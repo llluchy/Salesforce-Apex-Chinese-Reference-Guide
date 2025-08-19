@@ -2,6 +2,11 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+
+  base: '/Salesforce-Apex-Chinese-Reference-Guide/',  // 替换为你的仓库名
+  title: 'APEX 中文文档',
+
+
   lang: 'zh-CN',
   title: "APEX 中文文档",
   description: "Salesforce Apex 中文文档网站",
