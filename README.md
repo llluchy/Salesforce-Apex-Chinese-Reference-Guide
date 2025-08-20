@@ -1,3 +1,7 @@
+####上次更新 2025/08/20
+####当前目标 下载所有pdf，大模型翻译所有pdf成md，然后人工检查所有md，
+####当前状态 项目创建初，pdf还不齐全
+
 # Salesforce Apex 中文参考指南
 
 <!-- [![Deploy to GitHub Pages](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
