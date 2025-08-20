@@ -43,7 +43,7 @@
 - **[VitePress](https://vitepress.dev/)** - 静态站点生成器
 - **[Vue 3](https://vuejs.org/)** - 前端框架
 - **[Vite](https://vitejs.dev/)** - 构建工具
-- **[GitHub Actions](https://github.com/features/actions)** - 自动部署
+<!-- - **[GitHub Actions](https://github.com/features/actions)** - 自动部署 -->
 <!-- 
 ## 📝 贡献指南
 
@@ -95,7 +95,7 @@
 ## 📞 联系我
 
 - **GitHub Issues**: [提交问题或建议](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/issues)
-- **讨论**: [GitHub Discussions](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/discussions)
+<!-- - **讨论**: [GitHub Discussions](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/discussions) -->
 - **邮箱**: llluchy@outlook.com
 
 ---
