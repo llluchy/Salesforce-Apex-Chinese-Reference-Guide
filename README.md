@@ -1,6 +1,6 @@
 # Salesforce Apex 中文参考指南
 
-[![Deploy to GitHub Pages](https://github.com/your-username/Salesforce-Apex-Chinese-Reference-Guide/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://your-username.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
+[![Deploy to GitHub Pages](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 📖 项目简介
@@ -36,7 +36,7 @@
 
 ## 📖 阅读文档
 
-- **在线访问**: [https://your-username.github.io/Salesforce-Apex-Chinese-Reference-Guide/](https://your-username.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
+- **在线访问**: [https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
 
 ## 🔧 技术栈
 
@@ -94,8 +94,8 @@
 
 ## 📞 联系我
 
-- **GitHub Issues**: [提交问题或建议](https://github.com/your-username/Salesforce-Apex-Chinese-Reference-Guide/issues)
-- **讨论**: [GitHub Discussions](https://github.com/your-username/Salesforce-Apex-Chinese-Reference-Guide/discussions)
+- **GitHub Issues**: [提交问题或建议](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/issues)
+- **讨论**: [GitHub Discussions](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/discussions)
 - **邮箱**: llluchy@outlook.com
 
 ---
