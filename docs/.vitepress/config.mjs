@@ -25,12 +25,17 @@ export default defineConfig({
       {
         text: 'Apex 参考指南',
         items: [
-          { text: '引言', link: '/引言' },
-          { text: '正文',
+          { text: '- 介绍', link: '/Apex 参考指南/' },
+          { text: '✅代表已完成人工检查' },
+          { text: '系统命名空间',
+            collapsed: true,
             items: [
-              { text: '类', link: '/正文/类/' },
-              { text: '正文2', link: '/正文2' },
-              { text: '正文3', link: '/正文3' },
+              { text: '- 介绍', link: '/Apex 参考指南/系统命名空间/' },
+                { text: 'AccessLevel 类✅', link: '/Apex 参考指南/系统命名空间/AccessLevel' },
+                { text: 'Address 类', link: '/Apex 参考指南/系统命名空间/Address' },
+                { text: 'Answers 类', link: '/Apex 参考指南/系统命名空间/Answers' },
+                { text: 'ApexPages 类', link: '/Apex 参考指南/系统命名空间/ApexPages' },
+                { text: 'Cases 类', link: '/Apex 参考指南/系统命名空间/Cases Class' },
             ]
           },
         ]
