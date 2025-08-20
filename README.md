@@ -1,7 +1,7 @@
 # Salesforce Apex 中文参考指南
 
-[![Deploy to GitHub Pages](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<!-- [![Deploy to GitHub Pages](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) -->
 
 ## 📖 项目简介
 
@@ -12,7 +12,7 @@
 - **填补空白**: 提供 Salesforce Apex 的中文参考文档，解决官方文档只有英文版本的问题
 - **提高效率**: 帮助中文开发者更快地理解和掌握 Apex 编程语言
 - **社区贡献**: 为 Salesforce 中文开发者社区提供有价值的资源
-
+<!-- 
 ## 📚 文档内容
 
 本项目涵盖了 Salesforce Apex 的完整参考文档，按命名空间分类组织：
@@ -32,11 +32,11 @@
 - **Messaging 命名空间** - 邮件功能
 - **Approval 命名空间** - 审批流程
 - **Auth 命名空间** - 认证和会话管理
-- 更多...
+- 更多... -->
 
-## 📖 阅读文档
+<!-- ## 📖 阅读文档
 
-- **在线访问**: [https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
+- **在线访问**: [https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/) -->
 
 ## 🔧 技术栈
 
@@ -101,3 +101,25 @@
 ---
 
 ⭐ 如果这个项目对您有帮助，请给我们一个 Star！
+
+## ⚠️ 免责声明
+
+本项目仅用于学习和研究目的，所有文档内容均来自 Salesforce 官方文档的中文翻译。本项目不涉及任何商业用途，也不代表 Salesforce 官方立场。
+
+**版权声明：**
+- 原始英文文档版权归 Salesforce 所有
+- 本项目仅提供中文翻译，用于学习交流
+- 如有任何版权问题，请及时联系，我们将立即删除相关内容
+
+**联系方式：**
+- 邮箱：llluchy@outlook.com
+- GitHub Issues：[提交问题](https://github.com/llluchy/Salesforce-Apex-Chinese-Reference-Guide/issues)
+
+**使用声明：**
+请使用者遵守相关法律法规，仅将本项目用于合法的学习目的。使用者因使用本项目而产生的任何后果，本项目不承担任何责任。
+
+**内容免责：**
+- 本项目不承担因文档内容错误而产生的任何责任
+- 请辩证性地参考本文档，结合实际情况进行判断
+- 本项目的每一页文档都标注了 Salesforce 官方文档地址
+- 本文档仅提供参考理解作用，请以 Salesforce 官方文档为准
