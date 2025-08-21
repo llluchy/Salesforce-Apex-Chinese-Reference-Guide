@@ -243,7 +243,7 @@ Apex 是一种强类型、面向对象的编程语言，允许开发者在 Sales
 - **Apex DML 操作**  
   Support 命名空间提供了一个用于案例反馈（Case Feed）的接口。
 
-- [**System 命名空间**](/index.md)  
+- [**System 命名空间**](/docs/Apex 参考指南/系统命名空间/index.md)  
   System 命名空间提供了用于核心 Apex 功能的类和方法。
 
 - [**TerritoryMgmt 命名空间**](/en/guide/same-page.md)  
