@@ -100,8 +100,8 @@ SObjectAccessDecision decision = Security.stripInaccessible(
 
 ## 🔗 相关链接
 
-- [Security.stripInaccessible() 方法](../Security.md#stripinaccessible)
-- [SObjectAccessDecision 类](../SObjectAccessDecision.md)
+<!-- - [Security.stripInaccessible() 方法](../Security.md#stripinaccessible)
+- [SObjectAccessDecision 类](../SObjectAccessDecision.md) -->
 - [字段级安全性文档](https://help.salesforce.com/s/articleView?id=sf.security_fls.htm)
 
 ---
