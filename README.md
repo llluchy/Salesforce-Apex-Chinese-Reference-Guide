@@ -21,7 +21,7 @@
 
 本项目涵盖了 Salesforce Apex 的完整参考文档，按命名空间分类组织：
 
-### 系统命名空间 (System Namespace)
+### System_命名空间 (System Namespace)
 - ✅ **AccessLevel 类** - 定义数据库操作的执行模式
 - 🔄 **Address 类** - 地址相关功能
 - 🔄 **Answers 类** - 问答功能
@@ -55,7 +55,7 @@
 
 ### 翻译新文档
 1. Fork 本项目
-2. 在 `docs/Apex 参考指南/系统命名空间/` 目录下创建新的 `.md` 文件
+2. 在 `docs/Apex_参考指南/System_命名空间/` 目录下创建新的 `.md` 文件
 3. 参考现有的 `AccessLevel.md` 格式进行翻译
 4. 提交 Pull Request
 

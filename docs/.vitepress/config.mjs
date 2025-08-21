@@ -15,7 +15,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '主页', link: '/' },
-      { text: '文档', link: '/引言' }
+      { text: '文档', link: '/免责声明' }
     ],
 
     sidebar: [
@@ -23,19 +23,24 @@ export default defineConfig({
         text: '免责声明', link: '/免责声明'
       },
       {
-        text: 'Apex 参考指南',
+        text: 'Apex_参考指南',
         items: [
-          { text: '- 介绍', link: '/Apex 参考指南/' },
+          { text: '- 介绍', link: '/Apex_参考指南/' },
           { text: '✅代表已完成人工检查' },
-          { text: '系统命名空间',
+          { text: 'System_命名空间',
             collapsed: true,
             items: [
-              { text: '- 介绍', link: '/Apex 参考指南/系统命名空间/' },
-                { text: 'AccessLevel 类✅', link: '/Apex 参考指南/系统命名空间/AccessLevel' },
-                { text: 'Address 类', link: '/Apex 参考指南/系统命名空间/Address' },
-                { text: 'Answers 类', link: '/Apex 参考指南/系统命名空间/Answers' },
-                { text: 'ApexPages 类', link: '/Apex 参考指南/系统命名空间/ApexPages' },
-                { text: 'Cases 类', link: '/Apex 参考指南/系统命名空间/Cases Class' },
+              { text: '- 介绍', link: '/Apex_参考指南/System_命名空间/' },
+                { text: 'AccessLevel 类✅', link: '/Apex_参考指南/System_命名空间/AccessLevel%20类' },
+                { text: 'AccessType 枚举', link: '/Apex_参考指南/System_命名空间/AccessType%20枚举' },
+                { text: 'Address 类', link: '/Apex_参考指南/System_命名空间/Address%20类' },
+                { text: 'Answers 类', link: '/Apex_参考指南/System_命名空间/Answers%20类' },
+                { text: 'ApexPages 类', link: '/Apex_参考指南/System_命名空间/ApexPages%20类' },
+                { text: 'Approval 类', link: '/Apex_参考指南/System_命名空间/Approval%20类' },
+                { text: 'Assert 类', link: '/Apex_参考指南/System_命名空间/Assert%20类' },
+                { text: 'AsyncInfo 类', link: '/Apex_参考指南/System_命名空间/AsyncInfo%20类' },
+                { text: 'AsyncOptions 类', link: '/Apex_参考指南/System_命名空间/AsyncOptions%20类' },
+                { text: 'Cases 类', link: '/Apex_参考指南/System_命名空间/Cases%20类' },
             ]
           },
         ]
