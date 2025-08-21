@@ -8,10 +8,11 @@ Apex 是一种强类型、面向对象的编程语言，允许开发者在 Sales
 >
 > 在 API 版本 51.0 及更早版本中，Apex 参考信息包含在 Apex 开发人员指南的 **Apex 语言参考**部分。
 
-- [**Apex 版本说明**](/en/guide/same-page.md)  
+- **Apex 版本说明**  
   使用 Salesforce 版本说明了解 Apex 的最新更新和更改。
 
 - [**Apex DML 操作**](/en/guide/same-page.md)  
+- **Apex 版本说明**  
   您可以使用 Apex DML 语句或 Database 类的方法执行 DML 操作。对于潜在客户转换，请使用 Database 类的 convertLead 方法。没有与之对应的 DML 语句。
 
 - [**ApexPages 命名空间**](/en/guide/same-page.md)  
