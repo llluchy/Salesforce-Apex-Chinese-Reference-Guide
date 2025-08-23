@@ -55,7 +55,7 @@
 
 ### 翻译新文档
 1. Fork 本项目
-2. 在 `docs/Apex_参考指南/System_命名空间/` 目录下创建新的 `.md` 文件
+2. 在 `docs/Apex 参考指南/System_命名空间/` 目录下创建新的 `.md` 文件
 3. 参考现有的 `AccessLevel.md` 格式进行翻译
 4. 提交 Pull Request
 
