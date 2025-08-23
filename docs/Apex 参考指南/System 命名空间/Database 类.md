@@ -2,11 +2,6 @@
 
 包含用于创建和操作数据的方法。
 
-> [!NOTE] 白话 —— 个人理解，谨慎分析
-> Database类是Salesforce中最重要的数据操作类之一。
-> 
-> 它提供了完整的CRUD操作（创建、读取、更新、删除）以及事务管理、批量处理等功能。
-
 ## 命名空间
 
 System
@@ -15,130 +10,64 @@ System
 
 某些Database方法也作为DML语句存在。
 
-> [!NOTE] 白话 —— 个人理解，谨慎分析
-> Database类的主要用途：
-> 1. 执行CRUD操作（insert、update、delete、undelete）
-> 2. 查询数据（query、countQuery）
-> 3. 事务管理（setSavepoint、rollback）
-> 4. 批量处理（executeBatch）
-> 5. 数据转换（convertLead、merge）
+避免在同一个查询中指定`accessLevel`参数和`WITH SECURITY_ENFORCED`子句
+Salesforce建议您指定系统模式或用户模式，并删除任何冗余的`WITH SECURITY_ENFORCED`子句
 
-## 重要注意事项
+## 另请参阅
+- [Apex DML 操作]()
 
-- 避免在同一个查询中指定accessLevel参数和WITH SECURITY_ENFORCED子句
-- Salesforce建议您指定系统模式或用户模式，并删除任何冗余的WITH SECURITY_ENFORCED子句
+## Database 方法
 
-## Database 方法概述
+以下是 Database 的方法。所有方法均为静态方法。
 
-Database类包含以下主要方法类别：
+- **[convertLead(leadToConvert , allOrNone)](#convertlead-leadtoconvert-allornone)**  
+将潜在客户转换为客户和联系人，并可选择性地转换为商机。
 
-### 数据操作方法
-- **insert()** - 插入记录
-- **update()** - 更新记录  
-- **delete()** - 删除记录
-- **undelete()** - 恢复已删除记录
-- **merge()** - 合并记录
-
-### 查询方法
-- **query()** - 动态SOQL查询
-- **countQuery()** - 计数查询
-- **getQueryLocator()** - 创建查询定位器
-
-### 事务管理方法
-- **setSavepoint()** - 设置保存点
-- **rollback()** - 回滚事务
-- **releaseSavepoint()** - 释放保存点
-
-### 批量处理方法
-- **executeBatch()** - 执行批量作业
-
-### 数据转换方法
-- **convertLead()** - 转换潜在客户
-
-### 外部对象方法
-- **insertAsync()** - 异步插入外部对象
-- **updateAsync()** - 异步更新外部对象
-- **deleteAsync()** - 异步删除外部对象
-
-### 回收站方法
-- **emptyRecycleBin()** - 清空回收站
-- **getDeleted()** - 获取已删除记录
-- **getUpdated()** - 获取已更新记录
-
-## 详细方法文档
-
-由于Database类的方法非常多，详细的方法文档已分别创建：
-
-- [Database 插入方法](./Database%20插入方法.md)
-- [Database 更新方法](./Database%20更新方法.md)
-- [Database 删除方法](./Database%20删除方法.md)
-- [Database 查询方法](./Database%20查询方法.md)
-- [Database 事务管理方法](./Database%20事务管理方法.md)
-- [Database 批量处理方法](./Database%20批量处理方法.md)
-- [Database 数据转换方法](./Database%20数据转换方法.md)
-- [Database 外部对象方法](./Database%20外部对象方法.md)
-- [Database 回收站方法](./Database%20回收站方法.md)
-
-## 示例
-
-### 基本CRUD操作示例
-
-```apex
-// 插入记录
-Account acc = new Account(Name = 'Test Account');
-Database.SaveResult result = Database.insert(acc, false);
-
-// 查询记录
-List<Account> accounts = Database.query('SELECT Id, Name FROM Account LIMIT 10');
-
-// 更新记录
-acc.Name = 'Updated Account';
-Database.SaveResult updateResult = Database.update(acc, false);
-
-// 删除记录
-Database.DeleteResult deleteResult = Database.delete(acc.Id, false);
-```
-
-### 事务管理示例
-
-```apex
-// 设置保存点
-Savepoint sp = Database.setSavepoint();
-
-try {
-    // 执行一些操作
-    Account acc = new Account(Name = 'Test Account');
-    insert acc;
-    
-    // 如果成功，提交事务
-    // 如果失败，回滚到保存点
-} catch (Exception e) {
-    Database.rollback(sp);
-    System.debug('操作失败，已回滚: ' + e.getMessage());
-}
-```
-
-### 批量处理示例
-
-```apex
-// 执行批量作业
-Database.executeBatch(new MyBatchClass(), 200);
-```
-
-## 注意事项
-
-- Database方法提供了比DML语句更细粒度的控制
-- 可以使用allOrNone参数控制部分失败的处理
-- 支持访问级别控制（accessLevel参数）
-- 异步方法适用于外部对象操作
-- 事务管理方法用于复杂的数据操作场景
-
-## 相关链接
-
-- [Apex DML Operations](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dml.htm)
-- [Database Methods](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm)
-- [Batch Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_batch.htm)
+- **[convertLead(leadsToConvert, allOrNone)](#convertlead-leadstoconvert-allornone)**  
+将潜在客户转换对象列表转换为客户和联系人列表，并可选择性地转换为商机列表。
 
 ---
 
-*文档来源：https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm*
+### convertLead(leadToConvert, allOrNone)
+将潜在客户转换为客户和联系人，并可（可选）转换为商机。
+
+#### 签名
+public static Database.LeadConvertResult convertLead(Database.LeadConvert leadToConvert, Boolean allOrNone)
+
+#### 参数
+**leadToConvert**  
+类型：Database.LeadConvert  
+
+**allOrNone**  
+类型：布尔值  
+（可选）allOrNone 参数指定操作是否允许部分成功。若 allOrNone 设为 false 且某条记录失败，DML 操作的剩余部分仍可成功执行。您必须遍历返回结果以识别成功或失败的记录。若 allOrNone 设为 true 且方法未成功执行，将抛出异常。该参数的默认值为 true 。
+
+#### 返回值
+类型：Database.LeadConvertResult
+
+#### 用法
+建议向 convertLead 方法最多传递 100 个 LeadConvert 对象。单次调用包含超过 100 个对象可能导致 Apex 调控器限制错误。
+
+每个执行的 convertLead 方法都会计入 DML 语句的调控器限制。
+
+---
+
+### convertLead(leadsToConvert, allOrNone)
+将一组 LeadConvert 对象转换为客户和联系人，并可（可选）转换为商机。
+#### 签名
+public static Database.LeadConvertResult[] convertLead(Database.LeadConvert[] leadsToConvert, Boolean allOrNone)
+
+#### 参数
+leadsToConvert
+Type: Database.LeadConvert[]
+类型：Database.LeadConvert[]
+allOrNone
+Type: Boolean  类型：布尔值
+（可选）allOrNone 参数指定操作是否允许部分成功。如果 allOrNone 设置为 false 且某条记录失败，DML 操作的其余部分仍可成功。您必须遍历返回结果以确定哪些记录成功或失败。如果 allOrNone 设置为 true 且方法未成功，则会抛出异常。该参数的默认值为 true 。
+#### 返回值
+类型：Database.LeadConvertResult[]
+
+#### 用法
+我们建议每次最多向 convertLead 方法传递 100 个 LeadConvert 对象。每次调用包含超过 100 个对象可能导致 Apex 调控器限制错误。
+
+每个执行的 convertLead 方法都会计入 DML 语句的调控器限制。
