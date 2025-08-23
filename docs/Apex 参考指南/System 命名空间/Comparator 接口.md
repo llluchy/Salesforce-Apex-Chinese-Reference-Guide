@@ -130,16 +130,16 @@ public Integer compare(T var1, T var2)
 
 **var1**
 - 类型：T
-- 描述：T - 由Comparator的参数化类型确定的类型。例如，如果类实现Comparator<Account>，则var1和var2的类型为Account。
+- 描述：T - 由Comparator的参数化类型确定的类型。例如，如果类实现Comparator&lt;Account&gt;，则var1和var2的类型为Account。
 
 **var2**
 - 类型：T
-- 描述：T - 由Comparator的参数化类型确定的类型。例如，如果类实现Comparator<Account>，则var1和var2的类型为Account。
+- 描述：T - 由Comparator的参数化类型确定的类型。例如，如果类实现Comparator&lt;Account&gt;，则var1和var2的类型为Account。
 
 #### 返回值
 
 - 类型：Integer
-- 描述：比较结果。如果var1 < var2返回负数，如果var1 = var2返回0，如果var1 > var2返回正数
+- 描述：比较结果。如果var1 &lt; var2返回负数，如果var1 = var2返回0，如果var1 &gt; var2返回正数
 
 #### 示例
 
@@ -176,7 +176,7 @@ public class SalaryComparator implements Comparator<Employee> {
 ## 注意事项
 
 - 您的实现必须在compare()方法中明确处理null输入，以避免空指针异常
-- 防止null操作数用于'<'或'>'运算符，因为它们总是返回false并产生不一致的排序
+- 防止null操作数用于'&lt;'或'&gt;'运算符，因为它们总是返回false并产生不一致的排序
 - Comparator接口允许为同一个类定义多种排序策略
 - 建议在compare方法中实现一致的排序逻辑
 
