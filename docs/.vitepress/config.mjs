@@ -41,17 +41,20 @@ export default defineConfig({
                 { text: 'Boolean 类', link: '/Apex%20参考指南/System%20命名空间/Boolean%20类' },
                 { text: 'BusinessHours 类', link: '/Apex%20参考指南/System%20命名空间/BusinessHours%20类' },
                 { text: 'CallbackStatus 枚举', link: '/Apex%20参考指南/System%20命名空间/CallbackStatus%20枚举' },
-                { text: 'Callable 接口', link: '/Apex%20参考指南/System%20命名空间/Callable%20Interface' },
-                { text: 'Custom Metadata Type Methods', link: '/Apex%20参考指南/System%20命名空间/Custom%20Metadata%20Type%20Methods' },
+                { text: 'Callable 接口', link: '/Apex%20参考指南/System%20命名空间/Callable%20接口' },
                 { text: 'Cases 类', link: '/Apex%20参考指南/System%20命名空间/Cases%20类' },
                 { text: 'Collator 类', link: '/Apex%20参考指南/System%20命名空间/Collator%20类' },
-                { text: 'Comparable 接口', link: '/Apex%20参考指南/System%20命名空间/Comparable%20Interface' },
-                { text: 'Comparator 接口', link: '/Apex%20参考指南/System%20命名空间/Comparator%20Interface' },
+                { text: 'Comparable 接口', link: '/Apex%20参考指南/System%20命名空间/Comparable%20接口' },
+                { text: 'Comparator 接口', link: '/Apex%20参考指南/System%20命名空间/Comparator%20接口' },
                 { text: 'Continuation 类', link: '/Apex%20参考指南/System%20命名空间/Continuation%20类' },
                 { text: 'Cookie 类', link: '/Apex%20参考指南/System%20命名空间/Cookie%20类' },
+                { text: 'Crypto 类', link: '/Apex%20参考指南/System%20命名空间/Crypto%20类' },
+                { text: 'Custom Metadata Type Methods', link: '/Apex%20参考指南/System%20命名空间/Custom%20Metadata%20Type%20Methods' },
+                
                 { text: 'Database 类', link: '/Apex%20参考指南/System%20命名空间/Database%20类' },
                 { text: 'Date 类', link: '/Apex%20参考指南/System%20命名空间/Date%20类' },
                 { text: 'Datetime 类', link: '/Apex%20参考指南/System%20命名空间/Datetime%20类' },
+
             ]
           },
         ]
