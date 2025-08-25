@@ -181,10 +181,10 @@ public class SalaryComparator implements Comparator<Employee> {
 - 建议在compare方法中实现一致的排序逻辑
 
 ## 相关链接
-
+<!-- 
 - [Comparable 接口](./Comparable%20接口.md)
 - [List 类](../List%20Class.md)
-- [排序和比较文档](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_collections_lists.htm)
+- [排序和比较文档](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_collections_lists.htm) -->
 
 ---
 

@@ -163,11 +163,11 @@ public Integer compareTo(Object compareTo) {
 - 实现的方法必须声明为global或public
 - 如果对象不兼容，会抛出TypeException
 - 建议在compareTo方法中实现一致的排序逻辑
-
+<!-- 
 ## 相关链接
 
 - [List 类](../List%20Class.md)
-- [排序和比较文档](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_collections_lists.htm)
+- [排序和比较文档](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_collections_lists.htm) -->
 
 ---
 

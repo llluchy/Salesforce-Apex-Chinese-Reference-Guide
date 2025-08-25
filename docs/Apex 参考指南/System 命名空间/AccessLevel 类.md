@@ -17,7 +17,9 @@ System
 > 
 > -【用户模式】根据指定的用户的权限，对 对象和字段进行访问
 
-[System.Database](./Database%20类.md) 和 [System.Search](./Search%20类.md) 类的许多 DML 方法都包含 accessLevel 参数来指定执行模式。
+[System.Database](./Database%20类.md) 和System.Search类的许多 DML 方法都包含 accessLevel 参数来指定执行模式。
+<!-- 
+[System.Database](./Database%20类.md) 和 [System.Search](./Search%20类.md) 类的许多 DML 方法都包含 accessLevel 参数来指定执行模式。 -->
 
 避免在同一个查询中同时指定 accessLevel 参数和 WITH SECURITY_ENFORCED 子句。
 

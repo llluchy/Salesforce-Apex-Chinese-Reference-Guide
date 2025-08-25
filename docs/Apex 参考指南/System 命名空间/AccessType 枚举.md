@@ -138,12 +138,12 @@ SObjectAccessDecision decision = Security.stripInaccessible(
 - 访问检查基于当前用户的权限和字段级安全性设置
 - 如果用户没有访问权限，相应的字段值将被设置为 `null`
 - 建议在生产环境中使用这些检查来确保数据安全性
-
+<!-- 
 ## 相关链接
 
 - [Security.stripInaccessible() 方法](../Security.md#stripinaccessible)
 - [SObjectAccessDecision 类](../SObjectAccessDecision.md)
-- [字段级安全性文档](https://help.salesforce.com/s/articleView?id=sf.security_fls.htm)
+- [字段级安全性文档](https://help.salesforce.com/s/articleView?id=sf.security_fls.htm) -->
 
 ---
 
