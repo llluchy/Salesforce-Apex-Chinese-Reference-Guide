@@ -11,6 +11,8 @@
 
 这是一个 Salesforce Apex 编程语言的中文参考文档项目，旨在为中文开发者提供完整的 Apex 语言参考指南。项目基于 [VitePress](https://vitepress.dev/) 构建。
 
+## 📖 [项目地址](https://llluchy.github.io/Salesforce-Apex-Chinese-Reference-Guide/)
+
 ## 🎯 项目目标
 
 - **填补空白**: 提供 Salesforce Apex 的中文参考文档，解决官方文档只有英文版本的问题
