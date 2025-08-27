@@ -15,13 +15,12 @@ def extract_pdf_text(pdf_path):
         return f"Error reading PDF: {str(e)}"
 
 if __name__ == "__main__":
-    pdf_path = "docs/Apex 参考指南/System 命名空间/SelectOption Class.pdf"
+    pdf_path = "docs/Apex 参考指南/System 命名空间/String Class.pdf"
     text = extract_pdf_text(pdf_path)
     
     # 保存到文件
-    with open("selectoption_pdf_content.txt", "w", encoding="utf-8") as f:
+    with open("string_pdf_content.txt", "w", encoding="utf-8") as f:
         f.write(text)
     
     # 打印前5000个字符
     print(text[:5000])
-

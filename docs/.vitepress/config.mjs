@@ -8,6 +8,9 @@ export default defineConfig({
   lang: 'zh-CN',
   description: "Salesforce Apex 中文文档网站",
   themeConfig: {
+    search: {
+      provider: 'local'
+    },
     logo: './logo.svg',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -54,6 +57,8 @@ export default defineConfig({
                 { text: 'Database 类', link: '/Apex%20参考指南/System%20命名空间/Database%20类' },
                 { text: 'Date 类', link: '/Apex%20参考指南/System%20命名空间/Date%20类' },
                 { text: 'Datetime 类', link: '/Apex%20参考指南/System%20命名空间/Datetime%20类' },
+                
+                { text: 'String 类', link: '/Apex%20参考指南/System%20命名空间/String%20类' },
 
             ]
           },
