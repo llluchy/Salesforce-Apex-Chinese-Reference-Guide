@@ -2,15 +2,17 @@
 
 ## 📖 Apex Developer Guide
 #### - 英文原文 [跳转](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm)
-#### - 中文文档 [跳转](https://acnfli5539my.feishu.cn/wiki/space/7595212292392766681?ccm_open_type=lark_wiki_spaceLink&open_tab_from=wiki_home) 施工中
-#### - AI  问答 [跳转](https://ask.feishu.cn/shared-space/7595212292392766681) 因为AI的理解不区分中英文，所以可用
-#### 项目进度：英文原文还剩几本就能全部复制过来了，有一部分已经翻译完成，上次更新时间 2026/01/27
+#### - 中文文档 [跳转](https://acnfli5539my.feishu.cn/wiki/space/7595212292392766681?ccm_open_type=lark_wiki_spaceLink&open_tab_from=wiki_home) 旧，放弃，飞书
+#### - 中文文档 [跳转](https://49.232.62.216:12116/s/413313d1-4a10-4ab2-b72c-3996f6ded694/doc/apex-vacleG5LMp) 新，Outline，施工中
+#### - AI  问答 跳转 放弃
+#### 项目进度：英文原文还剩几本就能全部复制过来了，有一部分已经翻译完成，上次更新时间 2026/08/05
 
 ## 📖 Apex Reference Guide
 #### - 英文原文 [跳转](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_ref_guide.htm)
-#### - 中文文档 [跳转](https://acnfli5539my.feishu.cn/wiki/space/7595212099609955556?ccm_open_type=lark_wiki_spaceLink&open_tab_from=wiki_home) 施工中
-#### - AI  问答 [跳转](https://ask.feishu.cn/shared-space/7595212099609955556) 因为AI的理解不区分中英文，所以可用
-#### 项目进度：英文原文还剩几本就能全部复制过来了，有一部分已经翻译完成，上次更新时间 2026/01/27
+#### - 中文文档 [跳转](https://acnfli5539my.feishu.cn/wiki/space/7595212099609955556?ccm_open_type=lark_wiki_spaceLink&open_tab_from=wiki_home) 旧，放弃，飞书
+#### - 中文文档 跳转新，Outline，施工中，链接未生成
+#### - AI  问答 跳转 放弃
+#### 项目进度：英文原文还剩几本就能全部复制过来了，有一部分已经翻译完成，上次更新时间 2026/08/05
 
 ---
 ## ⚠️ 免责声明
