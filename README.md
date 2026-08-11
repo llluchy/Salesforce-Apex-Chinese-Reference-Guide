@@ -1,4 +1,4 @@
-这是一个Salesforce 全文档中文翻译的项目，利用飞书云文档进行快速构建，志在实现全一比一模拟原英文文档的结构，链接跳转，同时利用飞书的AI知识库工具，实现专用AI助手
+这是一个Salesforce 全文档中文翻译的项目，利用飞书云文档进行快速构建，志在实现全一比一模拟原英文文档的结构，链接跳转。
 
 ## 📖 Apex Developer Guide
 #### - 英文原文 [跳转](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dev_guide.htm)
