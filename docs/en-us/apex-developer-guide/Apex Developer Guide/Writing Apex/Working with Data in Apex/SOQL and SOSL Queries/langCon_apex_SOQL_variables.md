@@ -1,0 +1,106 @@
+---
+doc_id: "langCon_apex_SOQL_variables"
+---
+
+# Using Apex Variables in SOQL and SOSL Queries
+
+SOQL and SOSL statements in Apex can reference Apex code variables and expressions if they’re preceded by a colon (`:`). This use of a local code variable within a SOQL or SOSL statement is called a **bind**. The Apex parser first evaluates the local variable in code context before executing the SOQL or SOSL statement. Bind expressions can be used as:
+
+-   The search string in `FIND` clauses.
+-   The filter literals in `WHERE` clauses.
+-   The value of the `IN` or `NOT IN` operator in `WHERE` clauses, allowing filtering on a dynamic set of values. Note that this is of particular use with a list of IDs or Strings, though it works with lists of any type.
+-   The division names in `WITH DIVISION` clauses.
+-   The numeric value in `LIMIT` clauses.
+-   The numeric value in `OFFSET` clauses.
+
+For example:
+
+```apex
+Account A = new Account(Name='xxx');
+insert A;
+Account B;
+
+// A simple bind
+B = [SELECT Id FROM Account WHERE Id = :A.Id];
+
+// A bind with arithmetic
+B = [SELECT Id FROM Account 
+     WHERE Name = :('x' + 'xx')];
+
+String s = 'XXX';
+
+// A bind with expressions
+B = [SELECT Id FROM Account 
+     WHERE Name = :'XXXX'.substring(0,3)];
+
+// A bind with INCLUDES clause
+B = [SELECT Id FROM Account WHERE :A.TYPE INCLUDES (‘Customer – Direct; Customer – Channel’)];
+
+// A bind with an expression that is itself a query result
+B = [SELECT Id FROM Account
+     WHERE Name = :[SELECT Name FROM Account
+                    WHERE Id = :A.Id].Name];
+
+Contact C = new Contact(LastName='xxx', AccountId=A.Id);
+insert new Contact[]{C, new Contact(LastName='yyy', 
+                                    accountId=A.id)};
+
+// Binds in both the parent and aggregate queries
+B = [SELECT Id, (SELECT Id FROM Contacts
+                 WHERE Id = :C.Id)
+     FROM Account
+     WHERE Id = :A.Id];
+
+// One contact returned
+Contact D = B.Contacts;
+
+// A limit bind
+Integer i = 1;
+B = [SELECT Id FROM Account LIMIT :i];
+
+// An OFFSET bind
+Integer offsetVal = 10;
+List offsetList = [SELECT Id FROM Account OFFSET :offsetVal];
+
+// An IN-bind with an Id list. Note that a list of sObjects
+// can also be used--the Ids of the objects are used for 
+// the bind
+Contact[] cc = [SELECT Id FROM Contact LIMIT 2];
+Task[] tt = [SELECT Id FROM Task WHERE WhoId IN :cc];
+
+// An IN-bind with a String list
+String[] ss = new String[]{'a', 'b'};
+Account[] aa = [SELECT Id FROM Account 
+                WHERE AccountNumber IN :ss];
+
+// A SOSL query with binds in all possible clauses
+
+String myString1 = 'aaa';
+String myString2 = 'bbb';
+Integer myInt3 = 11;
+String myString4 = 'ccc';
+Integer myInt5 = 22;
+
+List> searchList = [FIND :myString1 IN ALL FIELDS 
+                                  RETURNING 
+                                     Account (Id, Name WHERE Name LIKE :myString2
+                                              LIMIT :myInt3), 
+                                     Contact, 
+                                     Opportunity, 
+                                     Lead 
+                                  WITH DIVISION =:myString4 
+                                  LIMIT :myInt5];
+```
+
+ 
+
+:::tip Note
+Apex bind variables aren’t supported for the units
+            parameter in the `DISTANCE` function. This query
+            doesn’t work.@@PH1PH@@
+:::
+
+## See Also
+
+- [← Previous](atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm)
+- [Next →](atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_query_all_rows.htm)

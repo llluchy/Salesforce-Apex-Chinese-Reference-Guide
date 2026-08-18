@@ -1,0 +1,21 @@
+---
+doc_id: "apex_connectapi_output_purchase_quantity_rule"
+---
+
+# ConnectApi.PurchaseQuantityRule
+
+Rule that restricts the quantity of a product that can be purchased.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `increment` | String | Increment value of the quantity that can be purchased. | 52.0 |
+| `maximum` | String | Maximum quantity that can be purchased. | 52.0 |
+| `minimum` | String | Minimum quantity that can be purchased. | 52.0 |
+
+## See Also
+
+- [ConnectApi.CartItemProduct](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_cart_product_summary.htm)
+
+-   [ConnectApi.ProductDetail](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_product_detail.htm "Details of a product.")
+    
+-   [ConnectApi.ProductSummary](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_product_summary.htm "Product summary.")

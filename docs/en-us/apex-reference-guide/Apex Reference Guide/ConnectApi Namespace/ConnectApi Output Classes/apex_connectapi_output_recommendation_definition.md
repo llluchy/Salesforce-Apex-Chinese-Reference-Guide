@@ -1,0 +1,24 @@
+---
+doc_id: "apex_connectapi_output_recommendation_definition"
+---
+
+# ConnectApi.RecommendationDefinition
+
+Represents a custom recommendation definition.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `actionUrl` | String | The URL for acting on this custom recommendation. | 35.0 |
+| `actionUrlName` | String | The text label for the action URL in the user interface. | 35.0 |
+| `explanation` | String | Explanation of the custom recommendation definition. | 35.0 |
+| `id` | String | 18-character ID of the custom recommendation definition. | 35.0 |
+| `name` | String | Name of the custom recommendation definition. The name is displayed in Setup. | 35.0 |
+| `photo` | [`ConnectApi.Photo`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_photo.htm#apex_connectapi_output_photo "Profile photo.") | Photo of the custom recommendation definition. | 35.0 |
+| `title` | String | Title of the custom recommendation definition. | 35.0 |
+| `url` | String | URL to the Connect REST API resource for the custom recommendation definition. | 35.0 |
+
+## See Also
+
+- [ConnectApi.RecommendationDefinitionPage](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_recommendation_definition_collection.htm)
+
+-   [ConnectApi.ScheduledRecommendation](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_scheduled_recommendation.htm "Represents a scheduled custom recommendation.")

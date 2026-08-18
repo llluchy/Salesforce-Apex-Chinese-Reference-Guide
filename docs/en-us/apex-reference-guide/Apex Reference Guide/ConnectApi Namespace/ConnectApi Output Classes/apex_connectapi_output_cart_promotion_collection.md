@@ -1,0 +1,22 @@
+---
+doc_id: "apex_connectapi_output_cart_promotion_collection"
+---
+
+# ConnectApi.CartPromotionCollection
+
+All the promotions associated with the cart.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `cartId` | String | ID of the cart. | 53.0 |
+| `cartStatus` | [`ConnectApi.​CartStatus`](atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#cartStatusEnum) | Status of the cart. Values are:
+-   `Active—`Cart is created and available for modifications, like adding or removing products or promotions.
+-   `Checkout—`Cart is in checkout. If the customer modifies the cart, the current checkout session is canceled.
+-   `Closed—`Checkout is complete and an order was created. The cart cannot be modified.
+-   `PendingClosed—`Cart is marked to be closed, but the request isn't completed yet. The cart can’t be modified. This value is available in API version 57.0 and later.
+-   `PendingDelete—`Cart is marked for delete, but the request isn't completed yet. The cart can’t be modified.
+-   `Processing—`Cart is processing. For example, taxes are being calculated. The cart can’t be modified.
+
+ | 53.0 |
+| `currencyIsoCode` | String | Currency ISO code of the cart. | 53.0 |
+| `promotions` | [List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<`ConnectApi.​CartPromotion​List`\> | Collection of promotions. | 53.0 |

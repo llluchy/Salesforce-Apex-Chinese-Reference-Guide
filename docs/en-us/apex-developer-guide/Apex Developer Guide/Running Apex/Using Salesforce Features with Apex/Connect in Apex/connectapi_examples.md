@@ -1,0 +1,55 @@
+---
+doc_id: "connectapi_examples"
+---
+
+# Connect in Apex Examples
+
+Use these examples to perform common tasks with Connect in Apex.
+
+## See Also
+
+- [Get Feed Elements From a Feed](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_feed_elements.htm)
+- [Get Feed Elements From Another User’s Feed](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_feed_elements_another_user.htm)
+- [Get Site-Specific Feed Elements from a Feed](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_feed_elements_community_scoped.htm)
+- [Post a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element.htm)
+- [Post a Feed Element with a Mention](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_mention.htm)
+- [Post a Feed Element with Existing Files](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_content.htm)
+- [Post a Rich-Text Feed Element with Inline Image](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_richtext_inlineimage.htm)
+- [Post a Rich-Text Feed Element with a Code Block](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_richtext_code_snippet.htm)
+- [Post a Feed Element with a New File (Binary) Attachment](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_binary.htm)
+- [Post a Batch of Feed Elements](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_batch.htm)
+- [Post a Batch of Feed Elements with a New (Binary) File](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_batch_binary.htm)
+- [Define an Action Link and Post with a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_define_post_action_link.htm)
+- [Define an Action Link in a Template and Post with a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_define_post_action_link_template.htm)
+- [Edit a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_edit_feed_element.htm)
+- [Edit a Question Title and Post](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_edit_question_title_post.htm)
+- [Like a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_like_feed_element.htm)
+- [Bookmark a Feed Element](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_bookmark_feed_element.htm)
+- [Share a Feed Element (prior to Version 39.0)](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_share_feed_element.htm)
+- [Share a Feed Element (in Version 39.0 and Later)](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_share_feed_element_comment.htm)
+- [Send a Direct Message](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_feed_element_direct_message.htm)
+- [Post a Comment](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_feed_element.htm)
+- [Post a Comment with a Mention](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_feed_element_2.htm)
+- [Post a Comment with an Existing File](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_feed_element_4.htm)
+- [Post a Comment with a New File](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_feed_element_3.htm)
+- [Post a Rich-Text Comment with Inline Image](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_richtext_inlineimage.htm)
+- [Post a Rich-Text Feed Comment with a Code Block](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_post_comment_richtext_code_snippet.htm)
+- [Edit a Comment](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_edit_comment.htm)
+- [Follow a Record](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_follow_record.htm)
+- [Unfollow a Record](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_unfollow_record.htm)
+- [Get a Repository](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repository.htm)
+- [Get Repositories](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repositories.htm)
+- [Get Allowed Item Types](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_allowed_item_types.htm)
+- [Get Previews](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_previews.htm)
+- [Get a File Preview](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_file_preview.htm)
+- [Get Repository Folder Items](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repository_folder_items.htm)
+- [Get a Repository Folder](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repository_folder.htm)
+- [Get a Repository File Without Permissions Information](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repository_file_without_perms.htm)
+- [Get a Repository File with Permissions Information](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_repository_file_with_perms.htm)
+- [Create a Repository File Without Content (Metadata Only)](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_add_repository_item_metadata.htm)
+- [Create a Repository File with Content](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_add_repository_item_binary.htm)
+- [Update a Repository File Without Content (Metadata Only)](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_update_repository_item_metadata.htm)
+- [Update a Repository File with Content](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_update_repository_item_binary.htm)
+- [Get an Authentication URL](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_get_an_authentication_url.htm)
+- [Resolve a Prompt Template](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_resolve_prompt_template.htm)
+- [Create a Cart and Cart Item with Custom Fields in a Commerce Store](atlas.en-us.apexcode.meta/apexcode/connectapi_examples_commerce_cart_custom.htm)

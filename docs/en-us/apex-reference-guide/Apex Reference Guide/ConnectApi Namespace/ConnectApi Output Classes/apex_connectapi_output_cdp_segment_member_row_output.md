@@ -1,0 +1,20 @@
+---
+doc_id: "apex_connectapi_output_cdp_segment_member_row_output"
+---
+
+# ConnectApi.CdpSegmentMemberRowOutput
+
+Data 360 segment member row output.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `deltaType` | String | Delta type, for example, `new`, `existing`, or `removed`. | 58.0 |
+| `id` | String | Segment member ID. | 58.0 |
+| `kqId` | String | Fully qualified key ID. | 58.0 |
+| `snapshotType` | String | Type of snapshot, for example, `full` or `incremental`. | 58.0 |
+| `timestamp` | String | Timestamp. | 58.0 |
+| `versionStamp` | String | Version timestamp. | 58.0 |
+
+## See Also
+
+- [ConnectApi.CdpSegmentMemberOutput](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_cdp_segment_member_output.htm)

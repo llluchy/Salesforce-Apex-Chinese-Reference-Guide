@@ -1,0 +1,366 @@
+---
+doc_id: "apex_manpkgs_safe_upgrades"
+---
+
+# Safely Upgrade Packages from Developer and Subscriber Perspectives
+
+Learn how to upgrade a managed package safely through this extended example. See the actions that package developers and subscribers can take to ensure a smooth transition and safeguard the backwards compatibility of existing integrations.
+
+These sections follow an example package developer and package subscriber as they move through a managed package upgrade process.
+
+## 1\. Package Developer: Publishes Version 1.0
+
+The package developer publishes version 1.0 of a 1GP managed package in the `eshop` namespace. The package contains Apex `CustomCart` and `CartCalculator` classes.
+
+```apex
+/**
+ * CustomCart
+ * Simple container for item prices used in a managed package context.
+ * @version 1.0
+ * @since 1.0
+ */
+global with sharing class CustomCart {
+
+    global ListDecimal> itemPrices;
+
+    global CustomCart() {
+        this.itemPrices = new ListDecimal>{0.0};
+    }
+}
+```
+
+ 
+
+```apex
+/**
+ * CartCalculator
+ * Handles tasks about calculating items and prices in customer carts.
+ * @version 1.0
+ * @since 1.0
+ */
+global virtual class CartCalculator {
+    /**
+     * Adds item prices in a custom cart.
+     * @param c A CustomCart object that represents a list of items that the customer 
+     * wants to buy
+     * @return A Decimal object that represents the total price of items in the
+     * cart
+     * @version 1.0
+     * @since 1.0
+     */
+    global virtual Decimal getTotalPrice(CustomCart c) {
+        Decimal price = 0.0;
+        // Add up items in cart
+        for (Decimal itemPrice : c.itemPrices) {
+            price += itemPrice;
+        }
+        return price;
+    }
+}
+```
+
+## 2\. Package Subscriber: Adds Functionality by Overriding a Method
+
+The package subscriber installs version 1.0 of the managed package, but they find that the existing `CartCalculator` class is inadequate. They want the ability to factor shipping costs into the total cart price.
+
+So, the subscriber extends the `CartCalculator` class in the managed package with a custom `CartCalculatorWithShipping` class. They override the `getTotalPrice()` method so that the total price includes the shipping cost.
+
+```apex
+// Package Subscriber - CartCalculatorWithShipping.cls
+
+/**
+* Handles tasks about calculating items and prices in customer carts,
+* including shipping costs.
+*/
+public with sharing class CartCalculatorWithShipping extends eshop.CartCalculator {
+
+    /**
+    * Adds item prices in a cart and adds the shipping cost to the total price.
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart, including the shipping cost 
+    */
+    public override Decimal getTotalPrice(eshop.CustomCart c) {
+        return super.getTotalPrice(c) + getShippingCost(c);
+    }
+
+    /**
+    * Get the shipping cost based on the items in a customer's cart
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total shipping cost
+    * for the cart
+    */ 
+    public Decimal getShippingCost(eshop.CustomCart c) {
+      // Flat rate shipping
+      return 20.0;
+    }
+
+}
+```
+
+## 3\. Package Developer: Releases Version 2.0 and Implements the Subscriber’s Custom Functionality
+
+The package developer releases version 2.0 of the managed package. In this version, the `CartCalculator` class now includes a native shipping cost calculator. The updated `getTotalPrice()` method calls the new `getShippingCost()` method. Notice that the package developer uses the same method name for `getShippingCost()` as the subscriber does for their custom override method.
+
+```plain
+// Package Developer - CartCalculator.cls 
+
+/**
+* Handles tasks about calculating items and prices in customer carts.
+* @version 2.0
+* @since 1.0
+*/
+global virtual class CartCalculator {
+    /**
+    * Adds item prices in a cart, including the shipping cost
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart, including the total shipping cost
+    * @version 2.0
+    * @since 1.0
+    */ 
+    global virtual Decimal getTotalPrice(CustomCart c) {
+        Decimal price = 0.0;
+        // Add up items in cart
+        for (Decimal itemPrice : c.itemPrices) {
+        price += itemPrice;
+    }
+    return price + getShippingCost(c);
+  }
+
+    /**
+    * Get the shipping cost based on the items in a customer's cart
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total shipping cost
+    * for the cart
+    * @version 2.0
+    * @since 2.0
+    */ 
+    global virtual Decimal getShippingCost(CustomCart c) {
+        // Flat rate shipping
+        return 20.0;
+    }
+}
+```
+
+## 4\. Package Subscriber: Upgrades to Version 2.0 Without Specifying a Package Version for the Apex Class
+
+By default, an Apex class or trigger is associated with the version of the managed package installed when the class or trigger was most recently deployed.
+
+In this example, the package subscriber created and saved the `CartCalculatorWithShipping` class when the `eshop` managed package was on version 1.0. If the package subscriber upgrades their `eshop` managed package to version 2.0, and doesn’t redeploy the `CartCalculatorWithShipping` class, then that class is still associated with version 1.0 of the managed package.
+
+Let’s say that the package subscriber upgrades their `eshop` managed package to version 2.0, but does try to redeploy `CartCalculatorWithShipping`. In this case, the subscriber encounters this compilation error: `Method must use the override keyword: public Decimal getShippingCost(CustomCart c)`.
+
+This error occurs because there’s a mismatch in the shape of the API. The subscriber’s original `CartCalculatorWithShipping` class has a `getShippingCost()` method, and the `CartCalculator` class in version 2.0 of the managed package now also includes a `getShippingCost()` method. The subscriber didn’t specify a package version for the `CartCalculatorWithShipping` class, so upon redeployment, the class is now associated with version 2.0 of the managed package. Therefore, the subscriber’s `getShippingCost()` method technically overrides the `getShippingCost()` method in `CartCalculator`, and so the Apex compiler requires an `override` keyword for the method.
+
+## 5\. Package Subscriber: Sets Apex Class to Package Version 1.0
+
+To avoid this compilation error, the package subscriber explicitly sets a package version for the `CartCalculatorWithShipping` class. When is set to a specific package version, the class views the package’s global Apex as if that version was installed.
+
+In this case, setting `CartCalculatorWithShipping` to version 1.0 of the managed package avoids a compilation error because the package’s `CartCalculator` class doesn’t define a `getShippingCost()` method until version 2.0. As long as the `CartCalculatorWithShipping` class is set to an earlier package version, the package’s `CartCalculator` class doesn’t expose the `getShippingCost()` method to the subscriber. Therefore, the Apex compiler doesn’t flag the subscriber’s own `getShippingCost()` method as needing to override the method in the managed package.
+
+To override the default package version for an Apex class or trigger, use the Salesforce Setup UI or the `packageVersions` field of the class’s ApexClass metadata type. See [Set Package Versions for Apex Classes and Triggers](atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_version.htm#apex_manpkgs_subscriber_version "As a managed package subscriber, you can specify which package version that your managed Apex classes and triggers use. Set the package version in Setup, through metadata deployments, or with API requests.").
+
+:::tip Note
+In Spring ’25 and earlier, setting Apex classes and triggers to a package version was
+     available for only first-generation managed packages (1GP). In Summer ’25 and later, package
+     version setting is also available for migrated 2GP managed packages. Package version setting
+     isn’t yet supported in 2GP packages that weren’t converted from a 1GP package. See [Apex Version Settings in Migrated Second-Generation Managed Packages
+      (2GP)](https://help.salesforce.com/s/articleView?id=005101483&type=1&language=en_US).
+
+    For migrated 2GP managed packages, the `packageVersions`
+          field of the ApexClass metadata type is different from that of 1GP managed packages. 2GP
+          managed packages are identified by their package ID, whereas 1GP managed packages are
+          identified by their namespace. This difference occurs because multiple 2GP managed
+          packages can have the same namespace, whereas 1GP managed packages each require a unique
+          namespace.
+:::
+
+For example, here’s the metadata file for the subscriber’s `CartCalculatorWithShipping` class, where the class is set to version 1.0 of the managed package. Because the package is a 1GP managed package, the namespace is specified instead of the package ID.
+
+```xml
+xmlns="http://soap.sforce.com/2006/04/metadata">
+    >66.0>
+    >Active>
+    >
+        >eshop> 
+        >1>
+        >0>
+    >
+>
+```
+
+## 6\. Package Subscriber: getTotalPrice() Returns an Incorrect Value
+
+The subscriber sets the `CartCalculatorWithShipping` class to version 1.0 of the managed package and successfully recompiles the class. However, the subscriber now encounters a new issue at run time: the `getTotalPrice()` method in the `CartCalculatorWithShipping` class returns the wrong total price.
+
+Recall that specifying an earlier package version for an Apex class or trigger hides globals that are defined in later versions during compilation. In other words, setting a package version preserves the shape of the API. However, it doesn’t necessarily preserve the behavior of the API at run time.
+
+In version 1.0, the `getTotalPrice()` method in the `CartCalculator` class returns only the base price. But in version 2.0, the `getTotalPrice()` method now returns the price plus the result of `getTotalShippingCost()`. The `getTotalPrice()` method exists in both versions of the managed package, even though its behavior differs. Therefore, even if the subscriber sets the `CartCalculatorWithShipping` class to version 1.0, the `getTotalPrice()` executes with its version 2.0 behavior at run time.
+
+Remember that the subscriber’s `getTotalPrice()` method in their `CartCalculatorWithShipping` class overrides the native `getTotalPrice()` method in the managed package. The subscriber’s override method adds the `getShippingCost()` result to the result of the native `getTotalPrice()` method. In version 2.0 of the managed package, the native `getTotalPrice()` method already adds the shipping cost, so the shipping cost is erroneously added twice.
+
+```plain
+// Package Developer - CartCalculator.cls (v2.0) (code unchanged)
+global virtual class CartCalculator {
+
+    global virtual Decimal getTotalPrice(CustomCart c) {
+        Decimal price = 0.0;
+        // Add up items in cart
+        for (Decimal itemPrice : c.itemPrices) {
+            price += itemPrice;
+        }
+        return price + getShippingCost(c);
+    }
+
+    global virtual Decimal getShippingCost(CustomCart c) {
+        // Flat rate shipping
+        return 20.0;
+    }
+
+}
+
+// Package Subscriber - CartCalculatorWithShipping.cls (code unchanged)
+public with sharing class CartCalculatorWithShipping extends eshop.CartCalculator {
+
+    // Now returns the wrong price because getShippingCost is added twice
+    public override Decimal getTotalPrice(eshop.CustomCart c) {
+        return super.getTotalPrice(c) + getShippingCost(c);
+    }
+
+    public Decimal getShippingCost(eshop.CustomCart c) {
+        // Flat rate shipping
+    return 20.0;
+    }
+}
+```
+
+To resolve this problem without requiring the subscriber to change their code, the package developer must version the behavior of Apex classes and triggers in the package.
+
+## 7\. Package Developer: Implements Backward Compatibility with System.requestVersion()
+
+After the package subscriber informs the package developer about the unexpected `getTotalPrice()` behavior, the package developer releases a patch update. Version 2.1 of the package allows the subscriber to keep their original `CartCalculatorWithShipping` class by implementing backwards compatibility with [`System.requestVersion()`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_requestVersion).
+
+Here’s version 2.1 of the `CartCalculator` class that contains an updated `getTotalPrice()` method. In the method, a `callerVersion` variable is set to `System.requestVersion()`, which returns a [`Version`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_version.htm) object that represents the managed package version of the calling class. A `minVersionWithShippingCost` variable is set to the managed package version that introduced the changed `getTotalPrice()` behavior.
+
+Then, the [`Version.compareTo()`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_compareTo) method compares `callerVersion` and `minVersionWithShippingCost`. If the caller version is earlier than the version that the shipping cost feature was introduced in, then `getTotalPrice()` returns the price. This value aligns with the original behavior in version 1.0 of the managed package. If the caller version matches or is later than the version that the shipping cost feature was introduced in, then `getTotalPrice()` returns the price addition to the shipping cost.
+
+```apex
+// Package Developer - CartCalculator.cls
+
+/**
+* Handles tasks about calculating items and prices in customer carts.
+* @version 2.1
+* @since 1.0
+*/
+global virtual class CartCalculator {
+
+   /**
+    * Adds item prices in a cart.
+    * @param c A CustomCart object that represents a list of items that the customer
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart. Total price includes the shipping cost for v2.0 and later.
+    * @version 2.1
+    * @since 1.0
+  */
+   global virtual Decimal getTotalPrice (CustomCart c) {
+       Decimal price = 0.00;
+       // Add up items in cart
+       Version callerVersion = System.requestVersion();
+       Version minVersionWithShippingCost = new Version(2, 0);
+       if (callerVersion.compareTo(minVersionWithShippingCost) // callVer 
+           return price;
+       } else {
+       return price + getShippingCost(c);
+       }
+   }
+
+   /**
+   * Get the shipping cost based on the items in a customer's cart
+   * @param c A CustomCart object that represents a list of items that the customer
+   * wants to buy
+   * @return A Decimal object that represents the total shipping cost
+   * for the cart
+   * @version 2.1
+   * @since 2.0
+   */
+   global virtual Decimal getShippingCost(CustomCart c) {
+       return 20.00;
+   }
+}
+```
+
+By versioning the behavior of `getTotalPrice()`, the package developer has implemented basic backward compatibility for the class. Now, as long as package subscribers set Apex classes to the desired managed package version, then their existing implementations won’t break when they upgrade from version 1.0 to version 2.1 of the package.
+
+## 8: Package Developer: Tests Backward Compatibility with System.runAs()
+
+To ensure that `getTotalPrice()` now behaves differently based on the package version of the calling code, the package developer can use [`System.runAs()`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_runAs) in their unit tests. This method, which can only be used in test methods, changes the current package version to the package version specified in the argument Here’s a basic unit test that the package developer implements for `getTotalPrice()`.
+
+```plain
+// Package Developer - CartCalculatorTest.cls
+@isTest
+private class CartCalculatorTest {
+
+    private static final List prices = new List{
+        10.0,
+        20.0,
+        30.0
+    };
+
+    @isTest
+    static void testGetTotalPrice_WithShippingCost() {
+        CustomCart cart = new CustomCart();
+        cart.itemPrices = prices;
+
+        CartCalculator calculator = new CartCalculator();
+
+        //Version 2.0 includes the shipping cost calculation
+        System.runAs(new Version(2, 0)) {
+            Decimal totalPrice = calculator.getTotalPrice(cart);
+            // The expected total is sum of item prices (60.0) plus the shipping cost (20.0)
+            Assert.areEqual(80.0, totalPrice, 'The total price should be 80.0');
+        }
+    }
+
+    @isTest
+    static void testGetTotalPrice_WithoutShippingCost() {
+        CustomCart cart = new CustomCart();
+        cart.itemPrices = prices;
+        CartCalculator calculator = new CartCalculator();
+        // Version 1.0 doesn't include the shipping cost calculation
+        System.runAs(new Version(1, 0)) {
+            Decimal totalPrice = calculator.getTotalPrice(cart);
+            // The expected total is the sum of item prices (60.0)
+            Assert.areEqual(60.0, totalPrice, 'The total price should be 60.0');
+        }
+    }
+}
+```
+
+## Summary: Shared Responsibilities for Safe Package Upgrades
+
+The extended example demonstrates that the package developer and package subscriber both play a role in ensuring safe package upgrades. Here’s a table that summarizes the recommended actions that each actor can take so that the package can evolve without compromising subscriber implementations.
+
+Table 1. Safe Package Upgrade Responsibilities
+| Goal | Actor | Action |
+| --- | --- | --- |
+| Version API Shape | Package Subscriber | 
+Be aware of the default versioned behavior: an Apex class or trigger is associated with the version of a managed package installed when that class or trigger was most recently deployed or saved.
+
+If necessary, override the default by explicitly setting dependent Apex classes and triggers to a specific package version.
+
+See [Set Package Versions for Apex Classes and Triggers](atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_version.htm#apex_manpkgs_subscriber_version "As a managed package subscriber, you can specify which package version that your managed Apex classes and triggers use. Set the package version in Setup, through metadata deployments, or with API requests.").
+
+ |
+| Version API Behavior | Package Developer | Version changed behavior with `System.requestVersion()`, and test it with `System.runAs()`. See [Version Apex in Managed Packages](atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_package_versions.htm "A managed package component can exhibit different behavior in different package versions. By versioning managed Apex, you can add and refine components in the managed package, while maintaining backwards compatibility for existing subscribers."). |
+
+## See Also
+
+- [Develop and Distribute Apex for Managed Packages](atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_chapter.htm)
+
+-   [Use Apex Referenced by Managed Packages](atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_intro.htm "Learn how to use managed Apex effectively as a managed package subscriber.")

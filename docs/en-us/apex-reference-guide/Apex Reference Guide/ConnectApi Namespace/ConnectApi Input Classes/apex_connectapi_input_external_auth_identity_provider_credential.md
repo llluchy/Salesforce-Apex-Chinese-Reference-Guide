@@ -1,0 +1,16 @@
+---
+doc_id: "apex_connectapi_input_external_auth_identity_provider_credential"
+---
+
+# ConnectApi.ExternalAuthIdentityProviderCredentialInput
+
+External auth identity provider credential input.
+
+| Property | Type | Description | Required or Optional | Available Version |
+| --- | --- | --- | --- | --- |
+| `credentialName` | String | Name of the external auth identity provider credential. | Required | 62.0 |
+| `credentialValue` | String | Value of the external auth identity provider credential. | Required | 62.0 |
+
+## See Also
+
+- [ConnectApi.ExternalAuthIdentityProviderCredentialsInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_external_auth_identity_provider_credentials.htm)

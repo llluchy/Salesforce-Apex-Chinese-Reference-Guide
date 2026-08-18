@@ -1,0 +1,14 @@
+---
+doc_id: "apex_connectapi_output_multiple_fulfillment_order_output"
+---
+
+# ConnectApi.MultipleFulfillmentOrderOutputRepresentation
+
+A list of responses for the individual FulfillmentOrder creation attempts from a request to create multiple fulfillment orders.
+
+Subclass of [ConnectApi.BaseOutputRepresentation](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_base_output.htm "Base Order Management output class.").
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `invoicesMap` |  |  | 50.0 |
+| `fulfillmentOrders` | [List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<`ConnectApi.​FulfillmentGroup​OutputRepresentation`\> | A list of response data for created and failed FulfillmentOrders. | 50.0 |

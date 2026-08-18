@@ -1,0 +1,17 @@
+---
+doc_id: "apex_connectapi_output_reputation"
+---
+
+# ConnectApi.Reputation
+
+Reputation for a user.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `reputationLevel` | [`ConnectApi.​ReputationLevel`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_reputation_level.htm#apex_connectapi_output_reputation_level "Reputation level for a user.") | User’s reputation level. | 32.0 |
+| `reputationPoints` | Double | User's reputation points, which can be earned by performing different activities. | 32.0 |
+| `url` | String | Connect REST API URL to the reputation. | 32.0 |
+
+## See Also
+
+- [ConnectApi.User](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_User.htm)

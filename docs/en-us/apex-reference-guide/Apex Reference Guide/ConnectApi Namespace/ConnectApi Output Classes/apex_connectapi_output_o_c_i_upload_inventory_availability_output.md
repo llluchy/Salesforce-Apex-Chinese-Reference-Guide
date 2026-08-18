@@ -1,0 +1,13 @@
+---
+doc_id: "apex_connectapi_output_o_c_i_upload_inventory_availability_output"
+---
+
+# ConnectApi.OCIUploadInventoryAvailabilityOutputRepresentation
+
+Response to an upload inventory availability job.
+
+Subclass of [ConnectApi.OCIBaseOutputRepresentation](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_o_c_i_base_output.htm "Base Omnichannel Inventory output class.").
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `uploadId` | String | Identifier of the upload job. Use this value to retrieve the status of the job. | 51.0 |

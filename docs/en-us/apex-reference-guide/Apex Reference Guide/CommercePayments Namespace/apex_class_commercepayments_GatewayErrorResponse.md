@@ -1,0 +1,78 @@
+---
+doc_id: "apex_class_commerce_payments_GatewayErrorResponse"
+---
+
+# GatewayErrorResponse Class
+
+Use to respond with an error indication following errors from the `PaymentGateway` adapter, such as request-forbidden responses, custom validation errors, or expired API tokens.
+
+## Namespace
+
+[CommercePayments](atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm "Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.")
+
+## Usage
+
+Use `GatewayErrorResponse` to create an object that stores information about error responses sent by the payment gateway adapter.
+
+## Example
+
+If `GatewayResponse` receives an exception rather than a valid request, it calls `GatewayErrorResponse` to create an error object with information about the exception.
+
+```apex
+global commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+        commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+        commercepayments.GatewayResponse response;
+        try {
+            if (requestType == commercepayments.RequestType.Authorize) {
+                response = createAuthResponse((commercepayments.AuthorizationRequest)gatewayContext.getPaymentRequest());
+            } else if (requestType == commercepayments.RequestType.Capture) {
+                response =  createCaptureResponse((commercepayments.CaptureRequest)gatewayContext.getPaymentRequest()) ;
+            } else if (requestType == commercepayments.RequestType.ReferencedRefund) {
+                response = createRefundResponse((commercepayments.ReferencedRefundRequest)gatewayContext.getPaymentRequest());
+            }
+            return response;
+        } catch(SalesforceValidationException e) {
+             commercepayments.GatewayErrorResponse error = new commercepayments.GatewayErrorResponse('400', e.getMessage());
+             return error;
+        }
+    }
+```
+
+## See Also
+
+- [GatewayErrorResponse Constructors](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayErrorResponse.htm#apex_commerce_payments_GatewayErrorResponse_constructors)
+
+## GatewayErrorResponse Constructors
+
+The following are constructors for `GatewayErrorResponse`.
+
+## See Also
+
+- [GatewayErrorResponse(errorCode, errorMessage)](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayErrorResponse.htm#apex_commerce_payments_GatewayErrorResponse_ctor)
+
+### GatewayErrorResponse(errorCode, errorMessage)
+
+Constructor to create a GatewayErrorResponse object that accepts `errorCode` and `errorMessage`.
+
+#### Signature
+
+`global GatewayErrorResponse(String errorCode, String errorMessage)`
+
+#### Parameters
+
+-   **errorCode**: Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.") Should match with the HTTP status code to be returned to the user. Here are a few examples.
+    -   If the status code is for a bad request, the errorCode should be 400.
+    -   If the status code is for a forbidden request, errorCode should be 403.
+    -   If errorCode isn’t a valid HTTP status code, a 500 internal server error is returned.
+
+:::tip Note
+errorCode must have a value, otherwise the platform throws
+              an error.
+:::
+
+-   **errorMessage**: Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.") The message response to users following an error. 
+
+:::tip Note
+errorMessage must have a value, otherwise the platform throws
+              an error.
+:::

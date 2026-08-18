@@ -1,0 +1,27 @@
+---
+doc_id: "apex_connectapi_output_bus_obj_insights_output"
+---
+
+# ConnectApi.BusObjInsightsOutputRepresentation
+
+Insights related to a business objective, or goal.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `currencyIsoCode` | String | The three-letter ISO currency code associated with the KPI values. For example, 'USD' for US dollars or 'EUR' for euros. | 62.0 |
+| `current` | Double | The current value of the KPI metric. This represents the most recent measurement or calculation of the business objective's key performance indicator. | 59.0 |
+| `insights` | [List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<[`ConnectApi.​InsightsOutput​Representation`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_insights_output.htm "Insight details for a business objective, or goal.")\> | A collection of insights related to the business objective. | 62.0 |
+| `kpiDashboardUrl` | String | The URL to the dashboard where the KPI details and visualizations can be viewed. | 62.0 |
+| `kpiSummaryText` | String | A human-readable summary of the KPI's performance, including the change from the previous value. | 62.0 |
+| `last` | Double | The previous value of the KPI metric, used for comparison with the current value to track progress or changes over time. | 59.0 |
+| `period` | String | The time period between the current and last values, such as 'Daily', 'Weekly', 'Monthly', or 'Quarterly'. This indicates the frequency of KPI measurements. | 59.0 |
+| `targetCompletionDate` | Datetime | Target date for completion of the goal. | 62.0 |
+| `targetValue` | Double | Target value for the goal. | 62.0 |
+| `unit` | [`ConnectApi.​ConnectInsight​UnitEnum`](atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#ConnectInsightUnitEnum) | Unit for an insight. Values are:
+-   `Count`
+-   `Currency`
+-   `Dollar`
+-   `Number`
+-   `Percent`
+
+ | 59.0 |

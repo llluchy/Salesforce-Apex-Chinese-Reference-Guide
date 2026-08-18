@@ -1,0 +1,21 @@
+---
+doc_id: "apex_connectapi_input_promotion_cart"
+---
+
+# ConnectApi.PromotionCartInput
+
+Cart during promotion evaluation.
+
+| Property | Type | Description | Required or Optional | Available Version |
+| --- | --- | --- | --- | --- |
+| `cartAdjustment​Groups` | [ConnectApi.​PromotionCart​AdjustmentGroupInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_cart_adjustment_group.htm#apex_connectapi_input_cart_adjustment_group "Cart adjustment group for a promotion.")\[\] | Collection of cart adjustment groups associated with the items in the cart. | Optional | 60.0 |
+| `cartDelivery​Groups` | [ConnectApi.​PromotionCart​DeliveryGroupInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_cart_delivery_group.htm#apex_connectapi_input_cart_delivery_group "Cart delivery group input.")\[\] | Collection of cart delivery groups associated with the items in the cart. Available if shipping promotions are enabled. | Required when evaluating shipping promotions | 60.0 |
+| `cartItems` | [List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<`ConnectApi.​PromotionCart​ItemInput`\> | A collection of items in the cart. | Required | 57.0 |
+| `currencyIsoCode` | String | Three-letter ISO 4217 currency code associated with the cart. | Required for multi-currency orgs | 57.0 |
+| `id` | String | ID of the cart. | Optional | 57.0 |
+
+## See Also
+
+- [ConnectApi.PromotionEvaluateInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_promotion_evaluate.htm)
+
+-   [evaluate(salesTransaction)](atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_CommercePromotions_static_methods.htm#apex_ConnectAPI_CommercePromotions_evaluate_1 "Determine which promotions the customer is eligible for based on the store and buyer group, and compute the applicable price adjustments based on the coupons and the items in the cart. This API evaluates only the first 50 active manual promotions and first 50 active automatic promotions, based on priority. This API computes and returns applicable price adjustments, but it does not apply those adjustments to the webcart record. If you want to enable promotions based on shipping, contact Salesforce Customer Support.")

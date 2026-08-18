@@ -1,0 +1,60 @@
+---
+doc_id: "langCon_apex_collections_lists_sorting"
+---
+
+# List Sorting
+
+You can sort list elements and the sort order depends on the data type of the elements.
+
+Using the `List.sort` method, you can sort elements in a list. Sorting is in ascending order for elements of primitive data types, such as strings. The sort order of other more complex data types is described in the chapters covering those data types.
+
+You can sort custom types (your Apex classes) if they implement the `Comparable` interface. Alternatively, a class implementing the `Comparator` interface can be passed as a parameter to the `List.sort` method. For more information on the sort order used for sObjects, see [Sorting Lists of sObjects](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_list_sorting_sobject.htm).
+
+This example shows how to sort a list of strings and verifies that the colors are in ascending order in the list.
+
+```apex
+ListString> colors = new ListString>{
+    'Yellow',
+    'Red',
+    'Green'};
+colors.sort();
+System.assertEquals('Green', colors.get(0));
+System.assertEquals('Red', colors.get(1));
+System.assertEquals('Yellow', colors.get(2));
+```
+
+For the Visualforce SelectOption control, sorting is in ascending order based on the value and label fields. See this next section for the sequence of comparison steps used for SelectOption.
+
+## Default Sort Order for SelectOption
+
+The `List.sort` method sorts SelectOption elements in ascending order using the value and label fields, and is based on this comparison sequence.
+
+1.  The value field is used for sorting first.
+2.  If two value fields have the same value or are both empty, the label field is used.
+
+The disabled field isn’t used for sorting.
+
+For text fields, the sort algorithm uses the Unicode sort order. Also, empty fields precede non-empty fields in the sort order.
+
+In this example, a list contains three SelectOption elements. Two elements, United States and Mexico, have the same value field (‘A’). The `List.sort` method sorts these two elements based on the label field, and places Mexico before United States, as shown in the output. The last element in the sorted list is Canada and is sorted on its value field ‘C’, which comes after ‘A’.
+
+```apex
+List options = new List();
+options.add(new SelectOption('A','United States'));
+options.add(new SelectOption('C','Canada'));
+options.add(new SelectOption('A','Mexico'));
+System.debug('Before sorting: ' + options);
+options.sort();
+System.debug('After sorting: ' + options);
+```
+
+The output of the debug statements shows the contents of the list, both before and after the sort.
+
+```plain
+DEBUG|Before sorting: (System.SelectOption[value="A", label="United States", disabled="false"], 
+  System.SelectOption[value="C", label="Canada", disabled="false"], 
+  System.SelectOption[value="A", label="Mexico", disabled="false"])
+DEBUG|After sorting: (System.SelectOption[value="A", label="Mexico", disabled="false"], 
+  System.SelectOption[value="A", label="United States", disabled="false"], 
+  System.SelectOption[value="C", label="Canada", disabled="false"])
+```

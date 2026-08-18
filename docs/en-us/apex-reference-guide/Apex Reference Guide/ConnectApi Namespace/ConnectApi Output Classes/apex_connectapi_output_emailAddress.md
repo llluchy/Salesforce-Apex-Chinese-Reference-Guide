@@ -1,0 +1,17 @@
+---
+doc_id: "apex_connectapi_output_emailAddress"
+---
+
+# ConnectApi.EmailAddress
+
+Email address.
+
+| Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `displayName` | String | The display name for the email address. | 29.0 |
+| `emailAddress` | String | The email address. | 29.0 |
+| `relatedRecord` | `ConnectApi.RecordSummary` | The summary of a related record, for example, a contact or user summary. | 36.0 |
+
+## See Also
+
+- [ConnectApi.EmailMessageCapability](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_email_message_capability.htm)

@@ -1,0 +1,18 @@
+---
+doc_id: "apex_connectapi_output_datacloud_contact_collection"
+---
+
+# ConnectApi.DatacloudContacts
+
+Lists all contacts that were purchased in the specific order, page URLs, and the number of contacts in the order.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `contacts` | 
+[List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<`ConnectApi.DatacloudContact`\>
+
+ | A detailed list of purchased contacts. | 32.0 |
+| `currentPageUrl` | String | URL to the current page of contacts. | 32.0 |
+| `nextPageUrl` | String | Connect REST API URL identifying the next page, or `null` if there isn’t a next page. | 32.0 |
+| `previousPageUrl` | String | URL to the previous page of contacts. This value is null if there is no previous page. | 32.0 |
+| `total` | Integer | Number of contacts that are associated with this order. Can be greater than the number of contacts that are shown on a single page. | 32.0 |

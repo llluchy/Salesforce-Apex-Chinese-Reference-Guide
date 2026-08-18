@@ -1,0 +1,48 @@
+---
+doc_id: "apex_interface_database_batchablecontext"
+---
+
+# BatchableContext Interface
+
+Represents the parameter type of a batch job method and contains the batch job ID. This interface is implemented internally by Apex.
+
+## Namespace
+
+[Database](atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm "The Database namespace provides classes used with DML operations.")
+
+## See Also
+
+- [Batchable Interface](atlas.en-us.apexref.meta/apexref/apex_interface_database_batchable.htm#apex_interface_database_batchable)
+
+## BatchableContext Methods
+
+The following are methods for `BatchableContext`.
+
+## See Also
+
+- [getChildJobId()](atlas.en-us.apexref.meta/apexref/apex_interface_database_batchablecontext.htm#apex_Database_BatchableContext_getChildJobId)
+- [getJobId()](atlas.en-us.apexref.meta/apexref/apex_interface_database_batchablecontext.htm#apex_Database_BatchableContext_getJobId)
+
+### getChildJobId()
+
+Returns the ID of the current batch job chunk that is being processed.
+
+#### Signature
+
+`public Id getChildJobId()`
+
+#### Return Value
+
+Type: [ID](atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id "Contains methods for the ID primitive data type.")
+
+### getJobId()
+
+Returns the batch job ID.
+
+#### Signature
+
+`public Id getJobId()`
+
+#### Return Value
+
+Type: [ID](atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id "Contains methods for the ID primitive data type.")

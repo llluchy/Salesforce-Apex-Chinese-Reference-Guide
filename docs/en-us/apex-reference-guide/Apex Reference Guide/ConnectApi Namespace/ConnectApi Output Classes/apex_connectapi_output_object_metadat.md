@@ -1,0 +1,24 @@
+---
+doc_id: "apex_connectapi_output_object_metadat"
+---
+
+# ConnectApi.ObjectMetadata
+
+Search metadata related to the object.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `dataCategories` | [Map](atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map "Contains methods for the Map collection type.")<String, [`ConnectApi.​DataCategoryMetadata`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_data_category_metadat.htm "Data category metadata for the object.")\> | Metadata on each data category for the object. | 63.0 |
+| `fields` | [Map](atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map "Contains methods for the Map collection type.")<String, [`ConnectApi.​FieldMetadata`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_field_metadat.htm "Search metadata for the field of an object.")\> | Metadata on each field of the object. | 63.0 |
+| `label` | String | Name of the object. | 63.0 |
+| `labelPlural` | String | Plural name of the object. | 63.0 |
+| `objectApiName` | String | API name of the object | 63.0 |
+| `themeInfo` | [`ConnectApi.​ThemeInfo`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_theme_inf.htm "Theme information related to an object.") | Theme related to the object. | 63.0 |
+
+## See Also
+
+- [ConnectApi.SearchResultGroups](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_search_result.htm)
+
+-   [ConnectApi.SearchAnswer](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_search_answe.htm "Results of searching objects using a natural language query.")
+    
+-   [ConnectApi.ScopedSearchResults](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_scoped_search_result.htm "Keyword search results for an object.")

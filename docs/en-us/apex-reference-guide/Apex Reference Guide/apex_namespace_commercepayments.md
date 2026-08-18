@@ -1,0 +1,78 @@
+---
+doc_id: "apex_namespace_commerce_payments"
+---
+
+# CommercePayments Namespace
+
+Use the `CommercePayments` namespace to provide a safe and customizable platform for managing customer payments and refunds.
+
+To review `CommercePayments` use cases and walkthroughs, go to [Use Cases for the CommercePayments Namespace](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_commercepayments_use_cases.htm).
+
+The following are the classes in the `CommercePayments` namespace.
+
+## See Also
+
+- [AbstractResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AbstractResponse.htm#apex_class_commerce_payments_AbstractResponse)
+- [AbstractTransactionResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AbstractTransactionResponse.htm#apex_class_commercepayments_AbstractTransactionResponse)
+- [AccountType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_AccountType.htm)
+- [AccountHolderType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_AccountHolderType.htm)
+- [AddressRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AddressRequest.htm#apex_class_commercepayments_AddressRequest)
+- [AlternativePaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AlternativePaymentMethodRequest.htm#apex_class_commercepayments_AlternativePaymentMethodRequest)
+- [AlternativePaymentMethodResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AlternativePaymentMethodResponse.htm#apex_class_commercepayments_AlternativePaymentMethodResponse)
+- [AuditParamsRequest](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuditParamsRequest.htm#apex_class_commerce_payments_AuditParamsRequest)
+- [AuthApiPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthApiPaymentMethodRequest.htm#apex_class_commercepayments_AuthApiPaymentMethodRequest)
+- [AuthorizationRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_class_commercepayments_AuthorizationRequest)
+- [AuthorizationResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_class_commercepayments_AuthorizationResponse)
+- [AuthorizationReversalRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalRequest.htm#apex_class_commercepayments_AuthorizationReversalRequest)
+- [AuthorizationReversalResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_class_commercepayments_AuthorizationReversalResponse)
+- [BankType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_BankType.htm)
+- [BankPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_class_commercepayments_BankPaymentMethodRequest)
+- [BankPaymentMethodResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodResponse.htm#apex_class_commercepayments_BankPaymentMethodResponse)
+- [BaseApiPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BaseApiPaymentMethodRequest.htm#apex_class_commercepayments_BaseApiPaymentMethodRequest)
+- [BaseNotification Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BaseNotification.htm#apex_class_commercepayments_BaseNotification)
+- [BasePaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BasePaymentMethodRequest.htm#apex_class_commercepayments_BasePaymentMethodRequest)
+- [BaseRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BaseRequest.htm#apex_class_System_BaseRequest)
+- [CaptureNotification Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CaptureNotification.htm#apex_class_commercepayments_CaptureNotification)
+- [CaptureRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CaptureRequest.htm#apex_class_commerce_payments_CaptureRequest)
+- [CaptureResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CaptureResponse.htm#apex_class_commerce_payments_CaptureResponse)
+- [CardCategory Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_CardCategory.htm)
+- [CardPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CardPaymentMethodRequest.htm#apex_class_commercepayments_CardPaymentMethodRequest)
+- [CardPaymentMethodResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CardPaymentMethodResponse.htm#apex_class_commercepayments_CardPaymentMethodResponse)
+- [CardType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_CardType.htm)
+- [CustomMetadataTypeInfo Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CustomMetadataTypeInfo.htm#apex_class_commerce_payments_CustomMetadataTypeInfo)
+- [EnhancedPaymentDataInput Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_EnhancedPaymentDataInput.htm#apex_class_commercepayments_EnhancedPaymentDataInput)
+- [GatewayErrorResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayErrorResponse.htm#apex_class_commerce_payments_GatewayErrorResponse)
+- [GatewayNotificationResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayNotificationResponse.htm#apex_class_commercepayments_GatewayNotificationResponse)
+- [GatewayResponse Interface](atlas.en-us.apexref.meta/apexref/apex_interface_commercepayments_GatewayResponse.htm#apex_interface_commerce_payments_GatewayResponse)
+- [NotificationClient Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_NotificationClient.htm#apex_class_commercepayments_NotificationClient)
+- [NotificationSaveResult Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_NotificationSaveResult.htm#apex_class_commercepayments_NotificationSaveResult)
+- [NotificationStatus Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_NotificationStatus.htm)
+- [PaymentGatewayAdapter Interface](atlas.en-us.apexref.meta/apexref/apex_interface_commercepayments_PaymentGatewayAdapter.htm#apex_interface_commerce_payments_PaymentGatewayAdapter)
+- [PaymentGatewayAsyncAdapter Interface](atlas.en-us.apexref.meta/apexref/apex_interface_commercepayments_PaymentGatewayAsyncAdapter.htm#apex_interface_commercepayments_PaymentGatewayAsyncAdapter)
+- [PaymentGatewayContext Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayContext.htm#apex_class_commerce_payments_PaymentGatewayContext)
+- [PaymentGatewayNotificationContext Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayNotificationContext.htm#apex_class_commercepayments_PaymentGatewayNotificationContext)
+- [PaymentGatewayNotificationRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayNotificationRequest.htm#apex_class_commercepayments_PaymentGatewayNotificationRequest)
+- [PaymentMethodDetailsResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodDetailsResponse.htm#apex_class_commercepayments_PaymentMethodDetailsResponse)
+- [LineItemInput Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_LineItemInput.htm#apex_class_commercepayments_LineItemInput)
+- [PaymentMethodIdType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_PaymentMethodIdType.htm)
+- [PaymentMethodTokenizationRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_class_commercepayments_PaymentMethodTokenizationRequest)
+- [PaymentMethodTokenizationResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationResponse.htm#apex_class_commercepayments_PaymentMethodTokenizationResponse)
+- [PaymentsHttp Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentsHttp.htm#apex_class_commerce_payments_PaymentsHttp)
+- [PostAuthApiPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PostAuthApiPaymentMethodRequest.htm)
+- [PostAuthorizationRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PostAuthorizationRequest.htm)
+- [PostAuthorizationResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PostAuthorizationResponse.htm)
+- [ReferencedRefundNotification Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_ReferencedRefundNotification.htm#apex_class_commercepayments_ReferencedRefundNotification)
+- [ReferencedRefundRequest](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_ReferencedRefundRequest.htm#apex_class_commerce_payments_ReferencedRefundRequest)
+- [ReferencedRefundResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_ReferencedRefundResponse.htm#apex_class_commerce_payments_ReferencedRefundResponse)
+- [RefundRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_RefundRequest.htm#apex_class_commercepayments_RefundRequest)
+- [RequestType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_RequestType.htm)
+- [RetryCategory Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_RetryCategory.htm)
+- [RetryDecision Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_RetryDecision.htm)
+- [SaleApiPaymentMethodRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleApiPaymentMethodRequest.htm#apex_class_commercepayments_SaleApiPaymentMethodRequest)
+- [SaleNotification Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_class_commercepayments_SaleNotification)
+- [SaleRequest Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_class_commercepayments_SaleRequest)
+- [SaleResponse Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleResponse.htm#apex_class_commercepayments_SaleResponse)
+- [SalesforceResultCode Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_SalesforceResultCode.htm)
+- [SalesforceResultCodeInfo](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SalesforceResultCodeInfo.htm#apex_class_commerce_payments_SalesforceResultCodeInfo)
+- [StandardEntryClassCode Enum](atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_StandardEntryClassCode.htm)
+- [TokenizeNotification Class](atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_TokenizeNotification.htm#apex_class_commercepayments_TokenizeNotification)

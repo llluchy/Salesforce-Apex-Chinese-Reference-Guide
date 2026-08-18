@@ -1,0 +1,167 @@
+---
+doc_id: "apex_commercepayments_async_adapter_concept"
+---
+
+# Building an Asynchronous Gateway Adapter
+
+In an asynchronous payments configuration, the payments platform first sends transaction information to the gateway. The gateway responds with an acknowledgment that it received the transaction, and then the platform creates a pending transaction. The gateway sends a notification, which contains the final transaction status. The platform then updates the transaction’s status accordingly.
+
+The asynchronous process differs from synchronous transactions, where the platform does not create a pending transaction after the initial gateway request. Instead, the platform creates a transaction only after the gateway sends a response containing the final transaction status. For information on building a synchronous adapter, review [Building a Synchronous Gateway Adapter](atlas.en-us.apexcode.meta/apexcode/apex_commercepayments_sync_adapter_concept.htm "In synchronous payment configurations, the Salesforce payment platform sends transaction information to the gateway, and then waits for a gateway response that contains the final transaction status. Salesforce creates a transaction only if the transaction is successful in the gateway.").
+
+An asynchronous configuration requires both a synchronous gateway adapter and an asynchronous adapter. In this topic, we’ll break down a sample asynchronous adapter by looking at several important areas.
+
+-   Defining an asynchronous payment gateway adapter
+-   Processing the initial payment request
+-   Processing a notification from the payment gateway
+-   Debugging gateway responses using system debug logs.
+
+:::tip Note
+Payment gateway adapters can’t make future calls, external callouts using `System.Http`, asynchronous calls, queueable calls, or
+            execute DMLs using SOQL.
+:::
+
+## Asynchronous Payment Gateway Adapter Definition
+
+An asynchronous gateway adapter class must implement both the [`PaymentGatewayAdapter Interface`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_commercepayments_PaymentGatewayAdapter.htm#apex_interface_commerce_payments_PaymentGatewayAdapter) and the [`PaymentGatewayAsyncAdapter Interface`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_commercepayments_PaymentGatewayAsyncAdapter.htm#apex_interface_commercepayments_PaymentGatewayAsyncAdapter). The adapter class must also implement the `processRequest` method for PaymentGatewayAdapter and the `processNotification` method for PaymentGatewayAsyncAdapter.
+
+```apex
+global with sharing class SampleAdapter implements commercepayments.PaymentGatewayAsyncAdapter, commercepayments.PaymentGatewayAdapter {
+    global SampleAdapter() {}
+    
+    global commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+    }
+    
+    global commercepayments.GatewayNotificationResponse processNotification(commercepayments.PaymentGatewayNotificationContext gatewayNotificationContext) {
+    }
+}
+```
+
+## Processing an Initial Payment Request
+
+When the payments platform receives a payments API request, it passes the request to your gateway adapter for further evaluation. The adapter begins the request evaluation process by calling the **processRequest** method, which represents the first step in an asynchronous payment flow. We can break the processRequest implementation into three parts.
+
+First, it builds a payment request object that the gateway can understand.
+
+```apex
+commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+if (requestType == commercepayments.RequestType.Capture) {
+   req.setEndpoint('/pal/servlet/Payment/v52/capture');
+    body = buildCaptureRequest((commercepayments.CaptureRequest)gatewayContext.getPaymentRequest());
+} else if (requestType == commercepayments.RequestType.ReferencedRefund) {
+    req.setEndpoint('/pal/servlet/Payment/v52/refund');
+    body = buildRefundRequest((commercepayments.ReferencedRefundRequest)gatewayContext.getPaymentRequest());
+}
+```
+
+Then, the adapter sends the request to the payment gateway.
+
+```apex
+req.setBody(body);
+req.setMethod('POST');
+commercepayments.PaymentsHttp http = new commercepayments.PaymentsHttp();
+HttpResponse res = null;
+try {
+    res = http.send(req);
+} catch(CalloutException ce) {
+    commercepayments.GatewayErrorResponse error = new commercepayments.GatewayErrorResponse('500', ce.getMessage());
+    return error;
+}
+```
+
+ Finally, the adapter creates a response object to store data from the gateway’s response. The type of response object will vary based on whether you originally made a payment capture request or a refund request.
+
+```apex
+if ( requestType == commercepayments.RequestType.Capture) {
+   // Refer to the end of this doc for sample createCaptureResponse implementation
+    response =  createCaptureResponse(res);
+} else if ( requestType == commercepayments.RequestType.ReferencedRefund) {
+    response =  createRefundResponse(res);
+}
+return response;
+```
+
+## Processing a Notification from the Payment Gateway
+
+After the customer bank processes the transaction and sends the results to the gateway, the gateway sends the adapter a notification indicating that it’s ready to provide the final transaction status. For this part of an asynchronous transaction flow, the adapter needs to call the processNotification class. We can split the processNotification implementation into four parts.
+
+First, the adapter verifies the signature in the notification request. For more information on verifying signatures, review [Encryption and Signature Techniques in Apex](https://developer.salesforce.com/blogs/2023/12/encryption-and-signature-techniques-in-apex).
+
+```apex
+private Boolean verifySignature(NotificationRequest requestItem) {
+    String payload = requestItem.pspReference + ':'
+        + (requestItem.originalReference == null ? '' : requestItem.originalReference) + ':'
+        + requestItem.merchantAccountCode + ':'
+        + requestItem.merchantReference + ':'
+        + requestItem.amount.value.intValue() + ':'
+        + requestItem.amount.currencyCode + ':'
+        + requestItem.eventCode + ':'
+        + requestItem.success;
+    String myHMacKey = getHMacKey();
+    String generatedSign = EncodingUtil.base64Encode(Crypto.generateMac('hmacSHA256', Blob.valueOf(payload), 
+                                EncodingUtil.convertFromHex(myHMacKey)));
+    return generatedSign.equals(requestItem.additionalData.hmacSignature);
+}
+```
+
+ Next, the adapter parses the gateway’s notification request and builds a notification object. The `getPaymentGatewayNotificationRequest` method evaluates data from the gateway’s notification request items, which include status, referenceNumber, event, and amount. The `notificationStatus` object is set to Success or Failed based on whether the platform successfully received the notification. If the notification’s event code indicates that the gateway processed a payment capture transaction, the adapter builds a notification object using the `CaptureNotification` class. If the event code indicates that the gateway processed a refund transaction, the adapter builds a notification object using the `ReferencedRefundNotification` class.
+
+```apex
+commercepayments.PaymentGatewayNotificationRequest gatewayNotificationRequest = gatewayNotificationContext.getPaymentGatewayNotificationRequest();
+Blob request = gatewayNotificationRequest.getRequestBody();
+SampleNotificationRequest notificationRequest = SampleNotificationRequest.parse(request.toString().replace('currency', 'currencyCode'));                
+List notificationItems = notificationRequest.notificationItems;
+SampleNotificationRequest.NotificationRequestItem notificationRequestItem = notificationItems[0].NotificationRequestItem;
+
+Boolean success = Boolean.valueOf(notificationRequestItem.success);
+String pspReference = notificationRequestItem.pspReference;
+String eventCode = notificationRequestItem.eventCode;
+Double amount = notificationRequestItem.amount.value;
+
+commercepayments.NotificationStatus notificationStatus = null;
+if (success) {
+    notificationStatus = commercepayments.NotificationStatus.Success;
+} else {
+    notificationStatus = commercepayments.NotificationStatus.Failed;
+}
+commercepayments.BaseNotification notification = null;
+if ('CAPTURE'.equals(eventCode)) {
+    notification = new commercepayments.CaptureNotification();
+} else if ('REFUND'.equals(eventCode)) {
+    notification = new commercepayments.ReferencedRefundNotification();
+}
+notification.setStatus(notificationStatus);
+notification.setGatewayReferenceNumber(pspReference);
+notification.setAmount(amount);
+```
+
+ The adapter then requests that the payments platform records the results of the notification.
+
+```apex
+commercepayments.NotificationSaveResult saveResult = commercepayments.NotificationClient.record(notification);
+```
+
+ All asynchronous gateways require that the platform acknowledges that it received the notification, regardless of whether the platform successfully saved the notification’s data. The platform calls the `GatewayNotificationResponse` class to send the acknowledgment.
+
+```apex
+commercepayments.GatewayNotificationResponse gnr = new commercepayments.GatewayNotificationResponse();
+if (saveResult.isSuccess()) {
+    system.debug('Notification accepted by platform');
+} else {
+    system.debug('Errors in the result '+ Blob.valueOf(saveResult.getErrorMessage()));
+}
+gnr.setStatusCode(200);
+gnr.setResponseBody(Blob.valueOf('[accepted]'));
+return gnr;
+```
+
+## Using Custom Data
+
+To transfer additional, custom data from the frontend to your payment gateway adapter, use the [Checkout Payments Connect API](https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_commerce_webstore_checkouts_payments.htm). Sending custom data to the adapter supports use cases like implementing conditional logic based on specific data or mapping asynchronous webhook events to a cart by passing an identifier.
+
+To send custom data to your payment gateway adapter, use the `paymentsData` parameter in the [Checkout Payments Connect API](https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_commerce_webstore_checkouts_payments.htm) input payload. This parameter is a serialized map of type `<String, String>` that supports up to four key-value pairs. Each key and each value can contain up to 255 characters. `paymentsData` is only applicable to Auth and PostAuth payment requests. Simple purchase orders don’t support `paymentsData`.
+
+Similarly, the [Post Authorization](https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_payment_post_auth.htm) input payload has an `additionalData` property, which is also a map of type`<String, String>`. The `paymentsData` property is accepted for Auth and PostAuth requests and is transferred to the Payment APIs through the `additionalData` property.
+
+## Debugging
+
+Usually, Apex debug logs are available in the developer console. However, Salesforce doesn’t store debug logs from the `processNotification` method in the developer console. To view this part of the method flow using system.debug, review the Collect Debug Logs for Guest Users section of [Set Up Debug Logging](https://help.salesforce.com/articleView?id=code_add_users_debug_log.htm&type=5&language=en_US).

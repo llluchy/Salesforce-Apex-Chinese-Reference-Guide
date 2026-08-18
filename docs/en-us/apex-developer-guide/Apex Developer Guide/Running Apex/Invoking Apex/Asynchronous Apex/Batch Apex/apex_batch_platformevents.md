@@ -1,0 +1,93 @@
+---
+doc_id: "apex_batch_platformevents"
+---
+
+# Firing Platform Events from Batch Apex
+
+Batch Apex classes can fire platform events when encountering an error or exception. Clients listening on an event can obtain actionable information, such as how often the event failed and which records were in scope at the time of failure. Events are also fired for Salesforce Platform internal errors and other uncatchable Apex exceptions such as LimitExceptions, which are caused by reaching governor limits.
+
+An event message provides more granular error tracking than the Apex Jobs UI. It includes the record IDs being processed, exception type, exception message, and stack trace. You can also incorporate custom handling and retry logic for failures. You can invoke custom Apex logic from any trigger on this type of event, so Apex developers can build functionality like custom logging or automated retry handling.
+
+For information on subscribing to platform events, see [Subscribing to Platform Events](https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_subscribe.htm).
+
+The BatchApexErrorEvent object represents a platform event associated with a batch Apex class. This object is available in API version 44.0 and later. If the `start`, `execute`, or `finish` method of a batch Apex job encounters an unhandled exception, a `BatchApexErrorEvent` platform event is fired. For more details, see [BatchApexErrorEvent](https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/sforce_api_objects_batchapexerrorevent.htm "HTML (New Window)") in the *Platform Events Developer Guide*.
+
+To fire a platform event, a batch Apex class declaration must implement the Database.RaisesPlatformEvents interface. 
+
+```apex
+public with sharing class YourSampleBatchJob implements Database.Batchable, 
+   Database.RaisesPlatformEvents{ 
+   // class implementation 
+}
+```
+
+## Example
+
+This example creates a trigger to determine which accounts failed in the batch transaction. Custom field Dirty\_\_c indicates that the account was one of a failing batch and ExceptionType\_\_c indicates the exception that was encountered. JobScope and ExceptionType are fields in the BatchApexErrorEvent object.
+
+```apex
+trigger MarkDirtyIfFail on BatchApexErrorEvent (after insert) {
+    Set asyncApexJobIds = new Set();
+    for(BatchApexErrorEvent evt:Trigger.new){
+        asyncApexJobIds.add(evt.AsyncApexJobId);
+    }
+    
+    Map jobs = new Map(
+        [SELECT id, ApexClass.Name FROM AsyncApexJob WHERE Id IN :asyncApexJobIds]
+    );
+    
+    List records = new List();
+    for(BatchApexErrorEvent evt:Trigger.new){
+        //only handle events for the job(s) we care about
+        if(jobs.get(evt.AsyncApexJobId).ApexClass.Name == 'AccountUpdaterJob'){
+            for (String item : evt.JobScope.split(',')) {
+                Account a = new Account(
+                    Id = (Id)item,
+                    ExceptionType__c = evt.ExceptionType,
+                    Dirty__c = true
+                );
+                records.add(a);
+            }
+        }
+    }
+    update records;
+}
+```
+
+## Testing BatchApexErrorEvent Messages Published from Batch Apex Jobs
+
+Use the `Test.getEventBus().deliver()` method to deliver event messages that are published by failed batch Apex jobs. Use the `Test.startTest()` and `Test.stopTest()` statement block to execute the batch job.
+
+This snippet shows how to execute a batch Apex job and deliver event messages. It executes the batch job after `Test.stopTest()`. This batch job publishes a BatchApexErrorEvent message when a failure occurs through the implementation of `Database.RaisesPlatformEvents`. After `Test.stopTest()` runs, a separate `Test.getEventBus().deliver()` statement is added so that it can deliver the BatchApexErrorEvent.
+
+```apex
+try {
+    Test.startTest();
+    Database.executeBatch(new SampleBatchApex());
+    Test.stopTest();
+    // Batch Apex job executes here
+} catch(Exception e) {
+    // Catch any exceptions thrown in the batch job
+}
+
+// The batch job fires BatchApexErrorEvent if it fails, so deliver the event.
+Test.getEventBus().deliver();
+```
+
+ 
+
+:::tip Note
+If further platform events are published by downstream processes, add `Test.getEventBus().deliver();` to deliver the
+                event messages for each process. For example, if a platform event trigger, which
+                processes the event from the Apex job, publishes another platform event, add a
+                    `Test.getEventBus().deliver();` statement
+                to deliver the event message.
+:::
+
+## See Also
+
+- [Platform Events Developer Guide: Deliver Test Event
+                            Messages](https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_test_deliver.htm)
+
+-   [*Platform Events Developer Guide*: Event and Event Bus Properties in Test Context](https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_test_events.htm "Platform Events Developer Guide: Event and Event Bus
+    Properties in Test Context - HTML (New Window)")

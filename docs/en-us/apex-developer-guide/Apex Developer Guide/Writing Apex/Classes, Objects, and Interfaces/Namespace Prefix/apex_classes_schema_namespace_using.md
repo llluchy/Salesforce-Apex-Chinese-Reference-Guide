@@ -1,0 +1,49 @@
+---
+doc_id: "apex_classes_schema_namespace"
+---
+
+# Using the Schema Namespace
+
+The `Schema` namespace provides classes and methods for working with schema metadata information. We implicitly import `Schema.*`, but you must fully qualify your uses of `Schema` namespace elements when they have naming conflicts with items in your unmanaged code. If your org contains an Apex class that has the same name as an sObject, add the `Schema` namespace prefix to the sObject name in your code.
+
+You can omit the namespace when creating an instance of a schema class or when calling a schema method. For example, because the `DescribeSObjectResult` and `FieldSet` classes are in the `Schema` namespace, these code segments are equivalent.
+
+```apex
+Schema.DescribeSObjectResult d = Account.sObjectType.getDescribe();
+MapString, Schema.FieldSet> FSMap = d.fieldSets.getMap();
+```
+
+And:
+
+```apex
+DescribeSObjectResult d = Account.sObjectType.getDescribe();
+MapString, FieldSet> FSMap = d.fieldSets.getMap();
+```
+
+## Using the Schema Namespace for Disambiguation
+
+Use `Schema.object_name` to refer to an sObject that has the same name as a custom class. This disambiguation instructs the Apex runtime to use the sObject.
+
+```apex
+public class Account {
+   public Integer myInteger;
+}
+
+// ...
+
+// Create a standard Account object myAccountSObject
+Schema.Account myAccountSObject = new Schema.Account();
+// Create accountClassInstance, a custom class in your org
+Account accountClassInstance = new Account();
+myAccountSObject.Name = 'Snazzy Account';
+accountClassInstance.myInteger = 1;
+```
+
+## See Also
+
+- [← Previous](atlas.en-us.apexcode.meta/apexcode/apex_classes_namespaces_and_invoking_methods.htm)
+- [Next →](atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_precedence.htm)
+
+#### See Also
+
+-   [Using the System Namespace](atlas.en-us.apexcode.meta/apexcode/apex_classes_namespaces_and_invoking_methods.htm)

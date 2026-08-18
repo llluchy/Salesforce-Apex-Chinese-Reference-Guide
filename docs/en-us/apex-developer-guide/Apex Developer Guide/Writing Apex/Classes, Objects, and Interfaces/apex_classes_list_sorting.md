@@ -1,0 +1,26 @@
+---
+doc_id: "apex_classes_list_sorting"
+---
+
+# Lists of Custom Types and Sorting
+
+Lists can hold objects of your user-defined types (your Apex classes). Lists of user-defined types can be sorted.
+
+To sort such a list, your Apex class can implement the `Comparator` interface and pass it as a parameter to the `List.sort` method. Alternatively, your Apex class can implement the `Comparable` interface.
+
+The sort criteria and sort order depend on the implementation that you provide for the `Comparable.compareTo` or the `Comparator.compare` method.
+
+To perform locale-sensitive comparisons and sorting, use the `Collator` class. Because locale-sensitive sorting can produce different results depending on the user running the code, avoid using it in triggers or in code that expects a particular sort order.
+
+## See Also
+
+- [← Previous](atlas.en-us.apexcode.meta/apexcode/apex_classes_version_settings_intro.htm)
+- [Next →](atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_maps_keys_userdefined.htm)
+
+#### See Also
+
+-   [*Apex Reference Guide*: Collator Class](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Collator.htm)
+    
+-   [*Apex Reference Guide*: Comparable Interface](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_comparable.htm)
+    
+-   [*Apex Reference Guide*: Comparator Interface](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_System_Comparator.htm)

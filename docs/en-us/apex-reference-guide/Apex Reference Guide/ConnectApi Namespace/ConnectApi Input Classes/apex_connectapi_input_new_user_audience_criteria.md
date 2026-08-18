@@ -1,0 +1,13 @@
+---
+doc_id: "apex_connectapi_input_new_user_audience_criteria"
+---
+
+# ConnectApi.NewUserAudienceCriteriaInput
+
+Criteria for the new members type of custom recommendation audience.
+
+Subclass of [ConnectApi.AudienceCriteriaInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_audience_criteria.htm "Custom recommendation audience criteria type.").
+
+| Property | Type | Description | Required or Optional | Available Version |
+| --- | --- | --- | --- | --- |
+| `value` | Double | The maximum number of days since a user became a site member. For example, if you specify 30, anyone who became a site member in the last 30 days is included in the new members audience. | Required | 36.0 |

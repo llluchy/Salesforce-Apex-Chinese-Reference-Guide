@@ -1,0 +1,16 @@
+---
+doc_id: "apex_connectapi_input_survey_recipient_survey_subjects"
+---
+
+# ConnectApi.AssociateRecordsWithRecipientInput
+
+Records associated with the survey invitation.
+
+| Property | Type | Description | Required or Optional | Available Version |
+| --- | --- | --- | --- | --- |
+| `associateRecord​Ids` | [List](atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list "Contains methods for the List collection type.")<String> | ID of the associated records. | Required | 50.0 |
+| `recipientId` | String | Participant ID with whose invitation the record should be associated. | Required | 50.0 |
+
+## See Also
+
+- [ConnectApi.SurveyInvitationEmailInput](atlas.en-us.apexref.meta/apexref/apex_connectapi_input_survey_email.htm)

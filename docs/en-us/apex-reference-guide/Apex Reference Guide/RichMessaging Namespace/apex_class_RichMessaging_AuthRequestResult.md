@@ -1,0 +1,84 @@
+---
+doc_id: "apex_class_RichMessaging_AuthRequestResult"
+---
+
+# AuthRequestResult Class
+
+This class contains the result from handling the authorization request response.
+
+## Namespace
+
+[RichMessaging](atlas.en-us.apexref.meta/apexref/apex_namespace_RichMessaging.htm "Provides objects and methods for handling content in enhanced Messaging channels.")
+
+## See Also
+
+- [AuthRequestResult Constructors](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_constructors)
+- [AuthRequestResult Properties](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_properties)
+
+## AuthRequestResult Constructors
+
+The following are constructors for `AuthRequestResult`.
+
+## See Also
+
+- [AuthRequestResult(redirectPageReference, resultStatus, expirationDateTime)](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_ctor)
+
+### AuthRequestResult(redirectPageReference, resultStatus, expirationDateTime)
+
+Creates a new instance of the `RichMessaging.AuthRequestResult` class.
+
+#### Signature
+
+`public AuthRequestResult(System.PageReference redirectPageReference, RichMessaging.AuthRequestResultStatus resultStatus, Datetime expirationDateTime)`
+
+#### Parameters
+
+-   **redirectPageReference**: Type: [System.PageReference](atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm "A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.") The reference to the redirect page.
+-   **resultStatus**: Type: [RichMessaging.AuthRequestResultStatus](atlas.en-us.apexref.meta/apexref/apex_enum_RichMessaging_AuthRequestResultStatus.htm "This enum describes the authentication result status.") The result status value.
+-   **expirationDateTime**: Type: [Datetime](atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime "Contains methods for the Datetime primitive data type.") The expiration time.
+
+## AuthRequestResult Properties
+
+The following are properties for `AuthRequestResult`.
+
+## See Also
+
+- [expirationDateTime](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_expirationDateTime)
+- [redirectPageReference](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_redirectPageReference)
+- [resultStatus](atlas.en-us.apexref.meta/apexref/apex_class_RichMessaging_AuthRequestResult.htm#apex_RichMessaging_AuthRequestResult_resultStatus)
+
+### expirationDateTime
+
+The expiration date and time.
+
+#### Signature
+
+`public Datetime expirationDateTime {get; set;}`
+
+#### Property Value
+
+Type: [Datetime](atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime "Contains methods for the Datetime primitive data type.")
+
+### redirectPageReference
+
+The reference to the redirect page.
+
+#### Signature
+
+`public System.PageReference redirectPageReference {get; set;}`
+
+#### Property Value
+
+Type: [System.PageReference](atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm "A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.")
+
+### resultStatus
+
+The result status value.
+
+#### Signature
+
+`public RichMessaging.AuthRequestResultStatus resultStatus {get; set;}`
+
+#### Property Value
+
+Type: [RichMessaging.AuthRequestResultStatus](atlas.en-us.apexref.meta/apexref/apex_enum_RichMessaging_AuthRequestResultStatus.htm "This enum describes the authentication result status.")

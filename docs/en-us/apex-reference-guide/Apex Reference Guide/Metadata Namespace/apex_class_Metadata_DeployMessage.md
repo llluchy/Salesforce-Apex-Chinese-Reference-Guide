@@ -1,0 +1,216 @@
+---
+doc_id: "apex_class_Metadata_DeployMessage"
+---
+
+# DeployMessage Class
+
+Represents result information for the deployment of a metadata component.
+
+## Namespace
+
+[Metadata](atlas.en-us.apexref.meta/apexref/apex_namespace_Metadata.htm "The Metadata namespace provides classes and methods for working with custom metadata in Salesforce")
+
+## Usage
+
+Use `DeployMessage` to access detailed information about component deployments. Salesforce provides a list of `DeployMessages` for a completed deployment via the `DeployDetails` and `DeployResults` instances sent in the [`DeployCallback.handleResult()`](atlas.en-us.apexref.meta/apexref/apex_interface_Metadata_DeployCallback.htm#apex_Metadata_DeployCallback_handleResult "Method that is called when the asynchronous deployment of custom metadata completes.") callback.
+
+## See Also
+
+- [DeployMessage Properties](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_properties)
+- [DeployMessage Methods](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_methods)
+
+## DeployMessage Properties
+
+The following are properties for `DeployMessage`.
+
+## See Also
+
+- [changed](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_changed)
+- [columnNumber](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_columnNumber)
+- [componentType](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_componentType)
+- [created](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_created)
+- [createdDate](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_createdDate)
+- [deleted](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_deleted)
+- [fileName](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_fileName)
+- [fullName](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_fullName)
+- [id](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_id)
+- [lineNumber](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_lineNumber)
+- [problem](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_problem)
+- [problemType](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_problemType)
+- [success](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_success)
+
+### changed
+
+Determines whether the component was changed after deployment. If true, the component was changed as a result of the deployment. If false, the deployed component was the same as the corresponding component already in the org.
+
+#### Signature
+
+`public Boolean changed {get; set;}`
+
+#### Property Value
+
+Type: [Boolean](atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean "Contains methods for the Boolean primitive data type.")
+
+### columnNumber
+
+Each component is represented by a text file. If an error occurs during deployment, this property represents the column of the text file where the error occurred.
+
+#### Signature
+
+`public Integer columnNumber {get; set;}`
+
+#### Property Value
+
+Type: [Integer](atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer "Contains methods for the Integer primitive data type.")
+
+### componentType
+
+The metadata type of the component in the deployment.
+
+#### Signature
+
+`public String componentType {get; set;}`
+
+#### Property Value
+
+Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.")
+
+### created
+
+If true, the component was created as a result of the deployment. If false, the component was modified as a result of the deployment.
+
+#### Signature
+
+`public Boolean created {get; set;}`
+
+#### Property Value
+
+Type: [Boolean](atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean "Contains methods for the Boolean primitive data type.")
+
+### createdDate
+
+The date and time when the component was created as a result of the deployment.
+
+#### Signature
+
+`public Datetime createdDate {get; set;}`
+
+#### Property Value
+
+Type: [Datetime](atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime "Contains methods for the Datetime primitive data type.")
+
+### deleted
+
+If true, the component was deleted as a result of the deployment. If false, the component was either new or modified as result of the deployment.
+
+#### Signature
+
+`public Boolean deleted {get; set;}`
+
+#### Property Value
+
+Type: [Boolean](atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean "Contains methods for the Boolean primitive data type.")
+
+### fileName
+
+The name of the file in the metadata archive used to deploy the component.
+
+#### Signature
+
+`public String fileName {get; set;}`
+
+#### Property Value
+
+Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.")
+
+### fullName
+
+Full name for the custom metadata component.
+
+#### Signature
+
+`public String fullName {get; set;}`
+
+#### Property Value
+
+Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.")
+
+### id
+
+ID of the component that was deployed.
+
+#### Signature
+
+`public Id id {get; set;}`
+
+#### Property Value
+
+Type: [Id](atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id "Contains methods for the ID primitive data type.")
+
+### lineNumber
+
+Each component is represented by a text file. If an error occurs during deployment, this field represents the line number of the text file where the error occurred.
+
+#### Signature
+
+`public Integer lineNumber {get; set;}`
+
+#### Property Value
+
+Type: [Integer](atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer "Contains methods for the Integer primitive data type.")
+
+### problem
+
+If an error or warning occurred, this field contains a description of the problem that caused the deployment to fail.
+
+#### Signature
+
+`public String problem {get; set;}`
+
+#### Property Value
+
+Type: [String](atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string "Contains methods for the String primitive data type.")
+
+### problemType
+
+Indicates the problem type, for example, an error or warning.
+
+#### Signature
+
+`public Metadata.DeployProblemType problemType {get; set;}`
+
+#### Property Value
+
+Type: [Metadata.DeployProblemType](atlas.en-us.apexref.meta/apexref/apex_enum_Metadata_DeployProblemType.htm#apex_enum_Metadata_DeployProblemType "Describes the problem type for an unsuccessful component deploy.")
+
+### success
+
+Indicates whether the component was successfully deployed (true) or not (false).
+
+#### Signature
+
+`public Boolean success {get; set;}`
+
+#### Property Value
+
+Type: [Boolean](atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean "Contains methods for the Boolean primitive data type.")
+
+## DeployMessage Methods
+
+The following are methods for `DeployMessage`.
+
+## See Also
+
+- [clone()](atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployMessage.htm#apex_Metadata_DeployMessage_clone)
+
+### clone()
+
+Makes a duplicate copy of the `Metadata.DeployMessage`.
+
+#### Signature
+
+`public Object clone()`
+
+#### Return Value
+
+Type: Object

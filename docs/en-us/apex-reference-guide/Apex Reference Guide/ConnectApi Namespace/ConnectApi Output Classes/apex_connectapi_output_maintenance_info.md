@@ -1,0 +1,31 @@
+---
+doc_id: "apex_connectapi_output_maintenance_info"
+---
+
+# ConnectApi.MaintenanceInfo
+
+Information about the upcoming scheduled maintenance for the organization.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `description` | String | Description of the maintenance. | 34.0 |
+| `maintenanceTitle` | String | Title of the maintenance. | 34.0 |
+| `maintenanceType` | [`ConnectApi.​MaintenanceType`](atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#MaintenanceTypeEnum) | Type of maintenance. Values are:
+-   `Downtime`—Downtime maintenance.
+-   `GenerallyAvailable`—Generally available mode.
+-   `MaintenanceAndAvailable`—​Maintenance with available mode.
+-   `MaintenanceWithDowntime`—​Scheduled maintenance with downtime.
+-   `ReadOnly`—Maintenance with read-only mode.
+-   `ServiceAgreement`—Service agreement maintenance.
+
+ | 34.0 |
+| `message​EffectiveTime` | Datetime | Effective time when users start seeing the maintenance message. | 34.0 |
+| `message​ExpirationTime` | Datetime | Expiration time of the maintenance message. | 34.0 |
+| `scheduledEnd​Downtime` | Datetime | Scheduled end of downtime. `null` for `GenerallyAvailable` and `ReadOnly` maintenance types. | 34.0 |
+| `scheduledEnd​MaintenanceTime` | Datetime | Scheduled end of maintenance. `null` for `Downtime` maintenance type. | 34.0 |
+| `scheduledStart​Downtime` | Datetime | Scheduled start of downtime. `null` for `GenerallyAvailable` and `ReadOnly` maintenance types. | 34.0 |
+| `scheduledStart​MaintenanceTime` | Datetime | Scheduled start time of maintenance. `null` for `Downtime` maintenance type. | 34.0 |
+
+## See Also
+
+- [ConnectApi.OrganizationSettings](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_organization.htm)

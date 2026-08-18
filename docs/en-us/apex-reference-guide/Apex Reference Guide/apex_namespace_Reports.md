@@ -1,0 +1,68 @@
+---
+doc_id: "apex_namespace_Reports"
+---
+
+# Reports Namespace
+
+The `Reports` namespace provides classes for accessing the same data as is available in the Salesforce Reports and Dashboards REST API.
+
+The following are the classes in the `Reports` namespace.
+
+## See Also
+
+- [AggregateColumn Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_aggregatecolumn.htm#apex_class_reports_aggregatecolumn)
+- [BucketField Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_BucketField.htm#apex_class_reports_BucketField)
+- [BucketFieldValue Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_BucketFieldValue.htm#apex_class_reports_BucketFieldValue)
+- [BucketType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_BucketType.htm)
+- [ColumnDataType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_columndatatype.htm)
+- [ColumnSortOrder Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_columnsortorder.htm)
+- [CrossFilter Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_CrossFilter.htm#apex_class_reports_CrossFilter)
+- [CsfGroupType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_CsfGroupType.htm)
+- [DateGranularity Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_dategranularity.htm)
+- [DetailColumn Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_detailcolumn.htm#apex_class_reports_detailcolumn)
+- [Dimension Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_dimension.htm#apex_class_reports_dimension)
+- [EvaluatedCondition Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_EvaluatedCondition.htm#apex_class_reports_EvaluatedCondition)
+- [EvaluatedConditionOperator Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_evaluatedconditionoperator.htm)
+- [FilterOperator Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_filteroperator.htm#apex_class_reports_filteroperator)
+- [FilterValue Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_filtervalue.htm#apex_class_reports_filtervalue)
+- [FormulaType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_FormulaType.htm)
+- [GroupingColumn Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_groupingcolumn.htm#apex_class_reports_groupingcolumn)
+- [GroupingInfo Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_groupinginfo.htm#apex_class_reports_groupinginfo)
+- [GroupingValue Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_groupingvalue.htm#apex_class_reports_groupingvalue)
+- [NotificationAction Interface](atlas.en-us.apexref.meta/apexref/apex_interface_reports_NotificationAction.htm#apex_interface_reports_NotificationAction)
+- [NotificationActionContext Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_NotificationActionContext.htm#apex_class_reports_NotificationActionContext)
+- [ReportCsf Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ReportCsf.htm#apex_class_reports_ReportCsf)
+- [ReportCurrency Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportcurrency.htm#apex_class_reports_reportcurrency)
+- [ReportDataCell Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportdatacell.htm#apex_class_reports_reportdatacell)
+- [ReportDescribeResult Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportdescriberesult.htm#apex_class_reports_reportdescriberesult)
+- [ReportDetailRow Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportdetailrow.htm#apex_class_reports_reportdetailrow)
+- [ReportDivisionInfo Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ReportDivisionInfo.htm#apex_class_reports_ReportDivisionInfo)
+- [ReportExtendedMetadata Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportextendedmetadata.htm#apex_class_reports_reportextendedmetadata)
+- [ReportFact Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportfact.htm#apex_class_reports_reportfact)
+- [ReportFactWithDetails Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportfactwithdetails.htm#apex_class_reports_reportfactwithdetails)
+- [ReportFactWithSummaries Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportfactwithsummaries.htm#apex_class_reports_reportfactwithsummaries)
+- [ReportFilter Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportfilter.htm#apex_class_reports_reportfilter)
+- [ReportFormat Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_reportformat.htm)
+- [ReportFilterType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_FilterType.htm)
+- [ReportInstance Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportinstance.htm#apex_class_reports_reportinstance)
+- [ReportManager Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportmanager.htm#apex_class_reports_reportmanager)
+- [ReportMetadata Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportmetadata.htm#apex_class_reports_reportmetadata)
+- [ReportResults Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reportresults.htm#apex_class_reports_reportresults)
+- [ReportScopeInfo Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ReportScopeInfo.htm#apex_class_reports_ReportScopeInfo)
+- [ReportScopeValue Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ReportScopeValue.htm#apex_class_reports_ReportScopeValue)
+- [ReportType Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttype.htm#apex_class_reports_reporttype)
+- [ReportTypeColumn Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttypecolumn.htm#apex_class_reports_reporttypecolumn)
+- [ReportTypeColumnCategory Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttypecolumncategory.htm#apex_class_reports_reporttypecolumncategory)
+- [ReportTypeMetadata Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ReportTypeMetadata.htm#apex_class_reports_reporttypemetadata)
+- [SortColumn Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_SortColumn.htm#apex_class_reports_SortColumn)
+- [StandardDateFilter Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardDateFilter.htm#apex_class_reports_StandardDateFilter)
+- [StandardDateFilterDuration Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardDateFilterDuration.htm#apex_class_reports_StandardDateFilterDuration)
+- [StandardDateFilterDurationGroup Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardDateFilterDurationGroup.htm#apex_class_reports_StandardDateFilterDurationGroup)
+- [StandardFilter Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardFilter.htm#apex_class_reports_StandardFilter)
+- [StandardFilterInfo Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardFilterInfo.htm#apex_class_reports_StandardFilterInfo)
+- [StandardFilterInfoPicklist Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_StandardFilterInfoPicklist.htm#apex_class_reports_StandardFilterInfoPicklist)
+- [StandardFilterType Enum](atlas.en-us.apexref.meta/apexref/apex_enum_reports_StandardFilterType.htm)
+- [SummaryValue Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_summaryvalue.htm#apex_class_reports_summaryvalue)
+- [ThresholdInformation Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_ThresholdInformation.htm#apex_class_reports_ThresholdInformation)
+- [TopRows Class](atlas.en-us.apexref.meta/apexref/apex_class_reports_TopRows.htm#apex_class_reports_TopRows)
+- [Reports Exceptions](atlas.en-us.apexref.meta/apexref/apex_Reports_exceptions.htm)

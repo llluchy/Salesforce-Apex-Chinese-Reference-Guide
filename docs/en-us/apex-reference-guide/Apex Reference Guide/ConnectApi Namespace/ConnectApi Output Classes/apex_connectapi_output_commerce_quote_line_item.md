@@ -1,0 +1,13 @@
+---
+doc_id: "apex_connectapi_output_commerce_quote_line_item"
+---
+
+# ConnectApi.CommerceQuoteLineItem
+
+Representation of the quote line item summary lookup.
+
+| Property Name | Type | Description | Available Version |
+| --- | --- | --- | --- |
+| `fields` | [Map](atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map "Contains methods for the Map collection type.")<String, [`ConnectApi.RecordFieldRepresentation`](https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_recordField.htm "HTML (New Window)")\> | Record field containing the quote line item details. | 66.0 |
+| `id` | String | ID of the quote line item. | 66.0 |
+| `product` | [`ConnectApi.BuyerProductSummary`](atlas.en-us.apexref.meta/apexref/apex_connectapi_output_buyer_product_summary.htm "Representation of the buyer's product summary.") | Details of buyer's product summary for the line item. | 66.0 |

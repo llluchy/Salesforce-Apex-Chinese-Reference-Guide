@@ -1,0 +1,21 @@
+---
+doc_id: "apex_classes_keywords_final"
+---
+
+# Using the final Keyword
+
+Keep in mind these consideration while using the `final` keyword to modify variables.
+
+-   Final variables can be assigned a value only once. Static final variables can be initialized in static initialization code blocks or where defined. Member final variables can be initialized in initialization code blocks, constructors, or where defined.
+-   To define a constant, mark a variable as both `static` and `final`.
+-   Non-final static variables are used to communicate state at the class level (such as state between triggers). However, they aren’t shared across requests.
+-   Methods and classes are final by default. You can’t use the `final` keyword in the declaration of a class or method. This means they can’t be overridden. Use the `virtual` keyword if you need to override a method or class.
+-   You can’t use the `final` keyword with properties.
+
+## See Also
+
+- [Next →](atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm)
+
+#### See Also
+
+-   [Extended Class Example](atlas.en-us.apexcode.meta/apexcode/apex_classes_example.htm)
