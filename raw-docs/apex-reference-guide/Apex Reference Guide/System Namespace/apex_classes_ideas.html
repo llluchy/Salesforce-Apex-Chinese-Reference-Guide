@@ -1,0 +1,448 @@
+<a name="apex_classes_ideas"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Ideas Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Represents zone ideas.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Ideas is a zone of users who post, vote for, and comment on ideas. An Ideas zone
+                provides an online, transparent way for you to attract, manage, and showcase
+                innovation.</p>
+
+            <p class="p">A set of <dfn class="term">recent replies</dfn> (returned by methods, see below) includes ideas
+                that a user posted or commented on that already have comments posted by another
+                user. The returned ideas are listed based on the time of the last comment made by
+                another user, with the most recent ideas appearing first.</p>
+
+            <p class="p">The <var class="keyword varname">userID</var> argument is a required argument that filters the
+                results so only the ideas that the specified user has posted or commented on are
+                returned.</p>
+
+            <p class="p">The <var class="keyword varname">communityID</var> argument filters the results so only the ideas
+                within the specified zone are returned. If this argument is the empty string, then
+                all recent replies for the specified user are returned regardless of the zone.</p>
+
+            <p class="p">For more information on ideas, see “Using Ideas” in the Salesforce
+                online help.</p>
+
+        </div>
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="IdeasExamples"><a name="IdeasExamples"><!-- --></a>Example</span></h2>
+
+            
+            <div class="p">The following example finds ideas in a specific zone that have similar titles as a
+                new
+                idea:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> FindSimilarIdeasController {
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> test() {
+      <span class="onelineComment">// Instantiate a new idea </span>
+      Idea idea = <span class="keyword">new</span> Idea ();
+
+      <span class="onelineComment">// Specify a title for the new idea</span>
+      idea.Title = <span class="string">'Increase Vacation Time for Employees'</span>;
+
+      <span class="onelineComment">// Specify the communityID (INTERNAL_IDEAS) in which to find similar ideas. </span>
+      Community community = [ SELECT Id FROM Community WHERE Name = <span class="string">'INTERNAL_IDEAS'</span> ];
+
+      idea.CommunityId = community.Id;
+
+      <span class="keyword">ID</span>[] results = Ideas.findSimilar(idea);
+   }
+}
+</pre></div>
+</div>
+
+            <p class="p">The following example uses a Visualforce page in conjunction with a <dfn class="term">custom
+                    controller</dfn>, that is, a special Apex class. For more information on
+                Visualforce, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="pdf (New Window)">Visualforce
+                    Developer's Guide</a>.</p>
+
+            <p class="p">This example creates an Apex method in the controller that returns unread recent
+                replies. You can leverage this same example for the <samp class="codeph apex_code">getAllRecentReplies</samp> and <samp class="codeph apex_code">getReadRecentReplies</samp> methods. For this example to work, there must be
+                ideas posted to the zone. In addition, at least one zone member must have posted a
+                comment to another zone member's idea or comment.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create an Apex method to retrieve the recent replies marked as unread in all communities</span>
+<span class="keyword">public</span> <span class="keyword">class</span> IdeasController {
+
+   <span class="keyword">public</span> Idea[] getUnreadRecentReplies() {
+       Idea[] recentReplies;
+       <span class="statement">if</span> (recentReplies == <span class="keyword">null</span>) {
+           Id[] recentRepliesIds = Ideas.getUnreadRecentReplies(UserInfo.getUserId(), <span class="string">''</span>);
+           recentReplies = [SELECT Id, Title FROM Idea WHERE Id IN :recentRepliesIds];
+       }
+       <span class="statement">return</span> recentReplies;                                                                      
+  }
+
+}
+
+</pre></div>
+
+            <p class="p">The following is the markup for a Visualforce page that
+                uses the above custom controller to list unread recent replies.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"IdeasController"</span><span class="attribute"> showHeader=</span><span class="string">"false"</span>&gt;
+    <span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!unreadRecentReplies}"</span><span class="attribute"> var=</span><span class="string">"recentReplyIdea"</span>&gt;
+           <span class="tag">&lt;a</span><span class="attribute"> href=</span><span class="string">"/apex/viewIdea?id={!recentReplyIdea.Id}"</span>&gt;
+                 <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!recentReplyIdea.Title}"</span><span class="attribute"> escape=</span><span class="string">"true"</span>/&gt;<span class="tag">&lt;/a</span>&gt;
+     <span class="tag">&lt;/apex:dataList</span>&gt;             
+<span class="tag">&lt;/apex:page</span>&gt;
+
+</pre></div>
+
+            <p class="p">The following example uses a Visualforce page in conjunction with a custom controller
+                to list ideas. Then, a second Visualforce page and custom controller is used to
+                display a specific idea and mark it as read. For this example to work, there must be
+                ideas posted to the zone.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a controller to use on a VisualForce page to list ideas</span>
+<span class="keyword">public</span> <span class="keyword">class</span> IdeaListController {
+
+    <span class="keyword">public</span> <span class="keyword">final</span> Idea[] ideas {get; <span class="keyword">private</span> set;}
+
+    <span class="keyword">public</span> IdeaListController() {
+        <span class="keyword">Integer</span> i = 0;
+        ideas = <span class="keyword">new</span> Idea[10];
+        <span class="statement">for</span> (Idea tmp : Database.query
+(<span class="string">'SELECT Id, Title FROM Idea WHERE Id != null AND parentIdeaId = null LIMIT 10'</span>)) {
+            i++;
+            ideas.add(tmp);
+        }
+    }
+}
+
+</pre></div>
+
+            <p class="p">The following is the markup for a Visualforce page that
+                uses the above custom controller to list ideas:</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"IdeaListController"</span><span class="attribute"> tabStyle=</span><span class="string">"Idea"</span><span class="attribute"> showHeader=</span><span class="string">"false"</span>&gt;
+
+        <span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!ideas}"</span><span class="attribute"> var=</span><span class="string">"idea"</span><span class="attribute"> id=</span><span class="string">"ideaList"</span>&gt;
+            <span class="tag">&lt;a</span><span class="attribute"> href=</span><span class="string">"/apex/viewIdea?id={!idea.id}"</span>&gt;
+<span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!idea.title}"</span><span class="attribute"> escape=</span><span class="string">"true"</span>/&gt;<span class="tag">&lt;/a</span>&gt;                       
+        <span class="tag">&lt;/apex:dataList</span>&gt;
+
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+
+            <p class="p">The following example also uses a Visualforce page and custom controller, this time,
+                to display the idea that is selected on the above idea list page. In this example,
+                the <samp class="codeph apex_code">markRead</samp> method marks the selected idea
+                and associated comments as read by the user that is currently logged in. Note that
+                the <samp class="codeph apex_code">markRead</samp> method is in the constructor
+                so that the idea is marked read immediately when the user goes to a page that uses
+                this controller. For this example to work, there must be ideas posted to the zone.
+                In addition, at least one zone member must have posted a comment to another zone
+                member's idea or comment.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create an Apex method in the controller that marks all comments as read for the </span>
+<span class="onelineComment">// selected idea</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ViewIdeaController {
+
+   <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> id = System.currentPage().getParameters().get(<span class="string">'id'</span>);
+
+   <span class="keyword">public</span> ViewIdeaController(ApexPages.StandardController controller) {
+                Ideas.markRead(id);
+   }
+
+}
+</pre></div>
+
+            <p class="p">The following is the markup for a Visualforce page that
+                uses the above custom controller to display the idea as read.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span><span class="attribute"> extensions=</span><span class="string">"ViewIdeaController"</span><span class="attribute"> showHeader=</span><span class="string">"false"</span>&gt;
+   
+     <span class="tag">&lt;h2</span>&gt;<span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!idea.title}"</span> /&gt;<span class="tag">&lt;/h2</span>&gt;
+     <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!idea.body}"</span> /&gt;
+
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+
+        </div>
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Ideas_methods">
+<a name="apex_System_Ideas_methods"><!-- --></a>
+<h2 class="helpHead2">Ideas Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Ideas</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_ideas.htm#apex_System_Ideas_findSimilar">findSimilar(idea)</a></strong><br>
+Returns a list of similar ideas based on the title of the specified idea.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_ideas.htm#apex_System_Ideas_getAllRecentReplies">getAllRecentReplies(userID, communityID)</a></strong><br>
+Returns ideas that have recent replies for the specified user or zone. This includes all     read and unread replies.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_ideas.htm#apex_System_Ideas_getReadRecentReplies">getReadRecentReplies(userID, communityID)</a></strong><br>
+Returns ideas that have recent replies marked as read.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_ideas.htm#apex_System_Ideas_getUnreadRecentReplies">getUnreadRecentReplies(userID, communityID)</a></strong><br>
+Returns ideas that have recent replies marked as unread.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_ideas.htm#apex_System_Ideas_markRead">markRead(ideaID)</a></strong><br>
+Marks all comments as read for the user that is currently logged in.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Ideas_findSimilar">
+<a name="apex_System_Ideas_findSimilar"><!-- --></a>
+<h3 class="helpHead3">findSimilar(idea)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a list of similar ideas based on the title of the specified idea.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span>[] findSimilar(Idea idea)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">idea</var></strong>: Type: Idea</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>[]</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Each <samp class="codeph apex_code">findSimilar</samp> call counts against the SOSL query
+                limits. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits</a>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Ideas_getAllRecentReplies">
+<a name="apex_System_Ideas_getAllRecentReplies"><!-- --></a>
+<h3 class="helpHead3">getAllRecentReplies(userID, communityID)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns ideas that have recent replies for the specified user or zone. This includes all
+    read and unread replies.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span>[] getAllRecentReplies(<span class="keyword">String</span> userID, <span class="keyword">String</span>
+          communityID)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>[]</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Each <samp class="codeph apex_code">getAllRecentReplies</samp> call counts against the
+        SOQL query limits. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits</a>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Ideas_getReadRecentReplies">
+<a name="apex_System_Ideas_getReadRecentReplies"><!-- --></a>
+<h3 class="helpHead3">getReadRecentReplies(userID, communityID)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns ideas that have recent replies marked as read.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span>[] getReadRecentReplies(<span class="keyword">String</span> userID,
+          <span class="keyword">String</span> communityID)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>[]</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Each <samp class="codeph apex_code">getReadRecentReplies</samp> call counts against the
+        SOQL query limits. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits</a>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Ideas_getUnreadRecentReplies">
+<a name="apex_System_Ideas_getUnreadRecentReplies"><!-- --></a>
+<h3 class="helpHead3">getUnreadRecentReplies(userID, communityID)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns ideas that have recent replies marked as unread.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span>[] getUnreadRecentReplies(<span class="keyword">String</span> userID,
+          <span class="keyword">String</span> communityID)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>[]</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Each <samp class="codeph apex_code">getUnreadRecentReplies</samp> call counts against the
+        SOQL query limits. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits</a>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Ideas_markRead">
+<a name="apex_System_Ideas_markRead"><!-- --></a>
+<h3 class="helpHead3">markRead(ideaID)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Marks all comments as read for the user that is currently
+logged in.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void markRead(<span class="keyword">String</span> ideaID)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ideaID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

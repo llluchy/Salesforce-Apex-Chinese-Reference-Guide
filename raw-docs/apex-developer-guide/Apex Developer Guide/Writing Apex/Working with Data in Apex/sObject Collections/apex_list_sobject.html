@@ -1,0 +1,139 @@
+<a name="apex_list_sobject"><!-- --></a><h1 class="helpHead1">Lists of sObjects</h1><div class="body conbody">
+<div class="shortdesc">Lists can contain sObjects among other types of elements.
+Lists of sObjects can be used for bulk processing of data.</div>
+
+<p class="p">You can use a list to store sObjects. Lists are useful when working
+with SOQL queries. SOQL queries return sObject data and this data
+can be stored in a list of sObjects. Also, you can use lists to perform
+bulk operations, such as inserting a list of sObjects with one call.</p>
+
+<p class="p">To declare a list of sObjects, use the <samp class="codeph apex_code">List</samp> keyword followed by the sObject
+type within &lt;&gt; characters. For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create an empty list of Accounts</span>
+List&lt;Account&gt; myList = <span class="keyword">new</span> List&lt;Account&gt;();
+</pre></div>
+
+<div class="section">
+<h2 class="helpHead2">Auto-populating a List from a SOQL Query</h2>
+<p class="p">You can assign a List variable directly to the results of a SOQL query. The SOQL query returns a
+            new list populated with the records returned. Make sure that the declared List variable
+            contains the same sObject that is being queried. Or you can use the generic sObject data
+            type.</p>
+<p class="p">This example shows how to declare and assign a list of accounts
+to the return value of a SOQL query. The query returns up to 1,000
+returns account records containing the Id and Name fields.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a list of account records from a SOQL query</span>
+List&lt;Account&gt; accts = [SELECT Id, Name FROM Account LIMIT 1000]; 
+</pre></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Adding and Retrieving List Elements</h2>
+<p class="p">As with lists of primitive data types, you can access and set elements of sObject lists using the
+<samp class="codeph apex_code">List</samp> methods provided by Apex. For example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; myList = <span class="keyword">new</span> List&lt;Account&gt;(); <span class="onelineComment">// Define a new list</span>
+Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Acme'</span>); <span class="onelineComment">// Create the account first</span>
+myList.add(a);                    <span class="onelineComment">// Add the account sObject</span>
+Account a2 = myList.get(0);      <span class="onelineComment">// Retrieve the element at index 0</span>
+</pre></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Bulk Processing</h2>
+
+         
+         <div class="p">You can bulk-process a list of sObjects by passing a list to the DML operation. This
+            example shows how you can insert a list of
+            accounts.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Define the list</span>
+List&lt;Account&gt; acctList = <span class="keyword">new</span> List&lt;Account&gt;(); 
+<span class="onelineComment">// Create account sObjects</span>
+Account a1 = <span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>); 
+Account a2 = <span class="keyword">new</span> Account(Name=<span class="string">'Account2'</span>); 
+<span class="onelineComment">// Add accounts to the list</span>
+acctList.add(a1);
+acctList.add(a2);
+<span class="onelineComment">// Bulk insert the list</span>
+<span class="statement">insert</span> acctList;</pre></div>
+</div>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> If you perform a bulk insert of Knowledge article versions, make the ownerId of all
+            records the same. </p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+<div class="section">
+<h2 class="helpHead2">Record ID Generation</h2>
+<p class="p">Apex automatically generates IDs for each object in an sObject list that was inserted or upserted
+            using DML. Therefore, a list that contains more than one instance of an sObject cannot
+            be inserted or upserted even if it has a <samp class="codeph apex_code"><span class="keyword">null</span></samp>
+            ID. This situation would imply that two IDs would need to be written to the same
+            structure in memory, which is illegal.</p>
+<p class="p">For example, the <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement in the following block of code generates
+a <samp class="codeph apex_code">ListException</samp> because it
+tries to insert a list with two references to the same sObject (<samp class="codeph apex_code">a</samp>):</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+
+   <span class="onelineComment">// Create a list with two references to the same sObject element</span>
+   Account a = <span class="keyword">new</span> Account();
+   List&lt;Account&gt; accs = <span class="keyword">new</span> List&lt;Account&gt;{a, a};
+
+   <span class="onelineComment">// Attempt to insert it...</span>
+   <span class="statement">insert</span> accs;
+
+   <span class="onelineComment">// Will not get here</span>
+   System.assert(<span class="keyword">false</span>);
+} <span class="statement">catch</span> (ListException e) {
+   <span class="onelineComment">// But will get here</span>
+}
+</pre></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Using Array Notation for One-Dimensional Lists of
+sObjects</h2>
+<p class="p">Alternatively, you can use the array notation (square
+brackets) to declare and reference lists of sObjects.</p>
+<div class="p">This example declares a list of accounts using the array
+            notation.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accts = <span class="keyword">new</span> Account[1];</pre></div>
+</div>
+<div class="p"> This example adds an element to the list using square brackets.<div class="codeSection apex_code"><pre class="codeblock brush:apex">accts[0] = <span class="keyword">new</span> Account(Name=<span class="string">'Acme2'</span>);</pre></div>
+</div>
+<p class="p">These examples also use the array notation with sObject lists.</p>
+</div>
+
+<div class="example">
+<h2 class="helpHead2">Defines an Account list with no elements.</h2>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accts = <span class="keyword">new</span> Account[]{};</pre></div>
+
+</div>
+</div>
+
+<div class="example">
+<h2 class="helpHead2">Defines an Account list with memory allocated for three Accounts: a new Account object in the first position, <span class="titlecodeph">null</span> in the second, and another new Account object in the third.</h2>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accts = <span class="keyword">new</span> Account[]
+         {<span class="keyword">new</span> Account(), <span class="keyword">null</span>, <span class="keyword">new</span> Account()};</pre></div>
+
+</div>
+</div>
+
+<div class="example">
+<h2 class="helpHead2">Defines the Contact list with a new list.</h2>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Contact&gt; contacts = <span class="keyword">new</span> List&lt;Contact&gt;
+                                  (otherList);</pre></div>
+
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

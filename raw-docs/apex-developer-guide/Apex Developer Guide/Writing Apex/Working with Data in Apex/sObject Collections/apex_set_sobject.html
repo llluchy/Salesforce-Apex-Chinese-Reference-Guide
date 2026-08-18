@@ -1,0 +1,39 @@
+<a name="apex_set_sobject"><!-- --></a><h1 class="helpHead1">Sets of Objects</h1><div class="body conbody">
+<div class="shortdesc">Sets can contain sObjects among other types of elements.</div>
+
+<div class="p">Sets contain unique elements. Uniqueness of sObjects is determined
+by comparing the objects’ fields. For example, if you try to
+add two accounts with the same name to a set, with no other fields
+set, only one sObject is added to the set.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create two accounts, a1 and a2</span>
+Account a1 = <span class="keyword">new</span> account(name=<span class="string">'MyAccount'</span>);
+Account a2 = <span class="keyword">new</span> account(name=<span class="string">'MyAccount'</span>);
+
+<span class="onelineComment">// Add both accounts to the new set </span>
+Set&lt;Account&gt; accountSet = <span class="keyword">new</span> Set&lt;Account&gt;{a1, a2};
+
+<span class="onelineComment">// Verify that the set only contains one item</span>
+System.assertEquals(accountSet.size(), 1);</pre></div>
+</div>
+
+<div class="p">If you add a description to one of the accounts, it is considered
+unique and both accounts are added to the set.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create two accounts, a1 and a2, and add a description to a2</span>
+Account a1 = <span class="keyword">new</span> account(name=<span class="string">'MyAccount'</span>);
+Account a2 = <span class="keyword">new</span> account(name=<span class="string">'MyAccount'</span>, description=<span class="string">'My test account'</span>);
+
+<span class="onelineComment">// Add both accounts to the new set</span>
+Set&lt;Account&gt; accountSet = <span class="keyword">new</span> Set&lt;Account&gt;{a1, a2};
+
+<span class="onelineComment">// Verify that the set contains two items</span>
+System.assertEquals(accountSet.size(), 2);</pre></div>
+</div>
+
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>If set elements are objects, and these objects
+change after being added to the collection, they won’t be found
+anymore when using, for example, the <samp class="codeph apex_code">contains</samp> or <samp class="codeph apex_code">containsAll</samp> methods, because of changed field values.</p>
+</div>
+</div></div></div></div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

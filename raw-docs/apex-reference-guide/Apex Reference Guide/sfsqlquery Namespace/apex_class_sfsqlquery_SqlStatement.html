@@ -1,0 +1,181 @@
+<a name="apex_class_sfsqlquery_SqlStatement"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SqlStatement Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built <samp class="codeph ">ConnectApi.QuerySqlInput</samp> object, and then execute synchronously with <samp class="codeph ">SqlRowIterator</samp> or pass it to a <samp class="codeph ">SqlQueueable</samp> subclass for asynchronous processing.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Use the static <samp class="codeph ">create()</samp> factories to build a statement, optionally configure the workload name with <samp class="codeph ">withWorkloadName()</samp>, and then either call <samp class="codeph ">execute()</samp> to get a synchronous <samp class="codeph ">SqlRowIterator</samp> or pass the statement to a <samp class="codeph ">SqlQueueable</samp> subclass for asynchronous execution.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Build and execute a statement synchronously.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    .withWorkloadName(<span class="string">'my_workload'</span>)
+    .execute();
+
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    System.debug(row.getString(<span class="string">'Id__c'</span>));
+}</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_methods">
+<a name="apex_sfsqlquery_SqlStatement_methods"><!-- --></a>
+  <h2 class="helpHead2">SqlStatement Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">SqlStatement</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_create">
+<a name="apex_sfsqlquery_SqlStatement_create"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">create(query, dataspace)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlStatement</samp> from a pre-built <samp class="codeph ">ConnectApi.QuerySqlInput</samp> object. Use this method when you need to configure query properties beyond a SQL string, such as parameterized queries, a server-side row limit, or custom query settings.</div>
+<div class="section">
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Keep the class name and <samp class="codeph ">.create()</samp> on the same line when chaining methods.</p>
+</div>
+</div></div></div></div>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static sfsqlquery.SqlStatement create(ConnectApi.QuerySqlInput query, String dataspace)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">query</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_query_sql.htm" title="Represents the input to create an SQL query.">ConnectApi.QuerySqlInput</a></p>
+<p class="p">Pre-built query input object that c</p>
+<p class="p">an include parameterized queries, a server-side row limit, or custom query settings.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dataspace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the Data 360 data space to query against.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_SqlStatement" title="Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built ConnectApi.QuerySqlInput object, and then execute synchronously with SqlRowIterator or pass it to a SqlQueueable subclass for asynchronous processing.">sfsqlquery.SqlStatement</a></p>
+<p class="p">A new <samp class="codeph ">SqlStatement</samp> instance configured with the provided query input and data space.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_create_2">
+<a name="apex_sfsqlquery_SqlStatement_create_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">create(sql, dataspace)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlStatement</samp> from a raw SQL string and a data space name.</div>
+<div class="section">
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Keep the class name and <samp class="codeph ">.create()</samp> on the same line when chaining methods.</p>
+</div>
+</div></div></div></div>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static sfsqlquery.SqlStatement create(String sql, String dataspace)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sql</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">SQL query string to execute.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dataspace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the Data 360 data space to query against.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_SqlStatement" title="Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built ConnectApi.QuerySqlInput object, and then execute synchronously with SqlRowIterator or pass it to a SqlQueueable subclass for asynchronous processing.">sfsqlquery.SqlStatement</a></p>
+<p class="p">A new <samp class="codeph ">SqlStatement</samp> instance configured with the provided SQL and data space.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_execute">
+<a name="apex_sfsqlquery_SqlStatement_execute"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">execute()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a synchronous <samp class="codeph ">SqlRowIterator</samp> built from this statement. Equivalent to <samp class="codeph ">new sfsqlquery.SqlRowIterator(statement)</samp>. The query isn't submitted until iteration begins.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public sfsqlquery.SqlRowIterator execute()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_SqlRowIterator.htm#apex_class_sfsqlquery_SqlRowIterator" title="Synchronous iterator for executing Data 360 SQL queries and retrieving results row-by-row within the current transaction. Implements Iterator&lt;Row&gt; and Iterable&lt;Row&gt; for use in both for-each and while loops. The iterator is single-use; once all rows are consumed, iterating again does not restart from the beginning.">sfsqlquery.SqlRowIterator</a></p>
+<p class="p">A new <samp class="codeph ">SqlRowIterator</samp> configured from this statement.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_toString">
+<a name="apex_sfsqlquery_SqlStatement_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of this <samp class="codeph ">SqlStatement</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A string representation of this <samp class="codeph ">SqlStatement</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlStatement_withWorkloadName">
+<a name="apex_sfsqlquery_SqlStatement_withWorkloadName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">withWorkloadName(name)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the workload name to send with the query and returns the same <samp class="codeph ">SqlStatement</samp> instance for method chaining. If not set, the framework uses <samp class="codeph ">dcsql_row_iterator_workload</samp> for iterators or <samp class="codeph ">dcsql_queueable_workload</samp> for queueables.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public sfsqlquery.SqlStatement withWorkloadName(String name)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Custom workload name to associate with the query. Set this value to help Salesforce Customer
+                        Support assist you with debugging issues</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_SqlStatement" title="Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built ConnectApi.QuerySqlInput object, and then execute synchronously with SqlRowIterator or pass it to a SqlQueueable subclass for asynchronous processing.">sfsqlquery.SqlStatement</a></p>
+<p class="p">This <samp class="codeph ">SqlStatement</samp> instance.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use custom workload names to monitor and throttle different query types:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// High-priority user-facing query</span>
+sfsqlquery.SqlRowIterator userQuery = sfsqlquery.SqlStatement.create(<span class="string">'SELECT * FROM accounts__dlm WHERE Region__c = \'West\''</span>, <span class="string">'default'</span>)
+    .withWorkloadName(<span class="string">'salescloud-userdashboard'</span>)
+    .execute();
+
+<span class="onelineComment">// Background batch processing query</span>
+sfsqlquery.SqlStatement batchStmt = sfsqlquery.SqlStatement.create(<span class="string">'SELECT * FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    .withWorkloadName(<span class="string">'marketing-nightlybatch'</span>);
+System.enqueueJob(<span class="keyword">new</span> MyBatchJob(batchStmt));</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>

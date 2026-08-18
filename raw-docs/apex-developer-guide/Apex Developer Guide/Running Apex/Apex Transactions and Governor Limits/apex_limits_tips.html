@@ -1,0 +1,158 @@
+<a name="apex_limits_tips"><!-- --></a><h1 class="helpHead1">Running Apex within Governor Execution Limits</h1><div class="body conbody">
+<div class="shortdesc"> When you develop software in a multitenant cloud environment such as the Lightning
+        platform, you don’t have to scale your code, because the Lightning platform does it for you.
+        Because resources are shared in a multitenant platform, the Apex runtime engine enforces
+        some limits to ensure that no one transaction monopolizes shared resources.</div>
+
+        <p class="p">Your Apex code must execute within these predefined execution limits. If a governor limit
+            is exceeded, a run-time exception that can’t be handled is thrown. By following
+            best practices in your code, you can avoid hitting these limits. Imagine you had to wash
+            100 T-shirts. Would you wash them one by one—one per load of laundry, or would
+            you group them in batches for just a few loads? The benefit of coding in the cloud is
+            that you learn how to write more efficient code and waste fewer resources.</p>
+
+        <p class="p">The governor execution limits are per transaction. For example, one transaction can issue
+            up to 100 SOQL queries and up to 150 DML statements. There are some other limits that
+            aren’t transaction bound, such as the number of batch jobs that can be queued or
+            active at one time.</p>
+
+        <p class="p">The following are some best practices for writing code that doesn’t exceed certain
+            governor limits.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Bulkifying DML Calls</h2>
+
+            
+            <p class="p">Making DML calls on lists of sObjects instead of each individual sObject makes it
+                less likely to reach the DML statements limit. The following is an example that
+                doesn’t bulkify DML operations, and the next example shows the recommended
+                way of calling DML statements.</p>
+
+            <p class="p"><strong class="ph b">Example:</strong> DML calls on single sObjects</p>
+
+            <p class="p">The for loop iterates over line items contained in the <samp class="codeph apex_code">liList</samp> List variable. For each line item, it sets a new value for the
+                Description__c field and then updates the line item. If the list contains more than
+                150 items, the 151st update call returns a run-time exception for exceeding the DML
+                statement limit of 150. How do we fix this? Check the second example for a simple
+                solution.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span>(Line_Item__c li : liList) {
+    <span class="statement">if</span> (li.Units_Sold__c &gt; 10) {
+        li.Description__c = <span class="string">'New description'</span>;
+    }
+    <span class="onelineComment">// Not a good practice since governor limits might be hit.</span>
+    <span class="statement">update</span> li;
+}
+</pre></div>
+
+            <p class="p"><strong class="ph b">Recommended Alternative:</strong> DML calls on sObject lists</p>
+
+            <p class="p">This enhanced version of the DML call performs the update on an entire list that
+                contains the updated line items. It starts by creating a new list and then, inside
+                the loop, adds every update line item to the new list. It then performs a bulk
+                update on the new list.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Line_Item__c&gt; updatedList = <span class="keyword">new</span> List&lt;Line_Item__c&gt;();
+
+<span class="statement">for</span>(Line_Item__c li : liList) {
+    <span class="statement">if</span> (li.Units_Sold__c &gt; 10) {
+        li.Description__c = <span class="string">'New description'</span>;
+        <strong class="ph b">updatedList.add(li);</strong>
+    }
+}
+
+<span class="onelineComment">// Once DML call for the entire list of line items</span>
+<strong class="ph b">update updatedList;</strong>
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">More Efficient SOQL Queries</h2>
+
+            
+            <p class="p">Placing SOQL queries inside <samp class="codeph apex_code"><span class="statement">for</span></samp> loop blocks
+                isn’t a good practice because the SOQL query executes once for each iteration
+                and may surpass the 100 SOQL queries limit per transaction. The following is an
+                example that runs a SOQL query for every item in <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp>, which isn’t efficient. An alternative example is
+                given with a modified query that retrieves child items using only one SOQL
+                query.</p>
+
+            <p class="p"><strong class="ph b">Example:</strong> Inefficient querying of child items</p>
+
+            <p class="p">The <samp class="codeph apex_code"><span class="statement">for</span></samp> loop in this example iterates over
+                all invoice statements that are in <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp>. The SOQL query performed inside the loop retrieves the
+                child line items of each invoice statement. If more than 100 invoice statements were
+                inserted or updated, and thus contained in <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp>, this results in a run-time exception because of reaching
+                the SOQL limit. The second example solves this problem by creating another SOQL
+                query that can be called only once.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> LimitExample on Invoice_Statement__c (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+    <span class="statement">for</span>(Invoice_Statement__c inv : Trigger.<span class="keyword">new</span>) {
+        <span class="onelineComment">// This SOQL query executes once for each item in Trigger.new.</span>
+        <span class="onelineComment">// It gets the line items for each invoice statement.</span>
+        List&lt;Line_Item__c&gt; liList = [SELECT Id,Units_Sold__c,Merchandise__c 
+                                     FROM Line_Item__c 
+                                     WHERE Invoice_Statement__c = :inv.Id];
+        <span class="statement">for</span>(Line_Item__c li : liList) {
+            <span class="onelineComment">// Do something</span>
+        }
+    }
+}</pre></div>
+
+            <p class="p"><strong class="ph b">Recommended Alternative:</strong> Querying of child items with one SOQL query</p>
+
+            <p class="p">This example bypasses the problem of having the SOQL query called for each item. It
+                has a modified SOQL query that retrieves all invoice statements that are part of
+                    <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp> and also gets their line
+                items through the nested query. In this way, only one SOQL query is performed and
+                we’re still within our limits.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> EnhancedLimitExample on Invoice_Statement__c (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+    <span class="onelineComment">// Perform SOQL query outside of the for loop.</span>
+    <span class="onelineComment">// This SOQL query runs once for all items in Trigger.new.</span>
+    List&lt;Invoice_Statement__c&gt; invoicesWithLineItems = 
+        [SELECT Id,Description__c,(SELECT Id,Units_Sold__c,Merchandise__c from Line_Items__r)
+         FROM Invoice_Statement__c WHERE Id IN :Trigger.newMap.KeySet()];
+    
+    <span class="statement">for</span>(Invoice_Statement__c inv : invoicesWithLineItems) {
+        <span class="statement">for</span>(Line_Item__c li : inv.Line_Items__r) {
+            <span class="onelineComment">// Do something</span>
+        }
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">SOQL For Loops</h2>
+
+            
+            <p class="p">Use SOQL for loops to operate on records in batches of 200. This helps avoid the heap
+                size limit of 6 MB. Note that this limit is for code running synchronously and it is
+                higher for asynchronous code execution.</p>
+
+            <p class="p"><strong class="ph b">Example:</strong> Query without a for loop</p>
+
+            <p class="p">The following is an example of a SOQL query that retrieves all merchandise items and
+                stores them in a List variable. If the returned merchandise items are large in size
+                and a large number of them was returned, the heap size limit might be hit.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Merchandise__c&gt; ml = [SELECT Id,Name FROM Merchandise__c];
+</pre></div>
+
+            <p class="p"><strong class="ph b">Recommended Alternative:</strong> Query within a for loop</p>
+
+            <p class="p">To prevent this from happening, this second version uses a SOQL for loop, which
+                iterates over the returned results in batches of 200 records. This reduces the size
+                of the <samp class="codeph apex_code">ml</samp> list variable which now holds 200
+                items instead of all items in the query results, and gets recreated for every
+                batch.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (List&lt;Merchandise__c&gt; ml : [SELECT Id,Name FROM Merchandise__c]){
+    <span class="onelineComment">// Do something.</span>
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

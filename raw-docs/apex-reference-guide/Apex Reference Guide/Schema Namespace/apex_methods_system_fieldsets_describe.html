@@ -1,0 +1,362 @@
+<a name="apex_methods_system_fieldsets_describe"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">FieldSet Class</h1>
+
+    
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="SchemaFieldSetClassDesc"><a name="SchemaFieldSetClassDesc"><!-- --></a>Contains methods for discovering and retrieving the
+            details of field sets created on sObjects.</span></div>
+
+        
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Schema.htm" title="The Schema namespace provides classes and methods for schema metadata information.">Schema</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <div class="p" id="FieldSetDescribeUsage">
+<a name="FieldSetDescribeUsage"><!-- --></a>Use the methods in the <samp class="codeph apex_code">Schema.FieldSet</samp> class to discover the fields contained within a field
+                set, and get details about the field set itself, such as the name, namespace, label,
+                and so on. The following example shows how to get a collection of field set describe
+                result objects for an sObject. The key of the returned Map is the field set name,
+                and the value is the corresponding field set describe
+                result.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, Schema.FieldSet&gt; FsMap = 
+    Schema.SObjectType.Account.fieldSets.getMap();</pre></div>
+</div>
+
+            <p class="p">Field sets are also available from sObject describe results. The following lines of
+                code are equivalent to the prior sample:</p>
+
+            <div class="p" id="FieldSetGetDescribeUsageExample">
+<a name="FieldSetGetDescribeUsageExample"><!-- --></a>
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult d = 
+  Account.sObjectType.getDescribe();
+Map&lt;<span class="keyword">String</span>, Schema.FieldSet&gt; FsMap = 
+  d.fieldSets.getMap();</pre></div>
+
+            </div>
+
+            <div class="p">To work with an individual field set, you can access it via the map of field sets on
+                an sObject or, when you know the name of the field set in advance, using an explicit
+                reference to the field set. The following two lines of code retrieve the same field
+                set:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.FieldSet fs1 = Schema.SObjectType.Account.fieldSets.getMap().get(<span class="string">'field_set_name'</span>);
+Schema.FieldSet fs2 = Schema.SObjectType.Account.fieldSets.field_set_name;</pre></div>
+</div>
+
+        </div>
+
+        <div class="section" id="FieldSetsDescribeExample">
+<a name="FieldSetsDescribeExample"><!-- --></a><h2 class="helpHead2">Example: Displaying a Field Set on a Visualforce Page</h2>
+
+            
+            <div class="p" id="FieldSetsDescribeExampleController">
+<a name="FieldSetsDescribeExampleController"><!-- --></a>This sample uses <samp class="codeph apex_code">Schema.FieldSet</samp> and <samp class="codeph apex_code">Schema.FieldSetMember</samp> methods to dynamically get
+                all the fields in the Dimensions field set for the Merchandise custom object. The
+                list of fields is then used to construct a SOQL query that ensures those fields are
+                available for display. The Visualforce page uses the <samp class="codeph apex_code">MerchandiseDetails</samp> class as its
+                controller.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MerchandiseDetails {
+
+    <span class="keyword">public</span> Merchandise__c merch { get; set; }
+    
+    <span class="keyword">public</span> MerchandiseDetails() {
+        <span class="statement">this</span>.merch = getMerchandise();
+    }
+
+    <span class="keyword">public</span> List&lt;Schema.FieldSetMember&gt; getFields() {
+        <span class="statement">return</span> SObjectType.Merchandise__c.FieldSets.Dimensions.getFields();
+    }
+
+    <span class="keyword">private</span> Merchandise__c getMerchandise() {
+        <span class="keyword">String</span> query = <span class="string">'SELECT '</span>;
+        <span class="statement">for</span>(Schema.FieldSetMember f : <span class="statement">this</span>.getFields()) {
+            query += f.getFieldPath() + <span class="string">', '</span>;
+        }
+        query += <span class="string">'Id, Name FROM Merchandise__c LIMIT 1'</span>;
+        <span class="statement">return</span> Database.query(query, AccessLevel.USER_MODE);
+    }
+}</pre></div>
+</div>
+
+            <div class="p" id="FieldSetsDescribeExampleVFMarkup">
+<a name="FieldSetsDescribeExampleVFMarkup"><!-- --></a>The Visualforce page using
+                the above controller is
+                simple:<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"MerchandiseDetails"</span>&gt;
+    <span class="tag">&lt;apex:form</span> &gt;
+
+      <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Product Details"</span>&gt;
+          <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> title=</span><span class="string">"Product"</span>&gt;
+              <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!merch.Name}"</span>/&gt;
+          <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+      
+          <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> title=</span><span class="string">"Dimensions"</span>&gt;
+              <span class="tag">&lt;apex:repeat</span><span class="attribute"> value=</span><span class="string">"{!fields}"</span><span class="attribute"> var=</span><span class="string">"f"</span>&gt;
+                  <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!merch[f.fieldPath]}"</span> 
+                     <span class="attribute"> required=</span><span class="string">"{!OR(f.required, f.dbrequired)}"</span>/&gt;
+              <span class="tag">&lt;/apex:repeat</span>&gt;
+          <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+  
+        <span class="tag">&lt;/apex:pageBlock</span>&gt;
+
+    <span class="tag">&lt;/apex:form</span>&gt;  
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+One
+                thing to note about the above markup is the expression used to determine if a field
+                on the form should be indicated as being a required field. A field in a field set
+                can be required by either the field set definition, or the field’s own
+                definition. The expression handles both cases.</div>
+
+        </div>
+
+    </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_methods">
+<a name="apex_Schema_FieldSet_methods"><!-- --></a>
+ <h2 class="helpHead2">FieldSet Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+  <div class="section">
+   <p class="p">The following are methods for <samp class="codeph apex_code">FieldSet</samp>. All are
+    instance methods.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getDescription">getDescription()</a></strong><br>
+Returns the field set’s description.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getFields">getFields()</a></strong><br>
+Returns a list of <samp class="codeph apex_code">Schema.FieldSetMember</samp> objects   for the fields making up the field set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getLabel">getLabel()</a></strong><br>
+Returns the translation of the text label that is displayed next to    the field in the Salesforce user interface.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getName">getName()</a></strong><br>
+Returns the field set’s name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getNamespace">getNamespace()</a></strong><br>
+Returns the field set’s namespace.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fieldsets_describe.htm#apex_Schema_FieldSet_getSObjectType">getSObjectType()</a></strong><br>
+Returns the <samp class="codeph apex_page">Schema.sObjectType</samp> of the sObject   containing the field set definition.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getDescription">
+<a name="apex_Schema_FieldSet_getDescription"><!-- --></a>
+ <h3 class="helpHead3">getDescription()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the field set’s description.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDescription()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><span class="keyword">String</span></samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Description is a required field for a field set, intended to describe the context and content
+    of the field set. It’s often intended for administrators who might be configuring a field
+    set defined in a managed package, rather than for end users.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getFields">
+<a name="apex_Schema_FieldSet_getFields"><!-- --></a>
+ <h3 class="helpHead3">getFields()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a list of <samp class="codeph apex_code">Schema.FieldSetMember</samp> objects
+  for the fields making up the field set.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;FieldSetMember&gt; getFields()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_FieldSetMember.htm#apex_class_Schema_FieldSetMember" title="Contains methods for accessing the metadata for field set member fields.">Schema.FieldSetMember</a>&gt;</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getLabel">
+<a name="apex_Schema_FieldSet_getLabel"><!-- --></a>
+ <h3 class="helpHead3">getLabel()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the translation of the text label that is displayed next to
+   the field in the Salesforce user interface.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLabel()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><span class="keyword">String</span></samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getName">
+<a name="apex_Schema_FieldSet_getName"><!-- --></a>
+ <h3 class="helpHead3">getName()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the field set’s name.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getName()</samp></p>
+
+   
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><span class="keyword">String</span></samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getNamespace">
+<a name="apex_Schema_FieldSet_getNamespace"><!-- --></a>
+ <h3 class="helpHead3">getNamespace()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the field set’s namespace.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getNamespace()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><span class="keyword">String</span></samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   
+   <p class="p">The returned namespace is an empty string if your organization hasn’t set a namespace,
+    and the field set is defined in your organization. Otherwise, it’s the namespace of your
+    organization, or the namespace of the managed package containing the field set.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_FieldSet_getSObjectType">
+<a name="apex_Schema_FieldSet_getSObjectType"><!-- --></a>
+ <h3 class="helpHead3">getSObjectType()</h3>
+
+ 
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the <samp class="codeph apex_page">Schema.sObjectType</samp> of the sObject
+  containing the field set definition.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Schema.SObjectType getSObjectType()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code">Schema.SObjectType</samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+</div>

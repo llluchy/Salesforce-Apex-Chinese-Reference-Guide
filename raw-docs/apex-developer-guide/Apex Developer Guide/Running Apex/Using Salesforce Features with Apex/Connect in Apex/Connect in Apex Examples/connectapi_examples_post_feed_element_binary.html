@@ -1,0 +1,35 @@
+<a name="connectapi_examples_post_feed_element_binary"><!-- --></a><h1 class="helpHead1">Post a Feed Element with a New File (Binary) Attachment</h1><div class="body refbody">
+<div class="shortdesc">Call a method to post a feed element with a new file.</div>
+
+                <div class="section"><div class="p">
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>In version 36.0 and later, you can’t post a feed
+                                element with a new file in the same call. Upload files to Salesforce
+                                first, and then specify existing files when posting a feed
+                                element.</p>
+</div>
+</div></div></div></div>
+This example calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_2" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId, feedElement,
+                                        feedElementFileUpload)</samp></a> to post a feed item
+                        with a new file (binary)
+                        attachment.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedItemInput input = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+input.subjectId = <span class="string">'me'</span>;
+
+ConnectApi.ContentCapabilityInput contentInput = <span class="keyword">new</span> ConnectApi.ContentCapabilityInput();
+contentInput.title = <span class="string">'Title'</span>;
+
+ConnectApi.FeedElementCapabilitiesInput capabilities = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+capabilities.content = contentInput;
+
+input.capabilities = capabilities;
+
+<span class="keyword">String</span> text = <span class="string">'These are the contents of the new file.'</span>;
+<span class="keyword">Blob</span> myBlob = <span class="keyword">Blob</span>.valueOf(text);
+ConnectApi.BinaryInput binInput = <span class="keyword">new</span> ConnectApi.BinaryInput(myBlob, <span class="string">'text/plain'</span>, <span class="string">'fileName'</span>);
+
+ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), input, binInput);</pre></div>
+</div></div>
+
+        </div><div id="sfdc:seealso" class="related-links"></div>

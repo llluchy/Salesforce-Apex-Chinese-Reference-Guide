@@ -1,0 +1,134 @@
+<a name="apex_class_Auth_Oauth2TokenExchangeHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Oauth2TokenExchangeHandler Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Use this class to create a token exchange handler that validates tokens from an external
+    identity provider and maps the token’s subject to a Salesforce user during the OAuth 2.0 token
+    exchange flow. The handler can also be used to create users by setting up a new User object and
+    returning it to Salesforce for automatic insertion.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      <p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/token_exchange_handler.htm" target="_blank">Token Exchange Handler Validation and Subject
+          Mapping</a>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_Oauth2TokenExchangeHandler.htm#apex_Auth_Oauth2TokenExchangeHandler_methods">Oauth2TokenExchangeHandler Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_Oauth2TokenExchangeHandler_methods">
+<a name="apex_Auth_Oauth2TokenExchangeHandler_methods"><!-- --></a><h2 class="helpHead2">Oauth2TokenExchangeHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">Oauth2TokenExchangeHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_Oauth2TokenExchangeHandler.htm#apex_Auth_Oauth2TokenExchangeHandler_getUserForTokenSubject">getUserForTokenSubject(networkId, result, canCreateUser, appDeveloperName, appType)</a></strong><br>
+Finds the subject defined in the external identity provider’s token so that it can be     mapped to a Salesforce subject.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_Oauth2TokenExchangeHandler.htm#apex_Auth_Oauth2TokenExchangeHandler_validateIncomingToken">validateIncomingToken(appDeveloperName, appType, incomingToken, tokenType)</a></strong><br>
+Validates an access token, refresh token, ID token, SAML 2.0 assertion, or JWT passed     from an external identity provider during the OAuth 2.0 token exchange flow.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_Oauth2TokenExchangeHandler_getUserForTokenSubject">
+<a name="apex_Auth_Oauth2TokenExchangeHandler_getUserForTokenSubject"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getUserForTokenSubject(networkId, result, canCreateUser, appDeveloperName, appType)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Finds the subject defined in the external identity provider’s token so that it can be
+    mapped to a Salesforce subject.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public User getUserForTokenSubject(Id networkId, Auth.TokenValidationResult result, Boolean canCreateUser, String appDeveloperName, Auth.IntegratingAppType appType)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">networkId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The identifier for the Salesforce user, if one exists.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">result</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm" target="_blank">Auth.TokenValidationResult</a></p>
+<p class="p">The result of the token validation performed by the <samp class="codeph ">validateIncomingToken</samp> method in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_Oauth2TokenExchangeHandler.htm" target="_blank">Auth.Oauth2TokenExchangeHandler</a> class.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">canCreateUser</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Specifies whether the handler can set up a User object if no user exists. Salesforce
+            automatically inserts the user into this object.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">appDeveloperName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The developer name of the Salesforce connected app or external client app that’s being used to
+            integrate your app with Salesforce.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">appType</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_IntegratingAppType.htm" target="_blank">Auth.IntegratingAppType</a></p>
+<p class="p">Specifies whether your app is integrated with Salesforce as a connected app or as an
+            external client app.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_user.htm" target="_blank">User</a></p>
+<p class="p">Returns a User object with the user information obtained from the token, from Salesforce, and
+        from callouts to the identity provider, if applicable. The User object can be an existing
+        user record or a new user that hasn’t been inserted in the database. If it’s a new user,
+        Salesforce automatically inserts the user on behalf of the token exchange handler.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_Oauth2TokenExchangeHandler_validateIncomingToken">
+<a name="apex_Auth_Oauth2TokenExchangeHandler_validateIncomingToken"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">validateIncomingToken(appDeveloperName, appType, incomingToken, tokenType)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Validates an access token, refresh token, ID token, SAML 2.0 assertion, or JWT passed
+    from an external identity provider during the OAuth 2.0 token exchange flow.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.TokenValidationResult validateIncomingToken(String appDeveloperName, Auth.IntegratingAppType appType, String incomingToken, Auth.OAuth2TokenExchangeType tokenType)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">appDeveloperName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The developer name of the Salesforce connected app or external client app that’s being
+            used to integrate your app with Salesforce.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">appType</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_IntegratingAppType.htm" target="_blank">Auth.IntegratingAppType</a></p>
+<p class="p">Specifies whether your app is integrated with Salesforce as a connected app or as an
+            external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">incomingToken</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The token from the external identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenType</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_OAuth2TokenExchangeType.htm" target="_blank">Auth.OAuth2TokenExchangeType</a></p>
+<p class="p">The type of token from the external identity provider. It can be an access token, a refresh
+            token, an ID token, a SAML 2.0 assertion, or any token that’s formatted as a JSON Web
+            Token (JWT).</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm" target="_blank">Auth.TokenValidationResult</a></p>
+<p class="p">Returns information about whether the token is valid, data extracted from the token, the token
+        itself, and the token type. It can also return a custom error message if the validation
+        failed.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

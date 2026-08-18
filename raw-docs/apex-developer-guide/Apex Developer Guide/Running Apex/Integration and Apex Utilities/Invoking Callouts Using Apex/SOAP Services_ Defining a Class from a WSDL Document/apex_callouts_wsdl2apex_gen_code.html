@@ -1,0 +1,179 @@
+<a name="apex_callouts_wsdl2apex_gen_code"><!-- --></a><h1 class="helpHead1">Generated WSDL2Apex Code</h1><div class="body">
+<div class="shortdesc">You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The
+        WSDL2Apex tool is open source and available on GitHub.</div>
+
+        <p class="p">You can find and contribute to the WSDL2Apex source code in the <a class="xref" href="https://github.com/forcedotcom/WSDL2Apex" target="_blank" title="HTML (New Window)">WSDL2Apex repository on GitHub</a>.</p>
+
+        <p class="p">The following example shows how an Apex class is created from a WSDL document. The Apex
+            class is auto-generated for you when you import the WSDL.</p>
+
+        <div class="p">The following code shows a sample WSDL
+            document.<div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;wsdl:definitions</span><span class="attribute"> xmlns:http=</span>"http://schemas.xmlsoap.org/wsdl/http/"<span class="attribute">
+xmlns:soap=</span>"http://schemas.xmlsoap.org/wsdl/soap/"<span class="attribute">
+xmlns:s=</span>"http://www.w3.org/2001/XMLSchema"<span class="attribute">
+xmlns:soapenc=</span>"http://schemas.xmlsoap.org/soap/encoding/"<span class="attribute">
+xmlns:tns=</span>"http://doc.sample.com/docSample"<span class="attribute">
+targetNamespace=</span>"http://doc.sample.com/docSample"<span class="attribute">
+xmlns:wsdl=</span>"http://schemas.xmlsoap.org/wsdl/"&gt;
+
+&lt;!-- Above, the schema targetNamespace maps to the Apex with sharing class name. --&gt;
+
+
+&lt;!-- Below, the type definitions for the parameters are listed. 
+     Each complexType and simpleType parameteris mapped to an Apex with sharing class inside the parent with sharing class for the WSDL.  Then, each element in the complexType is mapped to a public field inside the with sharing class. --&gt;
+
+<span class="tag">&lt;wsdl:types</span>&gt;
+<span class="tag">&lt;s:schema</span><span class="attribute"> elementFormDefault=</span>"qualified"<span class="attribute">
+targetNamespace=</span>"http://doc.sample.com/docSample"&gt;
+<span class="tag">&lt;s:element</span><span class="attribute"> name=</span>"EchoString"&gt;
+<span class="tag">&lt;s:complexType</span>&gt;
+<span class="tag">&lt;s:sequence</span>&gt;
+<span class="tag">&lt;s:element</span><span class="attribute"> minOccurs=</span>"0"<span class="attribute"> maxOccurs=</span>"1"<span class="attribute"> name=</span>"input"<span class="attribute"> type=</span>"s:string" /&gt;
+<span class="tag">&lt;/s:sequence</span>&gt;
+<span class="tag">&lt;/s:complexType</span>&gt;
+<span class="tag">&lt;/s:element</span>&gt;
+<span class="tag">&lt;s:element</span><span class="attribute"> name=</span>"EchoStringResponse"&gt;
+<span class="tag">&lt;s:complexType</span>&gt;
+<span class="tag">&lt;s:sequence</span>&gt;
+<span class="tag">&lt;s:element</span><span class="attribute"> minOccurs=</span>"0"<span class="attribute"> maxOccurs=</span>"1"<span class="attribute"> name=</span>"EchoStringResult"<span class="attribute">
+type=</span>"s:string" /&gt;
+<span class="tag">&lt;/s:sequence</span>&gt;
+<span class="tag">&lt;/s:complexType</span>&gt;
+<span class="tag">&lt;/s:element</span>&gt;
+<span class="tag">&lt;/s:schema</span>&gt;
+<span class="tag">&lt;/wsdl:types</span>&gt;
+
+&lt;!--The stub below defines operations. --&gt;
+
+<span class="tag">&lt;wsdl:message</span><span class="attribute"> name=</span>"EchoStringSoapIn"&gt;
+<span class="tag">&lt;wsdl:part</span><span class="attribute"> name=</span>"parameters"<span class="attribute"> element=</span>"tns:EchoString" /&gt;
+<span class="tag">&lt;/wsdl:message</span>&gt;
+<span class="tag">&lt;wsdl:message</span><span class="attribute"> name=</span>"EchoStringSoapOut"&gt;
+<span class="tag">&lt;wsdl:part</span><span class="attribute"> name=</span>"parameters"<span class="attribute"> element=</span>"tns:EchoStringResponse" /&gt;
+<span class="tag">&lt;/wsdl:message</span>&gt;
+<span class="tag">&lt;wsdl:portType</span><span class="attribute"> name=</span>"DocSamplePortType"&gt;
+<span class="tag">&lt;wsdl:operation</span><span class="attribute"> name=</span>"EchoString"&gt;
+<span class="tag">&lt;wsdl:input</span><span class="attribute"> message=</span>"tns:EchoStringSoapIn" /&gt;
+<span class="tag">&lt;wsdl:output</span><span class="attribute"> message=</span>"tns:EchoStringSoapOut" /&gt;
+<span class="tag">&lt;/wsdl:operation</span>&gt;
+<span class="tag">&lt;/wsdl:portType</span>&gt;
+
+&lt;!--The code below defines how the types map to SOAP. --&gt;
+
+<span class="tag">&lt;wsdl:binding</span><span class="attribute"> name=</span>"DocSampleBinding"<span class="attribute"> type=</span>"tns:DocSamplePortType"&gt;
+<span class="tag">&lt;wsdl:operation</span><span class="attribute"> name=</span>"EchoString"&gt;
+<span class="tag">&lt;soap:operation</span><span class="attribute"> soapAction=</span>"urn:dotnet.callouttest.soap.sforce.com/EchoString"<span class="attribute">
+style=</span>"document" /&gt;
+<span class="tag">&lt;wsdl:input</span>&gt;
+<span class="tag">&lt;soap:body</span><span class="attribute"> use=</span>"literal" /&gt;
+<span class="tag">&lt;/wsdl:input</span>&gt;
+<span class="tag">&lt;wsdl:output</span>&gt;
+<span class="tag">&lt;soap:body</span><span class="attribute"> use=</span>"literal" /&gt;
+<span class="tag">&lt;/wsdl:output</span>&gt;
+<span class="tag">&lt;/wsdl:operation</span>&gt;
+<span class="tag">&lt;/wsdl:binding</span>&gt;
+
+&lt;!-- Finally, the code below defines the endpoint, which maps to the endpoint in the with sharing class --&gt;
+
+<span class="tag">&lt;wsdl:service</span><span class="attribute"> name=</span>"DocSample"&gt;
+<span class="tag">&lt;wsdl:port</span><span class="attribute"> name=</span>"DocSamplePort"<span class="attribute"> binding=</span>"tns:DocSampleBinding"&gt;
+<span class="tag">&lt;soap:address</span><span class="attribute"> location=</span>"http://YourServer/YourService" /&gt;
+<span class="tag">&lt;/wsdl:port</span>&gt;
+<span class="tag">&lt;/wsdl:service</span>&gt;
+<span class="tag">&lt;/wsdl:definitions</span>&gt;
+
+</pre></div>
+</div>
+
+        <p class="p">From this WSDL document, the following Apex class is auto-generated. The class name
+                <samp class="codeph apex_code">docSample</samp> is the name you specify when
+            importing the WSDL.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Generated by wsdl2apex</span>
+
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> docSample {
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> EchoStringResponse_element {
+        <span class="keyword">public</span> <span class="keyword">String</span> EchoStringResult;
+        <span class="keyword">private</span> <span class="keyword">String</span>[] EchoStringResult_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                            <span class="string">'EchoStringResult'</span>,
+                            <span class="string">'http://doc.sample.com/docSample'</span>,
+                             <span class="keyword">null</span>,<span class="string">'0'</span>,<span class="string">'1'</span>,<span class="string">'false'</span>};
+        <span class="keyword">private</span> <span class="keyword">String</span>[] apex_schema_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                             <span class="string">'http://doc.sample.com/docSample'</span>,
+                             <span class="string">'true'</span>,<span class="string">'false'</span>};
+        <span class="keyword">private</span> <span class="keyword">String</span>[] field_order_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                             <span class="string">'EchoStringResult'</span>};
+    }
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> EchoString_element {
+        <span class="keyword">public</span> <span class="keyword">String</span> input;
+        <span class="keyword">private</span> <span class="keyword">String</span>[] input_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                              <span class="string">'input'</span>,
+                              <span class="string">'http://doc.sample.com/docSample'</span>,
+                               <span class="keyword">null</span>,<span class="string">'0'</span>,<span class="string">'1'</span>,<span class="string">'false'</span>};
+        <span class="keyword">private</span> <span class="keyword">String</span>[] apex_schema_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                               <span class="string">'http://doc.sample.com/docSample'</span>,
+                               <span class="string">'true'</span>,<span class="string">'false'</span>};
+        <span class="keyword">private</span> <span class="keyword">String</span>[] field_order_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">'input'</span>};
+    }
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> DocSamplePort {
+        <span class="keyword">public</span> <span class="keyword">String</span> endpoint_x = <span class="string">'http://YourServer/YourService'</span>;
+        <span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; inputHttpHeaders_x;
+        <span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; outputHttpHeaders_x;
+        <span class="keyword">public</span> <span class="keyword">String</span> clientCertName_x;
+        <span class="keyword">public</span> <span class="keyword">String</span> clientCert_x;
+        <span class="keyword">public</span> <span class="keyword">String</span> clientCertPasswd_x;
+        <span class="keyword">public</span> <span class="keyword">Integer</span> timeout_x;
+        <span class="keyword">private</span> <span class="keyword">String</span>[] ns_map_type_info = <span class="keyword">new</span> <span class="keyword">String</span>[]{
+                          <span class="string">'http://doc.sample.com/docSample'</span>, <span class="string">'docSample'</span>};
+        <span class="keyword">public</span> <span class="keyword">String</span> EchoString(<span class="keyword">String</span> input) {
+            docSample.EchoString_element request_x = <span class="keyword">new</span> 
+                                           docSample.EchoString_element();
+            request_x.input = input;
+            docSample.EchoStringResponse_element response_x;
+            Map&lt;<span class="keyword">String</span>, docSample.EchoStringResponse_element&gt; response_map_x = 
+                       <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, docSample.EchoStringResponse_element&gt;();
+            response_map_x.put(<span class="string">'response_x'</span>, response_x);
+            WebServiceCallout.invoke(
+              <span class="statement">this</span>,
+              request_x,
+              response_map_x,
+              <span class="keyword">new</span> <span class="keyword">String</span>[]{endpoint_x,
+              <span class="string">'urn:dotnet.callouttest.soap.sforce.com/EchoString'</span>,
+              <span class="string">'http://doc.sample.com/docSample'</span>,
+              <span class="string">'EchoString'</span>,
+              <span class="string">'http://doc.sample.com/docSample'</span>,
+              <span class="string">'EchoStringResponse'</span>,
+              <span class="string">'docSample.EchoStringResponse_element'</span>}
+            );
+            response_x = response_map_x.get(<span class="string">'response_x'</span>);
+            <span class="statement">return</span> response_x.EchoStringResult;
+        }
+    }
+}</pre></div>
+
+        <p class="p">Note the following mappings from the original WSDL document:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">The WSDL target namespace maps to the Apex class name.</li>
+
+            <li class="li">Each complex type becomes a class. Each element in the type is a public field in the
+                class.</li>
+
+            <li class="li">The WSDL port name maps to the stub class.</li>
+
+            <li class="li">Each operation in the WSDL maps to a public method.</li>
+
+        </ul>
+
+        <p class="p">You can use the auto-generated <samp class="codeph apex_code">docSample</samp> class to
+            invoke external Web services. The following code calls the <samp class="codeph apex_code">echoString</samp> method on the external server.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">docSample.DocSamplePort stub = <span class="keyword">new</span> docSample.DocSamplePort();
+<span class="keyword">String</span> input = <span class="string">'This is the input string'</span>;
+<span class="keyword">String</span> output = stub.EchoString(input);</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing.htm" title="Test Web Service Callouts">Next →</a></li>
+</ul></div>
+</div>

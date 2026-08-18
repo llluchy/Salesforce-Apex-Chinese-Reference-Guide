@@ -1,0 +1,44 @@
+<a name="apex_map_sobject_considerations"><!-- --></a><h1 class="helpHead1">sObject Map Considerations</h1><div class="body conbody">
+<div class="p">Be cautious when using sObjects as map keys. Key matching for sObjects
+is based on the comparison of all sObject field values. If one or
+more field values change after adding an sObject to the map, attempting
+to retrieve this sObject from the map returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>. This is because the modified
+sObject isn’t found in the map due to different field values.
+This can occur if you explicitly change a field on the sObject, or
+if the sObject fields are implicitly changed by the system; for example,
+after inserting an sObject, the sObject variable has the ID field
+autofilled. Attempting to fetch this Object from a map to which it
+was added before the <samp class="codeph apex_code"><span class="statement">insert</span></samp> operation won’t yield the map entry, as shown in this example. <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create an account and add it to the map</span>
+Account a1 = <span class="keyword">new</span> Account(Name=<span class="string">'A1'</span>);
+Map&lt;sObject, <span class="keyword">Integer</span>&gt; m = <span class="keyword">new</span> Map&lt;sObject, <span class="keyword">Integer</span>&gt;{
+a1 =&gt; 1};
+    
+<span class="onelineComment">// Get a1's value from the map.</span>
+<span class="onelineComment">// Returns the value of 1.</span>
+System.assertEquals(1, m.get(a1));
+<span class="onelineComment">// Id field is null.</span>
+System.assertEquals(<span class="keyword">null</span>, a1.Id);
+
+<span class="onelineComment">// Insert a1.</span>
+<span class="onelineComment">// This causes the ID field on a1 to be auto-filled</span>
+<span class="statement">insert</span> a1;
+<span class="onelineComment">// Id field is now populated.</span>
+System.assertNotEquals(<span class="keyword">null</span>, a1.Id);
+
+<span class="onelineComment">// Get a1's value from the map again.</span>
+<span class="onelineComment">// Returns null because Map.get(sObject) doesn't find</span>
+<span class="onelineComment">// the entry based on the sObject with an auto-filled ID.</span>
+<span class="onelineComment">// This is because when a1 was originally added to the map</span>
+<span class="onelineComment">// before the insert operation, the ID of a1 was null.</span>
+System.assertEquals(<span class="keyword">null</span>, m.get(a1));</pre></div>
+Another scenario
+where sObject fields are autofilled is in triggers, for example, when
+using before and after insert triggers for an sObject. If those triggers
+share a static map defined in a class, and the sObjects in <samp class="codeph apex_code">Trigger.New</samp> are added to this map
+in the before trigger, the sObjects in <samp class="codeph apex_code">Trigger.New</samp> in the after trigger aren’t found in
+the map because the two sets of sObjects differ by the fields that
+are autofilled. The sObjects in <samp class="codeph apex_code">Trigger.New</samp> in the after trigger have system fields populated after insertion,
+namely: ID, CreatedDate, CreatedById, LastModifiedDate, LastModifiedById,
+and SystemModStamp.</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

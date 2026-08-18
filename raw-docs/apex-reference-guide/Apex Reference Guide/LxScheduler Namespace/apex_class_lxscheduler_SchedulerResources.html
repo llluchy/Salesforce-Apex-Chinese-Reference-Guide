@@ -1,0 +1,401 @@
+<a name="apex_class_lxscheduler_SchedulerResources"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SchedulerResources Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods that holds the business logic to get resources
+      availability.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_lxscheduler.htm" title="The LxScheduler namespace provides an interface and classes for integrating Salesforce Scheduler with external calendars.">LxScheduler</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Implementation Considerations</h2>
+
+      
+      <p class="p">Apex implementation of the methods in the <samp class="codeph apex_code">SchedulerResources</samp> class should adhere to Apex Governor Limits. It includes
+        synchronous heap size limit, synchronous CPU time limit, and synchronous concurrent
+        transactions for long running transactions. To avoid governor limits, you must tune the
+        input by reducing the time frame, limiting number of service resources, or limiting number
+        or territories at a time. This will reduce the overall transaction time and response size of
+        the implementation. For more information on standard Apex Governer Limits, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_apexgov.htm" target="_blank">Salesforce Developer Limits and Allocations Quick Reference</a>.</p>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <p class="p">To get list of available service resources (appointment candidates):</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">String</span> response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);
+</pre></div>
+
+      <p class="p">To get a list of available appointment time slots for a resource:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">String</span> response = lxscheduler.SchedulerResources.getAppointmentSlots(input);
+</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_SchedulerResources.htm#apex_lxscheduler_SchedulerResources_methods">SchedulerResources Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_lxscheduler_SchedulerResources_methods">
+<a name="apex_lxscheduler_SchedulerResources_methods"><!-- --></a><h2 class="helpHead2">SchedulerResources Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SchedulerResources</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_SchedulerResources.htm#apex_lxscheduler_SchedulerResources_getAppointmentCandidates">getAppointmentCandidates(getAppointmentCandidatesInput)</a></strong><br>
+Returns a list of service resources based on work type group or work       type and service territories.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_SchedulerResources.htm#apex_lxscheduler_SchedulerResources_getAppointmentSlots">getAppointmentSlots(getAppointmentSlotsInput)</a></strong><br>
+Returns a list of available appointment time slots for a resource       based on given work type group or work type and service territories.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_SchedulerResources.htm#apex_lxscheduler_SchedulerResources_setAppointmentCandidatesMock">setAppointmentCandidatesMock(expectedResponse)</a></strong><br>
+Sets a mock object when running tests for the <samp class="codeph apex_code">getAppointmentCandidates</samp> method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_SchedulerResources.htm#apex_lxscheduler_SchedulerResources_setAppointmentSlotsMock">setAppointmentSlotsMock(expectedResponse)</a></strong><br>
+Sets a mock object when running tests for the <samp class="codeph apex_code">getAppointmentSlots</samp> method.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_lxscheduler_SchedulerResources_getAppointmentCandidates">
+<a name="apex_lxscheduler_SchedulerResources_getAppointmentCandidates"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getAppointmentCandidates(getAppointmentCandidatesInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a list of service resources based on work type group or work
+      type and service territories.</span></div>
+
+    <div class="section">
+      <p class="p">Set up Salesforce Scheduler before making requests. This setup includes creating or
+        configuring Service Resources, Service Territory Members, Work Type Groups, Work Types, Work
+        Type Group Members, and Service Territory Work Types. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_set_up.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Set Up Salesforce Scheduler</a>
+        for more information.</p>
+
+      <p class="p">The appointment time slots are determined based on multiple factors, such as field values,
+        scheduled appointments, absences, Scheduler Settings, and Scheduling Policies to determine
+        available time slots. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_how_are_time_slots_determined.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">How Salesforce Scheduler Determines
+          Available Time Slots</a> for more information.</p>
+
+    </div>
+
+    <div class="section">
+      <p class="p">The following factors are considered for returning start time and end time of
+        resources.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Resource Availability</strong>: Determined using service territory member, service territory, work type, and account
+            operating hours fields.</li>
+
+        <li class="li">
+<strong class="ph b">Resource Unavailability</strong>: Determined by resource absences, existing appointments that the resource is assigned
+            to. The resource must be marked as a required resource for the appointment with a status
+            that isn’t in closed, canceled, or completed.</li>
+
+        <li class="li">
+<strong class="ph b">Appointment Start Time Interval in the Scheduling Policy</strong>: Appointment start time interval field in the Scheduling Policy is used to determine
+            when the appointment can start. This interval can be 5, 10, 15, 20, 30, or 60. By
+            default, it’s set to 15.</li>
+
+        <li class="li">
+<strong class="ph b">Work Type Duration</strong>: The end time is calculated as start time + duration of the work type.</li>
+
+      </ul>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If asset scheduling is enabled, the response also includes asset-based
+        candidates.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getAppointmentCandidates(lxscheduler.GetAppointmentCandidatesInput getAppointmentCandidatesInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">getAppointmentCandidatesInput</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_GetAppointmentCandidatesInput.htm#apex_class_lxscheduler_GetAppointmentCandidatesInput" title="Contains information about the available service resources (appointment candidates) based on work type group and service territories.">lxscheduler.GetAppointmentCandidatesInput</a></p>
+<p class="p">This method takes input as an instance of the <samp class="codeph apex_code">lxscheduler.GetAppointmentCandidatesInput</samp> class. Build the instance of the
+            input class using the <samp class="codeph apex_code">lxscheduler.GetAppointmentCandidatesInputBuilder</samp> class.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_lxscheduler_SchedulerResources_getAppointmentSlots">
+<a name="apex_lxscheduler_SchedulerResources_getAppointmentSlots"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getAppointmentSlots(getAppointmentSlotsInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a list of available appointment time slots for a resource
+      based on given work type group or work type and service territories.</span></div>
+
+    <div class="section">
+      <p class="p">The appointment time slots are determined based on your Salesforce Scheduler data model
+        configurations. Here are some prerequisites that you can consider while setting up data.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Set up Salesforce Scheduler before making your requests. The setup includes creating or
+          configuring Service Resources, Service Territory Members, Work Type Groups, Work Types,
+          Work Type Group Members, and Service Territory Work Types. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_set_up.htm&amp;language=en_US" target="_blank">Manage Business Information in Salesforce
+            Scheduler</a> for more information.</li>
+
+        <li class="li">Configure a work type mapped for each territory in the request body via Service
+          Territory Work Type. Map the same work type to the work type group, via work type group
+          member.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+      <p class="p">The following factors affect how time slots are calculated and returned. </p>
+
+      <ul class="ul bulletList">
+        <li class="li">Timezones that differ across operating hours are handled and results are always returned
+          in UTC.</li>
+
+        <li class="li">The resource must be marked as a required resource on the assigned resource object.</li>
+
+        <li class="li">The resource is considered unavailable If the status categories of the resource assigned
+          to service appointments are other than <samp class="codeph nolang">Canceled</samp>,
+            <samp class="codeph nolang">Cannot Complete</samp>, and <samp class="codeph nolang">Completed</samp>.</li>
+
+        <li class="li">Resource Absences of all types are considered unavailable from start to end. </li>
+
+        <li class="li">The following fields of Work Type records, if configured, are used to fine-tune time
+          slot requirements. For more information, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_create_work_types.htm&amp;language=en_US" target="_blank">Create Work Types in Salesforce Scheduler</a>. 
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+              
+              
+              <thead class="thead sorted" align="left">
+                <tr>
+                  <th class="featureTableHeader  " id="d735123e350">Parameter</th>
+
+                  <th class="featureTableHeader  " id="d735123e353">Description</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="tbody">
+                <tr>
+                  <td class="entry" headers="d735123e350" data-title="Parameter"><span class="keyword parmname">Timeframe Start</span></td>
+
+                  <td class="entry" headers="d735123e353" data-title="Description">Time slots sooner than <samp class="codeph nolang">current time +
+                        <var class="keyword varname">Timeframe Start</var>
+                    </samp>aren’t returned.</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d735123e350" data-title="Parameter"><span class="keyword parmname">Timeframe End</span></td>
+
+                  <td class="entry" headers="d735123e353" data-title="Description"> Time slots later than <samp class="codeph nolang">current time +
+                        <var class="keyword varname">Timeframe End</var></samp> aren’t returned. </td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d735123e350" data-title="Parameter"><span class="keyword parmname">Block Time Before Appointment</span></td>
+
+                  <td class="entry" headers="d735123e353" data-title="Description">The time period before the appointment is considered as
+                    unavailable.</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d735123e350" data-title="Parameter"><span class="keyword parmname">Block Time After Appointment</span></td>
+
+                  <td class="entry" headers="d735123e353" data-title="Description">The time period after the appointment is considered as unavailable.</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d735123e350" data-title="Parameter"><span class="keyword parmname">Operating Hours</span></td>
+
+                  <td class="entry" headers="d735123e353" data-title="Description">The overlap of all operating hours from the account, work type, service
+                    territory, and service territory member are considered while determining time
+                    slots. For more information, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_set_up_oh.htm&amp;type=5&amp;language=en_US" target="_blank">Set Up Operating Hours in Salesforce
+                      Scheduler</a>.</td>
+
+                </tr>
+
+              </tbody>
+
+            </table></div>
+</li>
+
+        <li class="li">Only the time slots within the period of 31 days from the start date are returned.</li>
+
+        <li class="li">Salesforce Scheduler uses multiple factors, such as field values, scheduled
+          appointments, absences, Scheduler Settings, and Scheduling Policies to determine available
+          time slots, including the earliest and latest appointment slots. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_how_are_time_slots_determined.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">How Does Salesforce Scheduler
+            Determine Available Time Slots</a>.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If asset scheduling is enabled, you can
+            provide an asset-based service resource in <samp class="codeph nolang">requiredResourceIds</samp> to retrieve available timeslots for the asset
+            resource.</p>
+</div>
+</div></div></div></div>
+</li>
+
+      </ul>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getAppointmentSlots(lxscheduler.GetAppointmentSlotsInput getAppointmentSlotsInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">getAppointmentSlotsInput</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_GetAppointmentSlotsInput.htm#apex_class_lxscheduler_GetAppointmentSlotsInput" title="Contains information about the available appointment time slots for a resource based on given work type group and territories.">lxscheduler.GetAppointmentSlotsInput</a></p>
+<p class="p">This method takes input as an instance of the <samp class="codeph apex_code">lxscheduler.GetAppointmentSlotsInput</samp> class. Build the instance of the input
+            class using the <samp class="codeph apex_code">lxscheduler.GetAppointmentSlotsInputBuilder</samp> class.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: String</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_lxscheduler_SchedulerResources_setAppointmentCandidatesMock">
+<a name="apex_lxscheduler_SchedulerResources_setAppointmentCandidatesMock"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setAppointmentCandidatesMock(expectedResponse)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a mock object when running tests for the <samp class="codeph apex_code">getAppointmentCandidates</samp> method.</span></div>
+
+      <div class="section">
+         <p class="p">This constructor is intended for test usage and throws an exception if used outside of
+            the Apex test context.</p>
+
+      </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> setAppointmentCandidatesMock(<span class="keyword">String</span> expectedResponse)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">expectedResponse</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+      <p class="p">This example shows a sample implementation of the <samp class="codeph apex_code">GetAppointmentCandidates</samp> class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">public</span> <span class="keyword">class</span> AppointmentCandidateService {
+   <span class="onelineComment">//Instance members for parsing</span>
+   <span class="keyword">public</span> <span class="keyword">String</span> startTime;
+   <span class="keyword">public</span> <span class="keyword">String</span> endTime;
+   <span class="keyword">public</span> List&lt;<span class="keyword">String</span>&gt; resources; 
+   <span class="keyword">public</span> <span class="keyword">String</span> territoryId;
+   <span class="keyword">public</span> <span class="keyword">static</span> List&lt;AppointmentCandidateService&gt; getAppointmentCandidates(){
+      <span class="onelineComment">//Build input for GetAppointmentCandidates API</span>
+      lxscheduler.GetAppointmentCandidatesInput input = <span class="keyword">new</span> lxscheduler.GetAppointmentCandidatesInputBuilder()
+         .setWorkTypeGroupId(<span class="string">'0VSRM0000000AGT4A2'</span>)
+         .setTerritoryIds(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'0HhRM0000000G8W0AU'</span>})
+         .setStartTime(System.now().format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/Los_Angeles'</span>))
+         .setEndTime(System.now().addDays(2).format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/Los_Angeles'</span>))
+         .setSchedulingPolicyId(<span class="string">'0VrRM00000000D0'</span>)
+         .setApiVersion(<span class="keyword">Double</span>.valueOf(<span class="string">'50.0'</span>))
+         .build();
+      List&lt;AppointmentCandidateService&gt; vList = parse(lxscheduler.SchedulerResources.getAppointmentCandidates(input));
+      <span class="statement">return</span> vList;
+   }
+   <span class="keyword">private</span> <span class="keyword">static</span> List&lt;AppointmentCandidateService&gt; parse(<span class="keyword">String</span> json) {
+      <span class="statement">return</span> (List&lt;AppointmentCandidateService&gt;) System.JSON.deserialize(json, List&lt;AppointmentCandidateService&gt;.<span class="keyword">class</span>);
+   }
+}</pre></div>
+
+      <p class="p">This example shows how to set a sample mock using the <samp class="codeph apex_code">setAppointmentCandidatesMock</samp> method:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> GetAppointmentCandidatesTest {
+   <span class="keyword">static</span> testMethod <span class="keyword">void</span> getAppCandidatesTest() {
+      <span class="keyword">String</span> expectedResponse = <span class="string">'['</span> +
+                                    <span class="string">'  {'</span> +
+                                    <span class="string">'    \"startTime\": \"2021-03-18T16:00:00.000+0000\",'</span> +
+                                    <span class="string">'    \"endTime\": \"2021-03-18T17:00:00.000+0000\",'</span> +
+                                    <span class="string">'    \"resources\": ['</span> +
+                                    <span class="string">'      \"0HnRM0000000Fxv0AE\"'</span> +
+                                    <span class="string">'    ],'</span> +
+                                    <span class="string">'    \"territoryId\": \"0HhRM0000000G8W0AU\"'</span> +
+                                    <span class="string">'  },'</span> +
+                                    <span class="string">'  {'</span> +
+                                    <span class="string">'    \"startTime\": \"2021-03-18T19:00:00.000+0000\",'</span> +
+                                    <span class="string">'    \"endTime\": \"2021-03-18T20:00:00.000+0000\",'</span> +
+                                    <span class="string">'    \"resources\": ['</span> +
+                                    <span class="string">'      \"0HnRM0000000Fxv0AE\"'</span> +
+                                    <span class="string">'    ],'</span> +
+                                    <span class="string">'    \"territoryId\": \"0HhRM0000000G8W0AU\"'</span> +
+                                    <span class="string">'  }'</span> +
+                                    <span class="string">']'</span>;
+      lxscheduler.SchedulerResources.setAppointmentCandidatesMock(expectedResponse);
+
+      Test.startTest();
+         List&lt;AppointmentCandidateService&gt; candidateList = AppointmentCandidateService.getAppointmentCandidates();
+         System.assertEquals(2, candidateList.size(), <span class="string">'Should return only 2 records!'</span>);
+      Test.stopTest();
+   }
+}</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_lxscheduler_SchedulerResources_setAppointmentSlotsMock">
+<a name="apex_lxscheduler_SchedulerResources_setAppointmentSlotsMock"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setAppointmentSlotsMock(expectedResponse)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a mock object when running tests for the <samp class="codeph apex_code">getAppointmentSlots</samp> method.</span></div>
+
+    <div class="section">
+      <p class="p">This constructor is intended for test usage and throws an exception if used outside of the
+        Apex test context.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> setAppointmentSlotsMock(<span class="keyword">String</span> expectedResponse)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">expectedResponse</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

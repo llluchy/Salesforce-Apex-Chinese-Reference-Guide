@@ -1,0 +1,75 @@
+<a name="langCon_apex_SObject_types"><!-- --></a><h1 class="helpHead1">sObject Types</h1><div class="body">
+<div class="shortdesc">An sObject variable represents a row of data and can only be declared in Apex using
+        SOAP API name of the object.</div>
+
+        <p class="p"> For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+MyCustomObject__c co = <span class="keyword">new</span> MyCustomObject__c();
+</pre></div>
+
+        <p class="p">Similar to SOAP API, Apex allows the use of the generic sObject abstract type to
+            represent any object. The sObject data type can be used in code that processes different
+            types of sObjects.</p>
+
+        <p class="p">The <samp class="codeph apex_code"><span class="keyword">new</span></samp> operator still requires a concrete
+            sObject type, so all instances are specific sObjects. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">sObject s = <span class="keyword">new</span> Account();
+</pre></div>
+
+        <p class="p">You can also use casting between the generic sObject type and the specific sObject type.
+            For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Cast the generic variable s from the example above</span>
+<span class="onelineComment">// into a specific account and account variable a</span>
+Account a = (Account)s;
+<span class="onelineComment">// The following generates a runtime error</span>
+Contact c = (Contact)s;</pre></div>
+
+        <div class="p">Because sObjects work like objects, you can also have the
+            following:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Object</span> obj = s;
+<span class="onelineComment">// and</span>
+a = (Account)obj;</pre></div>
+</div>
+
+        <p class="p">DML operations work on variables declared as the generic sObject data type as well as
+            with regular sObjects.</p>
+
+        <p class="p">sObject variables are initialized to <samp class="codeph apex_code"><span class="keyword">null</span></samp>, but
+            can be assigned a valid object reference with the <samp class="codeph apex_code"><span class="keyword">new</span></samp> operator. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+</pre></div>
+
+        <p class="p">Developers can also specify initial field values with comma-separated <samp class="codeph apex_code">name = value</samp> pairs when instantiating a new
+            sObject. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(name = <span class="string">'Acme'</span>, billingcity = <span class="string">'San Francisco'</span>);</pre></div>
+
+        <p class="p">For information on accessing existing sObjects from the Lightning Platform database, see
+            “SOQL and SOSL Queries” in the <cite class="cite">SOQL and SOSL Reference</cite>.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The Lightning Platform assigns ID values automatically when an object record is
+            initially inserted to the database for the first time. For more information see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_lists.htm" title="A list is an ordered collection of elements that are distinguished by their indices. List elements can be of any data type—primitive types, collections, sObjects, user-defined types, and built-in Apex types.">Lists</a>.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Custom Labels</h2>
+<div class="p">
+<div class="p">Custom labels
+                aren’t standard sObjects. You can’t create a new instance of a custom label. You can
+                only access the value of a custom label using <samp class="codeph apex_code">system.label.<var class="keyword varname">label_name</var></samp>. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> errorMsg = System.Label.generic_error;</pre></div>
+</div>
+<p class="p">For
+                more information on custom labels, see “Custom Labels” in Salesforce
+                Help.</p>
+</div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

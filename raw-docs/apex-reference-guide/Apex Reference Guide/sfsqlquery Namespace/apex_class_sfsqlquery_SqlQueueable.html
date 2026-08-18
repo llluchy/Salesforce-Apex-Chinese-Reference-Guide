@@ -1,0 +1,322 @@
+<a name="apex_class_sfsqlquery_SqlQueueable"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SqlQueueable Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Abstract base class for executing long-running Data 360 SQL queries asynchronously in chained Queueable jobs. Implements <samp class="codeph ">Queueable</samp> and <samp class="codeph ">Database.AllowsCallouts</samp>. Create a concrete subclass that implements <samp class="codeph ">processDataChunk()</samp> to process each page of results and <samp class="codeph ">chainNextJob()</samp> to enqueue the next job when more data remains.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">The framework handles query submission, status polling, pagination, and job chaining automatically. Your subclass only needs to process data chunks and define how to chain the next job. Inside <samp class="codeph ">processDataChunk()</samp>, call <samp class="codeph ">getRows()</samp> to iterate results as <samp class="codeph ">Row</samp> objects, or <samp class="codeph ">getPageOutput()</samp> to access the raw <samp class="codeph ">ConnectApi.QuerySqlPageOutput</samp>. If you call <samp class="codeph ">cancel()</samp> inside <samp class="codeph ">processDataChunk()</samp>, the framework skips <samp class="codeph ">chainNextJob()</samp> automatically.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Define a concrete subclass and start a new query:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MyQueryJob <span class="keyword">extends</span> sfsqlquery.SqlQueueable {
+    <span class="keyword">public</span> MyQueryJob(sfsqlquery.SqlStatement stmt) { <span class="keyword">super</span>(stmt); }
+    <span class="keyword">public</span> MyQueryJob(sfsqlquery.QueryHandle handle) { <span class="keyword">super</span>(handle); }
+
+    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+        <span class="statement">for</span> (sfsqlquery.Row row : getRows()) {
+            System.debug(row.getString(<span class="string">'Name__c'</span>));
+        }
+    }
+
+    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> chainNextJob(sfsqlquery.QueryHandle handle) {
+        System.enqueueJob(<span class="keyword">new</span> MyQueryJob(handle));
+    }
+}
+
+<span class="onelineComment">// Start the job</span>
+sfsqlquery.SqlStatement stmt = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c, Name__c FROM accounts__dlm'</span>, <span class="string">'default'</span>);
+System.enqueueJob(<span class="keyword">new</span> MyQueryJob(stmt));</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_constructors">
+<a name="apex_sfsqlquery_SqlQueueable_constructors"><!-- --></a>
+  <h2 class="helpHead2">SqlQueueable Constructors</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are constructors for <samp class="codeph apex_code">SqlQueueable</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_ctor">
+<a name="apex_sfsqlquery_SqlQueueable_ctor"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">SqlQueueable(handle)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlQueueable</samp> subclass instance that resumes an in-progress query from a saved <samp class="codeph ">QueryHandle</samp>. Use this constructor in <samp class="codeph ">chainNextJob()</samp> to continue processing the next page.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public SqlQueueable(sfsqlquery.QueryHandle handle)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">handle</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_QueryHandle.htm#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a> <samp class="codeph ">QueryHandle</samp> tracking</p>
+<p class="p">the position and state of an in-progress query.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_ctor_2">
+<a name="apex_sfsqlquery_SqlQueueable_ctor_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">SqlQueueable(statement)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlQueueable</samp> subclass instance from a <samp class="codeph ">SqlStatement</samp> to start a new query. Pass the constructed job to <samp class="codeph ">System.enqueueJob()</samp> to begin execution.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public SqlQueueable(sfsqlquery.SqlStatement statement)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">statement</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_SqlStatement.htm#apex_class_sfsqlquery_SqlStatement" title="Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built ConnectApi.QuerySqlInput object, and then execute synchronously with SqlRowIterator or pass it to a SqlQueueable subclass for asynchronous processing.">sfsqlquery.SqlStatement</a> <samp class="codeph ">SqlStatement</samp> defining</p>
+<p class="p">the query to execute.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_methods">
+<a name="apex_sfsqlquery_SqlQueueable_methods"><!-- --></a>
+  <h2 class="helpHead2">SqlQueueable Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">SqlQueueable</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_cancel">
+<a name="apex_sfsqlquery_SqlQueueable_cancel"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">cancel()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Cancels the current query. When called inside <samp class="codeph ">processDataChunk()</samp>, the framework automatically skips <samp class="codeph ">chainNextJob()</samp>, stopping further job chaining.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void cancel()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Cancel the query based on a condition:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+    <span class="keyword">Integer</span> errorCount = 0;
+    <span class="statement">for</span> (sfsqlquery.Row row : getRows()) {
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Process row</span>
+        } <span class="statement">catch</span> (Exception e) {
+            errorCount++;
+            <span class="statement">if</span> (errorCount &gt; 10) {
+                cancel();  <span class="onelineComment">// Stop processing after too many errors</span>
+                <span class="statement">return</span>;
+            }
+        }
+    }
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_chainNextJob">
+<a name="apex_sfsqlquery_SqlQueueable_chainNextJob"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">chainNextJob(handle)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Abstract method called by the framework when more pages remain. Override this in your concrete subclass to enqueue the next job, passing the provided <samp class="codeph ">QueryHandle</samp> to the next job's constructor.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public abstract void chainNextJob(sfsqlquery.QueryHandle handle)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">handle</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_QueryHandle.htm#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a> <samp class="codeph ">QueryHandle</samp> tracking</p>
+<p class="p">the current query state, including position for the next page. Pass this to your next job's constructor.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_getColumnNames">
+<a name="apex_sfsqlquery_SqlQueueable_getColumnNames"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getColumnNames()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the ordered list of column names from the current data chunk. Call this inside <samp class="codeph ">processDataChunk()</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;String&gt; getColumnNames()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List&lt;String&gt;</a></p>
+<p class="p">An ordered list of column names as they appear in the result set.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">See <a class="xref" href="#apex_sfsqlquery_SqlQueueable_getMetadata" title="Returns the column metadata for the current data chunk, including column names and data types. Call this inside processDataChunk().">getMetadata()</a> for a combined example.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_getMetadata">
+<a name="apex_sfsqlquery_SqlQueueable_getMetadata"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getMetadata()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the column metadata for the current data chunk, including column names and data types. Call this inside <samp class="codeph ">processDataChunk()</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;ConnectApi.QuerySqlMetadataItem&gt; getMetadata()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_metadata_item.htm" title="Represents the metadata associated with an SQL query output.">List&lt;ConnectApi.QuerySqlMetadataItem&gt;</a></p>
+<p class="p">A list of <samp class="codeph ">ConnectApi.QuerySqlMetadataItem</samp> objects describing each column's name and data type.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use metadata and column names for dynamic column handling:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+    List&lt;<span class="keyword">String</span>&gt; columns = getColumnNames();
+    List&lt;ConnectApi.QuerySqlMetadataItem&gt; metadata = getMetadata();
+
+    System.debug(<span class="string">'Query returned '</span> + columns.size() + <span class="string">' columns'</span>);
+    <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; metadata.size(); i++) {
+        System.debug(columns[i] + <span class="string">' ('</span> + metadata[i].type + <span class="string">')'</span>);
+    }
+
+    <span class="onelineComment">// Process rows using the metadata</span>
+    <span class="statement">for</span> (sfsqlquery.Row row : getRows()) {
+        <span class="statement">for</span> (<span class="keyword">String</span> columnName : columns) {
+            <span class="keyword">Object</span> value = row.getObject(columnName);
+            System.debug(columnName + <span class="string">': '</span> + value);
+        }
+    }
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_getPageOutput">
+<a name="apex_sfsqlquery_SqlQueueable_getPageOutput"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getPageOutput()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the raw <samp class="codeph ">ConnectApi.QuerySqlPageOutput</samp> for the current page. Use this inside <samp class="codeph ">processDataChunk()</samp> when you need direct access to the underlying API response instead of <samp class="codeph ">Row</samp> objects.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public ConnectApi.QuerySqlPageOutput getPageOutput()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_page.htm" title="Represents the rows output for an SQL query.">ConnectApi.QuerySqlPageOutput</a></p>
+<p class="p">The raw <samp class="codeph ">ConnectApi.QuerySqlPageOutput</samp> for the current page.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Access raw API response for custom processing:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+    ConnectApi.QuerySqlPageOutput output = getPageOutput();
+    System.debug(<span class="string">'Page size: '</span> + output.rows.size());
+    System.debug(<span class="string">'Done: '</span> + output.done);
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_getQueryId">
+<a name="apex_sfsqlquery_SqlQueueable_getQueryId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getQueryId()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the server-assigned ID for this query. Save this value to resume the query in a later job using <samp class="codeph ">QueryHandle.create()</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getQueryId()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The server-assigned query ID string.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Save the query ID to resume later:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+    <span class="keyword">String</span> queryId = getQueryId();
+    <span class="onelineComment">// Store queryId in a custom object or platform cache</span>
+    MyQueryState__c state = <span class="keyword">new</span> MyQueryState__c(QueryId__c = queryId);
+    <span class="statement">insert</span> state;
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_getRows">
+<a name="apex_sfsqlquery_SqlQueueable_getRows"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getRows()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the rows in the current data chunk as an iterable of <samp class="codeph ">Row</samp> objects. Call this inside <samp class="codeph ">processDataChunk()</samp> to iterate over the page with typed accessor methods.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Iterable&lt;sfsqlquery.Row&gt; getRows()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">Iterable</a></p>
+<p class="p">An iterable of <samp class="codeph ">Row</samp> objects for the current page.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Iterate over rows and insert records:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> processDataChunk() {
+    List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;();
+    <span class="statement">for</span> (sfsqlquery.Row row : getRows()) {
+        accounts.add(<span class="keyword">new</span> Account(
+            Name = row.getString(<span class="string">'Name__c'</span>),
+            AnnualRevenue = row.getDecimal(<span class="string">'Revenue__c'</span>)
+        ));
+    }
+    <span class="statement">insert</span> accounts;
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_processDataChunk">
+<a name="apex_sfsqlquery_SqlQueueable_processDataChunk"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">processDataChunk()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Abstract method called by the framework with each page of query results. Override this in your concrete subclass to process the data chunk. Use <samp class="codeph ">getRows()</samp> or <samp class="codeph ">getPageOutput()</samp> to access the current page's data.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public abstract void processDataChunk()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlQueueable_toString">
+<a name="apex_sfsqlquery_SqlQueueable_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of this <samp class="codeph ">SqlQueueable</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A string representation of this <samp class="codeph ">SqlQueueable</samp>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

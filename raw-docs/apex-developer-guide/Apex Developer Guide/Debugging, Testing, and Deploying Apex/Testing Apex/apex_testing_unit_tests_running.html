@@ -1,0 +1,314 @@
+<a name="apex_testing_unit_tests_running"><!-- --></a><h1 class="helpHead1">Run Unit Test Methods</h1><div class="body">
+<div class="shortdesc">To verify the functionality of your Apex code, execute unit tests. You can run Apex
+        test methods in the Developer Console, in Setup, in the Salesforce extensions for Visual
+        Studio Code, or using the API.</div>
+
+        <p class="p">You can run these groupings of unit tests.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">Some or all methods in a specific class</li>
+
+            <li class="li">Some or all methods in a set of classes</li>
+
+            <li class="li">A predefined suite of classes, known as a test suite</li>
+
+            <li class="li">All unit tests in your org</li>
+
+        </ul>
+
+        <p class="p">To run a test, use any of the following:</p>
+
+        <ul class="ul bulletList">
+            <li class="li"><a class="xref" href="#UISectionTitle">Running Tests Through the Salesforce User Interface</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/tools/vscode" target="_blank">Salesforce extensions for Visual Studio
+                    Code and Code Builder</a></li>
+
+            <li class="li"><a class="xref" href="#DevConsoleTestsRunningSectionTitle">Developer Console</a></li>
+
+            <li class="li"><a class="xref" href="#APISectionTitle">The API</a></li>
+
+        </ul>
+
+        <p class="p">All Apex tests that are started from the Salesforce user interface (including the
+            Developer Console) run asynchronously and in parallel. Apex test classes are placed in
+            the Apex job queue for execution. The maximum number of test classes that you can run
+            per 24-hour period is the greater of 500 or 10 multiplied by the number of test classes
+            in the org. For sandbox and Developer Edition organizations, this limit is higher and is
+            the greater of 500 or 20 multiplied by the number of test classes in the org.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex tests that run as part of a deployment always run synchronously and
+            serially.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section" id="UISectionTitle">
+<a name="UISectionTitle"><!-- --></a><h2 class="helpHead2">Running Tests Through the Salesforce User Interface</h2>
+
+            
+            <div class="p">You can run unit tests on the Application Test Execution page. Tests started on this
+                page run asynchronously, that is, you don't have to wait for a test class execution
+                to finish. The Application Test Execution page refreshes the status of a test and
+                displays the results after the test completes.<div class="fig fignone">
+                    <img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fapplication_test_execution.png&folder=apexcode" alt="Apex Test Execution Page">
+                </div>
+</div>
+
+            <ol class="ol enumList">
+                <li class="li">From Setup, enter <kbd class="ph userinput">Application Test Execution</kbd> in the
+                        <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">Application Test
+                        Execution</strong>.</li>
+
+                <li class="li">Click <strong class="ph uicontrol">Select Tests...</strong>. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If you have
+                        Apex classes that are installed from a managed package, you must compile
+                        these classes first by clicking <strong class="ph uicontrol">Compile all classes</strong>
+                        on the Apex Classes page so that they appear in the list.</p>
+</div>
+</div></div></div></div>
+</li>
+
+                <li class="li">Select the tests to run. The list of tests includes only classes that contain
+                    test methods.<ul class="ul bulletList">
+                        <li class="li">To select tests from an installed managed package, select the managed
+                            package’s corresponding namespace from the dropdown list. Only the
+                            classes of the managed package with the selected namespace appear in the
+                            list.</li>
+
+                        <li class="li">To select tests that exist locally in your organization, select
+                                <strong class="ph uicontrol">[My Namespace]</strong> from the dropdown list. Only
+                            local classes that aren't from managed packages appear in the list.</li>
+
+                        <li class="li">To select any test, select <strong class="ph uicontrol">[All Namespaces]</strong> from
+                            the dropdown list. All the classes in the organization appear, even
+                            those in a managed package.</li>
+
+                    </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Classes with tests currently running don't appear in the
+                    list.</p>
+</div>
+</div></div></div></div>
+</li>
+
+                <li class="li">To opt out of collecting code coverage information during test runs, select
+                        <strong class="ph uicontrol">Skip Code Coverage</strong>.</li>
+
+                <li class="li">Click <strong class="ph uicontrol">Run</strong>.</li>
+
+            </ol>
+
+            <p class="p">After you run tests using the Application Test Execution page, you can view code
+                coverage details in the Developer Console. </p>
+
+            <p class="p">From Setup, enter <kbd class="ph userinput">Application</kbd> in the <span class="keyword parmname">Quick
+                    Find</span> box, select <strong class="ph uicontrol">Application Test Execution</strong>,
+                then click <strong class="ph uicontrol">View Test History</strong> to view all test results for
+                your organization, not just tests that you have run. Test results are retained for
+                30 days after they finish running, unless cleared. </p>
+
+        </div>
+
+        <div class="section" id="ForcecomIDESectionTitle">
+<a name="ForcecomIDESectionTitle"><!-- --></a><h2 class="helpHead2">Running Tests Using the Salesforce Extensions for Visual Studio Code</h2>
+
+            
+            <p class="p">You can execute tests with Visual Studio Code. See <a class="xref" href="https://developer.salesforce.com/tools/vscode" target="_blank">Salesforce Extensions for Visual Studio
+                    Code and Code Builder</a>.</p>
+
+        </div>
+
+        <div class="section" id="DevConsoleTestsRunningSectionTitle">
+<a name="DevConsoleTestsRunningSectionTitle"><!-- --></a><h2 class="helpHead2">Running Tests Using the Developer Console</h2>
+
+            
+            <p class="p">In the Developer Console, you can execute some or all tests in specific test classes,
+                set up and run test suites, or run all tests. The Developer Console runs tests
+                asynchronously in the background, unless your test run includes only one class and
+                you’ve not chosen <strong class="ph uicontrol">Always Run Asynchronously</strong> in the Test menu.
+                Running tests asynchronously lets you work in other areas of the Developer Console
+                while tests are running. After the tests execute, you can inspect the test results
+                in the Developer Console. Also, you can inspect the overall code coverage for
+                classes covered by the tests.</p>
+
+            <p class="p">For more information, see the Developer Console documentation in Salesforce Help.
+            </p>
+
+        </div>
+
+        <div class="section" id="APISectionTitle">
+<a name="APISectionTitle"><!-- --></a><h2 class="helpHead2">Running Tests Using the API</h2>
+
+            
+            <div class="p">You can use the <samp class="codeph nolang">runTests()</samp> call from SOAP API to
+                run tests
+                synchronously.<div class="codeSection apex_code"><pre class="codeblock brush:apex">RunTestsResult[] runTests(RunTestsRequest ri)</pre></div>
+</div>
+
+            <p class="p">This call allows you to run the following, as specified in the RunTestsRequest
+                object:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">All tests in all classes</li>
+
+                <li class="li">All tests in a specific namespace</li>
+
+                <li class="li">All tests in a subset of classes in a specific namespace</li>
+
+            </ul>
+
+            <p class="p">It returns the following:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Total number of tests that ran</li>
+
+                <li class="li">Code coverage statistics</li>
+
+                <li class="li">Error information for each failed test</li>
+
+                <li class="li">Information for each test that succeeds</li>
+
+                <li class="li">Time it took to run the test</li>
+
+            </ul>
+
+            <p class="p">For more information on <samp class="codeph nolang">runTests()</samp>, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_calls_runtests.htm" target="_blank" title="HTML (New Window)"><samp class="codeph nolang">runTests()</samp></a> in the <cite class="cite">SOAP API
+                    Developer Guide</cite>.</p>
+
+            <p class="p">You can also run tests using the Tooling REST API. Use the <samp class="codeph nolang">/runTestsAsynchronous/</samp> and <samp class="codeph nolang">/runTestsSynchronous/</samp> endpoints to run tests
+                asynchronously or synchronously. For usage details, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_tooling.meta/api_tooling/intro_rest_overview.htm" target="_blank" title="HTML (New Window)"><em class="ph i">Tooling API</em>: REST
+                    Resources</a>.</p>
+
+        </div>
+
+        <div class="section" id="ApexTestQueueItemSection">
+<a name="ApexTestQueueItemSection"><!-- --></a><h2 class="helpHead2">Running Tests Using <span class="titlecodeph">ApexTestQueueItem</span>
+</h2>
+
+            
+            <p class="p">You can run tests asynchronously using <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_apextestqueueitem.htm" target="_blank" title="HTML (New Window)"><samp class="codeph nolang">ApexTestQueueItem</samp></a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_apextestresult.htm" target="_blank" title="HTML (New Window)"><samp class="codeph nolang">ApexTestResult</samp></a>. These objects let you
+                add tests to the Apex job queue and check the results of the completed test runs.
+                This process enables you to not only start tests asynchronously but also schedule
+                your tests to execute at specific times by using the Apex scheduler. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_scheduler.htm" title="Use the Apex Scheduler to delay execution so that you can run Apex classes at a specified time. This is ideal for daily or weekly maintenance tasks using Batch Apex.">Apex Scheduler</a> for more information.</p>
+
+            <p class="p">Insert an <samp class="codeph nolang">ApexTestQueueItem</samp> object to place its
+                corresponding Apex class in the Apex job queue for execution. The Apex job executes
+                the test methods in the class. After the job executes, <samp class="codeph nolang">ApexTestResult</samp> contains the result for each single test method
+                executed as part of the test. </p>
+
+            <p class="p"><samp class="codeph ">ApexTestResult</samp> rows are also generated for Apex
+                tests run with the <samp class="codeph ">@testSetup</samp> annotation. The
+                    <samp class="codeph ">IsTestSetup</samp> field is set to <samp class="codeph nolang">true</samp> for these annotated tests to distinguish them
+                from other test methods. The <samp class="codeph nolang">TestSetupTime</samp>
+                field on <samp class="codeph ">ApexTestRunResult</samp> tracks the cumulative
+                time of all setup methods for the given <samp class="codeph ">ApexTestRunResult</samp>.</p>
+
+            <p class="p">To abort a class that is in the Apex job queue, perform an update operation on the
+                ApexTestQueueItem object and set its <span class="keyword parmname">Status</span> field to
+                    <kbd class="ph userinput">Aborted</kbd>.</p>
+
+            <p class="p">If you insert multiple Apex test queue items in a single bulk operation, the queue
+                items share a parent job and a test run can execute tests for several classes.</p>
+
+            <p class="p">The maximum number of test queue items, and hence classes, that you can insert in the
+                Apex job queue is the greater of 500 or 10 multiplied by the number of test classes
+                in the org. For sandbox and Developer Edition organizations, this limit is higher
+                and is the greater of 500 or 20 multiplied by the number of test classes in the
+                org.</p>
+
+            <p class="p">You may observe slower async test execution time when compilation is required, for
+                example when tests are run after altering an Apex class. This is because parallel
+                test execution is restricted to one job until compilation is completed. If you
+                have Apex code in your org that is referenced by queued tests and fails to
+                compile, you will be limited to the one concurrent job. You must ensure that Apex
+                code in your org compiles successfully.</p>
+
+            <div class="p">This example uses DML operations to insert and query the <samp class="codeph nolang">ApexTestQueueItem</samp> and <samp class="codeph nolang">ApexTestResult</samp> objects. The <samp class="codeph apex_code">enqueueTests</samp> method inserts queue items for all classes that end with
+                Test. It then returns the parent job ID of one queue item, which is the same for all
+                queue items because they were inserted in bulk. The <samp class="codeph apex_code">checkClassStatus</samp> method retrieves all queue items that correspond to
+                the specified job ID. It then queries and outputs the name, job status, and pass
+                rate for each class. The <samp class="codeph apex_code">checkMethodStatus</samp>
+                method gets information of each test method that was executed as part of the
+                job.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> TestUtil {
+
+    <span class="onelineComment">// Enqueue all classes ending in "Test". </span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span> enqueueTests() {
+        ApexClass[] testClasses = 
+           [SELECT Id FROM ApexClass 
+            WHERE Name LIKE <span class="string">'%Test'</span>];
+        <span class="statement">if</span> (testClasses.size() &gt; 0) {
+            ApexTestQueueItem[] queueItems = <span class="keyword">new</span> List&lt;ApexTestQueueItem&gt;();
+            <span class="statement">for</span> (ApexClass cls : testClasses) {
+                queueItems.add(<span class="keyword">new</span> ApexTestQueueItem(ApexClassId=cls.Id));
+            }
+
+            <span class="statement">insert</span> queueItems;
+
+            <span class="onelineComment">// Get the job ID of the first queue item returned.</span>
+            ApexTestQueueItem <span class="statement">item</span> = 
+               [SELECT ParentJobId FROM ApexTestQueueItem 
+                WHERE Id=:queueItems[0].Id LIMIT 1];
+            <span class="statement">return</span> <span class="statement">item</span>.parentjobid;
+        }
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+
+    <span class="onelineComment">// Get the status and pass rate for each class</span>
+    <span class="onelineComment">// whose tests were run by the job.</span>
+    <span class="onelineComment">// that correspond to the specified job ID.</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> checkClassStatus(<span class="keyword">ID</span> jobId) {
+        ApexTestQueueItem[] items = 
+           [SELECT ApexClass.Name, Status, ExtendedStatus 
+            FROM ApexTestQueueItem 
+            WHERE ParentJobId=:jobId];
+        <span class="statement">for</span> (ApexTestQueueItem <span class="statement">item</span> : items) {
+            <span class="keyword">String</span> extStatus = <span class="statement">item</span>.extendedstatus == <span class="keyword">null</span> ? <span class="string">''</span> : <span class="statement">item</span>.extendedStatus;
+            System.debug(<span class="statement">item</span>.ApexClass.Name + <span class="string">': '</span> + <span class="statement">item</span>.Status + extStatus);
+        }
+    }
+
+    <span class="onelineComment">// Get the result for each test method that was executed.</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> checkMethodStatus(<span class="keyword">ID</span> jobId) {
+        ApexTestResult[] results = 
+           [SELECT Outcome, ApexClass.Name, MethodName, Message, StackTrace 
+            FROM ApexTestResult 
+            WHERE AsyncApexJobId=:jobId];
+        <span class="statement">for</span> (ApexTestResult atr : results) {
+            System.debug(atr.ApexClass.Name + <span class="string">'.'</span> + atr.MethodName + <span class="string">': '</span> + atr.Outcome);
+            <span class="statement">if</span> (atr.message != <span class="keyword">null</span>) {
+                System.debug(atr.Message + <span class="string">'\n at '</span> + atr.StackTrace);
+            }
+        }
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_runas.htm">Using the runAs Method</a><br>
+Generally, all Apex code runs in user mode, where the object-level and field-level       permissions of the current user are enforced. With the System method <samp class="codeph apex_code">runAs</samp>, you can write test methods that change the user       context to an existing user or a new user. Then that user’s sharing rules and object-level and       field-level permissions are enforced.</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_start_stop_test.htm">Using Limits, startTest , and stopTest</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_SOSL.htm">Adding SOSL Queries to Unit Tests</a><br>
+</li>
+</ol>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_code_coverage_intro.htm" title="The Apex testing framework generates code coverage numbers for your Apex classes and triggers every time you run one or more tests. Code coverage indicates how many executable lines of code in your classes and triggers have been exercised by test methods. Write test methods to test your triggers and classes, and then run those tests to generate code coverage information.">Testing and Code Coverage</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_dev_console_opening.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Open the Developer Console</a></div></li>
+</ul>
+</div>
+</div>

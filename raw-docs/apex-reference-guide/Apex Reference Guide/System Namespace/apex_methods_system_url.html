@@ -1,0 +1,861 @@
+<a name="apex_methods_system_url"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">URL Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Represents a uniform resource locator (URL) and provides access to parts of the URL.
+        Enables access to the base URL used to access your Salesforce org.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p" id="URLUsage">
+<a name="URLUsage"><!-- --></a>Use the methods of the <samp class="codeph apex_code">System.URL</samp> class to
+                                create links to objects in your organization. Such objects can be
+                                files, images, logos, or records that you want to include in
+                                external emails, in activities, or in Chatter posts. For example,
+                                you can create a link to a file uploaded as an attachment to a
+                                Chatter post by concatenating the Salesforce base URL with the file
+                                ID:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get a file uploaded through Chatter.</span>
+ContentDocument doc = [SELECT Id FROM ContentDocument 
+          WHERE Title = <span class="string">'myfile'</span> WITH USER_MODE];
+<span class="onelineComment">// Create a link to the file.</span>
+<span class="keyword">String</span> fullFileURL = URL.getOrgDomainURL().toExternalForm() +
+   <span class="string">'/'</span> + doc.id;
+System.debug(fullFileURL);</pre></div>
+</div>
+<div class="p" id="URLUsageExample2">
+<a name="URLUsageExample2"><!-- --></a>The following example creates a link to a Salesforce record. The full URL
+                                is created by concatenating the Salesforce base URL with the record
+                                ID.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account acct = [SELECT Id FROM Account WHERE Name = <span class="string">'Acme'</span> WITH USER_MODE LIMIT 1];
+<span class="keyword">String</span> fullRecordURL = URL.getOrgDomainURL().toExternalForm() + <span class="string">'/'</span> + acct.Id;</pre></div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">In this example, the base URL and the full request URL of the current Salesforce server instance
+                                are retrieved. Next, a URL pointing to a specific account object is
+                                created. Finally, components of the base and full URL are obtained.
+                                This example prints out all the results to the debug log
+                                output.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a new account called Acme that we will create a link for later.</span>
+Account myAccount = <span class="keyword">new</span> Account(Name=<span class="string">'Acme'</span>);
+<span class="statement">insert</span> <span class="statement">as</span> user myAccount;
+
+<span class="onelineComment">// Get the base URL.</span>
+<span class="keyword">String</span> sfdcBaseURL = URL.getOrgDomainURL().toExternalForm();
+System.debug(<span class="string">'Base URL: '</span> + sfdcBaseURL );       
+
+<span class="onelineComment">// Get the URL for the current request.</span>
+<span class="keyword">String</span> currentRequestURL = URL.getCurrentRequestUrl().toExternalForm();
+System.debug(<span class="string">'Current request URL: '</span> + currentRequestURL);        
+
+<span class="onelineComment">// Create the account URL from the base URL.</span>
+<span class="keyword">String</span> accountURL = URL.getOrgDomainURL().toExternalForm() + 
+                       <span class="string">'/'</span> + myAccount.Id;
+System.debug(<span class="string">'URL of a particular account: '</span> + accountURL); 
+
+<span class="onelineComment">// Get some parts of the base URL.</span>
+System.debug(<span class="string">'Host: '</span> + URL.getOrgDomainURL().getHost());   
+System.debug(<span class="string">'Protocol: '</span> + URL.getOrgDomainURL().getProtocol());
+
+<span class="onelineComment">// Get the query string of the current request.</span>
+System.debug(<span class="string">'Query: '</span> + URL.getCurrentRequestUrl().getQuery());</pre></div>
+</div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+   
+   <p class="p">In API version 41.0 and later, Apex URL objects are represented by the <samp class="codeph apex_code">java.net.URI</samp> type, not the <samp class="codeph apex_code">java.net.URL</samp> type. The API version in which the URL object was instantiated
+        determines the behavior of subsequent method calls to the specific instance. Salesforce
+        strongly encourages you to use API 41.0 and later versions for fully RFC-compliant URL
+        parsing that includes proper handling of edge cases of complex URL structures. API 41.0 and
+        later versions also enforce that inputs are valid, RFC-compliant URL or URI strings.</p>
+
+  </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_constructors">URL Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_methods">URL Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_System_DomainCreator.htm#apex_class_System_DomainCreator" title="Use the DomainCreator class to return a hostname specific to the org. For example, get the org’s Visualforce hostname. Values are returned as a hostname, such as MyDomainName.lightning.force.com.">DomainCreator Class</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_URL_constructors">
+<a name="apex_System_URL_constructors"><!-- --></a>
+<h2 class="helpHead2">URL Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">URL</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_ctor_4">Url(spec)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified string representation of the URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_ctor_3">Url(context, spec)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">URL</samp> class by parsing the specified spec within the specified context.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_ctor_2">Url(protocol, host, file)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified protocol, host, and  file on the host. The default port for the specified protocol is used. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_ctor">Url(protocol, host, port, file)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified protocol, host, port, and file on the host.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Url_ctor_4">
+<a name="apex_System_Url_ctor_4"><!-- --></a>
+<h3 class="helpHead3">Url(spec)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified string representation of the
+URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Url(<span class="keyword">String</span> spec)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">spec</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string to parse as a URL.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Url_ctor_3">
+<a name="apex_System_Url_ctor_3"><!-- --></a>
+<h3 class="helpHead3">Url(context, spec)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">URL</samp> class by parsing the specified spec within the specified
+context.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Url(Url context, <span class="keyword">String</span> spec)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>: Type: <a class="xref" href="#apex_methods_system_url" title="Represents a uniform resource locator (URL) and provides access to parts of the URL. Enables access to the base URL used to access your Salesforce org.">URL</a> The context in which to parse the specification.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">spec</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string to parse as a URL.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The new URL is created from the given
+context URL and the spec argument as described in RFC2396 "Uniform
+Resource Identifiers : Generic * Syntax" :<div class="codeSection nolang"><pre class="codeblock brush:plain">&lt;scheme&gt;://&lt;authority&gt;&lt;path&gt;?&lt;query&gt;#&lt;fragment&gt;</pre></div>
+</div>
+<p class="p">For more information about the arguments of this constructor,
+see the corresponding <a class="xref" href="http://download.oracle.com/javase/6/docs/api/java/net/URL.html#URL%28java.net.URL,%20java.lang.String%29" target="_blank" title="HTML (New Window)">URL(java.net.URL, java.lang.String)</a> constructor for Java.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Url_ctor_2">
+<a name="apex_System_Url_ctor_2"><!-- --></a>
+<h3 class="helpHead3">Url(protocol, host, file)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified protocol, host, and  file
+on the host. The default port for the specified protocol is used. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Url(<span class="keyword">String</span> protocol, <span class="keyword">String</span> host, <span class="keyword">String</span>
+file)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">protocol</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The protocol name for this URL.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">host</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The host name for this URL.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">file</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The file name for this URL.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Url_ctor">
+<a name="apex_System_Url_ctor"><!-- --></a>
+<h3 class="helpHead3">Url(protocol, host, port, file)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">URL</samp> class using the specified protocol, host, port, and
+file on the host.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Url(<span class="keyword">String</span> protocol, <span class="keyword">String</span> host, <span class="keyword">Integer</span>
+port, <span class="keyword">String</span> file)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">protocol</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The protocol name for this URL.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">host</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The host name for this URL.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">port</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The port number for this URL.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">file</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The file name for this URL.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_URL_methods">
+<a name="apex_System_URL_methods"><!-- --></a>
+<h2 class="helpHead2">URL Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">URL</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getAuthority">getAuthority()</a></strong><br>
+Returns the authority portion of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getCurrentRequestUrl">getCurrentRequestUrl()</a></strong><br>
+Returns the URL of an entire request on a Salesforce instance.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getDefaultPort">getDefaultPort()</a></strong><br>
+Returns the default port number of the protocol associated  with the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getFile">getFile()</a></strong><br>
+Returns the file name of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getFileFieldURL">getFileFieldURL(entityId, fieldName)</a></strong><br>
+Returns the download URL for a file attachment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getHost">getHost()</a></strong><br>
+Returns the host name of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_getOrgDomainUrl">getOrgDomainUrl()</a></strong><br>
+Returns the canonical URL for your org. For example,           <span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.my.salesforce.com</span>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getPath">getPath()</a></strong><br>
+Returns the path portion of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getPort">getPort()</a></strong><br>
+Returns the port of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getProtocol">getProtocol()</a></strong><br>
+Returns the protocol name of the current URL, such as, <samp class="codeph nolang">https</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getQuery">getQuery()</a></strong><br>
+Returns the query portion of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getRef">getRef()</a></strong><br>
+Returns the anchor of the current URL. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getSalesforceBaseUrl">getSalesforceBaseUrl()</a></strong><br>
+In API version 59.0 and later, this method is deprecated and versioned out. Use     getOrgDomainUrl() to get the canonical URL for your org or use getCurrentRequestUrl() to get the     URL of an entire request on a Salesforce instance. Returns the URL of the current connection       to the Salesforce org.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_getUserInfo">getUserInfo()</a></strong><br>
+Gets the UserInfo portion of the current URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_sameFile">sameFile(URLToCompare)</a></strong><br>
+Compares the current URL with the specified URL object, excluding the fragment component.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_URL_toExternalForm">toExternalForm()</a></strong><br>
+Returns a string representation of the current URL.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getAuthority">
+<a name="apex_System_URL_getAuthority"><!-- --></a>
+<h3 class="helpHead3">getAuthority()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the authority portion of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getAuthority()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getCurrentRequestUrl">
+<a name="apex_System_URL_getCurrentRequestUrl"><!-- --></a>
+<h3 class="helpHead3">getCurrentRequestUrl()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the URL of an entire request on a Salesforce instance.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.URL getCurrentRequestUrl()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code">System.URL</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+            
+            <p class="p">An example of a URL for an entire request is
+                        <span class="ph filepath">https://<var class="keyword varname">yourInstance</var>.salesforce.com/apex/myVfPage.apexp</span>.</p>
+
+        </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getDefaultPort">
+<a name="apex_System_URL_getDefaultPort"><!-- --></a>
+<h3 class="helpHead3">getDefaultPort()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the default port number of the protocol associated
+ with the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getDefaultPort()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Returns -1 if the URL scheme
+or the stream  protocol handler for the URL doesn't define a default
+port number.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getFile">
+<a name="apex_System_URL_getFile"><!-- --></a>
+<h3 class="helpHead3">getFile()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the file name of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getFile()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getFileFieldURL">
+<a name="apex_System_URL_getFileFieldURL"><!-- --></a>
+<h3 class="helpHead3">getFileFieldURL(entityId, fieldName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the download URL for a file attachment.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getFileFieldURL(<span class="keyword">String</span>
+entityId, <span class="keyword">String</span> fieldName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">entityId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Specifies the ID of the entity that holds the file data.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">fieldName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Specifies the API name of a file field component, such as <samp class="codeph apex_code">AttachmentBody</samp>.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Example:</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> fileURL = 
+  URL.getFileFieldURL(
+    <span class="string">'087000000000123'</span> ,
+    <span class="string">'AttachmentBody'</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getHost">
+<a name="apex_System_URL_getHost"><!-- --></a>
+<h3 class="helpHead3">getHost()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the host name of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getHost()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Url_getOrgDomainUrl">
+<a name="apex_System_Url_getOrgDomainUrl"><!-- --></a>
+  <h3 class="helpHead3">getOrgDomainUrl()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the canonical URL for your org. For example,
+          <span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.my.salesforce.com</span>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.Url getOrgDomainUrl()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code">System.URL</samp></p>
+
+      <p class="p"><samp class="codeph apex_code">getOrgDomainUrl()</samp> always returns the login URL for
+        your org, regardless of context. Use that URL when making API calls to your org.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use <samp class="codeph apex_code">getOrgDomainUrl()</samp> to interact with Salesforce
+        REST and SOAP APIs in Apex code. Get endpoints for User Interface API calls, for creating
+        and customizing picklist value sets and custom fields, and more.</p>
+
+      <p class="p"><samp class="codeph apex_code">getOrgDomainUrl()</samp> can access the domain URL only
+        for the org in which the Apex code is running.</p>
+
+      <p class="p">You don't need a RemoteSiteSetting for your org to interact with the Salesforce APIs using
+        domain URLs retrieved with this method.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p" id="example_clone_record_sentence"><a name="example_clone_record_sentence"><!-- --></a>This example uses the Salesforce REST API to get
+        organization limit values. For information on limits, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/resources_limits.htm" target="_blank" title="HTML (New Window)"> Limits</a>
+        in the <cite class="cite">REST API Developer Guide</cite>.</p>
+
+      <div class="p" id="example_clone_record">
+<a name="example_clone_record"><!-- --></a>
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Http h = <span class="keyword">new</span> Http();
+HttpRequest req = <span class="keyword">new</span> HttpRequest();  
+req.setEndpoint(Url.getOrgDomainUrl().toExternalForm()
+   + <span class="string">'/services/data/v44.0/limits'</span>);
+req.setMethod(<span class="string">'GET'</span>);
+req.setHeader(<span class="string">'Authorization'</span>, <span class="string">'Bearer '</span> + UserInfo.getSessionId());
+HttpResponse res = h.send(req);</pre></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.lightning.meta/lightning/apex_api_calls.htm" target="_blank" title="Lightning Aura Components Developer Guide: Making API Calls from
+       Apex - HTML (New Window)"><em class="ph i">Lightning Aura Components Developer Guide</em>: Making API Calls from
+       Apex</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.uiapi.meta/uiapi/ui_api_resources_record_defaults_clone.htm" target="_blank" title="User Interface API Developer Guide: Get Default Values to Clone a
+       Record - HTML (New Window)"><em class="ph i">User Interface API Developer Guide</em>: Get Default Values to Clone a
+       Record</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.uiapi.meta/uiapi/ui_api_resources_picklist_values.htm" target="_blank" title="User Interface API Developer Guide: Get Values for a Picklist
+       Field - HTML (New Window)"><em class="ph i">User Interface API Developer Guide</em>: Get Values for a Picklist
+       Field</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.uiapi.meta/uiapi/ui_api_resources_overview.htm" target="_blank" title="User Interface API Developer Guide: User Inteface API Resources - HTML (New Window)"><em class="ph i">User Interface API Developer Guide</em>: User Inteface API Resources</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getPath">
+<a name="apex_System_URL_getPath"><!-- --></a>
+<h3 class="helpHead3">getPath()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the path portion of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getPath()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getPort">
+<a name="apex_System_URL_getPort"><!-- --></a>
+<h3 class="helpHead3">getPort()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the port of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getPort()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getProtocol">
+<a name="apex_System_URL_getProtocol"><!-- --></a>
+<h3 class="helpHead3">getProtocol()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the protocol name of the current URL, such as, <samp class="codeph nolang">https</samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getProtocol()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getQuery">
+<a name="apex_System_URL_getQuery"><!-- --></a>
+<h3 class="helpHead3">getQuery()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the query portion of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getQuery()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if no query portion exists.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getRef">
+<a name="apex_System_URL_getRef"><!-- --></a>
+<h3 class="helpHead3">getRef()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the anchor of the current URL. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getRef()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if no query portion exists.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getSalesforceBaseUrl">
+<a name="apex_System_URL_getSalesforceBaseUrl"><!-- --></a>
+  <h3 class="helpHead3">getSalesforceBaseUrl()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">In API version 59.0 and later, this method is deprecated and versioned out. Use
+    getOrgDomainUrl() to get the canonical URL for your org or use getCurrentRequestUrl() to get the
+    URL of an entire request on a Salesforce instance. Returns the URL of the current connection
+      to the Salesforce org.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.URL getSalesforceBaseUrl()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code">System.URL</samp></p>
+
+      <p class="p">Returns the URL for the current connection: for example,
+            <span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.my.salesforce.com</span> or
+            <span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.lightning.force.com</span>.</p>
+
+    </div>
+
+  </div>
+
+  
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_url.htm#apex_System_Url_getOrgDomainUrl" title="Returns the canonical URL for your org. For example, https://MyDomainName.my.salesforce.com.">getOrgDomainUrl()</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_getUserInfo">
+<a name="apex_System_URL_getUserInfo"><!-- --></a>
+<h3 class="helpHead3">getUserInfo()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the UserInfo portion of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getUserInfo()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if no UserInfo portion exists.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_sameFile">
+<a name="apex_System_URL_sameFile"><!-- --></a>
+<h3 class="helpHead3">sameFile(URLToCompare)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Compares the current URL with the specified URL object,
+excluding the fragment component.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> sameFile(System.URL URLToCompare)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">URLToCompare</var></strong>: Type: <a class="xref" href="#apex_methods_system_url" title="Represents a uniform resource locator (URL) and provides access to parts of the URL. Enables access to the base URL used to access your Salesforce org.">System.URL</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if both URL
+objects reference the same remote resource; otherwise,  returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">For more information about
+the syntax of URIs and fragment components, see <a class="xref" href="http://tools.ietf.org/html/rfc3986" target="_blank" title="HTML (New Window)">RFC3986</a>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_URL_toExternalForm">
+<a name="apex_System_URL_toExternalForm"><!-- --></a>
+<h3 class="helpHead3">toExternalForm()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of the current URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toExternalForm()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

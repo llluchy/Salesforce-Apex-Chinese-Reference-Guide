@@ -1,0 +1,62 @@
+<a name="langCon_apex_SOQL_agg_fns"><!-- --></a><h1 class="helpHead1">Working with SOQL Aggregate Functions</h1><div class="body">
+<div class="shortdesc">Aggregate functions in SOQL, such as <samp class="codeph soql">SUM()</samp> and <samp class="codeph soql">MAX()</samp>, allow you to roll up and summarize your data in a query.</div>
+
+    <p class="p">For more information on aggregate functions, see <cite class="cite">Aggregate Functions</cite> in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_agg_functions.htm" target="_blank" title="HTML (New Window)">Salesforce SOQL and SOSL
+        Reference Guide</a>.</p>
+
+    <p class="p">You can use aggregate functions without using a <samp class="codeph soql">GROUP BY</samp>
+      clause. For example, you could use the <samp class="codeph soql">AVG()</samp> aggregate
+      function to find the average <span class="keyword parmname">Amount</span> for all your opportunities.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">AggregateResult[] groupedResults
+  = [SELECT AVG(Amount)aver FROM Opportunity WITH USER_MODE];
+<span class="keyword">Object</span> avgAmount = groupedResults[0].get(<span class="string">'aver'</span>);</pre></div>
+
+    <p class="p">Note that any query that includes an aggregate function returns its results in an array of
+      AggregateResult objects. AggregateResult is a read-only sObject and is only used for query
+      results.</p>
+
+    <p class="p">Aggregate functions become a more powerful tool to generate reports when you use them with a
+        <samp class="codeph soql">GROUP BY</samp> clause. For example, you could find the average
+        <span class="keyword parmname">Amount</span> for all your opportunities by campaign.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">AggregateResult[] groupedResults
+  = [SELECT CampaignId, AVG(Amount)
+      FROM Opportunity
+      WITH USER_MODE 
+      GROUP BY CampaignId ];
+<span class="statement">for</span> (AggregateResult ar : groupedResults)  {
+    System.debug(<span class="string">'Campaign ID'</span> + ar.get(<span class="string">'CampaignId'</span>));
+    System.debug(<span class="string">'Average amount'</span> + ar.get(<span class="string">'expr0'</span>));
+}</pre></div>
+
+    <p class="p">Any aggregated field in a <samp class="codeph soql">SELECT</samp> list that does not have
+      an alias automatically gets an implied alias with a format <samp class="codeph soql">expr<var class="keyword varname">i</var></samp>, where <var class="keyword varname">i</var> denotes the order of the
+      aggregated fields with no explicit aliases. The value of <var class="keyword varname">i</var> starts at 0 and
+      increments for every aggregated field with no explicit alias. For more information, see
+        <cite class="cite">Using Aliases with <samp class="codeph soql">GROUP BY</samp></cite> in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/" target="_blank" title="HTML (New Window)">Salesforce SOQL and SOSL
+        Reference Guide</a>.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+      <p class="p">Queries that include aggregate functions are still subject to the limit on total number of
+        query rows. All aggregate functions other than <samp class="codeph apex_code">COUNT()</samp> or <samp class="codeph apex_code">COUNT(fieldname)</samp> include each
+        row used by the aggregation as a query row for the purposes of limit tracking. </p>
+
+      <p class="p">For <samp class="codeph apex_code">COUNT()</samp> or <samp class="codeph apex_code">COUNT(fieldname)</samp> queries, limits are counted as one query row, unless the query
+        contains a GROUP BY clause, in which case one query row per grouping is consumed.</p>
+
+      <p class="p">For information about the limits that apply to queries with <samp class="codeph ">for</samp> loop, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_loops_for_SOQL.htm" title="SOQL for loops iterate over all of the sObject records returned by a SOQL query.">SOQL For Loops</a>.</p>
+
+    </p>
+</div>
+</div></div></div></div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_foreign_key.htm" title="Understanding Foreign Key and Parent-Child Relationship SOQL Queries">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_VLSQ.htm" title="Working with Very Large SOQL Queries">Next →</a></li>
+</ul></div>
+</div>

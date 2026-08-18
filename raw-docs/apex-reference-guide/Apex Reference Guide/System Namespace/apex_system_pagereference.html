@@ -1,0 +1,324 @@
+<a name="apex_system_pagereference"><!-- --></a><h1 class="helpHead1">PageReference Class</h1><div class="body refbody">
+<div class="shortdesc">A PageReference is a reference to an instantiation of a page. Among other attributes,
+        PageReferences consist of a URL and a set of query parameter names and values.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+            <p class="p">Use a PageReference object:</p>
+
+            <a name="ul_e14_fc4_2fc"><!-- --></a><ul class="ul bulletList" id="ul_e14_fc4_2fc">
+                <li class="li">To view or set query string parameters and values for a page</li>
+
+                <li class="li">To send the user to a different page as the result of an action method</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+<div class="p">
+<p class="p">In a custom controller
+                or controller extension, you can refer to or instantiate a PageReference in one of
+                these ways.</p>
+<a name="ul_sfx_fc4_2fc"><!-- --></a><ul class="ul bulletList" id="ul_sfx_fc4_2fc">
+                <li class="li">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_tfx_fc4_2fc"><a name="codeblock_tfx_fc4_2fc"><!-- --></a>Page.<var class="keyword varname">existingPageName</var></pre></div>
+
+                    <p class="p">Refers to a PageReference for a Visualforce page that has already been saved
+                        in your organization. By referring to a page in this way, the platform
+                        recognizes that this controller or controller extension is dependent on the
+                        existence of the specified page and will prevent the page from being deleted
+                        while the controller or extension exists.</p>
+
+                </li>
+
+                <li class="li">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_ufx_fc4_2fc"><a name="codeblock_ufx_fc4_2fc"><!-- --></a>PageReference pageRef = <span class="keyword">new</span> PageReference(<span class="string">'</span><var class="keyword varname">partialURL</var><span class="string">');</span></pre></div>
+
+                    <p class="p">Creates a PageReference to any page that is hosted on the Lightning platform.
+                        For example, setting <var class="keyword varname">'partialURL'</var> to <samp class="codeph apex_page"><span class="string">'/apex/HelloWorld'</span></samp> refers to the
+                        Visualforce page located at
+                                <span class="ph filepath">http://<var class="keyword varname">mySalesforceInstance</var>/apex/HelloWorld</span>.
+                        Likewise, setting <samp class="codeph nolang">'<var class="keyword varname">partialURL</var>'</samp> to <samp class="codeph nolang">'/' + '<var class="keyword varname">recordID</var>'</samp> refers
+                        to the detail page for the specified record.</p>
+
+                    <p class="p">This syntax is less preferable for referencing other Visualforce pages than
+                            <samp class="codeph apex_code">Page.<var class="keyword varname">existingPageName</var></samp> because the
+                        PageReference is constructed at runtime, rather than referenced at compile
+                        time. Runtime references are not available to the referential integrity
+                        system. Consequently, the platform doesn't recognize that this controller or
+                        controller extension is dependent on the existence of the specified page and
+                        won't issue an error message to prevent user deletion of the page.</p>
+
+                </li>
+
+                <li class="li">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_vfx_fc4_2fc"><a name="codeblock_vfx_fc4_2fc"><!-- --></a>PageReference pageRef = <span class="keyword">new</span> PageReference(<span class="string">'</span><var class="keyword varname">fullURL</var><span class="string">');</span></pre></div>
+
+                    <p class="p">Creates a PageReference for an external URL. For example:</p>
+
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_wfx_fc4_2fc"><a name="codeblock_wfx_fc4_2fc"><!-- --></a>PageReference pageRef = <span class="keyword">new</span> PageReference(<span class="string">'http://www.google.com'</span>);</pre></div>
+
+                </li>
+
+            </ul>
+<div class="p">You can also instantiate a PageReference object for the current page with the
+                    <samp class="codeph apex_page">currentPage</samp> ApexPages method. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">PageReference pageRef = ApexPages.currentPage();</pre></div>
+</div>
+</div>
+</div>
+
+        <div class="section" id="RequestHeadersSection">
+<a name="RequestHeadersSection"><!-- --></a><h2 class="helpHead2">Request Headers</h2>
+
+            
+            <p class="p">Here’s a non-exhaustive list of headers that are set on requests.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d522444e172">Header</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d522444e175">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">Host</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">The host name requested in the request URL. This header is always
+                                set on Lightning Platform Site requests and My Domain requests. This
+                                header is optional on other requests when HTTP/1.0 is used instead
+                                of HTTP/1.1.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">Referer</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">The URL that is either included or linked to the current
+                                request's URL. This header is optional.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">User-Agent</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">The name, version, and extension support of the program that
+                                initiated this request, such as a web browser. This header is
+                                optional and can be overridden in most browsers to be a different
+                                value. Therefore, this header can’t be relied upon.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">CipherSuite</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">If this header exists and has a non-blank value, this means that
+                                the request is using HTTPS. Otherwise, the request is using HTTP.
+                                The contents of a non-blank value are not defined by this API, and
+                                can be changed without notice.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">X-Salesforce-SIP</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">The source IP address of the request. This header is always set
+                                on HTTP and HTTPS requests that are initiated outside of
+                                Salesforce's data centers. If a request passes through a content
+                                delivery network (CDN) or proxy server, the source IP address might
+                                be altered, and no longer the original client IP address.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d522444e172" data-title="Header">X-Salesforce-Forwarded-To</td>
+
+                            <td class="entry" headers="d522444e175" data-title="Description">The fully qualified domain name of the Salesforce instance that
+                                is handling this request. This header is always set on HTTP and
+                                HTTPS requests that are initiated outside of Salesforce's data
+                                centers.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Retrieving Query String Parameters</h2>
+<div class="p">
+<p class="p">This example
+                shows how to use a PageReference object to retrieve a query string parameter in the
+                current page URL. In this example, the <samp class="codeph apex_code">getAccount</samp> method references the <samp class="codeph apex_code">id</samp> query string
+                parameter.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MyController {
+   <span class="keyword">public</span> Account getAccount() {
+        <span class="statement">return</span> [SELECT Id, Name FROM Account 
+                WHERE Id = :ApexPages.currentPage().getParameters().get(<span class="string">'Id'</span>) 
+                WITH USER_MODE];
+    }
+}</pre></div>
+<p class="p">This page markup calls the <samp class="codeph apex_code">getAccount</samp> method from that controller.</p>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"MyController"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Retrieving Query String Parameters"</span>&gt;
+        You are viewing the <span class="formula">{!account.name}</span> account.
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <div class="p">For this example to render properly, you must associate the Visualforce page with
+                    a valid account record in the URL. For example, if <samp class="codeph nolang">001D000000IRt53</samp> is the account ID, the resulting URL should
+                    be:<div class="codeSection nolang"><pre class="codeblock brush:plain">https://<var class="keyword varname">Visualforce_Url</var>/apex/MyFirstPage?id=001D000000IRt53</pre></div>
+</div>
+
+                <p class="p">Replace <var class="keyword varname">Visualforce_URL</var> with the Visualforce URL for your org.
+                    For production, this URL is in the format <samp class="codeph nolang"><var class="keyword varname">MyDomainName</var>--<var class="keyword varname">PackageName</var>.vf.force.com</samp>,
+                    and if your installed package is unmanaged, the package name is <samp class="codeph nolang">c</samp>. For more information on the format of the
+                    URLs that Salesforce serves for your org, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=products.domain_name_url_formats.htm&amp;type=5&amp;language=en_US" target="_blank">My Domain Login and Application URL
+                        Formats</a> and <a class="xref" href="https://help.salesforce.com/s/articleView?id=products.domain_name_partitioned_domains.htm&amp;type=5&amp;language=en_US" target="_blank">Partitioned Domains</a> in Salesforce
+                    Help.</p>
+
+            </p>
+</div>
+</div></div></div></div>
+<p class="p">The <samp class="codeph apex_page">getAccount</samp> method uses an
+                embedded SOQL query to return the account specified by the <samp class="codeph apex_page">id</samp> parameter in the URL of the page. To access
+                    <samp class="codeph apex_page">id</samp>, the <samp class="codeph apex_page">getAccount</samp> method uses the <samp class="codeph apex_code">ApexPages</samp> namespace.</p>
+<ul class="ul bulletList">
+                <li class="li">First the <samp class="codeph apex_code">currentPage</samp> method returns
+                    the <samp class="codeph apex_code">PageReference</samp> instance for the
+                    current page. <samp class="codeph apex_code">PageReference</samp> returns a
+                    reference to a Visualforce page, including its query string parameters.</li>
+
+                <li class="li">Using the page reference, use the <samp class="codeph apex_code">getParameters</samp> method to return a map of the specified query string
+                    parameter names and values.</li>
+
+                <li class="li">Then a call to the <samp class="codeph apex_code">get</samp> method
+                    specifying <samp class="codeph apex_page">id</samp> returns the value of the
+                        <samp class="codeph apex_page">id</samp> parameter itself. </li>
+
+            </ul>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Navigating to a New Page as the Result of an Action
+                Method</h2>
+<div class="p">
+<p class="p">Any action method in a custom controller or
+                controller extension can return a PageReference object as the result of the method.
+                If the <samp class="codeph apex_code">redirect</samp> attribute on the
+                PageReference is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the user
+                navigates to the URL specified by the PageReference.</p>
+<p class="p">This example shows how
+                this can be implemented with a <samp class="codeph apex_code">save</samp> method.
+                In this example, the PageReference returned by the <samp class="codeph apex_code">save</samp> method redirects the user to the detail page for the account
+                record that was just
+                saved.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MySecondController {
+    Account account;
+
+    <span class="keyword">public</span> Account getAccount() {
+        <span class="statement">if</span>(account == <span class="keyword">null</span>) account = <span class="keyword">new</span> Account();
+        <span class="statement">return</span> account;
+    }
+
+    <span class="keyword">public</span> PageReference save() {
+        <span class="onelineComment">// Add the account to the database. </span>
+        <span class="statement">insert</span> <span class="statement">as</span> user account;
+        <span class="onelineComment">// Send the user to the detail page for the new account.</span>
+        PageReference acctPage = <span class="keyword">new</span> ApexPages.StandardController(account).view();
+        acctPage.setRedirect(<span class="keyword">true</span>);
+        <span class="statement">return</span> acctPage;
+    }
+}</pre></div>
+<p class="p">This page markup calls the <samp class="codeph apex_code">save</samp> method from that controller. When a user clicks
+                    <strong class="ph uicontrol">Save</strong>, he or she is redirected to the detail page for the
+                account just
+            created:</p>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"mySecondController"</span><span class="attribute"> tabStyle=</span><span class="string">"Account"</span>&gt;
+    <span class="tag">&lt;apex:sectionHeader</span><span class="attribute"> title=</span><span class="string">"New Account Edit Page"</span> /&gt;
+    <span class="tag">&lt;apex:form</span>&gt;
+        <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Create a New Account"</span>&gt;
+            <span class="tag">&lt;apex:pageBlockButtons</span><span class="attribute"> location=</span><span class="string">"bottom"</span>&gt;
+                <span class="tag">&lt;apex:commandButton</span><span class="attribute"> action=</span><span class="string">"{!save}"</span><span class="attribute"> value=</span><span class="string">"Save"</span>/&gt;
+            <span class="tag">&lt;/apex:pageBlockButtons</span>&gt;
+            <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> title=</span><span class="string">"Account Information"</span>&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> id=</span><span class="string">"accountName"</span><span class="attribute"> value=</span><span class="string">"{!account.name}"</span>/&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> id=</span><span class="string">"accountSite"</span><span class="attribute"> value=</span><span class="string">"{!account.site}"</span>/&gt;
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+       <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Redirect Users to a Replacement Experience Cloud Site</h2>
+
+            
+            <p class="p">This example shows how to redirect a user attempting to access a retired feedback
+                site to a self-service help site. If the <samp class="codeph apex_code">redirect</samp> attribute is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> on the PageReference for the feedback site, the user navigates to
+                the URL specified by the PageReference. The <samp class="codeph apex_code">redirectCode</samp> attribute defines the redirection type for search engine
+                optimization in public Experience Cloud sites.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce">public with sharing class RedirectController {
+    // Redirect users to the self-service help site
+    public PageReference redirect() {
+        final PageReference target = new
+        PageReference(Site.getBaseSecureUrl() + <span class="string">'/SiteLogin'</span>);
+        target.setRedirect(true);
+        // This is a permanent redirection
+        target.setRedirectCode(301);
+        return target;
+    }
+}</pre></div>
+
+            <p class="p">This example shows how to call the RedirectController class from the retired site
+                page.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">&lt;apex:page controller=<span class="string">"RedirectController"</span> action=<span class="string">"{!redirect}"</span>/&gt;</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To redirect a page that’s served by a third-party CDN, configure that
+                CDN to pass the origin IP address via the <samp class="codeph nolang">true-client-ip</samp> HTTP header on the page. For more information, see
+                    <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.domain_mgmt_enable_https.htm&amp;language=en_US" target="_blank"> Prerequisites for a Custom Domain That Uses a
+                    Third-Party Service or CDN</a> in Salesforce Help.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_System_PageReference_constructors.htm">PageReference Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_System_PageReference_methods.htm">PageReference Methods</a></strong><br>
+</li>
+</ul>
+</div>

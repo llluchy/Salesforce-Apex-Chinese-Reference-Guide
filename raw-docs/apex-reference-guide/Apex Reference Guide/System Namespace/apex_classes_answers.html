@@ -1,0 +1,157 @@
+<a name="apex_classes_answers"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Answers Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Represents zone answers.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Answers is a feature that enables users to ask questions and have zone members post replies.
+            Members can then vote on the helpfulness of each reply, and the person who asked the
+            question can mark one reply as the best answer.</p>
+<p class="p">For more information on answers, see “Answers Overview” in the Salesforce online
+help.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="AnswersExample"><a name="AnswersExample"><!-- --></a>Example</span></h2>
+<div class="p">The following example finds questions in an internal zone that have similar titles as a new
+question:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> FindSimilarQuestionController {
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> test() {
+   <span class="onelineComment">// Instantiate a new question </span>
+   Question question = <span class="keyword">new</span> Question ();
+
+   <span class="onelineComment">// Specify a title for the new question</span>
+   question.title = <span class="string">'How much vacation time do full-time employees get?'</span>;
+
+   <span class="onelineComment">// Specify the communityID (INTERNAL_COMMUNITY) in which to find similar questions. </span>
+   Community community = [ SELECT Id FROM Community WHERE Name = <span class="string">'INTERNAL_COMMUNITY'</span> ];
+
+   question.communityId = community.id;
+
+   <span class="keyword">ID</span>[] results = Answers.findSimilar(question);
+   }
+}
+</pre></div>
+</div>
+<div class="p">The following example marks a reply as the best
+reply:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">ID</span> questionId = [SELECT Id FROM Question WHERE Title = <span class="string">'Testing setBestReplyId'</span> LIMIT 1].Id;
+<span class="keyword">ID</span> replyID = [SELECT Id FROM Reply WHERE QuestionId = :questionId LIMIT 1].Id;
+Answers.setBestReply(questionId,replyId);
+</pre></div>
+</div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Answers_methods">
+<a name="apex_System_Answers_methods"><!-- --></a>
+<h2 class="helpHead2">Answers Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Answers</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_answers.htm#apex_System_Answers_findSimilar">findSimilar(yourQuestion)</a></strong><br>
+Returns a list of similar questions based on the title of the specified question.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_answers.htm#apex_System_Answers_setBestReply">setBestReply(questionId, replyId)</a></strong><br>
+Sets the specified reply for the specified question as the best reply. Because a question can have multiple replies, setting the best reply helps users quickly identify the reply that contains the most helpful information.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Answers_findSimilar">
+<a name="apex_System_Answers_findSimilar"><!-- --></a>
+<h3 class="helpHead3">findSimilar(yourQuestion)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a list of similar questions based on the title
+of the specified question.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span>[] findSimilar(Question yourQuestion)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">yourQuestion</var></strong>:<p class="p">Type: Question</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>[]</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Each <samp class="codeph apex_code">findSimilar</samp> call counts against the SOSL statements governor
+limit allowed for the process.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Answers_setBestReply">
+<a name="apex_System_Answers_setBestReply"><!-- --></a>
+<h3 class="helpHead3">setBestReply(questionId, replyId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the specified reply for the specified question as
+the best reply. Because a question can have multiple replies, setting
+the best reply helps users quickly identify the reply that contains
+the most helpful information.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setBestReply(<span class="keyword">String</span> questionId,
+<span class="keyword">String</span> replyId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">questionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">replyId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

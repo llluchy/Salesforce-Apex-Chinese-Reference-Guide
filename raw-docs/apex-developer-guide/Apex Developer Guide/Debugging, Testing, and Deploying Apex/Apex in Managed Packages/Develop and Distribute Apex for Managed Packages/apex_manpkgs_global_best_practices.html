@@ -1,0 +1,556 @@
+<a name="apex_manpkgs_global_best_practices"><!-- --></a><h1 class="helpHead1">Best Practices for Using Global Apex in Managed Packages</h1><div class="body conbody">
+<div class="shortdesc">As an independent software vendor (ISV) developer, understand when and how to use
+      <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex in managed packages. Learn design patterns
+   that maximize flexibility and comply with the strict manageability rules applied to <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex
+    after your managed package’s release. By following these best practices, you can improve the
+    stability and maintainability of your API.</div>
+
+    <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>We recommend using the <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+      access modifier only when necessary. The API shape of <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex, such as the name, parameters, and return type of <samp class="codeph apex_code"><span class="keyword">global</span></samp> methods, is subject to strict manageability rules.
+      You generally can’t change the API shape of <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+      Apex after it’s released in a managed package.</p>
+</div>
+</div></div></div></div>
+
+    <div class="section">
+      <p class="p">The <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm"><samp class="codeph apex_code"><span class="keyword">global</span></samp> modifier</a> provides the widest
+        level of access. It makes your Apex classes, methods, interfaces, and variables accessible
+        and callable from any Apex code outside of your package namespace, including code written by
+        subscribers or other installed packages.</p>
+
+      <p class="p">A key benefit of Apex in managed packages is Intellectual Property (IP) protection.
+        Although <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex signatures, such as <samp class="codeph apex_code"><span class="keyword">global</span></samp> class and method names, parameters, and return
+        types, are visible so subscribers can use your API, the underlying implementation logic
+        within your methods is encapsulated and hidden. This allows you to provide powerful
+        functionality without exposing your proprietary source code.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">When to Use Global Apex in Managed Packages</h2>
+
+      
+      <p class="p">Use <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex when:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Exposing a global API. You intend for subscribers to use your package’s core services by
+          directly calling your Apex methods or instantiating your classes from their own Apex code,
+          such as from their triggers, batch classes, or other custom logic.</li>
+
+        <li class="li">Providing extensibility points. You’re designing <samp class="codeph apex_code"><span class="keyword">global</span></samp> interfaces or <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+          <samp class="codeph apex_code"><span class="keyword">abstract</span></samp> base classes that subscribers must
+          implement or extend to customize or enhance specific behaviors within your app.</li>
+
+        <li class="li">Creating web service endpoints. You’re exposing Apex classes to handle incoming REST API
+          requests or SOAP web service calls from external systems. These endpoint classes and their
+          methods must be declared <samp class="codeph apex_code"><span class="keyword">global</span></samp> to receive calls
+          from external systems.</li>
+
+      </ul>
+
+      <p class="p">Avoid <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex for:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Internal package functionality, meaning any Apex code, such as business logic, helper
+          classes, or utility methods, that’s designed exclusively for use within your managed
+          packages. For these internal components, <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm"> access
+            modifiers</a> such as <samp class="codeph apex_code"><span class="keyword">public</span></samp>, <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, or <samp class="codeph apex_code"><span class="keyword">private</span></samp> avoid the manageability constraints of <samp class="codeph apex_code"><span class="keyword">global</span></samp>. You can even combine the <samp class="codeph apex_code"><span class="keyword">public</span></samp> access modifier with the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm"><samp class="codeph apex_code">@NamespaceAccessible</samp>
+            annotation</a> to allow access throughout your package namespace.</li>
+
+        <li class="li">Controller methods, or methods within your package that are called by your Lightning web
+          components (LWC) and aren’t used by your subscribers directly. Make these methods <samp class="codeph apex_code"><span class="keyword">public</span></samp> and annotate them with <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm"><samp class="codeph nolang">@AuraEnabled</samp></a>.</li>
+
+        <li class="li">Method signatures with external <samp class="codeph apex_code"><span class="keyword">global</span></samp> types.
+          Avoid using <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex types from another managed
+          package as parameters or return types in your own <samp class="codeph apex_code"><span class="keyword">global</span></samp> methods. This practice locks your package into a rigid dependency. If
+          the other package later changes or deprecates the types that your <samp class="codeph apex_code"><span class="keyword">global</span></samp> signature relies on, it can become difficult or
+          impossible for your package to adopt newer versions of the dependency package.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="manpkgs_global_manageability_rules">
+<a name="manpkgs_global_manageability_rules"><!-- --></a><h2 class="helpHead2">Global Apex Manageability Rules</h2>
+
+      
+      <p class="p">The decision to use <samp class="codeph apex_code"><span class="keyword">global</span></samp> is significant because
+        it subjects your code to strict <dfn class="term">manageability rules</dfn> after your package is
+        released. Manageability rules protect subscribers against package upgrades that break
+        existing functionality. These rules make your initial <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex design critical, as changes in later versions are heavily
+        restricted.</p>
+
+      <p class="p">After your managed package is released, these restrictions apply to the <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex in the package.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">You can’t delete a <samp class="codeph apex_code"><span class="keyword">global</span></samp> class, interface,
+          method, variable, or enum.</li>
+
+        <li class="li">You can’t change the name of a <samp class="codeph apex_code"><span class="keyword">global</span></samp> class,
+          interface, method, variable, or enum.</li>
+
+        <li class="li">You can’t change the access modifier of a <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+          class, interface, method, variable, or enum from <samp class="codeph apex_code"><span class="keyword">global</span></samp> to another access modifier.</li>
+
+        <li class="li">You can’t change a <samp class="codeph apex_code"><span class="keyword">global</span></samp> method’s signature,
+          including the order, number, and types of parameters, as well as the method’s return type.
+          You can add new methods that overload existing <samp class="codeph apex_code"><span class="keyword">global</span></samp> methods.</li>
+
+        <li class="li">You can’t change the value of a <samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span>
+            <span class="keyword">final</span></samp> variable.</li>
+
+        <li class="li">You can’t change the data type of a <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+          variable to an incompatible one.</li>
+
+        <li class="li">You can’t change most annotations or modifiers on <samp class="codeph apex_code"><span class="keyword">global</span></samp> members. For example, you can’t add or remove the <samp class="codeph apex_code">@AuraEnabled</samp> annotation or any <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_rest_annotations_list.htm">Apex REST
+            annotation</a> from a <samp class="codeph apex_code"><span class="keyword">global</span></samp> method.
+          Similarly, you can’t add or remove the <samp class="codeph apex_code"><span class="keyword">static</span></samp> or
+            <samp class="codeph apex_code"><span class="keyword">final</span></samp> keyword from a <samp class="codeph apex_code"><span class="keyword">global</span></samp> method.</li>
+
+        <li class="li">You can’t remove a zero-argument constructor from a <samp class="codeph apex_code"><span class="keyword">global</span></samp> class. This restriction applies both to explicitly deleting a
+          constructor you wrote, and to implicitly removing the default constructor by adding a new
+          constructor that requires arguments.</li>
+
+        <li class="li">You can’t remove a <samp class="codeph apex_code"><span class="keyword">global</span></samp> interface from a
+            <samp class="codeph apex_code"><span class="keyword">global</span></samp> class.</li>
+
+        <li class="li">You can’t extend a <samp class="codeph apex_code"><span class="keyword">global</span></samp> interface with a new
+          interface.</li>
+
+        <li class="li">You can’t change a <samp class="codeph apex_code"><span class="keyword">global</span></samp> class to an interface,
+          or vice versa.</li>
+
+        <li class="li">You can’t add <samp class="codeph apex_code"><span class="keyword">abstract</span></samp> methods to <samp class="codeph apex_code"><span class="keyword">global</span></samp> interfaces or <samp class="codeph apex_code"><span class="keyword">abstract</span></samp> classes.</li>
+
+        <li class="li">You can’t add <samp class="codeph apex_code"><span class="keyword">final</span></samp> methods to <samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">virtual</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span>
+            <span class="keyword">abstract</span></samp> classes.</li>
+
+        <li class="li">You can’t remove or reorder <samp class="codeph apex_code"><span class="keyword">global</span></samp> enum values,
+          although you can add new enum values.</li>
+
+        <li class="li">You can't add, remove or change that a global class extends another global class.</li>
+
+      </ul>
+
+      <p class="p">Given the strict manageability rules, a thoughtful design of your package’s global API is
+        crucial. These best practices for defining and managing <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex promote flexibility, reduce maintenance, and help create a stable,
+        evolvable API.</p>
+
+    </div>
+
+    <div class="section" id="manpkgs_global_necessary">
+<a name="manpkgs_global_necessary"><!-- --></a><h2 class="helpHead2">Only Use Global When Necessary</h2>
+
+      
+      <p class="p">When designing <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex, expose the fewest
+          <samp class="codeph apex_code"><span class="keyword">global</span></samp> members possible. Every <samp class="codeph apex_code"><span class="keyword">global</span></samp> part of your package is a contract with your
+        subscribers. Fewer <samp class="codeph apex_code"><span class="keyword">global</span></samp> members mean fewer
+        restrictions and more freedom for you to update your package later.</p>
+
+      <p class="p">Before making something <samp class="codeph apex_code"><span class="keyword">global</span></samp>, consider these
+        questions.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Is it truly necessary? Can you use <samp class="codeph apex_code"><span class="keyword">public</span></samp>
+          instead? For example, use <samp class="codeph apex_code"><span class="keyword">public</span></samp> for access only
+          by other Apex within the same package, or <samp class="codeph apex_code"><span class="keyword">public</span></samp>
+          and <samp class="codeph apex_code">@NamespaceAccessible</samp> for access only by other
+          Apex in packages that have the same namespace.</li>
+
+        <li class="li">Are there other designs? Can you achieve the same result without making methods or
+          classes <samp class="codeph apex_code"><span class="keyword">global</span></samp>?</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="manpkgs_global_entry_points_section">
+<a name="manpkgs_global_entry_points_section"><!-- --></a><h2 class="helpHead2">Delegate from Thin Global Entry Points</h2>
+
+      
+      <p class="p">Make your <samp class="codeph apex_code"><span class="keyword">global</span></samp> classes and methods act only as
+        thin entry points. Place any business logic or complex processes in <samp class="codeph apex_code"><span class="keyword">public</span></samp> classes and methods within your package. The
+          <samp class="codeph apex_code"><span class="keyword">global</span></samp> method then calls these <samp class="codeph apex_code"><span class="keyword">public</span></samp> methods.</p>
+
+      <p class="p">Delegating logic to <samp class="codeph apex_code"><span class="keyword">public</span></samp> classes and methods
+        promotes:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Flexibility. You can freely add new features or completely change the internal public
+          implementation of your service in future versions without altering the <samp class="codeph apex_code"><span class="keyword">global</span></samp> method signature.</li>
+
+        <li class="li">Maintainability. Fixing bugs and refactoring your existing business logic is now safer
+          and lower-risk because the work is decoupled from the stable global API contract that your
+          subscribers depend on.</li>
+
+        <li class="li">Testability. Your <samp class="codeph apex_code"><span class="keyword">public</span></samp> business logic classes
+          can be unit tested thoroughly and independently of their <samp class="codeph apex_code"><span class="keyword">global</span></samp> entry point.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+      <p class="p">In this example, <samp class="codeph apex_code">MyPackageApi.greetUsers</samp> is the
+        stable <samp class="codeph apex_code"><span class="keyword">global</span></samp> contract. The actual work happens in
+          <samp class="codeph apex_code">createGreetings</samp>, which is <samp class="codeph apex_code"><span class="keyword">public</span></samp> and can be easily modified in future package
+        versions as long as the <samp class="codeph apex_code">greetUsers</samp> signature in
+          <samp class="codeph apex_code">MyPackageApi</samp> remains unchanged. For example, the
+        ISV developer can later optimize <samp class="codeph apex_code">createGreetings</samp> or
+        add new helper methods without violating <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex
+        manageability rules.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// --- ISV's Managed Package Code ---</span>
+<span class="onelineComment">// Global Entry Point</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> MyPackageApi {
+    <span class="onelineComment">// Note: This is a simplified example using a primitive data type. For a </span>
+    <span class="onelineComment">// more flexible and future-proof design, we recommend using parameter </span>
+    <span class="onelineComment">// objects for global method signatures, as explained in the next section.</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> List&lt;<span class="keyword">String</span>&gt; greetUsers(List&lt;<span class="keyword">String</span>&gt; userNames) {
+            <span class="onelineComment">// Delegate directly to a public class to do the actual work.</span>
+            <span class="onelineComment">// GreetingService is a 'public' class within your package.</span>
+        GreetingService service = <span class="keyword">new</span> GreetingService();
+            <span class="statement">return</span> service.createGreetings(userNames);
+    }
+}
+
+<span class="onelineComment">// Public Class (Lives inside your package)</span>
+<span class="onelineComment">// This class can be updated easily in future package versions.</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> GreetingService {
+    <span class="onelineComment">// This public method contains all the business logic to process a list of names.</span>
+    <span class="keyword">public</span> List&lt;<span class="keyword">String</span>&gt; createGreetings(List&lt;<span class="keyword">String</span>&gt; names) {
+        List&lt;<span class="keyword">String</span>&gt; greetings = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;(); 
+        <span class="onelineComment">// Input validation and error handling, e.g. Return an empty list if input is null or empty.</span>
+        <span class="onelineComment">// Process each name in the list.</span>
+        <span class="statement">for</span> (<span class="keyword">String</span> name : names) {
+            greetings.add(<span class="string">'Hello, '</span> + name + <span class="string">'!'</span>);
+        }
+        <span class="statement">return</span> greetings;
+    }
+    
+    <span class="onelineComment">// If needed, you can freely add private methods here</span>
+    <span class="keyword">private</span> <span class="keyword">void</span> someHelperMethod() {
+        <span class="onelineComment">// ...</span>
+    }
+}
+
+
+<span class="onelineComment">// --- Subscriber Code ---</span>
+<span class="onelineComment">// Subscriber creates a list and calls the global method</span>
+List&lt;<span class="keyword">String</span>&gt; welcomeMessages = TheIsvNamespace.MyPackageApi.greetUsers(
+    <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'Jane Doe'</span>, <span class="string">'Rose Gonzalez'</span>});
+<span class="onelineComment">// The output is a corresponding list of greetings.</span>
+<span class="onelineComment">// welcomeMessages will be: ['Hello, Jane Doe!', 'Hello, Rose Gonzalez!']</span></pre></div>
+
+    </div>
+</div>
+
+    <div class="section" id="manpkgs_global_parameter_obj">
+<a name="manpkgs_global_parameter_obj"><!-- --></a><h2 class="helpHead2">Use Parameter Objects for Global Method Inputs and Return Types</h2>
+
+      
+      <p class="p">Using primitive data types, such as String or ID, directly in <samp class="codeph apex_code"><span class="keyword">global</span></samp> method signatures creates a rigid contract that you
+        can’t change. To avoid this restriction, we recommend using custom <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex classes as parameter objects for both inputs
+        and outputs. This pattern provides a stable API contract that’s evolvable, safer, and
+        readable for subscribers.</p>
+
+      <p class="p">Benefits of using parameter objects include:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Evolvability. You can add new parameters to your API by adding new properties to your
+          input or output classes. The <samp class="codeph apex_code"><span class="keyword">global</span></samp> method
+          signature itself never changes, which avoids breaking changes.</li>
+
+        <li class="li">Safety and discoverability. Subscribers get compile-time safety and code completion
+          while constructing the request object, which reduces the risk of run-time errors from
+          typos or incorrect data types.</li>
+
+        <li class="li">Readability. Grouping related parameters into a dedicated class makes your method
+          signature clean and its purpose clear. For example, <samp class="codeph apex_code">getCoordinates(Address location)</samp> is easier for your subscribers to understand
+          and use than <samp class="codeph apex_code">getCoordinates(<span class="keyword">String</span> street, <span class="keyword">String</span> city,
+            <span class="keyword">String</span> state, <span class="keyword">String</span> zip, ...).</samp>
+</li>
+
+      </ul>
+
+      <p class="p">Despite the benefits of using parameter objects, consider these costs.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Increased upfront complexity. This pattern requires more initial code, such as multiple
+          classes, and can be excessive for simple actions that aren’t expected to change.</li>
+
+        <li class="li">Expanded global surface area. Although the primary method signature remains stable, each
+          global property added to the input object becomes a new, permanent part of your package’s
+          API.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+      <p class="p">In this example, the <samp class="codeph apex_code">GeocodingService.getCoordinates</samp> method is the global contract. It uses the
+        custom <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+        <samp class="codeph apex_code">AddressRequest</samp> class as its input, and the custom
+          <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+        <samp class="codeph apex_code">GeolocationResponse</samp> class as its output.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// --- ISV's Managed Package Code ---</span>
+<span class="onelineComment">// The global entry point class contains the global method and input &amp; output wrapper inner classes.</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> GeocodingService {
+    <span class="onelineComment">// 1. The Global Method</span>
+    <span class="onelineComment">// The signature is clean, using the inner classes for its input parameter and return type.</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> GeolocationResponse getCoordinates(AddressRequest location) { 
+        <span class="onelineComment">// --- Internal logic to process the request ---</span>
+        <span class="onelineComment">// We recommend calling a public method to delegate all business logic. Skipping this for brevity in this example</span>
+        <span class="onelineComment">// This could involve callouts to an external geocoding service.</span>
+        <span class="onelineComment">// For this example, we will return mock data.</span>
+        <span class="statement">if</span> (location.postalCode == <span class="string">'94105'</span>) {
+            <span class="statement">return</span> <span class="keyword">new</span> GeolocationResponse(37.7749, -122.4194);
+        } <span class="statement">else</span> {
+			<span class="statement">return</span> <span class="keyword">new</span> GeolocationResponse(0, 0);
+		}
+    }
+   
+    <span class="onelineComment">// 2. The Input Parameter Object (as an inner class)</span>
+    <span class="onelineComment">// A simple inner class with global properties to bundle input parameters.</span>
+    <span class="keyword">global</span> with sharing <span class="keyword">class</span> AddressRequest {
+        <span class="keyword">global</span> <span class="keyword">String</span> street;
+        <span class="keyword">global</span> <span class="keyword">String</span> city;
+        <span class="keyword">global</span> <span class="keyword">String</span> state;
+        <span class="keyword">global</span> <span class="keyword">String</span> postalCode;
+    
+        <span class="onelineComment">// A constructor helps ensure required fields are provided.</span>
+        <span class="keyword">global</span> AddressRequest(<span class="keyword">String</span> street, <span class="keyword">String</span> city, <span class="keyword">String</span> state, <span class="keyword">String</span> postalCode) {
+            <span class="statement">this</span>.street = street;
+            <span class="statement">this</span>.city = city;
+            <span class="statement">this</span>.state = state;
+            <span class="statement">this</span>.postalCode = postalCode;
+        }
+    }
+    
+    <span class="onelineComment">// 3. The Output Parameter Object (as an inner class)</span>
+    <span class="onelineComment">// A simple inner class to provide a structured result.</span>
+    <span class="keyword">global</span> with sharing <span class="keyword">class</span> GeolocationResponse {
+        <span class="onelineComment">// Using 'private set' makes these properties read-only for subscribers.</span>
+        <span class="onelineComment">// @AuraEnabled makes these properties visible to Lightning web components, if necessary.</span>
+        @AuraEnabled <span class="keyword">global</span> <span class="keyword">Decimal</span> latitude { get; <span class="keyword">private</span> set; }
+        @AuraEnabled <span class="keyword">global</span> <span class="keyword">Decimal</span> longitude { get; <span class="keyword">private</span> set; }
+        
+        <span class="onelineComment">// This constructor is public, not global, so subscribers can't create their own response objects.</span>
+        <span class="keyword">public</span> GeolocationResponse(<span class="keyword">Decimal</span> lat, <span class="keyword">Decimal</span> lon) {
+            <span class="statement">this</span>.latitude = lat;
+            <span class="statement">this</span>.longitude = lon;
+        }
+    }
+}
+
+<span class="onelineComment">// --- Subscriber Code --- </span>
+<span class="onelineComment">// The subscriber's experience is clean and type-safe.</span>
+<span class="onelineComment">// 1. Create an instance of the input object, referencing it via the outer class.</span>
+TheIsvNamespace.GeocodingService.AddressRequest sfAddress = <span class="keyword">new</span> TheIsvNamespace.GeocodingService.AddressRequest(
+    <span class="string">'415 Mission St'</span>,
+    <span class="string">'San Francisco'</span>,
+    <span class="string">'CA'</span>,
+    <span class="string">'94105'</span>
+);
+
+<span class="onelineComment">// 2. Call the global method with the single parameter object.</span>
+TheIsvNamespace.GeocodingService.GeolocationResponse coordinates = TheIsvNamespace.GeocodingService.getCoordinates(sfAddress);
+
+<span class="onelineComment">// 3. Process the structured, strongly-typed result. </span>
+<span class="onelineComment">// For this example we will just log the results.</span>
+    System.debug(<span class="string">'Coordinates found: '</span> + coordinates.latitude + <span class="string">', '</span> + coordinates.longitude);
+</pre></div>
+
+    </div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Alternative for Unpredictable Inputs: The Map Pattern</h2>
+
+      
+      <p class="p">For scenarios where the inputs aren’t known at compile time, you can use a Map for your
+        method’s input parameters. An example signature with this pattern is <samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> GeolocationResponse
+          processUnstructuredRequest(Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputs)</samp>.</p>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Use this pattern with caution. This pattern isn’t recommended for
+        return types.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">Accepting a Map allows the subscriber to construct the Map and populate the keys and values
+        themselves. Although this pattern provides maximum flexibility, returning a Map forces the
+        subscriber to guess key names and data types, which leads to fragile code.</p>
+
+      <p class="p">Additionally, using a Map for inputs sacrifices compile-time safety and discoverability.
+        Subscribers must rely entirely on documentation to know the required keys and their data
+        types. Simple typos in map keys can result in hard-to-debug run-time errors instead of
+        compile-time errors.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The standard <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_System_Callable.htm" target="_blank" title="HTML (New Window)">Callable interface</a> uses the
+        Map pattern through its <samp class="codeph apex_code">call(<span class="keyword">String</span> action, Map&lt;<span class="keyword">String</span>,
+          <span class="keyword">Object</span>&gt; args)</samp> method. However, this method returns a generic Object, which
+        forces subscribers to cast the response and risk run-time errors. It creates a single,
+        generic entry point that can perform many different functions based on the action string.
+        For a single-purpose action that accepts unstructured inputs, a custom method such as
+          <samp class="codeph apex_code">processUnstructuredRequest</samp> is clearer and
+        safer.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">Instead of using the Map pattern, prefer strongly-typed parameter objects as shown in the
+          <a class="xref" href="#manpkgs_global_parameter_obj">Use Parameter Objects for Global Method Inputs and Return
+          Types</a> section. Reserve the Map pattern for advanced use cases where the inputs are
+        truly unpredictable and its risks are acceptable, but always return a strongly-typed
+        object.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Use Global Interfaces with Factory Methods</h2>
+
+      
+      <p class="p">The <dfn class="term">facade pattern</dfn> is effective if you want to define a capability and then
+        provide one or more ways to use it. In this pattern, a global interface defines the
+        capability, and the public classes that implement the interface define how to use the
+        capability. A global factory method gives the subscriber the specific implementation of the
+        interface.</p>
+
+      <p class="p">Benefits of using the facade pattern include:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">You can change the public class that does the work as long as it still follows the
+          global interface rules.</li>
+
+        <li class="li">You can offer new implementations of the interface later.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+      <p class="p">In this example, <samp class="codeph apex_code">Notifier</samp> is the <samp class="codeph apex_code"><span class="keyword">global</span></samp> contract, and the <samp class="codeph apex_code"><span class="keyword">public</span></samp> class <samp class="codeph apex_code">EmailNotifierImpl</samp> does the
+        work. Because the factory class is <samp class="codeph apex_code"><span class="keyword">global</span></samp> but the
+        classes that implement the <samp class="codeph apex_code">Notifier</samp> interface are
+          <samp class="codeph apex_code"><span class="keyword">public</span></samp>, the ISV developer can later change or add
+        to these classes. For example, if the ISV developer later wants to offer an SMS notifier,
+        they can add <samp class="codeph apex_code">getSmsNotifier()</samp> to the factory class
+        and implement a new <samp class="codeph apex_code"><span class="keyword">public</span></samp>
+        <samp class="codeph apex_code">SmsNotifierImpl</samp> class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// --- ISV's Managed Package Code ---</span>
+<span class="onelineComment">// Global Interface - Defines a capability</span>
+<span class="keyword">global</span> <span class="keyword">interface</span> Notifier {
+    <span class="keyword">global</span> <span class="keyword">void</span> send(<span class="keyword">String</span> message);
+}
+
+<span class="onelineComment">// Global Factory Class - Provides instances</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> NotificationFactory {
+    <span class="keyword">global</span> <span class="keyword">static</span> Notifier getEmailNotifier() {
+        <span class="statement">return</span> <span class="keyword">new</span> EmailNotifierImpl(); <span class="onelineComment">// EmailNotifierImpl is public</span>
+    }
+}
+
+<span class="onelineComment">// Public Implementation (Lives inside your package)</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> EmailNotifierImpl <span class="keyword">implements</span> Notifier {
+    <span class="keyword">public</span> <span class="keyword">void</span> send(<span class="keyword">String</span> message) {
+        <span class="onelineComment">// Logic to send an email (simplified here)</span>
+        System.debug(<span class="string">'Emailing: '</span> + message);
+    }
+}
+
+<span class="onelineComment">// --- Subscriber Code ---</span>
+<span class="onelineComment">// Subscriber gets an instance of a Notifier</span>
+Notifier myEmailer = NotificationFactory.getEmailNotifier();
+
+<span class="onelineComment">// Subscriber uses the interface method</span>
+myEmailer.send(<span class="string">'Welcome to our service!'</span>); <span class="onelineComment">// Outputs: Emailing: Welcome to our service!</span></pre></div>
+
+    </div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Strategies for Retiring Global Apex</h2>
+<p class="p">Even though <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_deprecated.htm" title="Use the @Deprecated annotation to specify Apex identifiers that can subscribers can no longer reference in subsequent releases of the managed package. Deprecation is useful when you’re refactoring code in managed packages as the requirements evolve.">deprecating Apex</a>
+        only affects future versions of your package, phasing out a <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex member requires careful planning and clear communication to prevent
+        subscriber disruption.</p>
+<p class="p">Here’s some recommendations for effectively retiring a <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex member.</p>
+<ul class="ul bulletList">
+        <li class="li">Communicate early and clearly. Inform subscribers well in advance—ideally, multiple
+          release cycles—of any deprecation. Explain reasons, timelines, and migration paths. Update
+          the documentation, and share it prominently.</li>
+
+        <li class="li">Provide alternatives. Release well-documented and robust alternatives before or
+          concurrent with the deprecation announcement.</li>
+
+        <li class="li">Implement soft deprecation with non-breaking warnings.<ul class="ul bulletList">
+            <li class="li">Add the <samp class="codeph apex_code"><span class="keyword">@Deprecated</span></samp> annotation to the
+                <samp class="codeph apex_code"><span class="keyword">global</span></samp> member. This annotation generates
+              compile-time warnings in developer tools, but doesn’t alter run-time behavior.</li>
+
+            <li class="li">Consider run-time logging when the deprecated member is invoked, guiding subscribers
+              to the new alternative.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can’t remove the <samp class="codeph apex_code"><span class="keyword">@Deprecated</span></samp> annotation to undeprecate something in Apex after you’ve
+                released a package version where that item in Apex is deprecated. You also can’t add
+                new <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifiers to a <samp class="codeph apex_code"><span class="keyword">@Deprecated</span></samp> type.</p>
+</div>
+</div></div></div></div>
+</li>
+
+          </ul>
+
+        </li>
+
+        <li class="li">Enforce non-operation with exceptions. Change the code to throw an informative
+          exception, such as<samp class="codeph apex_code">
+              FeatureDeprecatedException(<span class="string">'</span><var class="keyword varname">Method X is retired. Use Method
+            Y.</var><span class="string">')</span></samp>. This breaking change at run time stops the old logic from
+          running and forces attention to the deprecation. However, any breaking change requires
+          extensive prior communication.</li>
+
+        <li class="li">Retire code for obsolete <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex. After
+          ample time and communication, confirm that subscribers are no longer using the deprecated
+            <samp class="codeph apex_code"><span class="keyword">global</span></samp> member. Then minimize the member’s
+          internal code. Although the <samp class="codeph apex_code"><span class="keyword">global</span></samp> signature must
+          remain, its logic can become non-operational (no-op), return a safe default, or throw a
+          specific <samp class="ph systemoutput">Feature Retired</samp> exception. Implementing these
+          changes reduces the risk and effort of maintaining the old code.</li>
+
+      </ul>
+<p class="p">Always thoroughly test changes related to deprecating <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex, including testing your package’s behavior if a subscriber attempts
+        to call the deprecated member. The goal is a graceful transition for your subscribers.</p>
+</div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm">Access Modifiers</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_defining.htm">Apex Class Definition</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_rest.htm" title="You can expose your Apex classes and methods so that external applications can access your code and your application through the REST architecture.">Exposing Apex Classes as REST Web Services</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_web_services.htm" title="You can expose your Apex methods as SOAP web services so that external applications can access your code and your application.">Exposing Apex Methods as SOAP Web Services</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm">NamespaceAccessible Annotation</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_deprecated.htm" title="Use the @Deprecated annotation to specify Apex identifiers that can subscribers can no longer reference in subsequent releases of the managed package. Deprecation is useful when you’re refactoring code in managed packages as the requirements evolve.">Deprecate Managed Apex</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_System_Callable.htm" target="_blank"><em class="ph i">Apex Reference Guide</em>: Callable Interface</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.pkg2_dev.meta/pkg2_dev/packaging_packageable_components.htm#mdc_apex_class" target="_blank"><em class="ph i">Second-Generation Managed Packaging Developer Guide</em>: Components Available in
+       Second-Generation Managed Packages–Apex Class</a></div></li>
+</ul>
+</div>
+</div>

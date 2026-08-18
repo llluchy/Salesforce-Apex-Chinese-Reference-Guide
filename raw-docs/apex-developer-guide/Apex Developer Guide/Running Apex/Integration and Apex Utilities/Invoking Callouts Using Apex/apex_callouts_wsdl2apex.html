@@ -1,0 +1,567 @@
+<a name="apex_callouts_wsdl2apex"><!-- --></a><h1 class="helpHead1">SOAP Services: Defining a Class from a WSDL Document</h1><div class="body">
+    <p class="p"><span class="ph" id="gen_class_from_wsdl"><a name="gen_class_from_wsdl"><!-- --></a>Classes can be automatically generated from a WSDL document that
+        is stored on a local hard drive or network.</span> Creating a class by consuming a WSDL
+      document allows developers to make callouts to the external Web service in their Apex code. </p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Use Outbound Messaging to handle integration solutions when possible. Use callouts to
+      third-party Web services only when necessary.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">To generate an Apex class from a WSDL: </p>
+
+    <ol class="ol enumList">
+      <li class="li">In the application, from Setup, enter <kbd class="ph userinput">Apex Classes</kbd> in the
+          <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">Apex Classes</strong>.</li>
+
+      <li class="li">Click <strong class="ph uicontrol">Generate from WSDL</strong>.</li>
+
+      <li class="li">Click <strong class="ph uicontrol">Browse</strong> to navigate to a WSDL document on your local hard
+        drive or network, or type in the full path. This WSDL document is the basis for the Apex
+        class you are creating. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+          <p class="p">The WSDL document that you specify might contain a SOAP endpoint location that
+            references an outbound port.</p>
+
+          <p class="p" id="port_restrictions_p"><a name="port_restrictions_p"><!-- --></a>For security reasons, Salesforce restricts the outbound ports
+            you can specify to one of the following:</p>
+
+          <a name="port_restriction_li"><!-- --></a><ul class="ul bulletList" id="port_restriction_li">
+            <li class="li">80: This port only accepts HTTP connections.</li>
+
+            <li class="li">443: This port only accepts HTTPS connections.</li>
+
+            <li class="li">1024–66535 (inclusive): These ports accept HTTP or HTTPS connections.</li>
+
+          </ul>
+
+        </p>
+</div>
+</div></div></div></div>
+</li>
+
+      <li class="li">Click <strong class="ph uicontrol">Parse WSDL</strong> to verify the WSDL document contents. The
+        application generates a default class name for each namespace in the WSDL document and
+        reports any errors. Parsing fails if the WSDL contains schema types or constructs that
+        aren’t supported by Apex classes, or if the resulting classes exceed the 1 million character
+        limit on Apex classes. For example, the Salesforce SOAP API WSDL cannot be parsed.</li>
+
+      <li class="li">Modify the class names as desired. <span class="ph" id="class_rename"><a name="class_rename"><!-- --></a>While you can save more than one
+          WSDL namespace into a single class by using the same class name for each namespace, Apex
+          classes can be no more than 1 million characters total.</span>
+      </li>
+
+      <li class="li">Click <strong class="ph uicontrol">Generate Apex</strong>. The final page of the wizard shows which
+        classes were successfully generated, along with any errors from other classes. The page also
+        provides a link to view successfully generated code.</li>
+
+    </ol>
+
+    <p class="p">The successfully generated Apex classes include stub and type classes for calling the
+      third-party Web service represented by the WSDL document. These classes allow you to call the
+      external Web service from Apex. For each generated class, a second class is created with the
+      same name and with a prefix of <samp class="codeph nolang">Async</samp>. The first class is
+      for synchronous callouts. The second class is for asynchronous callouts. For more information
+      about asynchronous callouts, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm" title="Use asynchronous callouts to make long-running requests from a Visualforce page or a Lightning component to an external Web service and process responses in callback methods.">Make Long-Running Callouts with Continuations</a>.</p>
+
+    <p class="p">Note the following about the generated Apex:</p>
+
+    <ul class="ul bulletList">
+      <li class="li">If a WSDL document contains an Apex reserved word, the word is appended with <samp class="codeph nolang">_x</samp> when the Apex class is generated. For example, <samp class="codeph nolang">limit</samp> in a WSDL document converts to <samp class="codeph nolang">limit_x</samp> in the generated Apex class. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_reserved_words.htm" title="These words can be used only as keywords.">Reserved Keywords</a>. For details on
+        handling characters in element names in a WSDL that are not supported in Apex variable
+        names, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_considerations.htm">Considerations Using WSDLs</a>.</li>
+
+      
+      <li class="li">If an operation in the WSDL has an output message with more than one element, the
+        generated Apex wraps the elements in an inner class. The Apex method that represents the
+        WSDL operation returns the inner class instead of the individual elements.</li>
+
+      <li class="li">Since periods (<samp class="codeph nolang">.</samp>) are not allowed in Apex class
+        names, any periods in WSDL names used to generate Apex classes are replaced by underscores
+          (<samp class="codeph nolang">_</samp>) in the generated Apex code.</li>
+
+    </ul>
+
+    <p class="p">After you have generated a class from the WSDL, you can invoke the external service
+      referenced by the WSDL.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Before you can use the samples in the rest of this topic, you must copy the Apex class
+        <samp class="codeph apex_code">docSampleClass</samp> from <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_gen_code.htm" title="You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The WSDL2Apex tool is open source and available on GitHub.">Generated WSDL2Apex Code</a> and add it to your
+      organization.</p>
+</div>
+</div></div></div></div>
+
+    <div class="section">
+<h2 class="helpHead2">Invoking an External Service</h2>
+
+      
+      <p class="p" id="apex_soa_invoke"><a name="apex_soa_invoke"><!-- --></a>To invoke an external service after using its WSDL document to
+        generate an Apex class, create an instance of the stub in your Apex code and call the
+        methods on it. For example, to invoke the <a class="xref" href="http://ws.strikeiron.com/relauto/iplookup?WSDL" target="_blank" title="HTML (New Window)">StrikeIron IP address lookup service</a> from Apex, you could
+        write code similar to the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="apex_soa_example"><a name="apex_soa_example"><!-- --></a>  <span class="onelineComment">// Create the stub</span>
+  strikeironIplookup.DNSSoap dns = <span class="keyword">new</span> strikeironIplookup.DNSSoap();
+
+  <span class="onelineComment">// Set up the license header</span>
+  dns.LicenseInfo = <span class="keyword">new</span> strikeiron.LicenseInfo();
+  dns.LicenseInfo.RegisteredUser = <span class="keyword">new</span> strikeiron.RegisteredUser();
+  dns.LicenseInfo.RegisteredUser.UserID = <span class="string">'you@company.com'</span>;
+  dns.LicenseInfo.RegisteredUser.Password = <span class="string">'your-password'</span>;
+
+  <span class="onelineComment">// Make the Web service call</span>
+  strikeironIplookup.DNSInfo info = dns.DNSLookup(<span class="string">'www.myname.com'</span>); 
+</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">HTTP Header Support</h2>
+
+      
+    </div>
+
+    <p class="p">You can set the HTTP headers on a Web service callout. For example, you can use this feature
+      to set the value of a cookie in an authorization header. To set HTTP headers, add <samp class="codeph apex_code">inputHttpHeaders_x</samp> and <samp class="codeph apex_code">outputHttpHeaders_x</samp> to the stub.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="callouts_content_type_header"><a name="callouts_content_type_header"><!-- --></a>In API versions 16.0 and earlier, HTTP responses for
+        callouts are always decoded using UTF-8, regardless of the Content-Type header. In API
+        versions 17.0 and later, HTTP responses are decoded using the encoding specified in the
+        Content-Type header.</span></p>
+</div>
+</div></div></div></div>
+
+    <p class="p">The following samples work with the sample WSDL file in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_gen_code.htm" title="You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The WSDL2Apex tool is open source and available on GitHub.">Generated WSDL2Apex Code</a>:</p>
+
+    
+    <div class="section">
+<h2 class="helpHead2">Sending HTTP Headers on a Web Service Callout</h2>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="input_docSample"><a name="input_docSample"><!-- --></a>docSample.DocSamplePort stub = <span class="keyword">new</span> docSample.DocSamplePort();
+stub.inputHttpHeaders_x = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+<span class="onelineComment">//Setting a basic authentication header</span>
+<span class="onelineComment">// Tip: Use named credentials instead.</span>
+stub.inputHttpHeaders_x.put(<span class="string">'Authorization'</span>, <span class="string">'Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='</span>);
+
+<span class="onelineComment">//Setting a cookie header</span>
+stub.inputHttpHeaders_x.put(<span class="string">'Cookie'</span>, <span class="string">'name=value'</span>);
+
+<span class="onelineComment">//Setting a custom HTTP header</span>
+stub.inputHttpHeaders_x.put(<span class="string">'myHeader'</span>, <span class="string">'myValue'</span>);
+
+<span class="keyword">String</span> input = <span class="string">'This is the input string'</span>;
+<span class="keyword">String</span> output = stub.EchoString(input);
+</pre></div>
+
+      <p class="p">If a value for <samp class="codeph apex_code">inputHttpHeaders_x</samp> is specified, it
+        overrides the standard headers set.</p>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>Instead of hardcoding the <samp class="codeph nolang">Authorization</samp>
+        header value, use named credentials. Named credentials offer a declarative and secure way to
+        store and manage the credentials needed for HTTP callouts so that Salesforce can
+        authenticate with external APIs. For more information, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=sf.named_credentials_about.htm&amp;language=en_US" target="_blank">Named Credentials</a> in
+          <cite class="cite">Salesforce Help</cite>.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Accessing HTTP Response Headers from a Web Service Callout Response</h2>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="output_docSample"><a name="output_docSample"><!-- --></a>docSample.DocSamplePort stub = <span class="keyword">new</span> docSample.DocSamplePort();
+stub.outputHttpHeaders_x = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+<span class="keyword">String</span> input = <span class="string">'This is the input string'</span>;
+<span class="keyword">String</span> output = stub.EchoString(input);
+
+<span class="onelineComment">//Getting cookie header</span>
+<span class="keyword">String</span> cookie = stub.outputHttpHeaders_x.get(<span class="string">'Set-Cookie'</span>);
+
+<span class="onelineComment">//Getting custom header</span>
+<span class="keyword">String</span> myHeader = stub.outputHttpHeaders_x.get(<span class="string">'My-Header'</span>);
+</pre></div>
+
+      <p class="p">The value of <samp class="codeph apex_code">outputHttpHeaders_x</samp> is null by
+        default. You must set <samp class="codeph apex_code">outputHttpHeaders_x</samp> before
+        you have access to the content of headers in the response.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Supported WSDL Features</h2>
+
+      
+      <p class="p">Apex supports only the document literal wrapped WSDL style and the following primitive and
+        built-in datatypes:</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d15605e289">Schema Type</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d15605e292">Apex Type</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:anyURI</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:boolean</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Boolean</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:date</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Date</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:dateTime</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Datetime</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:double</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Double</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:float</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Double</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:int</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:integer</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:language</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:long</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Long</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:Name</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:NCName</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:nonNegativeInteger</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:NMTOKEN</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:NMTOKENS</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:normalizedString</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:NOTATION</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:positiveInteger</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:QName</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:short</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:string</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:time</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Datetime</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:token</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">String</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:unsignedInt</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:unsignedLong</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Long</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d15605e289" data-title="Schema Type"><samp class="codeph apex_code">xsd:unsignedShort</samp></td>
+
+              <td class="entry" headers="d15605e292" data-title="Apex Type">Integer</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="box message info" id="NoAnyTypeForWSDL">
+<a name="NoAnyTypeForWSDL"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The Salesforce datatype anyType is not supported in WSDLs used to
+        generate Apex code that is saved using API version 15.0 and later. For code saved using API
+        version 14.0 and earlier, anyType is mapped to String.</p>
+</div>
+</div></div></div>
+</div>
+
+      <p class="p">Apex also supports the following schema constructs:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph apex_code">xsd:all</samp>, in Apex code saved using API version
+          15.0 and later</li>
+
+        <li class="li">
+<samp class="codeph apex_code">xsd:annotation</samp>, in Apex code saved using API
+          version 15.0 and later</li>
+
+        <li class="li">
+<samp class="codeph apex_code">xsd:attribute</samp>, in Apex code saved using API
+          version 15.0 and later</li>
+
+        <li class="li">
+<samp class="codeph apex_code">xsd:choice</samp>, in Apex code saved using API
+          version 15.0 and later</li>
+
+        <li class="li">
+<samp class="codeph apex_code">xsd:element</samp>. In Apex code saved using API
+          version 15.0 and later, the <samp class="codeph apex_code">ref</samp> attribute is also
+          supported with the following restrictions:<ul class="ul bulletList">
+            <li class="li">You cannot call a <samp class="codeph apex_code">ref</samp> in a different
+              namespace.</li>
+
+            <li class="li">A global element cannot use <samp class="codeph apex_code">ref</samp>.</li>
+
+            <li class="li">If an element contains <samp class="codeph apex_code">ref</samp>, it cannot also
+              contain <samp class="codeph apex_code">name</samp> or <samp class="codeph apex_code">type</samp>.</li>
+
+          </ul>
+</li>
+
+        <li class="li"><samp class="codeph apex_code">xsd:sequence</samp></li>
+
+      </ul>
+
+      <p class="p">The following data types are only supported when used as <dfn class="term">call ins</dfn>, that is,
+        when an external Web service calls an Apex Web service method. These data types are not
+        supported as <dfn class="term">callouts</dfn>, that is, when an Apex Web service method calls an
+        external Web service.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">blob</li>
+
+        <li class="li">decimal</li>
+
+        <li class="li">enum</li>
+
+      </ul>
+
+      <p class="p">Apex does not support any other WSDL constructs, types, or services, including:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">RPC/encoded services</li>
+
+        <li class="li">WSDL files with multiple <samp class="codeph apex_code">portTypes</samp>, multiple
+          services, or multiple bindings</li>
+
+        <li class="li">WSDL files that import external schemas. For example, the following WSDL fragment
+          imports an external schema, which is not
+            supported:<div class="codeSection xml"><pre class="codeblock brush:xml">  <span class="tag">&lt;wsdl:types</span>&gt;
+    <span class="tag">&lt;xsd:schema</span>
+    <span class="attribute"> elementFormDefault=</span>"qualified"
+    <span class="attribute"> targetNamespace=</span>"http://s3.amazonaws.com/doc/2006-03-01/"&gt;
+      <span class="tag">&lt;xsd:include</span><span class="attribute"> schemaLocation=</span>"AmazonS3.xsd"/&gt;
+    <span class="tag">&lt;/xsd:schema</span>&gt;
+  <span class="tag">&lt;/wsdl:types</span>&gt;
+</pre></div>
+<p class="p">However, an import within the same schema is supported. In the following
+            example, the external WSDL is pasted into the WSDL you are
+          converting:</p>
+<div class="codeSection xml"><pre class="codeblock brush:xml">  <span class="tag">&lt;wsdl:types</span>&gt;
+    <span class="tag">&lt;xsd:schema</span>
+     <span class="attribute"> xmlns:tns=</span>"http://s3.amazonaws.com/doc/2006-03-01/"
+     <span class="attribute"> xmlns:xsd=</span>"http://www.w3.org/2001/XMLSchema"
+     <span class="attribute"> elementFormDefault=</span>"qualified"
+     <span class="attribute"> targetNamespace=</span>"http://s3.amazonaws.com/doc/2006-03-01/"&gt;
+
+      <span class="tag">&lt;xsd:element</span><span class="attribute"> name=</span>"CreateBucket"&gt;
+        <span class="tag">&lt;xsd:complexType</span>&gt;
+          <span class="tag">&lt;xsd:sequence</span>&gt;
+     [...]
+    <span class="tag">&lt;/xsd:schema</span>&gt;
+  <span class="tag">&lt;/wsdl:types</span>&gt;
+</pre></div>
+</li>
+
+        <li class="li">Any schema types not documented in the previous table</li>
+
+        <li class="li">WSDLs that exceed the size limit, including the Salesforce WSDLs</li>
+
+        <li class="li">WSDLs that don’t use the document literal wrapped style. The following WSDL
+          snippet doesn’t use document literal wrapped style and results in an “Unable
+          to find complexType” error when
+          imported.<div class="codeSection xml"><pre class="codeblock brush:xml">  <span class="tag">&lt;wsdl:types</span>&gt;
+    <span class="tag">&lt;xsd:schema</span><span class="attribute"> targetNamespace=</span>"http://test.org/AccountPollInterface/"<span class="attribute"> xmlns:xsd=</span>"http://www.w3.org/2001/XMLSchema"&gt;
+      <span class="tag">&lt;xsd:element</span><span class="attribute"> name=</span>"SFDCPollAccountsResponse"<span class="attribute"> type=</span>"tns:SFDCPollResponse"/&gt;
+      <span class="tag">&lt;xsd:simpleType</span><span class="attribute"> name=</span>"SFDCPollResponse"&gt;
+          <span class="tag">&lt;xsd:restriction</span><span class="attribute"> base=</span>"xsd:string" /&gt;
+      <span class="tag">&lt;/xsd:simpleType</span>&gt;
+    <span class="tag">&lt;/xsd:schema</span>&gt;
+  <span class="tag">&lt;/wsdl:types</span>&gt;</pre></div>
+This modified version wraps the <samp class="codeph nolang">simpleType</samp> element as a <samp class="codeph nolang">complexType</samp> that
+          contains a sequence of elements. This follows the document literal style and is
+          supported.<div class="codeSection xml"><pre class="codeblock brush:xml">  <span class="tag">&lt;wsdl:types</span>&gt;
+    <span class="tag">&lt;xsd:schema</span><span class="attribute"> targetNamespace=</span>"http://test.org/AccountPollInterface/"<span class="attribute"> xmlns:xsd=</span>"http://www.w3.org/2001/XMLSchema"&gt;
+      <span class="tag">&lt;xsd:element</span><span class="attribute"> name=</span>"SFDCPollAccountsResponse"<span class="attribute"> type=</span>"tns:SFDCPollResponse" /&gt;
+      <span class="tag">&lt;xsd:complexType</span><span class="attribute"> name=</span>"SFDCPollResponse"&gt;
+        <span class="tag">&lt;xsd:sequence</span>&gt;
+          <span class="tag">&lt;xsd:element</span><span class="attribute"> name=</span>"SFDCOutput"<span class="attribute"> type=</span>"xsd:string" /&gt;
+        <span class="tag">&lt;/xsd:sequence</span>&gt;
+      <span class="tag">&lt;/xsd:complexType</span>&gt;
+    <span class="tag">&lt;/xsd:schema</span>&gt;
+  <span class="tag">&lt;/wsdl:types</span>&gt;</pre></div>
+</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_gen_code.htm">Generated WSDL2Apex Code</a><br>
+You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The         WSDL2Apex tool is open source and available on GitHub.</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing.htm">Test Web Service Callouts</a><br>
+Generated code is saved as an Apex class containing the methods you can invoke for         calling the web service. To deploy or package this Apex class and other accompanying code,         75% of the code must have test coverage, including the methods in the generated class. By         default, test methods don’t support web service callouts, and tests that perform web         service callouts fail. To prevent tests from failing and to increase code coverage, Apex         provides the built-in <samp class="codeph apex_code">WebServiceMock</samp> interface and         the <samp class="codeph apex_code">Test.setMock</samp> method. Use <samp class="codeph apex_code">WebServiceMock</samp> and <samp class="codeph apex_code">Test.setMock</samp> to receive fake responses in a test method.</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing_dml.htm">Performing DML Operations and Mock Callouts</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_considerations.htm">Considerations Using WSDLs</a><br>
+</li>
+</ol>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" title="Named Credentials as Callout Endpoints">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_http.htm" title="Invoking HTTP Callouts">Next →</a></li>
+</ul></div>
+</div>

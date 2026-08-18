@@ -1,0 +1,271 @@
+<a name="apex_class_VisualEditor_DynamicPickList"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">DynamicPickList Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>An abstract class, used to display the values of a picklist in a Lightning component on a Lightning page.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_VisualEditor.htm#apex_namespace_VisualEditor" title="The VisualEditor namespace provides classes and methods for interacting with the Lightning App Builder. The classes and methods in this namespace operate on Lightning components, which include Lightning web components and Aura components.">VisualEditor</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">To use this class as the datasource of a picklist in a Lightning component, it must be
+      extended by a custom Apex class and then that class must be called in the component’s design
+      file.</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="p">Here’s an example of a custom Apex class extending the <samp class="codeph apex_code">VisualEditor.DynamicPickList</samp> class.
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="dynamic_picklist_custom_apex_class_code"><a name="dynamic_picklist_custom_apex_class_code"><!-- --></a><span class="keyword">global</span> <span class="keyword">class</span> MyCustomPickList <span class="keyword">extends</span> VisualEditor.DynamicPickList{
+    
+    <span class="keyword">global</span> <span class="keyword">override</span> VisualEditor.DataRow getDefaultValue(){
+        VisualEditor.DataRow defaultValue = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'red'</span>, <span class="string">'RED'</span>);
+        <span class="statement">return</span> defaultValue;
+    }
+    <span class="keyword">global</span> <span class="keyword">override</span> VisualEditor.DynamicPickListRows getValues() {
+        VisualEditor.DataRow value1 = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'red'</span>, <span class="string">'RED'</span>);
+        VisualEditor.DataRow value2 = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'yellow'</span>, <span class="string">'YELLOW'</span>);
+        VisualEditor.DynamicPickListRows  myValues = <span class="keyword">new</span> VisualEditor.DynamicPickListRows();
+        myValues.addRow(value1);
+        myValues.addRow(value2);
+        <span class="statement">return</span> myValues;
+    }
+}</pre></div>
+</div>
+
+      <div class="p">Here’s an example of how the custom Apex class gets called in a design file so that the
+        picklist appears in the Lightning component.
+        <div class="codeSection nolang"><pre class="codeblock brush:plain" id="dynamic_picklist_design_file_code"><a name="dynamic_picklist_design_file_code"><!-- --></a>&lt;design:component&gt;
+        &lt;design:attribute name="property1" datasource="apex://MyCustomPickList"/&gt;
+&lt;/design:component&gt;</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_methods">DynamicPickList Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_methods">
+<a name="apex_VisualEditor_DynamicPickList_methods"><!-- --></a>
+  <h2 class="helpHead2">DynamicPickList Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">DynamicPickList</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_clone">clone()</a></strong><br>
+Makes a duplicate copy of the <samp class="codeph apex_code">VisualEditor.DynamicPicklist</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_getDefaultValue">getDefaultValue()</a></strong><br>
+Returns the picklist item that is set as the default value for the       picklist.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_getLabel">getLabel(attributeValue)</a></strong><br>
+Returns the user-facing label for a specified picklist     value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_getValues">getValues()</a></strong><br>
+Returns the list of picklist item values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickList.htm#apex_VisualEditor_DynamicPickList_isValid">isValid(attributeValue)</a></strong><br>
+Returns the valid state of the picklist item’s value. A picklist       value is considered valid if it’s a part of any <samp class="codeph apex_code">VisualEditor.DataRow</samp> in the <samp class="codeph apex_code">VisualEditor.DynamicPickListRows</samp> returned by <samp class="codeph apex_code">getValues()</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_clone">
+<a name="apex_VisualEditor_DynamicPickList_clone"><!-- --></a>
+  <h3 class="helpHead3">clone()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Makes a duplicate copy of the <samp class="codeph apex_code">VisualEditor.DynamicPicklist</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Object</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_getDefaultValue">
+<a name="apex_VisualEditor_DynamicPickList_getDefaultValue"><!-- --></a>
+  <h3 class="helpHead3">getDefaultValue()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the picklist item that is set as the default value for the
+      picklist.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> VisualEditor.DataRow getDefaultValue()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DataRow.htm#apex_class_VisualEditor_DataRow" title="Contains information about one item in a picklist used in a Lightning component on a Lightning page.">VisualEditor.DataRow</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_getLabel">
+<a name="apex_VisualEditor_DynamicPickList_getLabel"><!-- --></a>
+  <h3 class="helpHead3">getLabel(attributeValue)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the user-facing label for a specified picklist
+    value.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLabel(<span class="keyword">Object</span> attributeValue)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">attributeValue</var></strong>: Type: Object The value of the picklist item.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_getValues">
+<a name="apex_VisualEditor_DynamicPickList_getValues"><!-- --></a>
+  <h3 class="helpHead3">getValues()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the list of picklist item values.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> VisualEditor.DynamicPickListRows
+        getValues()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DynamicPickListRows.htm#apex_class_VisualEditor_DynamicPickListRows" title="Contains a list of picklist items in a Lightning component on a Lightning page.">VisualEditor.DynamicPickListRows</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DynamicPickList_isValid">
+<a name="apex_VisualEditor_DynamicPickList_isValid"><!-- --></a>
+  <h3 class="helpHead3">isValid(attributeValue)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the valid state of the picklist item’s value. A picklist
+      value is considered valid if it’s a part of any <samp class="codeph apex_code">VisualEditor.DataRow</samp> in the <samp class="codeph apex_code">VisualEditor.DynamicPickListRows</samp> returned by <samp class="codeph apex_code">getValues()</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isValid(<span class="keyword">Object</span> attributeValue)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">attributeValue</var></strong>: Type: Object The value of the picklist item.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

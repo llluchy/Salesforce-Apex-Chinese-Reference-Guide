@@ -1,0 +1,75 @@
+<a name="apex_classes_namespace_precedence"><!-- --></a><h1 class="helpHead1">Namespace, Class, and Variable Name Precedence</h1><div class="body conbody">
+<div class="p">Because local variables, class names, and namespaces can all hypothetically
+use the same identifiers, the Apex parser evaluates expressions in the form of <samp class="codeph apex_code">name1.name2.[...].nameN</samp> as follows:<ol class="ol enumList">
+<li class="li">The parser first assumes that <samp class="codeph apex_code">name1</samp> is a local variable with <samp class="codeph apex_code">name2</samp> - <samp class="codeph apex_code">nameN</samp> as
+field references. </li>
+
+<li class="li">If the first assumption does not hold true, the parser then assumes
+that <samp class="codeph apex_code">name1</samp> is a class name
+and <samp class="codeph apex_code">name2</samp> is a static variable
+name with <samp class="codeph apex_code">name3</samp> - <samp class="codeph apex_code">nameN</samp> as field references.</li>
+
+<li class="li">If the second assumption does not hold true, the parser then assumes
+that <samp class="codeph apex_code">name1</samp> is a namespace
+name, <samp class="codeph apex_code">name2</samp> is a class name, <samp class="codeph apex_code">name3</samp> is a static variable name,
+and <samp class="codeph apex_code">name4</samp> - <samp class="codeph apex_code">nameN</samp> are field references.</li>
+
+<li class="li">If the third assumption does not hold true, the parser reports
+an error.</li>
+
+</ol>
+</div>
+
+<div class="p">If the expression ends with a set of parentheses (for example, <samp class="codeph apex_code">name1.name2.[...].nameM.nameN()</samp>), the Apex parser evaluates the expression as follows:<ol class="ol enumList">
+        <li class="li">The parser first assumes that <samp class="codeph apex_code">name1</samp> is a local
+          variable with <samp class="codeph apex_code">name2</samp> - <samp class="codeph apex_code">nameM</samp> as field references, and <samp class="codeph apex_code">nameN</samp> as a method invocation. </li>
+
+        <li class="li">If the first assumption does not hold true:<ul class="ul bulletList">
+            <li class="li">If the expression contains only two identifiers (<samp class="codeph apex_code">name1.name2()</samp>), the parser then assumes that <samp class="codeph apex_code">name1</samp> is a class name and <samp class="codeph apex_code">name2</samp> is a method invocation.</li>
+
+            <li class="li">If the expression contains more than two identifiers, the parser then assumes that
+                <samp class="codeph apex_code">name1</samp> is a class name, <samp class="codeph apex_code">name2</samp> is a static variable name with <samp class="codeph apex_code">name3</samp> - <samp class="codeph apex_code">nameM</samp> as field references, and <samp class="codeph apex_code">nameN</samp> is a method invocation.</li>
+
+          </ul>
+</li>
+
+        <li class="li">If the second assumption does not hold true, the parser then assumes that <samp class="codeph apex_code">name1</samp> is a namespace name, <samp class="codeph apex_code">name2</samp> is a class name, <samp class="codeph apex_code">name3</samp> is a static variable name, <samp class="codeph apex_code">name4</samp> - <samp class="codeph apex_code">nameM</samp> are field references,
+          and <samp class="codeph apex_code">nameN</samp> is a method invocation.</li>
+
+        <li class="li">If the third assumption does not hold true, the parser reports an error.</li>
+
+      </ol>
+</div>
+
+<p class="p">However, with class variables Apex also uses dot notation to reference member variables. Those member
+variables might refer to other class instances, or they might refer
+to an sObject which has its own dot notation rules to refer to field
+names (possibly navigating foreign keys). </p>
+
+<p class="p">Once you enter an sObject field in the expression, the remainder
+of the expression stays within the sObject domain, that is, sObject
+fields cannot refer back to Apex expressions.</p>
+
+<p class="p">For instance, if you have the following class:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> c { 
+  c1 c1 = <span class="keyword">new</span> c1(); 
+  <span class="keyword">class</span> c1 { c2 c2; } 
+  <span class="keyword">class</span> c2 { Account a; } 
+}
+</pre></div>
+
+<p class="p">Then the following expressions are all legal:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">c.c1.c2.a.name
+c.c1.c2.a.owner.lastName.toLowerCase()
+c.c1.c2.a.tasks
+c.c1.c2.a.contacts.size()
+</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_schema_namespace_using.htm" title="Using the Schema Namespace">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_type_resolution.htm" title="Type Resolution and System Namespace for Types">Next →</a></li>
+</ul></div>
+</div>

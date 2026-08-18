@@ -1,0 +1,113 @@
+<a name="apex_interface_Metadata_DeployCallback"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">DeployCallback Interface</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>An interface for metadata deployment callback
+    classes.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Metadata.htm" title="The Metadata namespace provides classes and methods for working with custom metadata in Salesforce">Metadata</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">You must provide a callback class for the asynchronous deployment of custom metadata
+        through Apex. This class must implement the <samp class="codeph nolang">Metadata.DeployCallback</samp> interface.</p>
+
+      <p class="p">Salesforce calls your <samp class="codeph nolang">DeployCallback.handleResult()</samp>
+        method asynchronously once the queued deployment completes. Because the callback is called
+        as asynchronous Apex after deployment, there may be a brief period where the deploy has
+        completed, but your callback has not been called yet.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Metadata_DeployCallback.htm#apex_Metadata_DeployCallback_methods">DeployCallback Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Metadata_DeployCallback.htm#apex_interface_Metadata_DeployCallback_Example">DeployCallback Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Metadata_DeployCallback_methods">
+<a name="apex_Metadata_DeployCallback_methods"><!-- --></a><h2 class="helpHead2">DeployCallback Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DeployCallback</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Metadata_DeployCallback.htm#apex_Metadata_DeployCallback_handleResult">handleResult(var1, var2)</a></strong><br>
+Method that is called when the asynchronous deployment of custom       metadata completes.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Metadata_DeployCallback_handleResult">
+<a name="apex_Metadata_DeployCallback_handleResult"><!-- --></a><h3 class="helpHead3">handleResult(var1, var2)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Method that is called when the asynchronous deployment of custom
+      metadata completes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> handleResult(Metadata.DeployResult var1, Metadata.DeployCallbackContext var2)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">var1</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployResult.htm#apex_class_Metadata_DeployResult" title="Represents the results of a metadata deployment.">Metadata.DeployResult</a></p>
+<p class="p">The results of the asynchronous deployment.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">var2</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployCallbackContext.htm#apex_class_Metadata_DeployCallbackContext" title="Represents context information for a deployment job.">Metadata.DeployCallbackContext</a></p>
+<p class="p">The context for the queued asynchronous deployment job.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Metadata_DeployCallback_Example">
+<a name="apex_interface_Metadata_DeployCallback_Example"><!-- --></a><h2 class="helpHead2">DeployCallback Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">This is an example implementation of the <samp class="codeph apex_code">Metadata.DeployCallback</samp> interface.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyCallback <span class="keyword">implements</span> Metadata.DeployCallback {
+    <span class="keyword">public</span> <span class="keyword">void</span> handleResult(Metadata.DeployResult result,
+                             Metadata.DeployCallbackContext context) {
+        <span class="statement">if</span> (result.status == Metadata.DeployStatus.Succeeded) {
+            <span class="onelineComment">// Deployment was successful</span>
+        } <span class="statement">else</span> {
+            <span class="onelineComment">// Deployment was not successful</span>
+        }
+    }
+}
+</pre></div>
+<p class="p">The following example uses this implementation for a deployment.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Setup callback and deploy</span>
+MyCallback callback = <span class="keyword">new</span> MyCallback();
+Metadata.Operations.enqueueDeployment(mdContainer, callback);
+</pre></div>
+</div>
+</div>
+</div>
+</div>

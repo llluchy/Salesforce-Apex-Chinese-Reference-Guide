@@ -1,0 +1,49 @@
+<a name="connectapi_examples_post_feed_element_richtext_code_snippet"><!-- --></a><h1 class="helpHead1">Post a Rich-Text Feed Element with a Code Block</h1><div class="body refbody">
+<div class="shortdesc">Call a method to post a feed element with a code block.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId,
+          feedElement)</samp></a> to post a feed item with a code block.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityId = <span class="keyword">null</span>;
+<span class="keyword">String</span> targetUserOrGroupOrRecordId  = <span class="string">'me'</span>;
+<span class="keyword">String</span> codeSnippet = <span class="string">'&lt;html&gt;\n\t&lt;body&gt;\n\t\tHello, world!\n\t&lt;/body&gt;\n&lt;/html&gt;'</span>;
+ConnectApi.FeedItemInput input = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+input.subjectId = targetUserOrGroupOrRecordId;
+input.feedElementType = ConnectApi.FeedElementType.FeedItem;
+
+ConnectApi.MessageBodyInput messageInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegment;
+ConnectApi.MarkupBeginSegmentInput markupBeginSegment;
+ConnectApi.MarkupEndSegmentInput markupEndSegment;
+
+messageInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+markupBeginSegment = <span class="keyword">new</span> ConnectApi.MarkupBeginSegmentInput();
+markupBeginSegment.markupType = ConnectApi.MarkupType.Code;
+messageInput.messageSegments.add(markupBeginSegment);
+
+textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+textSegment.text = codeSnippet;
+messageInput.messageSegments.add(textSegment);
+
+markupEndSegment = <span class="keyword">new</span> ConnectApi.MarkupEndSegmentInput();
+markupEndSegment.markupType = ConnectApi.MarkupType.Code;
+messageInput.messageSegments.add(markupEndSegment);
+
+input.body = messageInput;
+
+ConnectApi.ChatterFeeds.postFeedElement(communityId, input);
+</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_markup_begin_segment.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.MarkupBeginSegmentInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.MarkupBeginSegmentInput</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_markup_end_segment.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.MarkupEndSegmentInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.MarkupEndSegmentInput</a></div></li>
+</ul>
+</div>
+</div>

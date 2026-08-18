@@ -1,0 +1,71 @@
+<a name="apex_dynamic_describeTabs"><!-- --></a><h1 class="helpHead1">Describing Tabs Using Schema Methods</h1><div class="body conbody">
+        
+        <p class="p">You can get metadata information about the apps and their tabs available in the
+            Salesforce user interface by executing a describe call in Apex. Also, you can get more
+            detailed information about each tab. Use the <samp class="codeph apex_code">describeTabs</samp> Schema method and the <samp class="codeph apex_code">getTabs</samp> method in <samp class="codeph apex_code">Schema.DescribeTabResult</samp>, respectively.</p>
+
+        <p class="p">This example shows how to get the tab sets for each app. The example then obtains tab
+            describe metadata information for the Sales app. For each tab, metadata information
+            includes the icon URL, whether the tab is custom or not, and colors among others. The
+            tab describe information is written to the debug output.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get tab set describes for each app</span>
+List&lt;Schema.DescribeTabSetResult&gt; tabSetDesc = Schema.describeTabs();
+
+<span class="onelineComment">// Iterate through each tab set describe for each app and display the info</span>
+<span class="statement">for</span>(DescribeTabSetResult tsr : tabSetDesc) {
+    <span class="keyword">String</span> appLabel = tsr.getLabel();
+    System.debug(<span class="string">'Label: '</span> + appLabel);
+    System.debug(<span class="string">'Logo URL: '</span> + tsr.getLogoUrl());
+    System.debug(<span class="string">'isSelected: '</span> + tsr.isSelected());
+    <span class="keyword">String</span> ns = tsr.getNamespace();
+    <span class="statement">if</span> (ns == <span class="string">''</span>) {
+        System.debug(<span class="string">'The '</span> + appLabel + <span class="string">' app has no namespace defined.'</span>);
+    }
+    <span class="statement">else</span> {
+        System.debug(<span class="string">'Namespace: '</span> + ns);
+    }
+    
+    <span class="onelineComment">// Display tab info for the Sales app</span>
+    <span class="statement">if</span> (appLabel == <span class="string">'Sales'</span>) {
+        List&lt;Schema.DescribeTabResult&gt; tabDesc = tsr.getTabs();
+        System.debug(<span class="string">'-- Tab information for the Sales app --'</span>);
+        <span class="statement">for</span>(Schema.DescribeTabResult tr : tabDesc) {
+            System.debug(<span class="string">'getLabel: '</span> + tr.getLabel());
+            System.debug(<span class="string">'getColors: '</span> + tr.getColors());
+            System.debug(<span class="string">'getIconUrl: '</span> + tr.getIconUrl());
+            System.debug(<span class="string">'getIcons: '</span> + tr.getIcons());
+            System.debug(<span class="string">'getMiniIconUrl: '</span> + tr.getMiniIconUrl());
+            System.debug(<span class="string">'getSobjectName: '</span> + tr.getSobjectName());
+            System.debug(<span class="string">'getUrl: '</span> + tr.getUrl());
+            System.debug(<span class="string">'isCustom: '</span> + tr.isCustom());
+        }
+    }
+}
+
+<span class="onelineComment">// Example debug statement output</span>
+<span class="onelineComment">// DEBUG|Label: Sales</span>
+<span class="onelineComment">// DEBUG|Logo URL: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/seasonLogos/2014_winter_aloha.png
+<span class="onelineComment">// DEBUG|isSelected: true</span>
+<span class="onelineComment">// DEBUG|The Sales app has no namespace defined.// DEBUG|-- Tab information for the Sales app --</span>
+<span class="onelineComment">// (This is an example debug output for the Accounts tab.)</span>
+<span class="onelineComment">// DEBUG|getLabel: Accounts</span>
+<span class="onelineComment">// DEBUG|getColors: (Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme4;], </span>
+<span class="onelineComment">//       Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme3;], </span>
+<span class="onelineComment">//       Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme2;])</span>
+<span class="onelineComment">// DEBUG|getIconUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts32.png
+<span class="onelineComment">// DEBUG|getIcons: (Schema.DescribeIconResult[getContentType=image/png;getHeight=32;getTheme=theme3;</span>
+<span class="onelineComment">//       getUrl=https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts32.png;getWidth=32;], 
+<span class="onelineComment">//       Schema.DescribeIconResult[getContentType=image/png;getHeight=16;getTheme=theme3;</span>
+<span class="onelineComment">//       getUrl=https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts16.png;getWidth=16;])
+<span class="onelineComment">// DEBUG|getMiniIconUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts16.png
+<span class="onelineComment">// DEBUG|getSobjectName: Account</span>
+<span class="onelineComment">// DEBUG|getUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/001/o
+<span class="onelineComment">// DEBUG|isCustom: false</span></pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_describeSObject.htm" title="Describing sObjects Using Schema Method">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_global_describe.htm" title="Accessing All sObjects">Next →</a></li>
+</ul></div>
+</div>

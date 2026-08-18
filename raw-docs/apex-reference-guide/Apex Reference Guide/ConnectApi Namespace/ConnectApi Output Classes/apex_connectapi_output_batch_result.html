@@ -1,0 +1,85 @@
+<a name="apex_connectapi_output_batch_result"><!-- --></a><h1 class="helpHead1">ConnectApi.BatchResult</h1><div class="body refbody">
+<div class="shortdesc">The result of an operation returned by a batch method.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p"><span class="ph" id="description"><a name="description"><!-- --></a>Calls to batch methods return a list of <samp class="codeph apex_code">BatchResult</samp> objects. Each element in the
+                        <samp class="codeph apex_code">BatchResult</samp> list corresponds to the
+                    strings in the list parameter passed to the batch method. The first element in
+                    the <samp class="codeph apex_code">BatchResult</samp> list matches the first
+                    string passed in the list parameter, the second element corresponds with the
+                    second string, and so on. If only one string is passed, the <samp class="codeph apex_code">BatchResult</samp> list contains a single
+                    element.</span></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following example shows how to obtain and iterate through the returned <samp class="codeph apex_code">ConnectApi.BatchResult</samp> objects. The code adds
+                two group IDs to a list. One of group IDs is incorrect, which causes a failure when
+                the code calls the batch method. After it calls the batch method, it iterates
+                through the results to determine whether the operation was successful or not for
+                each group ID in the list. The code writes the ID of every group that was processed
+                successfully to the debug log. The code writes an error message for every failed
+                group. </p>
+
+            <p class="p">This example generates one successful operation and one failure.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">String</span>&gt; myList = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+<span class="onelineComment">// Add one correct group ID.</span>
+myList.add(<span class="string">'0F9D00000000oOT'</span>); 
+<span class="onelineComment">// Add one incorrect group ID.</span>
+myList.add(<span class="string">'0F9D00000000izf'</span>);
+
+ConnectApi.BatchResult[] batchResults = ConnectApi.ChatterGroups.getGroupBatch(<span class="keyword">null</span>, myList);
+
+<span class="onelineComment">// Iterate through each returned result.</span>
+<span class="statement">for</span> (ConnectApi.BatchResult batchResult : batchResults) {
+    <span class="statement">if</span> (batchResult.isSuccess()) {
+        <span class="onelineComment">// Operation was successful. </span>
+        <span class="onelineComment">// Print the group ID.</span>
+        ConnectApi.ChatterGroupSummary groupSummary;
+        <span class="statement">if</span>(batchResult.getResult() <span class="statement">instanceof</span> ConnectApi.ChatterGroupSummary) {
+           groupSummary = (ConnectApi.ChatterGroupSummary) batchResult.getResult();
+        }
+        System.debug(<span class="string">'SUCCESS'</span>);
+        System.debug(groupSummary.id);
+    }
+    <span class="statement">else</span> {
+        <span class="onelineComment">// Operation failed. Print errors.</span>
+        System.debug(<span class="string">'FAILURE'</span>);
+        System.debug(batchResult.getErrorMessage());
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_batch_result_methods.htm">BatchResult Methods</a></strong><br>
+These are instance methods for <samp class="codeph apex_code">BatchResult</samp>.</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_getCommentBatch_1" title="Get a list of comments.">getCommentBatch(communityId, commentIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_getFeedElementBatch_1" title="Get a list of feed elements.">getFeedElementBatch(communityId, feedElementIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_updateFeedElementReadByCapabilityBatch_1" title="Mark multiple feed elements as read by the context user at the same time using an input class.">updateFeedElementReadByCapabilityBatch(communityId, feedElementIds, readBy)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElementBatch_1" title="Post a list of feed elements.">postFeedElementBatch(communityId, feedElements)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_updateFeedElementReadByCapabilityBatch_2" title="Mark multiple feed elements as read by the context user at the same time.">updateFeedElementReadByCapabilityBatch(communityId, feedElementIds, isReadByMe)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterGroups_static_methods.htm#apex_ConnectAPI_ChatterGroups_getMembershipBatch" title="Get information about a list of group memberships.">getMembershipBatch(communityId, membershipIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterGroups_static_methods.htm#apex_ConnectAPI_ChatterGroups_getGroupBatch" title="Get information about a list of groups.">getGroupBatch(communityId, groupIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterUsers_static_methods.htm#apex_ConnectAPI_ChatterUsers_getUserBatch" title="Get information about a list of users.">getUserBatch(communityId, userIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm#apex_ConnectAPI_CommerceCart_addItemsToCart_2" title="Add a batch of up to 100 items to a cart of a specific currency.">addItemsToCart(webstoreId, effectiveAccountId, activeCartOrId, cartItems, currencyIsoCode)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm#apex_ConnectAPI_Commerce_addItemsToCart_1" title="Add a batch of up to 100 items to a cart.">addItemsToCart(webstoreId, effectiveAccountId, activeCartOrId, cartItems)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Personalization_static_methods.htm#apex_ConnectAPI_Personalization_getAudienceBatch_1" title="Get audience information for a comma-separated list of audience IDs.">getAudienceBatch(communityId, audienceIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Personalization_static_methods.htm#apex_ConnectAPI_Personalization_getTargetBatch_1" title="Get target information for a comma-separated list of target IDs.">getTargetBatch(communityId, targetIds)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Records_static_methods.htm#apex_ConnectAPI_Records_getMotifBatch" title="Get a motif for a list of objects.">getMotifBatch(communityId, idOrPrefixList)</a></div></li>
+</ul>
+</div>
+</div>

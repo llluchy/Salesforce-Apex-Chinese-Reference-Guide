@@ -1,0 +1,171 @@
+<a name="apex_dynamic_describe_objects"><!-- --></a><h1 class="helpHead1">Understanding Apex Describe Information</h1><div class="body">
+  <p class="p">You can describe sObjects either by using tokens or the <samp class="codeph apex_code">describeSObjects</samp> Schema method.</p>
+
+  <p class="p">Apex provides two data structures and a method for sObject and field describe information:</p>
+
+  <ul class="ul bulletList">
+   <li class="li">
+<dfn class="term">Token</dfn>—a lightweight, serializable reference to an sObject or a field that
+    is validated at compile time. This is used for token describes.</li>
+
+   <li class="li">The <samp class="codeph apex_code">describeSObjects</samp> method—a method in the
+     <samp class="codeph apex_code">Schema</samp> class that performs describes on one or more
+    sObject types.</li>
+
+   <li class="li">
+<dfn class="term">Describe result</dfn>—an object of type <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> that contains all the describe properties for the
+    sObject or field. Describe result objects are not serializable, and are validated at runtime.
+    This result object is returned when performing the describe, using either the sObject token or
+    the <samp class="codeph apex_code">describeSObjects</samp> method.</li>
+
+  </ul>
+
+  <div class="section" id="tokenDescribe">
+<a name="tokenDescribe"><!-- --></a><h2 class="helpHead2">Describing sObjects Using Tokens</h2>
+<div class="p">
+<p class="p">It is easy to
+    move from a token to its describe result, and vice versa. Both sObject and field tokens have the
+    method <samp class="codeph apex_code">getDescribe</samp> which returns the describe result
+    for that token. On the describe result, the <samp class="codeph apex_code">getSObjectType</samp> and <samp class="codeph apex_code">getSObjectField</samp> methods
+    return the tokens for sObject and field, respectively. </p>
+<p class="p">Because tokens are lightweight,
+    using them can make your code faster and more efficient. For example, use the token version of
+    an sObject or field when you are determining the type of an sObject or field that your code
+    needs to use. The token can be compared using the equality operator (<samp class="codeph apex_code">==</samp>) to determine whether an sObject is the Account object, for
+    example, or whether a field is the <span class="keyword parmname">Name</span> field or a custom calculated field.
+    </p>
+<p class="p">The following code provides a general example of how to use tokens and describe results
+    to access information about sObject and field
+    properties:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a new account as the generic type sObject</span>
+sObject s = <span class="keyword">new</span> Account();
+
+<span class="onelineComment">// Verify that the generic sObject is an Account sObject</span>
+System.assert(s.getsObjectType() == Account.sObjectType);
+
+<span class="onelineComment">// Get the sObject describe result for the Account object</span>
+Schema.DescribeSObjectResult dsr = Account.sObjectType.getDescribe();
+
+<span class="onelineComment">// Get the field describe result for the Name field on the Account object</span>
+Schema.DescribeFieldResult dfr = Schema.sObjectType.Account.fields.Name;
+
+<span class="onelineComment">// Verify that the field token is the token for the Name field on an Account object</span>
+System.assert(dfr.getSObjectField() == Account.Name);
+
+<span class="onelineComment">// Get the field describe result from the token</span>
+dfr = dfr.getSObjectField().getDescribe();</pre></div>
+<p class="p">The following algorithm shows how you
+    can work with describe information in Apex:</p>
+<ol class="ol enumList">
+    <li class="li">Generate a list or map of tokens for the sObjects in your organization (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_global_describe.htm#apex_dynamic_global_describe">Accessing All sObjects</a>.)</li>
+
+    <li class="li">Determine the sObject you need to access.</li>
+
+    <li class="li">Generate the describe result for the sObject.</li>
+
+    <li class="li">If necessary, generate a map of field tokens for the sObject (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_field_tokens.htm#apex_describe_object_all_fields">Accessing All Field Describe Results for an
+      sObject</a>.)</li>
+
+    <li class="li">Generate the describe result for the field the code needs to access.</li>
+
+   </ol>
+</div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_sobject_tokens_using"><a name="apex_sobject_tokens_using"><!-- --></a>Using sObject
+     Tokens</span></h2>
+<div class="p"></div>
+</div>
+
+  <p class="p">SObjects, such as Account and MyCustomObject__c, act as static classes with special static
+   methods and member variables for accessing token and describe result information. You must
+   explicitly reference an sObject and field name at compile time to gain access to the describe
+   result. </p>
+
+  <p class="p">To access the token for an sObject, use one of the following methods:</p>
+
+  <ul class="ul bulletList">
+   <li class="li">Access the <samp class="codeph apex_code">sObjectType</samp> member variable on an sObject
+    type, such as Account.</li>
+
+   <li class="li">Call the <samp class="codeph apex_code">getSObjectType</samp> method on an sObject
+    describe result, an sObject variable, a list, or a map.</li>
+
+  </ul>
+
+  <p class="p"><samp class="codeph apex_code">Schema.SObjectType</samp> is the data type for an sObject
+   token. </p>
+
+  <p class="p">In the following example, the token for the Account sObject is returned:</p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.sObjectType t = Account.sObjectType;
+</pre></div>
+
+  <p class="p">The following also returns a token for the Account sObject:</p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+Schema.sObjectType t = a.getSObjectType();
+</pre></div>
+
+  <p class="p">This example can be used to determine whether an sObject or a list of sObjects is of a
+   particular type:</p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a generic sObject variable s</span>
+SObject s = Database.query(<span class="string">'SELECT Id FROM Account LIMIT 1'</span>);
+
+<span class="onelineComment">// Verify if that sObject variable is an Account token</span>
+System.assertEquals(s.getSObjectType(), Account.sObjectType);
+
+<span class="onelineComment">// Create a list of generic sObjects </span>
+List&lt;sObject&gt; sobjList = <span class="keyword">new</span> Account[]{};
+
+<span class="onelineComment">// Verify if the list of sObjects contains Account tokens</span>
+System.assertEquals(sobjList.getSObjectType(), Account.sObjectType);
+</pre></div>
+
+  <p class="p">Some standard sObjects have a field called <samp class="codeph apex_code">sObjectType</samp>, for example, AssignmentRule, QueueSObject, and RecordType. For these types
+   of sObjects, always use the <samp class="codeph apex_code">getSObjectType</samp> method for
+   retrieving the token. If you use the property, for example, <samp class="codeph apex_code">RecordType.sObjectType</samp>, the field is returned.</p>
+
+  <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_sobject_describe_using"><a name="apex_sobject_describe_using"><!-- --></a>Obtaining sObject Describe Results Using
+          Tokens</span></h2>
+<div class="p">
+<div class="p">To access the describe result for an
+        sObject, use one of the following methods:<ul class="ul bulletList">
+          <li class="li">Call the <samp class="codeph apex_code">getDescribe</samp> method on an sObject
+            token.</li>
+
+          <li class="li">Use the Schema <samp class="codeph apex_code">sObjectType</samp> static variable
+            with the name of the sObject. For example, <samp class="codeph apex_code">Schema.sObjectType.Lead</samp>.</li>
+
+        </ul>
+</div>
+<p class="p"><samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> is the
+        data type for an sObject describe result. </p>
+<p class="p">The following example uses the <samp class="codeph apex_code">getDescribe</samp> method on an sObject
+        token:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult dsr = Account.sObjectType.getDescribe();</pre></div>
+<div class="p">The
+        following example uses the Schema <samp class="codeph apex_code">sObjectType</samp>
+        static member
+        variable:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult dsr = Schema.SObjectType.Account;</pre></div>
+</div>
+<p class="p">For
+        more information about the methods available with the sObject describe result, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank">DescribeSObjectResultClass</a>.</p>
+</div>
+</div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_field_tokens.htm" title="Using Field Tokens">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fields() - HTML (New Window)">DescribeSObjectResult.fields()</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fieldsets() - HTML (New Window)">DescribeSObjectResult.fieldsets()</a></div></li>
+</ul>
+</div>
+</div>

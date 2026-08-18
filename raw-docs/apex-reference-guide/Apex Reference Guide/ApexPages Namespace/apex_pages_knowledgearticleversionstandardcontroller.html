@@ -1,0 +1,297 @@
+<a name="apex_pages_knowledgearticleversionstandardcontroller"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">KnowledgeArticleVersionStandardController Class</h1>
+
+    
+    
+    <div class="body">
+<div class="shortdesc">
+<samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp>
+        objects offer article-specific functionality in addition to what is provided by the <samp class="codeph apex_code">StandardController</samp>.</div>
+
+        
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_ApexPages.htm" title="The ApexPages namespace provides classes used in Visualforce controllers.">ApexPages</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <div class="p">In addition to the method listed above, the <samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp> class inherits all the
+                methods associated with <samp class="codeph apex_code">StandardController</samp>.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Though inherited, the <samp class="codeph apex_code">edit</samp>, <samp class="codeph nolang">delete</samp>, and <samp class="codeph apex_code">save</samp> methods
+                    don't serve a function when used with the <samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp> class.</p>
+</div>
+</div></div></div></div>
+</div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following example shows how a <samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp> object can be used to create
+                a custom extension controller. In this example, you create a class named <samp class="codeph apex_code">AgentContributionArticleController</samp> that allows
+                customer-support agents to see pre-populated fields on the draft articles they
+                create while closing cases.</p>
+
+            <div class="p">Prerequisites:<ol class="ol enumList">
+                    <li class="li">Create an article type called <kbd class="ph userinput">FAQ</kbd>. For instructions,
+                        see “Create Article Types” in the Salesforce online help.</li>
+
+                    <li class="li">Create a text custom field called <span class="keyword parmname">Details</span>. For
+                        instructions, see “Add Custom Fields to Article Types” in the
+                        Salesforce online help.</li>
+
+                    <li class="li">Create a category group called <kbd class="ph userinput">Geography</kbd> and assign
+                        it to a category called <kbd class="ph userinput">USA</kbd>. For instructions, see
+                        “Create and Modify Category Groups” and “Add Data
+                        Categories to Category Groups” in the Salesforce online help.</li>
+
+                    <li class="li">Create a category group called <kbd class="ph userinput">Topics</kbd> and assign it a
+                        category called <kbd class="ph userinput">Maintenance</kbd>.</li>
+
+                </ol>
+</div>
+
+            <div class="p">
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="article_case_apex"><a name="article_case_apex"><!-- --></a><span class="multilineComment">/** Custom extension controller for the simplified article edit page that 
+    appears when an article is created on the close-case page.
+*/</span>
+<span class="keyword">public</span> <span class="keyword">class</span> AgentContributionArticleController {
+    <span class="onelineComment">// The constructor must take a ApexPages.KnowledgeArticleVersionStandardController as an argument</span>
+    <span class="keyword">public</span> AgentContributionArticleController(
+        ApexPages.KnowledgeArticleVersionStandardController ctl) {
+        <span class="onelineComment">// This is the SObject for the new article. </span>
+        <span class="onelineComment">//It can optionally be cast to the proper article type.</span>
+        <span class="onelineComment">// For example, FAQ__kav article = (FAQ__kav) ctl.getRecord();</span>
+        SObject article = ctl.getRecord();   
+        <span class="onelineComment">// This returns the ID of the case that was closed.</span>
+        <span class="keyword">String</span> sourceId = ctl.getSourceId(); 
+        Case c = [SELECT Subject, Description FROM Case WHERE Id=:sourceId];
+        
+        <span class="onelineComment">// This overrides the default behavior of pre-filling the </span>
+        <span class="onelineComment">// title of the article with the subject of the closed case. </span>
+        article.put(<span class="string">'title'</span>, <span class="string">'From Case: '</span>+c.subject);  
+        article.put(<span class="string">'details__c'</span>,c.description);  
+        
+        <span class="onelineComment">// Only one category per category group can be specified.</span>
+        ctl.selectDataCategory(<span class="string">'Geography'</span>,<span class="string">'USA'</span>);  
+        ctl.selectDataCategory(<span class="string">'Topics'</span>,<span class="string">'Maintenance'</span>);                        
+    }
+}
+</pre></div>
+
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="article_case_apex_test"><a name="article_case_apex_test"><!-- --></a><span class="multilineComment">/** Test class for the custom extension controller.
+*/</span>
+<span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> AgentContributionArticleControllerTest {
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testAgentContributionArticleController() { 
+         <span class="keyword">String</span> caseSubject = <span class="string">'my test'</span>;
+         <span class="keyword">String</span> caseDesc = <span class="string">'my test description'</span>;
+
+         Case c = <span class="keyword">new</span> Case();
+         c.subject= caseSubject;
+         c.description = caseDesc;
+         <span class="statement">insert</span> c;
+         <span class="keyword">String</span> caseId = c.id;
+         System.debug(<span class="string">'Created Case: '</span> + caseId);
+         
+         ApexPages.currentPage().getParameters().put(<span class="string">'sourceId'</span>, caseId);
+         ApexPages.currentPage().getParameters().put(<span class="string">'sfdc.override'</span>, <span class="string">'1'</span>);
+         
+         ApexPages.KnowledgeArticleVersionStandardController ctl = 
+            <span class="keyword">new</span> ApexPages.KnowledgeArticleVersionStandardController(<span class="keyword">new</span> FAQ__kav());
+         
+         <span class="keyword">new</span> AgentContributionArticleController(ctl);
+
+         System.assertEquals(caseId, ctl.getSourceId());
+         System.assertEquals(<span class="string">'From Case: '</span>+caseSubject, ctl.getRecord().get(<span class="string">'title'</span>));
+         System.assertEquals(caseDesc, ctl.getRecord().get(<span class="string">'details__c'</span>));
+   }
+}
+</pre></div>
+
+            </div>
+
+            <div class="p">If you created the custom extension controller for the purpose described in the
+                previous example (that is, to modify submitted-via-case articles), complete the
+                following steps after creating the class:<ol class="ol enumList">
+                    <li class="li">Log into your Salesforce organization and from Setup, enter
+                            <kbd class="ph userinput">Knowledge Settings</kbd> in the <span class="keyword parmname">Quick
+                            Find</span> box, then select <strong class="ph uicontrol">Knowledge
+                            Settings</strong>.</li>
+
+                    <li class="li">Click <strong class="ph uicontrol">Edit</strong>.</li>
+
+                    <li class="li">Assign the class to the <span class="keyword parmname">Use Apex customization</span> field.
+                        This associates the article type specified in the new class with the article
+                        type assigned to closed cases.</li>
+
+                    <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+                </ol>
+</div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_knowledgearticleversionstandardcontroller.htm#apex_ApexPages_KnowledgeArticleVersionStandardController_constructors">KnowledgeArticleVersionStandardController Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_knowledgearticleversionstandardcontroller.htm#apex_ApexPages_KnowledgeArticleVersionStandardController_methods">KnowledgeArticleVersionStandardController Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_pages_standardcontroller" title="Use a StandardController when defining an extension for a standard controller.">StandardController Class</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_KnowledgeArticleVersionStandardController_constructors">
+<a name="apex_ApexPages_KnowledgeArticleVersionStandardController_constructors"><!-- --></a>
+<h2 class="helpHead2">KnowledgeArticleVersionStandardController
+Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_knowledgearticleversionstandardcontroller.htm#apex_ApexPages_KnowledgeArticleVersionStandardController_ctor">KnowledgeArticleVersionStandardController(article)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">ApexPages.KnowledgeArticleVersionStandardController</samp> class using the specified knowledge article.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_KnowledgeArticleVersionStandardController_ctor">
+<a name="apex_ApexPages_KnowledgeArticleVersionStandardController_ctor"><!-- --></a>
+<h3 class="helpHead3">KnowledgeArticleVersionStandardController(article)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">ApexPages.KnowledgeArticleVersionStandardController</samp> class
+using the specified knowledge article.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> KnowledgeArticleVersionStandardController(SObject
+article)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">article</var></strong>: Type: SObject The knowledge article, such as <samp class="codeph nolang">FAQ_kav</samp>.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_KnowledgeArticleVersionStandardController_methods">
+<a name="apex_ApexPages_KnowledgeArticleVersionStandardController_methods"><!-- --></a>
+<h2 class="helpHead2">KnowledgeArticleVersionStandardController
+Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are instance methods for <samp class="codeph apex_code">KnowledgeArticleVersionStandardController</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_knowledgearticleversionstandardcontroller.htm#apex_ApexPages_KnowledgeArticleVersionStandardController_getSourceId">getSourceId()</a></strong><br>
+Returns the ID for the source object record when creating a new article from another object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_knowledgearticleversionstandardcontroller.htm#apex_ApexPages_KnowledgeArticleVersionStandardController_setDataCategory">setDataCategory(categoryGroup, category)</a></strong><br>
+Specifies a default data category for the specified data category group when creating a new article.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_KnowledgeArticleVersionStandardController_getSourceId">
+<a name="apex_ApexPages_KnowledgeArticleVersionStandardController_getSourceId"><!-- --></a>
+<h3 class="helpHead3">getSourceId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID for the source object record when creating
+a new article from another object.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getSourceId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_KnowledgeArticleVersionStandardController_setDataCategory">
+<a name="apex_ApexPages_KnowledgeArticleVersionStandardController_setDataCategory"><!-- --></a>
+<h3 class="helpHead3">setDataCategory(categoryGroup, category)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies a default data category for the specified data
+category group when creating a new article.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setDataCategory(<span class="keyword">String</span> categoryGroup,
+<span class="keyword">String</span> category)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">categoryGroup</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">category</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,379 @@
+<a name="apex_ConnectAPI_Routing_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">Routing Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Route orders to inventory locations in Order Management.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_methods">
+<a name="apex_ConnectAPI_Routing_methods"><!-- --></a>
+ <h2 class="helpHead2">Routing Methods</h2>
+
+ <div class="shortdesc">These methods are for <samp class="codeph apex_code">Routing</samp>. All methods are
+  static.</div>
+
+ 
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_confirmHeldFOCapacity_1">confirmHeldFOCapacity(confirmHeldFOCapacityInput)</a></strong><br>
+Confirm held fulfillment order capacity at one or more locations.       This call decreases a location’s held capacity and increases its assigned fulfillment order       count. Confirm held capacity when you assign a fulfillment order to a     location.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_findRoutesWithFewestSplits_1">findRoutesWithFewestSplits(findRoutesWithFewestSplitsInputRepresentation)</a></strong><br>
+Returns combinations of inventory locations that can fulfill an       order within a specified limit of shipment splits. By default, checks up to 1,000,000       potential routes, returning a maximum of 10,000 results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_findRoutesWithFewestSplitsUsingOCI_1">findRoutesWithFewestSplitsUsingOCI(findRoutesWithFewestSplitsUsingOCIInput)</a></strong><br>
+For one or more order summaries, find inventory availability using       Omnichannel Inventory and identify the fulfillment routes with fewest splits. By default,       checks up to 1,000,000 potential routes, returning a maximum of 10,000 results. This method       combines the functionality of the <samp class="codeph apex_code">getInventoryAvailability()</samp> and <samp class="codeph apex_code">findRoutesWithFewestSplits()</samp> methods.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_getFOCapacityValues_1">getFOCapacityValues(getFOCapacityValuesInput)</a></strong><br>
+Get information about the current fulfillment order capacity of one       or more locations.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_holdFOCapacity_1">holdFOCapacity(holdFOCapacityInput)</a></strong><br>
+Hold fulfillment order capacity at a location. Holding capacity at a       location reserves a space for a fulfillment order that you’ll assign to it.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_rankAverageDistance_1">rankAverageDistance(rankAverageDistanceInputRepresentation)</a></strong><br>
+Calculates the average distance from sets of inventory locations to       an order recipient, and ranks them. Use this method to compare the average shipping distances       for different sets of locations that can fulfill an order. While this method is executing, you       can’t invoke another Apex callout.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_releaseHeldFOCapacity_1">releaseHeldFOCapacity(releaseHeldFOCapacityInput)</a></strong><br>
+Release held fulfillment order capacity at one or more locations. This       call decreases a location’s held capacity without changing its assigned fulfillment order       count. Release held capacity when you cancel the assignment of a fulfillment order to a       location.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_confirmHeldFOCapacity_1">
+<a name="apex_ConnectAPI_Routing_confirmHeldFOCapacity_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">confirmHeldFOCapacity(confirmHeldFOCapacityInput)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Confirm held fulfillment order capacity at one or more locations.
+      This call decreases a location’s held capacity and increases its assigned fulfillment order
+      count. Confirm held capacity when you assign a fulfillment order to a
+    location.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">55.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.ConfirmHeldFOCapacityOutputRepresentation
+          confirmHeldFOCapacity(ConnectApi.ConfirmHeldFOCapacityInputRepresentation
+          confirmHeldFOCapacityInput)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">confirmHeldFOCapacityInput</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_confirm_held_f_o_capacity.htm" title="Request to confirm held fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.ConfirmHeldFOCapacityInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">The input includes, for each fulfillment order, the location where capacity is held
+            for it.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_confirm_held_f_o_capacity_output.htm" title="Response to a request to confirm held fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.ConfirmHeldFOCapacityOutputRepresentation</a></samp></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_findRoutesWithFewestSplits_1">
+<a name="apex_ConnectAPI_Routing_findRoutesWithFewestSplits_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">findRoutesWithFewestSplits(findRoutesWithFewestSplitsInputRepresentation)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns combinations of inventory locations that can fulfill an
+      order within a specified limit of shipment splits. By default, checks up to 1,000,000
+      potential routes, returning a maximum of 10,000 results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">51.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.FindRoutesWithFewestSplitsOutputRepresentation
+          findRoutesWithFewestSplits(ConnectApi.FindRoutesWithFewestSplitsInputRepresentation
+          findRoutesWithFewestSplitsInputRepresentation)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">findRoutesWithFewestSplitsInputRepresentation</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_find_routes_with_fewest_splits.htm" title="Data used to calculate order fulfillment routes involving the fewest number of shipment splits.">ConnectApi.FindRoutesWithFewestSplitsInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">The input includes the ordered item quantities, data about available inventory, and,
+            optionally, a maximum allowable number of shipment splits.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_find_routes_with_fewest_splits_output.htm" title="A list of inventory location combinations that can fulfill an order without exceeding the maximum number of shipments.">ConnectApi.FindRoutesWithFewestSplitsOutputRepresentation</a></samp></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_findRoutesWithFewestSplitsUsingOCI_1">
+<a name="apex_ConnectAPI_Routing_findRoutesWithFewestSplitsUsingOCI_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">findRoutesWithFewestSplitsUsingOCI(findRoutesWithFewestSplitsUsingOCIInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>For one or more order summaries, find inventory availability using
+      Omnichannel Inventory and identify the fulfillment routes with fewest splits. By default,
+      checks up to 1,000,000 potential routes, returning a maximum of 10,000 results. This method
+      combines the functionality of the <samp class="codeph apex_code">getInventoryAvailability()</samp> and <samp class="codeph apex_code">findRoutesWithFewestSplits()</samp> methods.</span></div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">54.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.FindRoutesWithFewestSplitsUsingOCIOutputRepresentation findRoutesWithFewestSplitsUsingOCI(ConnectApi.FindRoutesWithFewestSplitsUsingOCIInputRepresentation findRoutesWithFewestSplitsUsingOCIInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">findRoutesWithFewestSplitsUsingOCIInput</var></dt>
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_find_routes_with_fewest_splits_using_o_c_i.htm" title="Data used to calculate order fulfillment routes involving the fewest number of shipment splits, taking into account inventory availability.">ConnectApi.FindRoutesWithFewestSplitsUsingOCIInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">The input includes, for each order, the ordered item quantities, the assigned location
+            group or locations, and, optionally, a maximum allowable number of shipment splits and a
+            list of locations to exclude from the calculation.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_find_routes_with_fewest_splits_using_o_c_i_output.htm" title="A list of order fulfillment routes with inventory availability information.">ConnectApi.FindRoutesWithFewestSplitsUsingOCIOutputRepresentation</a></samp></p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_OmnichannelInventoryService_static_methods.htm#apex_ConnectAPI_OmnichannelInventoryService_getInventoryAvailability_1" title="Retrieve inventory availability data for one or more products at one or more inventory locations or location groups.">getInventoryAvailability(inventoryAvailabilityInputRepresentation)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Routing_static_methods.htm#apex_ConnectAPI_Routing_findRoutesWithFewestSplits_1" title="Returns combinations of inventory locations that can fulfill an order within a specified limit of shipment splits. By default, checks up to 1,000,000 potential routes, returning a maximum of 10,000 results.">findRoutesWithFewestSplits(findRoutesWithFewestSplitsInputRepresentation)</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_getFOCapacityValues_1">
+<a name="apex_ConnectAPI_Routing_getFOCapacityValues_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getFOCapacityValues(getFOCapacityValuesInput)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get information about the current fulfillment order capacity of one
+      or more locations.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">55.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.GetFOCapacityValuesOutputRepresentation
+          getFOCapacityValues(ConnectApi.GetFOCapacityValuesRequestInputRepresentation
+          getFOCapacityValuesInput)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">getFOCapacityValuesInput</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_get_f_o_capacity_values_request.htm" title="Locations to get fulfillment order capacity information for.">ConnectApi.GetFOCapacityValuesRequestInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">Locations to get fulfillment order capacity information about.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_get_f_o_capacity_values_output.htm" title="Response to a request for fulfillment order capacity values for one or more locations.">ConnectApi.GetFOCapacityValuesOutputRepresentation</a></samp></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_holdFOCapacity_1">
+<a name="apex_ConnectAPI_Routing_holdFOCapacity_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">holdFOCapacity(holdFOCapacityInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Hold fulfillment order capacity at a location. Holding capacity at a
+      location reserves a space for a fulfillment order that you’ll assign to it.</span></div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">55.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.HoldFOCapacityOutputRepresentation holdFOCapacity(ConnectApi.HoldFOCapacityInputRepresentation holdFOCapacityInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">holdFOCapacityInput</var></dt>
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_hold_f_o_capacity.htm" title="Request to hold fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.HoldFOCapacityInputRepresentation</a></samp>
+</dd>
+<dd class="dd">The input includes, for each fulfillment order, the location to hold capacity for it.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_hold_f_o_capacity_output.htm" title="Response to a request to hold fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.HoldFOCapacityOutputRepresentation</a></samp></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_rankAverageDistance_1">
+<a name="apex_ConnectAPI_Routing_rankAverageDistance_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">rankAverageDistance(rankAverageDistanceInputRepresentation)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Calculates the average distance from sets of inventory locations to
+      an order recipient, and ranks them. Use this method to compare the average shipping distances
+      for different sets of locations that can fulfill an order. While this method is executing, you
+      can’t invoke another Apex callout.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">51.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.RankAverageDistanceOutputRepresentation
+          rankAverageDistance(ConnectApi.RankAverageDistanceInputRepresentation
+          rankAverageDistanceInputRepresentation)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">rankAverageDistanceInputRepresentation</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_rank_average_distance.htm" title="An order recipient’s geographic location and information about sets of inventory locations that can fulfill the order.">ConnectApi.RankAverageDistanceInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">An order recipient’s geographic location and information about sets of inventory
+            locations that can fulfill the order.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_rank_average_distance_output.htm" title="The results of calculating the average distances from sets of inventory locations to an order recipient.">ConnectApi.RankAverageDistanceOutputRepresentation</a></samp></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Routing_releaseHeldFOCapacity_1">
+<a name="apex_ConnectAPI_Routing_releaseHeldFOCapacity_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">releaseHeldFOCapacity(releaseHeldFOCapacityInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Release held fulfillment order capacity at one or more locations. This
+      call decreases a location’s held capacity without changing its assigned fulfillment order
+      count. Release held capacity when you cancel the assignment of a fulfillment order to a
+      location.</span></div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">55.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ReleaseHeldFOCapacityOutputRepresentation releaseHeldFOCapacity(ConnectApi.ReleaseHeldFOCapacityInputRepresentation releaseHeldFOCapacityInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">releaseHeldFOCapacityInput</var></dt>
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_release_held_f_o_capacity.htm" title="Request to release held fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.ReleaseHeldFOCapacityInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">The input includes, for each fulfillment order, the location that holds the capacity
+            to release.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_release_held_f_o_capacity_output.htm" title="Response to a request to confirm held fulfillment order capacity at one or more locations. Can correspond to one action call.">ConnectApi.ReleaseHeldFOCapacityOutputRepresentation</a></samp></p>
+</div>
+</div>
+</div>
+</div>
+</div>

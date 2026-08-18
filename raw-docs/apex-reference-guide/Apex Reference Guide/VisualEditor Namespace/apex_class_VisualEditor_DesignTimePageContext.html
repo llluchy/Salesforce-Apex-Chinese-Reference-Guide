@@ -1,0 +1,195 @@
+<a name="apex_class_VisualEditor_DesignTimePageContext"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">DesignTimePageContext Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>A class that provides context information about a Lightning page. It
+      can be used to help define the values of a picklist in a Lightning component on a Lightning
+      page based on the page’s type and the object with which it’s associated.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_VisualEditor.htm#apex_namespace_VisualEditor" title="The VisualEditor namespace provides classes and methods for interacting with the Lightning App Builder. The classes and methods in this namespace operate on Lightning components, which include Lightning web components and Aura components.">VisualEditor</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">To use this class, create a parameterized constructor in the custom
+      Apex class that extends <samp class="codeph apex_code">VisualEditor.DynamicPickList</samp>.</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">Here’s an example of a custom Apex class extending the <samp class="codeph apex_code">VisualEditor.DynamicPickList</samp> class. It includes <samp class="codeph apex_code">VisualEditor.DesignTimePageContext</samp> to define a picklist value that is available
+        only if the page type is <samp class="codeph apex_code">HomePage</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> MyCustomPickList <span class="keyword">extends</span> VisualEditor.DynamicPickList{
+    VisualEditor.DesignTimePageContext context;
+
+    <span class="keyword">global</span> MyCustomPickList(VisualEditor.DesignTimePageContext context) {
+       <span class="statement">this</span>.context = context;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">override</span> VisualEditor.DataRow getDefaultValue(){
+        VisualEditor.DataRow defaultValue = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'red'</span>, <span class="string">'RED'</span>);
+        <span class="statement">return</span> defaultValue;
+    }
+    <span class="keyword">global</span> <span class="keyword">override</span> VisualEditor.DynamicPickListRows getValues() {
+        VisualEditor.DataRow value1 = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'red'</span>, <span class="string">'RED'</span>);
+        VisualEditor.DataRow value2 = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'yellow'</span>, <span class="string">'YELLOW'</span>);
+        VisualEditor.DynamicPickListRows  myValues = <span class="keyword">new</span> VisualEditor.DynamicPickListRows();
+        myValues.addRow(value1);
+        myValues.addRow(value2);
+
+        <span class="statement">if</span> (context.pageType == <span class="string">'HomePage'</span>) {
+            VisualEditor.DataRow value3 = <span class="keyword">new</span> VisualEditor.DataRow(<span class="string">'purple'</span>, <span class="string">'PURPLE'</span>);
+            myValues.addRow(value3);
+        }
+
+        <span class="statement">return</span> myValues;
+    }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DesignTimePageContext.htm#apex_VisualEditor_DesignTimePageContext_properties">DesignTimePageContext Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DesignTimePageContext.htm#apex_VisualEditor_DesignTimePageContext_methods">DesignTimePageContext Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_VisualEditor_DesignTimePageContext_properties">
+<a name="apex_VisualEditor_DesignTimePageContext_properties"><!-- --></a><h2 class="helpHead2">DesignTimePageContext Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">DesignTimePageContext</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DesignTimePageContext.htm#apex_VisualEditor_DesignTimePageContext_entityName">entityName</a></strong><br>
+The API name of the sObject that a Lightning page is associated       with, such as Account, Contact, or Custom_object__c. <samp class="codeph apex_code">entityName</samp> is available only for object pages, and not all Lightning pages are       associated with objects.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DesignTimePageContext.htm#apex_VisualEditor_DesignTimePageContext_pageType">pageType</a></strong><br>
+The type of Lightning page, such as <samp class="codeph apex_page">HomePage</samp>, <samp class="codeph apex_page">AppPage</samp>, or <samp class="codeph apex_page">RecordPage</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DesignTimePageContext_entityName">
+<a name="apex_VisualEditor_DesignTimePageContext_entityName"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">entityName</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The API name of the sObject that a Lightning page is associated
+      with, such as Account, Contact, or Custom_object__c. <samp class="codeph apex_code">entityName</samp> is available only for object pages, and not all Lightning pages are
+      associated with objects.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> entityName {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DesignTimePageContext_pageType">
+<a name="apex_VisualEditor_DesignTimePageContext_pageType"><!-- --></a>
+  <h3 class="helpHead3">pageType</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The type of Lightning page, such as <samp class="codeph apex_page">HomePage</samp>, <samp class="codeph apex_page">AppPage</samp>, or <samp class="codeph apex_page">RecordPage</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> pageType {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_VisualEditor_DesignTimePageContext_methods">
+<a name="apex_VisualEditor_DesignTimePageContext_methods"><!-- --></a><h2 class="helpHead2">DesignTimePageContext Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DesignTimePageContext</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_VisualEditor_DesignTimePageContext.htm#apex_VisualEditor_DesignTimePageContext_clone">clone()</a></strong><br>
+Makes a duplicate copy of the <samp class="codeph apex_code">VisualEditor.DesignTimePageContext</samp> object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_VisualEditor_DesignTimePageContext_clone">
+<a name="apex_VisualEditor_DesignTimePageContext_clone"><!-- --></a>
+  <h3 class="helpHead3">clone()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Makes a duplicate copy of the <samp class="codeph apex_code">VisualEditor.DesignTimePageContext</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Object</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

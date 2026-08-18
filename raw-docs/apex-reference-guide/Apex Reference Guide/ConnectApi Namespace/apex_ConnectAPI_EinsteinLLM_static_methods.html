@@ -1,0 +1,201 @@
+<a name="apex_ConnectAPI_EinsteinLLM_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">EinsteinLLM Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Get a list of prompt templates and generate LLM responses for prompt
+  templates.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_EinsteinLLM_methods">
+<a name="apex_ConnectAPI_EinsteinLLM_methods"><!-- --></a>
+ <h2 class="helpHead2">EinsteinLLM Methods</h2>
+
+ <div class="shortdesc">These methods are for <samp class="codeph apex_code">EinsteinLLM</samp>. All methods
+  are static.</div>
+
+ 
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_EinsteinLLM_static_methods.htm#apex_ConnectAPI_EinsteinLLM_generateMessagesForPromptTemplate_1">generate​MessagesFor​PromptTemplate​(promptTemplate​DevName, prompt​Template​GenerationsInput)</a></strong><br>
+Generates a response using the specified prompt template and input     parameters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_EinsteinLLM_static_methods.htm#apex_ConnectAPI_EinsteinLLM_getPromptTemplates_1">getPromptTemplates(query, sortBy, offset, pageLimit, fields, type, relatedEntity, isActive)</a></strong><br>
+Get a list of prompt templates using the specified filters.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_EinsteinLLM_generateMessagesForPromptTemplate_1">
+<a name="apex_ConnectAPI_EinsteinLLM_generateMessagesForPromptTemplate_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">generate​MessagesFor​PromptTemplate​(promptTemplate​DevName,
+      prompt​Template​GenerationsInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Generates a response using the specified prompt template and input
+    parameters.</div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">60.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generateMessagesForPromptTemplate(<span class="keyword">String</span> promptTemplateDevName, ConnectApi.EinsteinPromptTemplateGenerationsInput promptTemplateGenerationsInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">promptTemplateDevName</var></dt>
+<dd class="dd">Type: String</dd>
+<dd class="dd">Developer name or ID of a prompt template record.</dd>
+<dt class="dt dlterm"><var class="keyword varname">promptTemplateGenerationsInput</var></dt>
+<dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_einstein_prompt_template_generations.htm" title="Prompt template input parameters to use for generation."><samp class="codeph apex_code">ConnectApi.EinsteinPromptTemplateGenerationsInput</samp></a>
+</dd>
+<dd class="dd">Input for generating a response using the specified prompt template.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_einstein_prompt_template_generations.htm" title="Generated response from the LLM provider and resolved prompt template text."><samp class="codeph apex_code">ConnectApi.EinsteinPromptTemplateGenerationsRepresentation</samp></a></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example, call <samp class="codeph nolang">generateMessagesForPromptTemplate(promptTemplateDevName,
+          promptTemplateGenerationsInput)</samp> to resolve a Sales Email prompt template. For
+        more examples, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_resolve_prompt_template.htm" target="_blank">Resolve a Prompt Template</a>.</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">// Create input
+ConnectApi.EinsteinPromptTemplateGenerationsInput promptGenerationsInput = new ConnectApi.EinsteinPromptTemplateGenerationsInput();
+promptGenerationsInput.isPreview = false;
+
+// Build input map
+Map&lt;String,ConnectApi.WrappedValue&gt; valueMap = new Map&lt;String,ConnectApi.WrappedValue&gt;();
+
+Map&lt;String, String&gt; recipientEntityRecordIdMap = new Map&lt;String, String&gt;();
+recipientEntityRecordIdMap.put('id', '00Qxx000002ToPvEAK');
+
+Map&lt;String, String&gt; senderEntityRecordIdMap = new Map&lt;String, String&gt;();
+senderEntityRecordIdMap.put('id', '005xx000001XiWLAA0');
+
+ConnectApi.WrappedValue recipientEntityWrappedValue = new ConnectApi.WrappedValue();
+recipientEntityWrappedValue.value = recipientEntityRecordIdMap;
+
+ConnectApi.WrappedValue senderEntityWrappedValue = new ConnectApi.WrappedValue();
+senderEntityWrappedValue.value = senderEntityRecordIdMap;
+
+valueMap.put('Input:Account', recipientEntityWrappedValue);
+valueMap.put('Input:Recipient', recipientEntityWrappedValue);
+valueMap.put('Input:Sender', senderEntityWrappedValue);
+
+promptGenerationsInput.inputParams = valueMap;
+
+// Set additional configuration values
+promptGenerationsInput.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
+promptGenerationsInput.additionalConfig.applicationName = 'PromptTemplateGenerationsInvocable';
+
+// Call the service
+ConnectApi.EinsteinPromptTemplateGenerationsRepresentation generationsOutput = 
+ConnectApi.EinsteinLLM.generateMessagesForPromptTemplate('0hfxx0000000KTNAA2', promptGenerationsInput);
+
+// Consume response
+System.debug('Prompt Testing: ' + generationsOutput.prompt);</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_EinsteinLLM_getPromptTemplates_1">
+<a name="apex_ConnectAPI_EinsteinLLM_getPromptTemplates_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getPromptTemplates(query, sortBy, offset, pageLimit, fields, type, relatedEntity, isActive)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Get a list of prompt templates using the specified filters.</div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">62.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.EinsteinPromptRecordCollectionOutputRepresentation getPromptTemplates(<span class="keyword">String</span> query, <span class="keyword">String</span> sortBy, <span class="keyword">Integer</span> offset, <span class="keyword">Integer</span> pageLimit, List&lt;<span class="keyword">String</span>&gt; fields, <span class="keyword">String</span> type, <span class="keyword">String</span> relatedEntity, <span class="keyword">Boolean</span> isActive)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">query</var></dt>
+<dd class="dd">Type: String</dd>
+<dd class="dd">User-entered search string. If
+                            <samp class="codeph apex_code"><span class="keyword">null</span></samp>, all prompt
+                        template records are returned.</dd>
+<dt class="dt dlterm"><var class="keyword varname">sortBy</var></dt>
+<dd class="dd">Type: String</dd>
+<dd class="dd">Field to sort the returned prompt template records by, such as <samp class="codeph apex_code">createdDate</samp>. If <samp class="codeph apex_code"><span class="keyword">null</span></samp>,
+                        records are returned in the order they’re retrieved.</dd>
+<dt class="dt dlterm"><var class="keyword varname">offset</var></dt>
+<dd class="dd">Type: Integer </dd>
+<dd class="dd">Used for pagination. Number of rows to skip between returned prompt template records.  The
+                        default value is <samp class="codeph nolang">0</samp>.</dd>
+<dt class="dt dlterm"><var class="keyword varname">pageLimit</var></dt>
+<dd class="dd">Type: Integer</dd>
+<dd class="dd">Used for pagination. Maximum number of prompt template records returned per page. The default
+                        value is <samp class="codeph nolang">50</samp>.</dd>
+<dt class="dt dlterm"><var class="keyword varname">fields</var></dt>
+<dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;String&gt;</dd>
+<dd class="dd">Comma-separated list of prompt template record fields to return, such as <samp class="codeph nolang">createdDate</samp>. If <samp class="codeph apex_code"><span class="keyword">null</span></samp>, all fields are returned.</dd>
+<dt class="dt dlterm"><var class="keyword varname">type</var></dt>
+<dd class="dd">Type: String</dd>
+<dd class="dd">Prompt template type to filter records by, such as <samp class="codeph apex_code">einstein_gpt__salesEmail</samp>. If <samp class="codeph apex_code"><span class="keyword">null</span></samp>, records of all types are returned.</dd>
+<dt class="dt dlterm"><var class="keyword varname">relatedEntity</var></dt>
+<dd class="dd">Type: String</dd>
+<dd class="dd">Related entity to filter records by, such as <samp class="codeph nolang">Contact</samp>. If
+                            <samp class="codeph apex_code"><span class="keyword">null</span></samp>, all records with all
+                        related entities are returned.</dd>
+<dt class="dt dlterm"><var class="keyword varname">isActive</var></dt>
+<dd class="dd">Type: Boolean </dd>
+<dd class="dd">Specifies whether to return active prompt templates only. The default is <samp class="codeph nolang">false</samp>.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_einstein_prompt_record_collection_output.htm" title="List of prompt template records."><samp class="codeph apex_code">ConnectApi.EinsteinPromptRecordCollectionOutputRepresentation</samp></a></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To get a list of prompt templates, you must have Einstein Generative AI enabled and the Execute
+                Prompt Templates user permission.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">
+ConnectApi.EinsteinPromptRecordCollectionOutputRepresentation promptTemplateList = ConnectApi.EinsteinLLM.getPromptTemplates('Summarize', 'CreatedDate', 0, 5, null, 'einstein_gpt__flex', null, true);
+
+// Get information from the prompt templates in the list
+    if (promptTemplateList != null &amp;&amp; promptTemplateList.promptRecords != null) {
+    for (ConnectApi.EinsteinPromptRecordRepresentation promptTemplate : promptTemplateList.promptRecords) {
+        System.debug('Prompt Template ID: ' + promptTemplate.id);
+        for (String fieldName : promptTemplate.fields.keySet()) {
+            System.debug('Field Name: ' + fieldName + ', Value: ' + promptTemplate.fields.get(fieldName).value);
+        }
+    }
+} else {
+    System.debug('No prompt templates found.');
+}
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>

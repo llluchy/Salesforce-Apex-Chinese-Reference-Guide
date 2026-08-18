@@ -1,0 +1,83 @@
+<a name="apex_dynamic_sosl"><!-- --></a><h1 class="helpHead1">Dynamic SOSL</h1><div class="body">
+        <p class="p"><dfn class="term">Dynamic SOSL</dfn> refers to the creation of a SOSL string at run time with Apex
+            code. Dynamic SOSL enables you to create more flexible applications. For example, you
+            can create a search based on input from an end user, or update records with varying
+            field names.</p>
+
+        <p class="p">To create a dynamic SOSL query at run time, use the search <samp class="codeph apex_code">query</samp> method. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;List &lt;sObject&gt;&gt; myQuery = search.query(<var class="keyword varname">SOSL_search_string</var>);</pre></div>
+
+        <p class="p">The following example exercises a simple SOSL query string.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> searchquery=<span class="string">'FIND\'Edge*\'IN ALL FIELDS RETURNING Account(id,name),Contact, Lead'</span>; 
+List&lt;List&lt;SObject&gt;&gt;searchList=search.query(searchquery);</pre></div>
+
+        <p class="p">Dynamic SOSL statements evaluate to a list of lists of sObjects, where each list contains
+            the search results for a particular sObject type. The result lists are always returned
+            in the same order as they were specified in the dynamic SOSL query. From the example
+            above, the results from Account are first, then Contact, then Lead.</p>
+
+        <p class="p">The search <samp class="codeph apex_code">query</samp> method can be used wherever an
+            inline SOSL query can be used, such as in regular assignment statements and <samp class="codeph apex_code"><span class="statement">for</span></samp> loops. The results are processed in much the
+            same way as static SOSL queries are processed. </p>
+
+        <p class="p">Dynamic SOSL queries have the same governor limits as static queries. For more
+            information on governor limits, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution
+                Governors and Limits</a>.</p>
+
+        <p class="p">For a full description of SOSL query syntax, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl.htm" target="_blank" title="html (New Window)">Salesforce Object Search Language
+                (SOSL)</a> in the <cite class="cite">SOQL and SOSL Reference</cite>.</p>
+
+        <div class="section" id="snippet">
+<a name="snippet"><!-- --></a><h2 class="helpHead2"><span class="ph" id="snippet_title"><a name="snippet_title"><!-- --></a>Use Dynamic SOSL to Return Snippets</span></h2>
+
+            
+            <p class="p">To provide more context for records in search results, use the SOSL <samp class="codeph apex_code">WITH SNIPPET</samp> clause. Snippets make it easier to
+                identify the content you’re looking for. For information about how snippets are
+                generated, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/sforce_api_calls_sosl_with_snippet.htm" target="_blank" title="HTML (New Window)">WITH SNIPPET</a> in the
+                    <em class="ph i">SOQL and SOSL Reference</em>.</p>
+
+            <div class="p">To use the SOSL <samp class="codeph apex_code">WITH SNIPPET</samp> clause in a
+                dynamic SOSL query at run time, use the <samp class="codeph apex_code">Search.find</samp> method.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">Search.SearchResults searchResults = Search.find(<var class="keyword varname">SOSL_search_string</var>);</pre></div>
+</div>
+
+            <p class="p">This example exercises a simple SOSL query string that includes a <samp class="codeph apex_code">WITH SNIPPET</samp> clause. The example calls <samp class="codeph apex_code">System.debug()</samp> to print the returned titles and
+                snippets. Your code would display the titles and snippets in a Web page.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Search.SearchResults searchResults = Search.find(<span class="string">'FIND \'test\' IN ALL FIELDS RETURNING 
+</span>KnowledgeArticleVersion(id, title WHERE PublishStatus = \<span class="string">'Online\' AND Language = \'en_US\') WITH SNIPPET (target_length=120)'</span>);
+ 
+List&lt;Search.SearchResult&gt; articlelist = searchResults.get(<span class="string">'KnowledgeArticleVersion'</span>);
+
+<span class="statement">for</span> (Search.SearchResult searchResult : articleList) { 
+	KnowledgeArticleVersion article = (KnowledgeArticleVersion) searchResult.getSObject(); 
+	System.debug(article.Title); 
+	System.debug(searchResult.getSnippet()); 
+} </pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_sosl_injection"><a name="apex_sosl_injection"><!-- --></a>SOSL Injection</span></h2>
+<div class="p">
+<p class="p"><dfn class="term">SOSL injection</dfn> is a technique by which a user
+                causes your application to execute database methods you did not intend by passing
+                SOSL statements into your code. A SOSL injection can occur in Apex code whenever
+                your application relies on end-user input to construct a dynamic SOSL statement and
+                you do not handle the input properly.</p>
+<p class="p"> To prevent SOSL injection, use the
+                    <samp class="codeph apex_code">escapeSingleQuotes</samp> method. This method
+                adds the escape character (\) to all single quotation marks in a string that is
+                passed in from a user. The method ensures that all single quotation marks are
+                treated as enclosing strings, instead of database commands. </p>
+</div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm" title="Dynamic SOQL">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_dml.htm" title="Dynamic DML">Next →</a></li>
+</ul></div>
+</div>

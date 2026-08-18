@@ -1,0 +1,206 @@
+<a name="apex_exception_custom"><!-- --></a><h1 class="helpHead1">Create Custom Exceptions</h1><div class="body">
+        <p class="p">Custom exceptions enable you to specify detailed error messages and have more custom
+            error handling in your catch blocks.</p>
+
+        <p class="p">Exceptions can be top-level classes, that is, they can have member variables, methods and
+            constructors, they can implement interfaces, and so on. </p>
+
+        <p class="p">To create your custom exception class, extend the built-in <samp class="codeph apex_code">Exception</samp> class and make sure your class name ends with the word <samp class="codeph apex_code">Exception</samp>, such as “MyException” or
+            “PurchaseException”. All exception classes extend the system-defined base class <samp class="codeph apex_code">Exception</samp>, and therefore, inherits all common
+            Exception methods.</p>
+
+        <div class="p">This example defines a custom exception called <samp class="codeph apex_code">MyException</samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> <var class="keyword varname">MyException</var> <strong class="ph b">extends Exception</strong> {}</pre></div>
+</div>
+
+        <p class="p">Like Java classes, user-defined exception types can form an inheritance tree, and catch
+            blocks can catch any object in this inheritance tree. For example: </p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> ExceptionExample {
+    <span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">class</span> BaseException <span class="keyword">extends</span> Exception {}
+    <span class="keyword">public</span> <span class="keyword">class</span> OtherException <span class="keyword">extends</span> BaseException {}
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testExtendedException() {
+        <span class="statement">try</span> {
+            <span class="keyword">Integer</span> i=0;
+            <span class="onelineComment">// Your code here</span>
+            <span class="statement">if</span> (i &lt; 5) <span class="statement">throw</span> <span class="keyword">new</span> OtherException(<span class="string">'This is bad'</span>);
+        } <span class="statement">catch</span> (BaseException e) {  
+            <span class="onelineComment">// This catches the OtherException</span>
+            System.debug(e.getMessage());
+        }  
+    }
+}</pre></div>
+
+        <p class="p">Here are some ways you can create your exceptions objects, which you can then throw.</p>
+
+        <div class="p" id="ConstructException">
+<a name="ConstructException"><!-- --></a>You can construct exceptions:<ul class="ul bulletList">
+                <li class="li">With no
+                    arguments:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> MyException();</pre></div>
+</li>
+
+                <li class="li">With a single String argument that specifies the error
+                    message:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> MyException(<span class="string">'This is bad'</span>);</pre></div>
+</li>
+
+                <li class="li">With a single Exception argument that specifies the cause and that displays in
+                    any stack
+                    trace:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> MyException(e);</pre></div>
+</li>
+
+                <li class="li">With both a String error message and a chained exception cause that displays in
+                    any stack
+                    trace:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> MyException(<span class="string">'This is bad'</span>, e);</pre></div>
+</li>
+
+            </ul>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Rethrowing Exceptions and Inner Exceptions</h2>
+
+            
+            <p class="p">After catching an exception in a catch block, you have the option to rethrow the
+                caught exception variable. This is useful if your method is called by another method
+                and you want to delegate the handling of the exception to the caller method. You can
+                rethrow the caught exception as an inner exception in your custom exception and have
+                the main method catch your custom exception type.</p>
+
+            <p class="p">The following example shows how to rethrow an exception as an inner exception. The
+                example defines two custom exceptions, <samp class="codeph apex_code">My1Exception</samp> and <samp class="codeph apex_code">My2Exception</samp>, and generates a stack trace with information about both.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Define two custom exceptions</span>
+<span class="keyword">public</span> <span class="keyword">class</span> My1Exception <span class="keyword">extends</span> Exception {} 
+<span class="keyword">public</span> <span class="keyword">class</span> My2Exception <span class="keyword">extends</span> Exception {} 
+
+<span class="statement">try</span> { 
+    <span class="onelineComment">// Throw first exception</span>
+    <span class="statement">throw</span> <span class="keyword">new</span> My1Exception(<span class="string">'First exception'</span>); 
+} <span class="statement">catch</span> (My1Exception e) { 
+    <span class="onelineComment">// Throw second exception with the first </span>
+    <span class="onelineComment">// exception variable as the inner exception</span>
+    <span class="statement">throw</span> <span class="keyword">new</span> My2Exception(<span class="string">'Thrown with inner exception'</span>, e);
+} 
+</pre></div>
+
+            <p class="p">This is how the stack trace looks like resulting from running the code above:</p>
+
+            <p class="p"><samp class="ph systemoutput">15:52:21:073 EXCEPTION_THROWN [7]|My1Exception: First
+                    exception</samp></p>
+
+            <p class="p"><samp class="ph systemoutput">15:52:21:077 EXCEPTION_THROWN [11]|My2Exception: Throw with inner
+                    exception</samp></p>
+
+            <p class="p"><samp class="ph systemoutput">15:52:21:000 FATAL_ERROR AnonymousBlock: line 11, column
+                    1</samp></p>
+
+            <p class="p"><samp class="ph systemoutput">15:52:21:000 FATAL_ERROR Caused by</samp></p>
+
+            <p class="p"><samp class="ph systemoutput">15:52:21:000 FATAL_ERROR AnonymousBlock: line 7, column
+                    1</samp></p>
+
+            <p class="p">The example in the next section shows how to handle an exception with an inner
+                exception by calling the <samp class="codeph apex_code">getCause</samp>
+                method.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Inner Exception Example</h2>
+
+            
+        </div>
+
+        <p class="p">Now that you’ve seen how to create a custom exception class and how to construct
+            your exception objects, let’s create and run an example that demonstrates the
+            usefulness of custom exceptions.</p>
+
+        <ol class="ol enumList">
+            <li class="li">In the Developer Console, create a class named <samp class="codeph apex_code">MerchandiseException</samp> and confirm that it has this
+                    content.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MerchandiseException <span class="keyword">extends</span> Exception {
+
+}</pre></div>
+<p class="p">You’ll
+                    use this exception class in the second class that you create. The curly braces
+                    at the end enclose the body of your exception class, which we left empty because
+                    we get some free code—our class inherits all the constructors and common
+                    exception methods, such as <samp class="codeph apex_code">getMessage</samp>,
+                    from the built-in <samp class="codeph apex_code">Exception</samp>
+                class.</p>
+</li>
+
+            <li class="li">Next, create a second class named <samp class="codeph apex_code">MerchandiseUtility</samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MerchandiseUtility {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> mainProcessing() {
+        <span class="statement">try</span> {
+            insertMerchandise();
+        } <span class="statement">catch</span>(MerchandiseException me) {
+            System.debug(<span class="string">'Message: '</span> + me.getMessage());    
+            System.debug(<span class="string">'Cause: '</span> + me.getCause());    
+            System.debug(<span class="string">'Line number: '</span> + me.getLineNumber());    
+            System.debug(<span class="string">'Stack trace: '</span> + me.getStackTraceString());    
+        }
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> insertMerchandise() {
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Insert merchandise without required fields</span>
+            Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+            <span class="statement">insert</span> m;
+        } <span class="statement">catch</span>(DmlException e) {
+            <span class="onelineComment">// Something happened that prevents the insertion</span>
+            <span class="onelineComment">// of Employee custom objects, so throw a more</span>
+            <span class="onelineComment">// specific exception.</span>
+            <span class="statement">throw</span> <span class="keyword">new</span> MerchandiseException(
+                <span class="string">'Merchandise item could not be inserted.'</span>, e);
+        }
+    }
+}</pre></div>
+<p class="p">This
+                    class contains the <samp class="codeph apex_code">mainProcessing</samp>
+                    method, which calls <samp class="codeph apex_code">insertMerchandise</samp>.
+                    The latter causes an exception by inserting a Merchandise without required
+                    fields. The catch block catches this exception and throws a new exception, the
+                    custom MerchandiseException you created earlier. Notice that we called a
+                    constructor for the exception that takes two arguments: the error message, and
+                    the original exception object. You might wonder why we are passing the original
+                    exception? Because it is useful information—when the MerchandiseException
+                    gets caught in the first method, <samp class="codeph apex_code">mainProcessing</samp>, the original exception (referred to as an inner
+                    exception) is really the cause of this exception because it occurred before the
+                    MerchandiseException.</p>
+</li>
+
+            <li class="li">Now let’s see all this in action to understand better. Execute the
+                following:<div class="codeSection apex_code"><pre class="codeblock brush:apex">MerchandiseUtility.mainProcessing();</pre></div>
+</li>
+
+            <li class="li">Check the debug log output. You should see something similar to the
+                        following:<p class="p"><samp class="codeph nolang">18:12:34:928 USER_DEBUG
+                        [6]|DEBUG|Message: Merchandise item could not be
+                        inserted.</samp></p>
+<p class="p"><samp class="codeph nolang">18:12:34:929 USER_DEBUG
+                        [7]|DEBUG|Cause: System.DmlException: Insert failed. First exception on row
+                        0; first error: REQUIRED_FIELD_MISSING, Required fields are missing:
+                        [Description, Price, Total Inventory]: [Description, Price, Total
+                        Inventory]</samp></p>
+<p class="p"><samp class="codeph nolang">18:12:34:929
+                        USER_DEBUG [8]|DEBUG|Line number: 22</samp></p>
+<p class="p"><samp class="codeph nolang">18:12:34:930 USER_DEBUG [9]|DEBUG|Stack trace:
+                        Class.EmployeeUtilityClass.insertMerchandise: line 22, column
+                    1</samp></p>
+<div class="p">A few items of interest:<ul class="ul bulletList">
+                        <li class="li">The cause of MerchandiseException is the DmlException. You can see the
+                            DmlException message also that states that required fields were
+                            missing.</li>
+
+                        <li class="li">The stack trace is line 22, which is the second time an exception was
+                            thrown. It corresponds to the throw statement of
+                            MerchandiseException.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">throw</span> <span class="keyword">new</span> MerchandiseException(<span class="string">'Merchandise item could not be inserted.'</span>, e);</pre></div>
+</li>
+
+                    </ul>
+</div>
+</li>
+
+        </ol>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,76 @@
+<a name="apex_commercepayments_process_payments"><!-- --></a><h1 class="helpHead1">Process Payments</h1><div class="body taskbody">
+<div class="shortdesc">Process a payment in the payment gateway.</div>
+
+  <div class="section prereq p"><div class="p">
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+     <tbody class="tbody">
+      <tr>
+       <td class="subHead">Available in: Salesforce Spring ’20</td>
+
+      </tr>
+
+     </tbody>
+
+    </table>
+<br>
+</div>
+To access <samp class="codeph apex_code">commercepayments</samp> API, you need the PaymentPlatform org
+   permission.</div></div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">Get the payment capture request object from the <samp class="codeph apex_code"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayContext.htm#apex_class_commerce_payments_PaymentGatewayContext" target="_blank">PaymentGatewayContext Class</a></samp>.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+commercepayments.CaptureRequest = (commercepayments.CaptureRequest)gatewayContext.getPaymentRequest()
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Set the HTTP request object.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection apex_code"><pre class="codeblock brush:apex">HttpRequest req = <span class="keyword">new</span> HttpRequest();
+req.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Read the parameters from the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_CaptureRequest.htm#apex_class_commerce_payments_CaptureRequest" target="_blank"><samp class="codeph apex_code">CaptureRequest</samp></a>
+     object and prepare the HTTP request body.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Make the HTTP call to the gateway using the <samp class="codeph apex_code"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_PaymentsHttp.htm#apex_class_commerce_payments_PaymentsHttp" target="_blank">PaymentsHttp Class</a></samp>.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.PaymentsHttp http = <span class="keyword">new</span> commercepayments.PaymentsHttp();
+HttpResponse res = http.send(req);
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Parse the <samp class="codeph apex_code">httpResponse</samp> and prepare the <samp class="codeph apex_code"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_CaptureResponse.htm#apex_class_commerce_payments_CaptureResponse" target="_blank">CaptureResponse</a></samp> object.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.CaptureResponse captureResponse = <span class="keyword">new</span> commercepayments.CaptureResponse();
+captureResponse.setGatewayResultCode(“”); captureResponse.setGatewayResultCodeDescription(“”); captureResponse.setGatewayReferenceNumber(“”);
+captureResponse.setSalesforceResultCodeInfo(getSalesforceResultCodeInfo(commercepayments.SalesforceResultCode.SUCCESS.name())); 
+captureResponse.setGatewayReferenceDetails(“”);
+captureResponse.setAmount(double.valueOf(100);
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Return the <samp class="codeph apex_code">captureResponse</samp>.</span>
+   </li>
+
+  </ol>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

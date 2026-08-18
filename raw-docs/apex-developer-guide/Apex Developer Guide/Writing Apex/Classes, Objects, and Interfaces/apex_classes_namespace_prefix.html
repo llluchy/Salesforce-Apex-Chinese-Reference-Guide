@@ -1,0 +1,83 @@
+<a name="apex_classes_namespace_prefix"><!-- --></a><h1 class="helpHead1">Namespace Prefix</h1><div class="body">
+<div class="shortdesc">The Salesforce application supports the use of <dfn class="term">namespace prefixes</dfn>. <span class="ph">Namespace prefixes are used in managed AppExchange packages to
+            differentiate custom object and field names from names used by other
+        organizations.</span>
+</div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>When creating a namespace, use something that’s useful and
+            informative to users. However, don’t name a namespace after a person (for example, by
+            using a person's name, nickname, or private information). Once namespaces are assigned,
+            they cannot be changed.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">After a developer registers a globally unique namespace prefix and registers it with
+            AppExchange registry, external references to custom object and field names in the
+            developer's managed packages take on the following long format:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"> <var class="keyword varname">namespace_prefix</var>__<var class="keyword varname">obj_or_field_name</var>__c</pre></div>
+
+        <p class="p">These fully qualified names can be onerous to update in working SOQL or SOSL statements,
+            and Apex once a class is marked as “managed”. Therefore, Apex supports a default
+            namespace for schema names. When looking at identifiers, the parser assumes that the
+            namespace of the current object is the namespace of all other objects and fields unless
+            otherwise specified. Therefore, a stored class must refer to custom object and field
+            names directly (using <samp class="codeph apex_code">
+                <var class="keyword varname">obj_or_field_name</var>__c</samp>) for those objects that are defined
+            within its same application namespace. </p>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>Only use namespace prefixes when referring to custom objects
+            and fields in managed packages that have been installed to your organization from the
+            AppExchange.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Namespaces When Invoking Package Methods</h2>
+
+            
+            <p class="p">To invoke a method that is defined in a managed package, Apex allows fully qualified
+                identifiers of the form:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"> <var class="keyword varname">namespace_prefix</var>.<var class="keyword varname">class</var>.<var class="keyword varname">method</var>(<var class="keyword varname">args</var>)</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 34.0 and later, Schema.DescribeSObjectResult on a custom SObjectType
+                includes map keys prefixed with the namespace, even if the namespace is that of
+                currently executing code. If you work with multiple namespaces and generate runtime
+                describe data, make sure that your code accesses keys correctly using the namespace
+                prefix.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespaces_and_invoking_methods.htm">Using the System Namespace</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_schema_namespace_using.htm">Using the Schema Namespace</a><br>
+The <samp class="codeph apex_code">Schema</samp> namespace provides classes and       methods for working with schema metadata information. We implicitly import <samp class="codeph apex_code">Schema.*</samp>, but you must fully qualify your uses of <samp class="codeph apex_code">Schema</samp> namespace elements when they have naming conflicts       with items in your unmanaged code. If your org contains an Apex class that has the same name       as an sObject, add the <samp class="codeph apex_code">Schema</samp> namespace prefix to the       sObject name in your code.</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_precedence.htm">Namespace, Class, and Variable Name Precedence</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_type_resolution.htm">Type Resolution and System Namespace for Types</a><br>
+</li>
+</ol>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_creating.htm" title="Class Definition Creation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_version_settings_intro.htm" title="Apex Code Versions">Next →</a></li>
+</ul></div>
+</div>

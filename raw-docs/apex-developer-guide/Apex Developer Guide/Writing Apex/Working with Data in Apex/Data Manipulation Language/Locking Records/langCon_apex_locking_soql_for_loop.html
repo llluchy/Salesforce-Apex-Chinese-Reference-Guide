@@ -1,0 +1,18 @@
+<a name="langCon_apex_locking_soql_for_loop"><!-- --></a><h1 class="helpHead1">Locking in a SOQL For Loop</h1><div class="body conbody">
+        <div class="p">The <samp class="codeph apex_code">FOR UPDATE</samp> keywords can also be used within
+            SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loops. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (Account[] accts : [SELECT Id FROM Account
+                        FOR UPDATE]) {
+    <span class="onelineComment">// Your code</span>
+}</pre></div>
+</div>
+
+        <p class="p">As discussed in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_loops_for_SOQL.htm" title="SOQL for loops iterate over all of the sObject records returned by a SOQL query.">SOQL For Loops</a>, the example above corresponds internally to calls to the
+                <samp class="codeph apex_code">query()</samp> and <samp class="codeph apex_code">queryMore()</samp> methods in the SOAP API.</p>
+
+        <p class="p">Note that there is no <samp class="codeph apex_code">commit</samp> statement. If your
+            Apex trigger completes successfully, any database changes are automatically committed.
+            If your Apex trigger does not complete successfully, any changes made to the database
+            are rolled back.</p>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

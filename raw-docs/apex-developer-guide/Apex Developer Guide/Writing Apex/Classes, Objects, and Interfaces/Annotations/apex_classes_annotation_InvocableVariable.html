@@ -1,0 +1,328 @@
+<a name="apex_classes_annotation_InvocableVariable"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">InvocableVariable</span> Annotation</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="invocablevariable_annotation_overview"><a name="invocablevariable_annotation_overview"><!-- --></a>To identify variables used by invocable
+      methods in custom classes, use the <samp class="codeph apex_code">InvocableVariable</samp>
+      annotation.</span></div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph apex_code">InvocableVariable</samp> annotation identifies a
+        class variable used as an input or output parameter for an <samp class="codeph apex_code">InvocableMethod</samp> method’s invocable action. If you create your own custom class
+        to use as the input or output to an invocable method, you can annotate individual class
+        member variables to make them available to the method.</p>
+
+      <p class="p">This code sample shows an invocable method with invocable variables.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ConvertLeadAction {
+  @InvocableMethod(label=<span class="string">'Convert Leads'</span>)
+  <span class="keyword">global</span> <span class="keyword">static</span> List&lt;ConvertLeadActionResult&gt; convertLeads(List&lt;ConvertLeadActionRequest&gt; requests) {
+    List&lt;ConvertLeadActionResult&gt; results = <span class="keyword">new</span> List&lt;ConvertLeadActionResult&gt;();
+    <span class="statement">for</span> (ConvertLeadActionRequest request : requests) {
+      results.add(convertLead(request));
+    }
+    <span class="statement">return</span> results;
+  }
+
+  <span class="keyword">public</span> <span class="keyword">static</span> ConvertLeadActionResult convertLead(ConvertLeadActionRequest request) {
+    Database.LeadConvert lc = <span class="keyword">new</span> Database.LeadConvert();
+    lc.setLeadId(request.leadId);
+    lc.setConvertedStatus(request.convertedStatus);
+
+    <span class="statement">if</span> (request.accountId != <span class="keyword">null</span>) {
+        lc.setAccountId(request.accountId);
+    }
+
+    <span class="statement">if</span> (request.contactId != <span class="keyword">null</span>) {
+      lc.setContactId(request.contactId);
+    }
+
+    <span class="statement">if</span> (request.overWriteLeadSource != <span class="keyword">null</span> &amp;&amp; request.overWriteLeadSource) {
+      lc.setOverwriteLeadSource(request.overWriteLeadSource);
+    }
+
+    <span class="statement">if</span> (request.createOpportunity != <span class="keyword">null</span> &amp;&amp; !request.createOpportunity) {
+      lc.setDoNotCreateOpportunity(!request.createOpportunity);
+    }
+
+    <span class="statement">if</span> (request.opportunityName != <span class="keyword">null</span>) {
+      lc.setOpportunityName(request.opportunityName);
+    }
+
+    <span class="statement">if</span> (request.ownerId != <span class="keyword">null</span>) {
+      lc.setOwnerId(request.ownerId);
+    }
+
+    <span class="statement">if</span> (request.sendEmailToOwner != <span class="keyword">null</span> &amp;&amp; request.sendEmailToOwner) {
+      lc.setSendNotificationEmail(request.sendEmailToOwner);
+    }
+
+    Database.LeadConvertResult lcr = Database.convertLead(lc, <span class="keyword">true</span>);
+    <span class="statement">if</span> (lcr.isSuccess()) {
+      ConvertLeadActionResult result = <span class="keyword">new</span> ConvertLeadActionResult();
+      result.accountId = lcr.getAccountId();
+      result.contactId = lcr.getContactId();
+      result.opportunityId = lcr.getOpportunityId();
+      <span class="statement">return</span> result;
+    } <span class="statement">else</span> {
+      <span class="statement">throw</span> <span class="keyword">new</span> ConvertLeadActionException(lcr.getErrors()[0].getMessage());
+    }
+  }
+
+  <span class="keyword">global</span> <span class="keyword">class</span> ConvertLeadActionRequest {
+    @InvocableVariable(required=<span class="keyword">true</span>)
+    <span class="keyword">global</span> <span class="keyword">ID</span> leadId;
+
+    @InvocableVariable(required=<span class="keyword">true</span>)
+    <span class="keyword">global</span> <span class="keyword">String</span> convertedStatus;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> accountId;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> contactId;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">Boolean</span> overWriteLeadSource;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">Boolean</span> createOpportunity;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">String</span> opportunityName;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> ownerId;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">Boolean</span> sendEmailToOwner;
+  }
+
+  <span class="keyword">global</span> <span class="keyword">class</span> ConvertLeadActionResult {
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> accountId;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> contactId;
+
+    @InvocableVariable
+    <span class="keyword">global</span> <span class="keyword">ID</span> opportunityId;
+  }
+
+  <span class="keyword">class</span> ConvertLeadActionException <span class="keyword">extends</span> Exception {}
+}</pre></div>
+
+      <p class="p">This code sample shows an invocable method with invocable variables that have the generic
+        sObject data type.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> GetFirstFromCollection {
+  @InvocableMethod
+  <span class="keyword">public</span> <span class="keyword">static</span> List &lt;Results&gt; execute (List&lt;Requests&gt; requestList) {
+    List&lt;SObject&gt; inputCollection = requestList[0].inputCollection;
+    SObject outputMember = inputCollection[0];
+
+    <span class="onelineComment">//Create a Results object to hold the return values</span>
+    Results response = <span class="keyword">new</span> Results();
+
+    <span class="onelineComment">//Add the return values to the Results object</span>
+    response.outputMember = outputMember;
+
+    <span class="onelineComment">//Wrap the Results object in a List container </span>
+    <span class="onelineComment">//(an extra step added to allow this interface to also support bulkification)</span>
+    List&lt;Results&gt; responseWrapper= <span class="keyword">new</span> List&lt;Results&gt;();
+    responseWrapper.add(response);
+    <span class="statement">return</span> responseWrapper;    
+  }
+
+<span class="keyword">public</span> <span class="keyword">class</span> Requests {
+  @InvocableVariable(label=<span class="string">'</span><var class="keyword varname">Records for Input</var><span class="string">' description='</span><var class="keyword varname">yourDescription</var><span class="string">' required=true)
+</span>  <span class="keyword">public</span> List&lt;SObject&gt; inputCollection;
+  }
+
+<span class="keyword">public</span> <span class="keyword">class</span> Results {
+  @InvocableVariable(label=<span class="string">'</span><var class="keyword varname">Records for Output</var><span class="string">' description='</span><var class="keyword varname">yourDescription</var><span class="string">' required=true)
+</span>  <span class="keyword">public</span> SObject outputMember;
+  }
+}
+</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Supported Modifiers</h2>
+
+      
+      <p class="p">All modifiers are optional.</p>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>Default values, labels, and placeholder text appear in Flow Builder for the
+        Action element that corresponds to an invocable method. These modifiers help admins
+        understand how to use variables in the flow.</p>
+</div>
+</div></div></div></div>
+
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">defaultValue</strong>: Provide a value to the action at runtime, if no value is provided then these default
+            values are provided to the action at runtime. Valid invocable variable data types are: <ul class="ul bulletList">
+              <li class="li">Boolean - fields must have a value of <samp class="codeph ">'true'</samp> or
+                  <samp class="codeph ">'false'</samp> and case-insensitive.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'true'</span>)
+<span class="keyword">public</span> <span class="keyword">Boolean</span> myBoolean;</pre></div>
+</li>
+
+              <li class="li">Decimal - fields must have a value of <samp class="codeph ">'validDecimalValue'</samp> where the floating point value can’t have a suffix.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'123.4'</span>)
+<span class="keyword">public</span> <span class="keyword">Decimal</span> myDecimal;</pre></div>
+</li>
+
+              <li class="li">Double - fields must have a value of <samp class="codeph ">'validDoubleValue'</samp> where the d suffix is required and case-insensitive.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'867.3D'</span>)
+<span class="keyword">public</span> <span class="keyword">Double</span> myDouble;</pre></div>
+</li>
+
+              <li class="li">Integer - fields must have a value of <samp class="codeph ">'validIntegerValue'</samp> where the integer value can’t have a suffix.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'-214'</span>)
+<span class="keyword">public</span> <span class="keyword">Integer</span> myInteger;</pre></div>
+</li>
+
+              <li class="li">Long - fields must have a value of <samp class="codeph ">'validLongValue'</samp> where the l suffix is required and case-insensitive.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'922337L'</span>)
+<span class="keyword">public</span> <span class="keyword">Long</span> myLong;
+</pre></div>
+</li>
+
+              <li class="li">String - fields can use any valid string value including the empty string.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'hello world!'</span>)
+<span class="keyword">public</span> <span class="keyword">String</span> myString;</pre></div>
+</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b">description</strong>: The description for the variable. The default is <samp class="codeph apex_code">Null</samp>.</li>
+
+        <li class="li">
+<strong class="ph b">label</strong>: The label for the variable. The default is the variable name.</li>
+
+        <li class="li">
+<strong class="ph b">placeholderText</strong>: Provides examples or additional guidance about the invocable variable, such as
+            examples of values that can set the invocable variable. Valid invocable variable data
+            types are:<ul class="ul bulletList">
+              <li class="li">Double - fields must have a value of  <samp class="codeph ">'validDoubleValue'</samp> where the d suffix is required and
+                case-insensitive.</li>
+
+              <li class="li">Integer -  fields must have a value of <samp class="codeph ">'validIntegerValue'</samp> where the integer value can’t have a suffix.</li>
+
+              <li class="li">String - fields can use any valid string value including the empty string.</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b">required</strong>: Specifies whether the variable is required. If not specified, the default is <samp class="codeph ">false</samp>. The value is ignored for output variables.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The
+                <samp class="codeph apex_code">defaultValue</samp> modifier throws an error when
+              used with <samp class="codeph apex_code">required</samp>.</p>
+</div>
+</div></div></div></div>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+      <p class="p">The invocable variable annotation supports the modifiers shown in this example.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(label=<span class="string">'</span><var class="keyword varname">yourLabel</var><span class="string">'
+</span> description=<span class="string">'</span><var class="keyword varname">yourDescription</var><span class="string">' placeholderText='</span><var class="keyword varname">yourPlaceholderText</var><span class="string">'
+</span> required=(<span class="keyword">true</span> | <span class="keyword">false</span>))</pre></div>
+
+      <p class="p">The invocable variable annotation supports <samp class="codeph apex_code">defaultValue</samp> in this example.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">@InvocableVariable(defaultValue=<span class="string">'</span><var class="keyword varname">yourDefaultValue</var><span class="string">')
+</span>        <span class="keyword">global</span> <span class="keyword">String</span> createOpportunity;</pre></div>
+
+    </div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">InvocableVariable Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">Other annotations can’t be used with the <samp class="codeph apex_code">InvocableVariable</samp> annotation.</li>
+
+        <li class="li">Only global and public variables can be invocable variables.</li>
+
+        <li class="li">The invocable variable can’t be any of these:<ul class="ul bulletList">
+            <li class="li">A non-member variable such as a <samp class="codeph apex_code"><span class="keyword">static</span></samp> or
+                <samp class="codeph apex_code">local</samp> variable.</li>
+
+            <li class="li">A property.</li>
+
+            <li class="li">A <samp class="codeph apex_code"><span class="keyword">final</span></samp> variable.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Protected</samp> or <samp class="codeph apex_code"><span class="keyword">private</span></samp>.</li>
+
+          </ul>
+</li>
+
+        <li class="li">The data type of the invocable variable must be one of these:<ul class="ul bulletList">
+            <li class="li">A primitive other than Object</li>
+
+            <li class="li">An sObject, either the generic sObject or a specific sObject</li>
+
+            <li class="li">A list of primitives, sObjects, or objects created from Apex classes</li>
+
+            <li class="li">A list of lists of primitives or objects created from Apex classes</li>
+
+          </ul>
+</li>
+
+        <li class="li">The invocable variable name in Apex must match the name in the flow. The name is
+          case-sensitive.</li>
+
+        <li class="li">For managed packages:<ul class="ul bulletList">
+            <li class="li">Public invocable variables can be set in flows and processes within the same managed
+              package.</li>
+
+            <li class="li">Global invocable variables can be set anywhere in the subscriber org. Only global
+              invocable variables appear in Flow Builder and Process Builder in the subscriber
+              org.</li>
+
+          </ul>
+</li>
+
+        <li class="li">Starting in API version 66.0, Apex classes used for invocable action parameters must
+          have a visible no-argument constructor. Use the default constructor or add your own
+          constructor. The constructor must be public for non-packaged classes or global for
+          packaged classes invoked from outside the package. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_constructors.htm">Using Constructors</a>.</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="InvocableMethod Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="IsTest Annotation">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" target="_blank" title="Apex Developer Guide: InvocableMethod Annotation
+                         - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: InvocableMethod Annotation
+                        </a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Invocable_Action.htm" target="_blank"><em class="ph i">Apex Reference Guide</em>: Action Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_forcecom_flow_invocable_action_extension_customize_input_order_example.htm" title="Simplify the configuration of Apex invocable actions in Flow Builder by using the InvocableActionExtension metadata file. Create partial custom property editors for one or more input parameters that don't require updates when you introduce new versions of your action. Define dynamic or static picklists for input parameters and control input parameter display order and grouping. You can also add a custom header to your property editor.">Extend Invocable Action Configuration in Flow Builder</a></div></li>
+</ul>
+</div>
+</div>

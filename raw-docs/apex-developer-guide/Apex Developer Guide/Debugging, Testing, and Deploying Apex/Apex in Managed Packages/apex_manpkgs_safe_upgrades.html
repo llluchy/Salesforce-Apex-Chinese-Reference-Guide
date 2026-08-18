@@ -1,0 +1,483 @@
+<a name="apex_manpkgs_safe_upgrades"><!-- --></a><h1 class="helpHead1">Safely Upgrade Packages from Developer and Subscriber Perspectives</h1><div class="body conbody">
+<div class="shortdesc">Learn how to upgrade a managed package safely through this extended example. See the
+  actions that package developers and subscribers can take to ensure a smooth transition and
+  safeguard the backwards compatibility of existing integrations.</div>
+
+  <p class="p">These sections follow an example package developer and package subscriber as they move through
+   a managed package upgrade process.</p>
+
+  <div class="section">
+<h2 class="helpHead2">1. Package Developer: Publishes Version 1.0</h2>
+<p class="p">The package developer publishes version 1.0 of a 1GP managed package in the <samp class="codeph apex_code">eshop</samp> namespace. The package contains Apex <samp class="codeph apex_code">CustomCart</samp> and <samp class="codeph apex_code">CartCalculator</samp> classes.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * CustomCart
+ * Simple container for item prices used in a managed package context.
+ * @version 1.0
+ * @since 1.0
+ */</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> CustomCart {
+
+    <span class="keyword">global</span> List&lt;<span class="keyword">Decimal</span>&gt; itemPrices;
+
+    <span class="keyword">global</span> CustomCart() {
+        <span class="statement">this</span>.itemPrices = <span class="keyword">new</span> List&lt;<span class="keyword">Decimal</span>&gt;{0.0};
+    }
+}
+</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * CartCalculator
+ * Handles tasks about calculating items and prices in customer carts.
+ * @version 1.0
+ * @since 1.0
+ */</span>
+<span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">class</span> CartCalculator {
+    <span class="multilineComment">/**
+     * Adds item prices in a custom cart.
+     * @param c A CustomCart object that represents a list of items that the customer 
+     * wants to buy
+     * @return A Decimal object that represents the total price of items in the
+     * cart
+     * @version 1.0
+     * @since 1.0
+     */</span>
+    <span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">Decimal</span> getTotalPrice(CustomCart c) {
+        <span class="keyword">Decimal</span> price = 0.0;
+        <span class="onelineComment">// Add up items in cart</span>
+        <span class="statement">for</span> (<span class="keyword">Decimal</span> itemPrice : c.itemPrices) {
+            price += itemPrice;
+        }
+        <span class="statement">return</span> price;
+    }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">2. Package Subscriber: Adds Functionality by Overriding a Method</h2>
+<p class="p">The package subscriber installs version 1.0 of the managed package, but they find that the
+        existing <samp class="codeph apex_code">CartCalculator</samp> class is inadequate. They
+        want the ability to factor shipping costs into the total cart price. </p>
+
+      <p class="p">So, the subscriber extends the <samp class="codeph apex_code">CartCalculator</samp> class
+        in the managed package with a custom <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class. They override the <samp class="codeph apex_code">getTotalPrice()</samp> method so that the total price includes
+        the shipping cost.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Package Subscriber - CartCalculatorWithShipping.cls</span>
+
+<span class="multilineComment">/**
+* Handles tasks about calculating items and prices in customer carts,
+* including shipping costs.
+*/</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> CartCalculatorWithShipping <span class="keyword">extends</span> eshop.CartCalculator {
+
+    <span class="multilineComment">/**
+    * Adds item prices in a cart and adds the shipping cost to the total price.
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart, including the shipping cost 
+    */</span>
+    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">Decimal</span> getTotalPrice(eshop.CustomCart c) {
+        <span class="statement">return</span> <span class="keyword">super</span>.getTotalPrice(c) + getShippingCost(c);
+    }
+
+    <span class="multilineComment">/**
+    * Get the shipping cost based on the items in a customer's cart
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total shipping cost
+    * for the cart
+    */</span> 
+    <span class="keyword">public</span> <span class="keyword">Decimal</span> getShippingCost(eshop.CustomCart c) {
+      <span class="onelineComment">// Flat rate shipping</span>
+      <span class="statement">return</span> 20.0;
+    }
+
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"> 3. Package Developer: Releases Version 2.0 and Implements the Subscriber’s Custom
+    Functionality </h2>
+<p class="p">The package developer releases version 2.0 of the managed package. In
+    this version, the <samp class="codeph apex_code">CartCalculator</samp> class now includes a
+    native shipping cost calculator. The updated <samp class="codeph apex_code">getTotalPrice()</samp> method calls the new <samp class="codeph apex_code">getShippingCost()</samp> method. Notice that the package developer uses the same method name
+    for <samp class="codeph apex_code">getShippingCost()</samp> as the subscriber does for their
+    custom override
+   method.</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">// Package Developer - CartCalculator.cls 
+
+/**
+* Handles tasks about calculating items and prices in customer carts.
+* @version 2.0
+* @since 1.0
+*/
+global virtual class CartCalculator {
+    /**
+    * Adds item prices in a cart, including the shipping cost
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart, including the total shipping cost
+    * @version 2.0
+    * @since 1.0
+    */ 
+    global virtual Decimal getTotalPrice(CustomCart c) {
+        Decimal price = 0.0;
+        // Add up items in cart
+        for (Decimal itemPrice : c.itemPrices) {
+        price += itemPrice;
+    }
+    return price + getShippingCost(c);
+  }
+
+    /**
+    * Get the shipping cost based on the items in a customer's cart
+    * @param c A CustomCart object that represents a list of items that the customer 
+    * wants to buy
+    * @return A Decimal object that represents the total shipping cost
+    * for the cart
+    * @version 2.0
+    * @since 2.0
+    */ 
+    global virtual Decimal getShippingCost(CustomCart c) {
+        // Flat rate shipping
+        return 20.0;
+    }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"> 4. Package Subscriber: Upgrades to Version 2.0 Without Specifying a Package Version for
+        the Apex Class </h2>
+
+   
+   <p class="p">By default, an Apex class or trigger is associated with the version of the managed package
+        installed when the class or trigger was most recently deployed.</p>
+
+   <p class="p">In this example, the package subscriber created and saved the <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class when the <samp class="codeph apex_code">eshop</samp> managed package was on version 1.0. If the package subscriber upgrades
+        their <samp class="codeph apex_code">eshop</samp> managed package to version 2.0, and
+        doesn’t redeploy the <samp class="codeph apex_code">CartCalculatorWithShipping</samp>
+        class, then that class is still associated with version 1.0 of the managed package.</p>
+
+   <p class="p">Let’s say that the package subscriber upgrades their <samp class="codeph apex_code">eshop</samp> managed package to version 2.0, but does try to redeploy <samp class="codeph apex_code">CartCalculatorWithShipping</samp>. In this case, the subscriber
+        encounters this compilation error: <samp class="ph systemoutput">Method must use the override keyword:
+          public Decimal getShippingCost(CustomCart c)</samp>.</p>
+
+   <p class="p">This error occurs because there’s a mismatch in the shape of the API. The subscriber’s
+        original <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class has a
+          <samp class="codeph apex_code">getShippingCost()</samp> method, and the <samp class="codeph apex_code">CartCalculator</samp> class in version 2.0 of the managed package
+        now also includes a <samp class="codeph apex_code">getShippingCost()</samp> method. The
+        subscriber didn’t specify a package version for the <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class, so upon redeployment, the class is now
+        associated with version 2.0 of the managed package. Therefore, the subscriber’s <samp class="codeph apex_code">getShippingCost()</samp> method technically overrides the <samp class="codeph apex_code">getShippingCost()</samp> method in <samp class="codeph apex_code">CartCalculator</samp>, and so the Apex compiler requires an <samp class="codeph apex_code"><span class="keyword">override</span></samp> keyword for the method.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2"> 5. Package Subscriber: Sets Apex Class to Package Version 1.0</h2>
+<p class="p">To avoid this compilation error, the package subscriber explicitly sets a package version for the
+          <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class. When  is set to
+        a specific package version, the class views the package’s global Apex as if that version was
+        installed.</p>
+<p class="p">In this case, setting <samp class="codeph apex_code">CartCalculatorWithShipping</samp> to
+        version 1.0 of the managed package avoids a compilation error because the package’s <samp class="codeph apex_code">CartCalculator</samp> class doesn’t define a <samp class="codeph apex_code">getShippingCost()</samp> method until version 2.0. As long as the
+          <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class is set to an
+        earlier package version, the package’s <samp class="codeph apex_code">CartCalculator</samp> class doesn’t expose the <samp class="codeph apex_code">getShippingCost()</samp> method to the subscriber. Therefore, the Apex compiler doesn’t
+        flag the subscriber’s own <samp class="codeph apex_code">getShippingCost()</samp> method
+        as needing to override the method in the managed package.</p>
+<p class="p">To override the default package version for an Apex class or trigger, use the Salesforce Setup UI
+        or the <samp class="codeph xml">packageVersions</samp> field of the class’s ApexClass
+        metadata type. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_version.htm#apex_manpkgs_subscriber_version" title="As a managed package subscriber, you can specify which package version that your managed Apex classes and triggers use. Set the package version in Setup, through metadata deployments, or with API requests.">Set Package Versions for Apex Classes and
+          Triggers</a>.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+    <p class="p">In Spring ’25 and earlier, setting Apex classes and triggers to a package version was
+     available for only first-generation managed packages (1GP). In Summer ’25 and later, package
+     version setting is also available for migrated 2GP managed packages. Package version setting
+     isn’t yet supported in 2GP packages that weren’t converted from a 1GP package. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=005101483&amp;type=1&amp;language=en_US" target="_blank">Apex Version Settings in Migrated Second-Generation Managed Packages
+      (2GP)</a>.</p>
+
+    <p class="p">For migrated 2GP managed packages, the <samp class="codeph xml">packageVersions</samp>
+          field of the ApexClass metadata type is different from that of 1GP managed packages. 2GP
+          managed packages are identified by their package ID, whereas 1GP managed packages are
+          identified by their namespace. This difference occurs because multiple 2GP managed
+          packages can have the same namespace, whereas 1GP managed packages each require a unique
+          namespace. </p>
+
+   </p>
+</div>
+</div></div></div></div>
+<p class="p">For example, here’s the metadata file for the subscriber’s <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class, where the class is set to
+    version 1.0 of the managed package. Because the package is a 1GP managed package, the namespace
+    is specified instead of the package
+   ID.</p>
+<div class="codeSection xml"><pre class="codeblock brush:xml">&lt;!-- CartCalculatorWithShipping.cls-meta.xml --&gt;
+<span class="tag">&lt;ApexClass</span><span class="attribute"> xmlns=</span>"http://soap.sforce.com/2006/04/metadata"&gt;
+    <span class="tag">&lt;apiVersion</span>&gt;66.0<span class="tag">&lt;/apiVersion</span>&gt;
+    <span class="tag">&lt;status</span>&gt;Active<span class="tag">&lt;/status</span>&gt;
+    <span class="tag">&lt;packageVersions</span>&gt;
+        <span class="tag">&lt;namespace</span>&gt;eshop<span class="tag">&lt;/namespace</span>&gt; &lt;!-- For only 1GP  --&gt;
+        <span class="tag">&lt;majorNumber</span>&gt;1<span class="tag">&lt;/majorNumber</span>&gt;
+        <span class="tag">&lt;minorNumber</span>&gt;0<span class="tag">&lt;/minorNumber</span>&gt;
+    <span class="tag">&lt;/packageVersions</span>&gt;
+<span class="tag">&lt;/ApexClass</span>&gt;
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"> 6. Package Subscriber: getTotalPrice() Returns an Incorrect Value</h2>
+<p class="p">The
+        subscriber sets the <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class
+        to version 1.0 of the managed package and successfully recompiles the class. However, the
+        subscriber now encounters a new issue at run time: the <samp class="codeph apex_code">getTotalPrice()</samp> method in the <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class returns the wrong total price.</p>
+<p class="p">Recall
+        that specifying an earlier package version for an Apex class or trigger hides globals that
+        are defined in later versions during compilation. In other words, setting a package version
+        preserves the shape of the API. However, it doesn’t necessarily preserve the behavior of the
+        API at run time. </p>
+<p class="p">In version 1.0, the <samp class="codeph apex_code">getTotalPrice()</samp> method in the <samp class="codeph nolang">CartCalculator</samp> class returns only the base price. But in
+        version 2.0, the <samp class="codeph apex_code">getTotalPrice()</samp> method now returns
+        the price plus the result of <samp class="codeph apex_code">getTotalShippingCost()</samp>.
+        The <samp class="codeph apex_code">getTotalPrice()</samp> method exists in both versions
+        of the managed package, even though its behavior differs. Therefore, even if the subscriber
+        sets the <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class to version
+        1.0, the <samp class="codeph apex_code">getTotalPrice()</samp> executes with its version
+        2.0 behavior at run time. </p>
+<p class="p">Remember that the subscriber’s <samp class="codeph apex_code">getTotalPrice()</samp> method in
+        their <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class overrides the
+        native <samp class="codeph apex_code">getTotalPrice()</samp> method in the managed
+        package. The subscriber’s override method adds the <samp class="codeph apex_code">getShippingCost()</samp> result to the result of the native <samp class="codeph apex_code">getTotalPrice()</samp> method. In version 2.0 of the managed
+        package, the native <samp class="codeph apex_code">getTotalPrice()</samp> method already
+        adds the shipping cost, so the shipping cost is erroneously added twice.</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">// Package Developer - CartCalculator.cls (v2.0) (code unchanged)
+global virtual class CartCalculator {
+
+    global virtual Decimal getTotalPrice(CustomCart c) {
+        Decimal price = 0.0;
+        // Add up items in cart
+        for (Decimal itemPrice : c.itemPrices) {
+            price += itemPrice;
+        }
+        return price + getShippingCost(c);
+    }
+
+    global virtual Decimal getShippingCost(CustomCart c) {
+        // Flat rate shipping
+        return 20.0;
+    }
+
+}
+
+// Package Subscriber - CartCalculatorWithShipping.cls (code unchanged)
+public with sharing class CartCalculatorWithShipping extends eshop.CartCalculator {
+
+    // Now returns the wrong price because getShippingCost is added twice
+    public override Decimal getTotalPrice(eshop.CustomCart c) {
+        return super.getTotalPrice(c) + getShippingCost(c);
+    }
+
+    public Decimal getShippingCost(eshop.CustomCart c) {
+        // Flat rate shipping
+    return 20.0;
+    }
+}
+</pre></div>
+<p class="p">To resolve this problem without requiring the subscriber to change their
+        code, the package developer must version the behavior of Apex classes and triggers in the
+        package.</p>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"> 7. Package Developer: Implements Backward Compatibility with
+        System.requestVersion() </h2>
+<p class="p">After the package subscriber informs the package developer about the unexpected <samp class="codeph apex_code">getTotalPrice()</samp> behavior, the package developer releases a
+        patch update. Version 2.1 of the package allows the subscriber to keep their original
+          <samp class="codeph apex_code">CartCalculatorWithShipping</samp> class by implementing
+        backwards compatibility with <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_requestVersion" target="_blank"><samp class="codeph apex_code">System.requestVersion()</samp></a>.</p>
+<p class="p">Here’s version 2.1 of the <samp class="codeph apex_code">CartCalculator</samp> class that contains an updated <samp class="codeph apex_code">getTotalPrice()</samp> method. In the method, a <samp class="codeph apex_code">callerVersion</samp> variable is set to <samp class="codeph apex_code">System.requestVersion()</samp>, which returns a <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_version.htm" target="_blank"><samp class="codeph apex_code">Version</samp></a>
+        object that represents the managed package version of the calling class. A <samp class="codeph apex_code">minVersionWithShippingCost</samp> variable is set to the managed
+        package version that introduced the changed <samp class="codeph apex_code">getTotalPrice()</samp> behavior. </p>
+<p class="p">Then, the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_compareTo" target="_blank"><samp class="codeph nolang">Version.compareTo()</samp></a> method compares <samp class="codeph nolang">callerVersion</samp> and <samp class="codeph nolang">minVersionWithShippingCost</samp>. If the caller version is earlier than the version
+        that the shipping cost feature was introduced in, then <samp class="codeph nolang">getTotalPrice()</samp> returns the price. This value aligns with the original behavior
+        in version 1.0 of the managed package. If the caller version matches or is later than the
+        version that the shipping cost feature was introduced in, then <samp class="codeph nolang">getTotalPrice()</samp> returns the price addition to the shipping cost.
+        </p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Package Developer - CartCalculator.cls</span>
+
+
+<span class="multilineComment">/**
+* Handles tasks about calculating items and prices in customer carts.
+* @version 2.1
+* @since 1.0
+*/</span>
+<span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">class</span> CartCalculator {
+
+
+   <span class="multilineComment">/**
+    * Adds item prices in a cart.
+    * @param c A CustomCart object that represents a list of items that the customer
+    * wants to buy
+    * @return A Decimal object that represents the total price of items in the
+    * cart. Total price includes the shipping cost for v2.0 and later.
+    * @version 2.1
+    * @since 1.0
+  */</span>
+   <span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">Decimal</span> getTotalPrice (CustomCart c) {
+       <span class="keyword">Decimal</span> price = 0.00;
+       <span class="onelineComment">// Add up items in cart</span>
+       Version callerVersion = System.requestVersion();
+       Version minVersionWithShippingCost = <span class="keyword">new</span> Version(2, 0);
+       <span class="statement">if</span> (callerVersion.compareTo(minVersionWithShippingCost) &lt; 0) {
+       <span class="onelineComment">// callVer &lt; minVer that you introduced the shipping cost feature in</span>
+           <span class="statement">return</span> price;
+       } <span class="statement">else</span> {
+       <span class="statement">return</span> price + getShippingCost(c);
+       }
+   }
+
+
+   <span class="multilineComment">/**
+   * Get the shipping cost based on the items in a customer's cart
+   * @param c A CustomCart object that represents a list of items that the customer
+   * wants to buy
+   * @return A Decimal object that represents the total shipping cost
+   * for the cart
+   * @version 2.1
+   * @since 2.0
+   */</span>
+   <span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">Decimal</span> getShippingCost(CustomCart c) {
+       <span class="statement">return</span> 20.00;
+   }
+}
+</pre></div>
+<p class="p">By versioning the behavior of <samp class="codeph nolang">getTotalPrice()</samp>, the package developer has implemented basic backward
+        compatibility for the class. Now, as long as package subscribers set Apex classes to the
+        desired managed package version, then their existing implementations won’t break when they
+        upgrade from version 1.0 to version 2.1 of the package.</p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">8: Package Developer: Tests Backward Compatibility with
+        System.runAs()</h2>
+<p class="p">To ensure that <samp class="codeph apex_code">getTotalPrice()</samp> now behaves differently based on the package version of the
+        calling code, the package developer can use <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_runAs" target="_blank"><samp class="codeph nolang">System.runAs()</samp></a>
+        in their unit tests. This method, which can only be used in test methods, changes the
+        current package version to the package version specified in the argument Here’s a basic unit
+        test that the package developer implements for<samp class="codeph nolang">
+          getTotalPrice()</samp>.</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">// Package Developer - CartCalculatorTest.cls
+@isTest
+private class CartCalculatorTest {
+
+    private static final List&lt;Decimal&gt; prices = new List&lt;Decimal&gt;{
+        10.0,
+        20.0,
+        30.0
+    };
+
+    @isTest
+    static void testGetTotalPrice_WithShippingCost() {
+        CustomCart cart = new CustomCart();
+        cart.itemPrices = prices;
+
+        CartCalculator calculator = new CartCalculator();
+
+        //Version 2.0 includes the shipping cost calculation
+        System.runAs(new Version(2, 0)) {
+            Decimal totalPrice = calculator.getTotalPrice(cart);
+            // The expected total is sum of item prices (60.0) plus the shipping cost (20.0)
+            Assert.areEqual(80.0, totalPrice, 'The total price should be 80.0');
+        }
+    }
+
+    @isTest
+    static void testGetTotalPrice_WithoutShippingCost() {
+        CustomCart cart = new CustomCart();
+        cart.itemPrices = prices;
+        CartCalculator calculator = new CartCalculator();
+        // Version 1.0 doesn't include the shipping cost calculation
+        System.runAs(new Version(1, 0)) {
+            Decimal totalPrice = calculator.getTotalPrice(cart);
+            // The expected total is the sum of item prices (60.0)
+            Assert.areEqual(60.0, totalPrice, 'The total price should be 60.0');
+        }
+    }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Summary: Shared Responsibilities for Safe Package Upgrades </h2>
+
+   
+   <p class="p">The extended example demonstrates that the package developer and package subscriber both play
+        a role in ensuring safe package upgrades. Here’s a table that summarizes the recommended
+        actions that each actor can take so that the package can evolve without compromising
+        subscriber implementations.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Safe Package Upgrade Responsibilities</span></caption>
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d171053e394">Goal</th>
+
+              <th class="featureTableHeader  " id="d171053e397">Actor</th>
+
+              <th class="featureTableHeader  " id="d171053e400">Action</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d171053e394" data-title="Goal">Version API Shape</td>
+
+              <td class="entry" headers="d171053e397" data-title="Actor">Package Subscriber</td>
+
+              <td class="entry" headers="d171053e400" data-title="Action">
+                <p class="p">Be aware of the default versioned behavior: an Apex class or trigger is
+                  associated with the version of a managed package installed when that class or
+                  trigger was most recently deployed or saved.</p>
+
+                <p class="p">If necessary, override the default by explicitly setting dependent Apex classes
+                  and triggers to a specific package version.</p>
+
+                <p dir="ltr" class="p">See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_version.htm#apex_manpkgs_subscriber_version" title="As a managed package subscriber, you can specify which package version that your managed Apex classes and triggers use. Set the package version in Setup, through metadata deployments, or with API requests.">Set Package Versions for Apex Classes
+                    and Triggers</a>.</p>
+
+              </td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d171053e394" data-title="Goal">Version API Behavior</td>
+
+              <td class="entry" headers="d171053e397" data-title="Actor">Package Developer</td>
+
+              <td class="entry" headers="d171053e400" data-title="Action">Version changed behavior with <samp class="codeph apex_code">System.requestVersion()</samp>, and test it with <samp class="codeph apex_code">System.runAs()</samp>. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_package_versions.htm" title="A managed package component can exhibit different behavior in different package versions. By versioning managed Apex, you can add and refine components in the managed package, while maintaining backwards compatibility for existing subscribers.">Version Apex in Managed Packages</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_chapter.htm" title="As an independent software vendor (ISV) or Salesforce partner, you can distribute Apex code to customer orgs by using managed packages. For first-generation managed packages (1GP) and migrated second-generation managed packages (2GP), use versioning to evolve components of your managed package gracefully without breaking existing customer integrations. Understand how global Apex in managed packages behaves and learn how to develop global Apex in managed packages specifically for agents.">Develop and Distribute Apex for Managed Packages</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_intro.htm" title="Learn how to use managed Apex effectively as a managed package subscriber.">Use Apex Referenced by Managed Packages</a></div></li>
+</ul>
+</div>
+</div>

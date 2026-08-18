@@ -1,0 +1,470 @@
+<a name="apex_class_commercepayments_BankPaymentMethodRequest"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">BankPaymentMethodRequest Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sends data related to a bank payment method to a gateway adapter
+      during a service call.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Use the <samp class="codeph apex_code">BankPaymentMethodRequest</samp> class to include bank payment details in a Tokenize
+        request. The gateway adapter reads the fields from this class when constructing the
+        tokenized JSON request for the payment gateway. You can create an instance of this class by
+        calling <samp class="codeph apex_code">bankPaymentMethod </samp> on the <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> class.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">private</span> <span class="keyword">String</span> buildTokenizationRequest(commercepayments.PaymentMethodTokenizationRequest tokenizeRequest) {
+    commercepayments.BankPaymentMethodRequest bankPaymentMethod = tokenizeRequest.bankPaymentMethod;
+
+    <span class="onelineComment">// Setup currency</span>
+    <span class="keyword">String</span> currencyIso = UserInfo.getDefaultCurrency();
+
+    <span class="keyword">String</span> accountId;
+    JSONGenerator jsonGeneratorInstance = JSON.createGenerator(<span class="keyword">true</span>);
+    jsonGeneratorInstance.writeStartObject();
+
+    <span class="onelineComment">// Basic fields</span>
+    jsonGeneratorInstance.writeStringField(<span class="string">'merchantAccount'</span>, <span class="string">'{!$Credential.Username}'</span>);
+    jsonGeneratorInstance.writeStringField(<span class="string">'reference'</span>, <span class="string">'Tokenize_'</span> + <span class="keyword">String</span>.valueOf(<span class="keyword">Datetime</span>.now().getTime()));
+
+    <span class="onelineComment">// Payment method details (from encrypted form input)</span>
+    jsonGeneratorInstance.writeFieldName(<span class="string">'paymentMethod'</span>);
+    jsonGeneratorInstance.writeStartObject();
+
+    <span class="statement">if</span> (bankPaymentMethod != <span class="keyword">null</span>) {
+        accountId = bankPaymentMethod.accountId;
+        <span class="statement">if</span> (bankPaymentMethod.bankType.equals(commercepayments.BankType.Ach)) {
+            currencyIso = <span class="string">'USD'</span>;
+            jsonGeneratorInstance.writeStringField(<span class="string">'type'</span>, <span class="string">'ach'</span>);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bankAccountNumber'</span>, bankPaymentMethod.accountNumber);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bankLocationId'</span>, bankPaymentMethod.bankCode);
+            jsonGeneratorInstance.writeStringField(<span class="string">'ownerName'</span>, bankPaymentMethod.accountHolderName);
+
+        } <span class="statement">else</span> <span class="statement">if</span> (bankPaymentMethod.bankType.equals(commercepayments.BankType.SepaDebit)) {
+
+            currencyIso = <span class="string">'EUR'</span>;
+            jsonGeneratorInstance.writeStringField(<span class="string">'type'</span>, <span class="string">'sepadirectdebit'</span>);
+            jsonGeneratorInstance.writeStringField(<span class="string">'iban'</span>, bankPaymentMethod.accountNumber);
+            jsonGeneratorInstance.writeStringField(<span class="string">'ownerName'</span>, bankPaymentMethod.accountHolderName);
+
+        } <span class="statement">else</span> <span class="statement">if</span> (bankPaymentMethod.bankType.equals(commercepayments.BankType.Bacs)) {
+
+            currencyIso = <span class="string">'GBP'</span>;
+            jsonGeneratorInstance.writeStringField(<span class="string">'type'</span>, <span class="string">'directdebit_GB'</span>);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bankAccountNumber'</span>, bankPaymentMethod.accountNumber);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bankLocationId'</span>, bankPaymentMethod.bankCode);
+            jsonGeneratorInstance.writeStringField(<span class="string">'holderName'</span>, bankPaymentMethod.accountHolderName);
+
+        } <span class="statement">else</span> <span class="statement">if</span> (bankPaymentMethod.bankType.equals(commercepayments.BankType.Becs)) {
+
+            currencyIso = <span class="string">'AUD'</span>;
+            jsonGeneratorInstance.writeStringField(<span class="string">'type'</span>, <span class="string">'directdebit_AU'</span>);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bankAccountNumber'</span>, bankPaymentMethod.accountNumber);
+            jsonGeneratorInstance.writeStringField(<span class="string">'bsb'</span>, bankPaymentMethod.bankCode);
+            jsonGeneratorInstance.writeStringField(<span class="string">'ownerName'</span>, bankPaymentMethod.accountHolderName);
+
+        } <span class="statement">else</span> {
+            <span class="onelineComment">//Add support for other banks if required in future.</span>
+        }
+
+        jsonGeneratorInstance.writeEndObject();
+    }
+
+    <span class="onelineComment">// Zero-dollar amount</span>
+    jsonGeneratorInstance.writeFieldName(<span class="string">'amount'</span>);
+    jsonGeneratorInstance.writeStartObject();
+    jsonGeneratorInstance.writeNumberField(<span class="string">'value'</span>, 0);
+    jsonGeneratorInstance.writeStringField(<span class="string">'currency'</span>, currencyIso);
+    jsonGeneratorInstance.writeEndObject();
+
+    <span class="onelineComment">// Save payment method for later</span>
+    jsonGeneratorInstance.writeStringField(<span class="string">'shopperReference'</span>, accountId);
+    jsonGeneratorInstance.writeBooleanField(<span class="string">'storePaymentMethod'</span>, <span class="keyword">true</span>);
+    jsonGeneratorInstance.writeStringField(<span class="string">'shopperInteraction'</span>, <span class="string">'Ecommerce'</span>);
+    jsonGeneratorInstance.writeStringField(<span class="string">'recurringProcessingModel'</span>, <span class="string">'UnscheduledCardOnFile'</span>);
+
+    commercepayments.AddressRequest billingAddress = tokenizeRequest.address;
+
+    <span class="statement">if</span> (billingAddress != <span class="keyword">null</span>) {
+        jsonGeneratorInstance.writeFieldName(<span class="string">'billingAddress'</span>);
+        jsonGeneratorInstance.writeStartObject();
+        jsonGeneratorInstance.writeStringField(<span class="string">'street'</span>, billingAddress.street);
+        jsonGeneratorInstance.writeStringField(<span class="string">'stateOrProvince'</span>, billingAddress.state);
+        jsonGeneratorInstance.writeStringField(<span class="string">'city'</span>, billingAddress.city);
+        jsonGeneratorInstance.writeStringField(<span class="string">'postalCode'</span>, billingAddress.postalCode);
+        jsonGeneratorInstance.writeStringField(<span class="string">'country'</span>, billingAddress.country);
+        jsonGeneratorInstance.writeEndObject();
+
+    }
+    jsonGeneratorInstance.writeEndObject();
+    <span class="statement">return</span> jsonGeneratorInstance.getAsString();
+}</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_properties">BankPaymentMethodRequest Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_methods">BankPaymentMethodRequest Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_properties">
+<a name="apex_commercepayments_BankPaymentMethodRequest_properties"><!-- --></a><h2 class="helpHead2">BankPaymentMethodRequest Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph ">BankPaymentMethodRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountHolderFirstName">accountHolderFirstName</a></strong><br>
+The first name of the account holder for the bank payment     method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountHolderLastName">accountHolderLastName</a></strong><br>
+The last name of the account holder for the bank payment     method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountHolderName">accountHolderName</a></strong><br>
+The name of the account holder for the bank payment     method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountHolderType">accountHolderType</a></strong><br>
+The type of the account holder.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountId">accountId</a></strong><br>
+Salesforce Payments account ID associated with the bank payment       method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountNumber">accountNumber</a></strong><br>
+The unique account number for the bank account.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_accountType">accountType</a></strong><br>
+The type for the bank account.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_autoPay">autoPay</a></strong><br>
+Indicates whether a token for recurring payments is being requested       (true) or not (false). The token enables the payment method to be used for recurring       payments.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_bankCode">bankCode</a></strong><br>
+The routing number is a unique nine-digit code that identifies the       bank.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_bankType">bankType</a></strong><br>
+The bank type associated with the bank payment   method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_comments">comments</a></strong><br>
+Additional details about the bank account.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_email">email</a></strong><br>
+The email address of the bank account holder.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_mandate">mandate</a></strong><br>
+Authorization from the account holder to debit their payment       method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_nickName">nickName</a></strong><br>
+The nick name of the account holder.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_standardEntryClassCode">standardEntryClassCode</a></strong><br>
+The three-letter code that identifies the type of electronic payment       transaction being processed within the Automated Clearing House (ACH)     network.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountHolderFirstName">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountHolderFirstName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountHolderFirstName</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The first name of the account holder for the bank payment
+    method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String accountHolderFirstName {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountHolderLastName">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountHolderLastName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountHolderLastName</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The last name of the account holder for the bank payment
+    method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String accountHolderLastName {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountHolderName">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountHolderName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountHolderName</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The name of the account holder for the bank payment
+    method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String accountHolderName {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountHolderType">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountHolderType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountHolderType</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>The type of the account holder.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.AccountHolderType accountHolderType {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_AccountHolderType.htm" title="Specifies the type of the account holder.">AccountHolderType</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountId">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountId</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Salesforce Payments account ID associated with the bank payment
+      method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String accountId {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountNumber">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountNumber"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountNumber</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The unique account number for the bank account.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String accountNumber {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_accountType">
+<a name="apex_commercepayments_BankPaymentMethodRequest_accountType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">accountType</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The type for the bank account.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.AccountType accountType {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_AccountType.htm" title="Specifies the account type.">AccountType</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_autoPay">
+<a name="apex_commercepayments_BankPaymentMethodRequest_autoPay"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">autoPay</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Indicates whether a token for recurring payments is being requested
+      (true) or not (false). The token enables the payment method to be used for recurring
+      payments.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean autoPay {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_bankCode">
+<a name="apex_commercepayments_BankPaymentMethodRequest_bankCode"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">bankCode</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The routing number is a unique nine-digit code that identifies the
+      bank.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String bankCode {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_bankType">
+<a name="apex_commercepayments_BankPaymentMethodRequest_bankType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">bankType</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The bank type associated with the bank payment
+  method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.BankType bankType {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_BankType.htm" title="Specifies the bank type.">BankType</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_comments">
+<a name="apex_commercepayments_BankPaymentMethodRequest_comments"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">comments</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Additional details about the bank account.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String comments {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_email">
+<a name="apex_commercepayments_BankPaymentMethodRequest_email"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">email</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The email address of the bank account holder.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String email {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_mandate">
+<a name="apex_commercepayments_BankPaymentMethodRequest_mandate"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">mandate</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Authorization from the account holder to debit their payment
+      method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String mandate {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_nickName">
+<a name="apex_commercepayments_BankPaymentMethodRequest_nickName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">nickName</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The nick name of the account holder.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String nickName {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_standardEntryClassCode">
+<a name="apex_commercepayments_BankPaymentMethodRequest_standardEntryClassCode"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">standardEntryClassCode</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The three-letter code that identifies the type of electronic payment
+      transaction being processed within the Automated Clearing House (ACH)
+    network.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.StandardEntryClassCode standardEntryClassCode {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_StandardEntryClassCode.htm" title="Specifies the three-letter code that identifies the type of electronic payment transaction being processed within the Automated Clearing House (ACH) network.">StandardEntryClassCode</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_methods">
+<a name="apex_commercepayments_BankPaymentMethodRequest_methods"><!-- --></a><h2 class="helpHead2">BankPaymentMethodRequest Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">BankPaymentMethodRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_equals">equals(obj)</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">BankPaymentMethodRequest</samp> by determining the equality of       external objects in a list. This method is dynamic and based on the equals method in       Java.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_hashCode">hashCode()</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">BankPaymentMethodRequest</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_commercepayments_BankPaymentMethodRequest_toString">toString()</a></strong><br>
+Converts a date to a string.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_equals">
+<a name="apex_commercepayments_BankPaymentMethodRequest_equals"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">equals(obj)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">BankPaymentMethodRequest</samp> by determining the equality of
+      external objects in a list. This method is dynamic and based on the equals method in
+      Java.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean equals(Object obj)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">obj</var></strong>:<p class="p">Type: Object External object whose key is to be validated.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_hashCode">
+<a name="apex_commercepayments_BankPaymentMethodRequest_hashCode"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">hashCode()</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">BankPaymentMethodRequest</samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer hashCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_BankPaymentMethodRequest_toString">
+<a name="apex_commercepayments_BankPaymentMethodRequest_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Converts a date to a string.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

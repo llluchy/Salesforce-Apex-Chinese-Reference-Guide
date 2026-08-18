@@ -1,0 +1,236 @@
+<a name="apex_class_commercetax_TaxEngineContext"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">TaxEngineContext Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Wrapper class that stores details about the type of a tax
+            calculation request.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercetax.htm" title="Manage the communication between Salesforce and an external tax engine.">CommerceTax</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            <p class="p">At the beginning of a tax adapter, use <samp class="codeph ">TaxEngineContext</samp> class to pass the value of a request type to an
+                instance of <samp class="codeph ">RequestType</samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">class</span> MockAdapter <span class="keyword">implements</span> commercetax.TaxEngineAdapter {
+ 
+     <span class="keyword">global</span> commercetax.TaxEngineResponse processRequest(commercetax.TaxEngineContext taxEngineContext) {
+         commercetax.RequestType requestType = taxEngineContext.getRequestType();
+         commercetax.CalculateTaxRequest request = (commercetax.CalculateTaxRequest)taxEngineContext.getRequest();</pre></div>
+
+            <p class="p">Build the rest of your adapter based on the type of request that you got from <samp class="codeph ">TaxEngineContext</samp> class.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span>(requestType == commercetax.RequestType.CalculateTax){
+             commercetax.calculatetaxtype type = request.taxtype;
+             <span class="keyword">String</span> docCode=<span class="string">''</span>;
+             <span class="statement">if</span>(request.DocumentCode == <span class="string">'simulateEmptyDocumentCode'</span>)
+                 docCode = <span class="string">''</span>;
+             <span class="statement">else</span> <span class="statement">if</span>(request.DocumentCode != <span class="keyword">null</span>)
+                 docCode =request.DocumentCode;
+             <span class="statement">else</span> <span class="statement">if</span>(request.ReferenceEntityId != <span class="keyword">null</span>) docCode = request.ReferenceEntityId;
+             <span class="statement">else</span> docCode =  <span class="keyword">String</span>.valueOf(getRandomInteger(0,2147483647));
+             commercetax.CalculateTaxResponse response = <span class="keyword">new</span> commercetax.CalculateTaxResponse();
+             <span class="statement">if</span>(request.isCommit == <span class="keyword">true</span>) {
+                 response.setStatus(commercetax.TaxTransactionStatus.Committed);
+             } <span class="statement">else</span> {
+                 response.setStatus(commercetax.TaxTransactionStatus.Uncommitted);
+             }
+}</pre></div>
+</div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_constructors">TaxEngineContext Constructors</a></strong><br>
+Learn more about the available constructors with the <samp class="codeph ">TaxEngineContext</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_methods">TaxEngineContext Methods</a></strong><br>
+Learn more about the available methods with the <samp class="codeph ">TaxEngineContext</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_constructors">
+<a name="apex_commercetax_TaxEngineContext_constructors"><!-- --></a>
+  <h2 class="helpHead2">TaxEngineContext Constructors</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Learn more about the available constructors with the <samp class="codeph ">TaxEngineContext</samp> class.</div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph apex_code">TaxEngineContext</samp> class includes these
+        constructors.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_ctor">TaxEngineContext(request, requestType, namedUri)</a></strong><br>
+Initializes the <samp class="codeph ">TaxEngineContext</samp>       object. This constructor is intended for test usage and throws an exception if used outside of       the Apex test context.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_ctor">
+<a name="apex_commercetax_TaxEngineContext_ctor"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">TaxEngineContext(request, requestType,
+    namedUri)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Initializes the <samp class="codeph ">TaxEngineContext</samp>
+      object. This constructor is intended for test usage and throws an exception if used outside of
+      the Apex test context.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"> TaxEngineContext(commercetax.TaxEngineRequest request,
+          commercetax.RequestType requestType, <span class="keyword">String</span> namedUri)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">request</var></strong>:<p class="p">Type: TaxEngineRequest Information about</p>
+<p class="p">the request.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">requestType</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_RequestType.htm" title="Shows the type of tax request made to the tax engine.">RequestType</a></p>
+<p class="p">Whether the tax request is to calculate or estimate tax.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">namedUri</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">URI that was called as part of the tax calculation request.</p>
+</li>
+
+      </ul>
+</div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_methods">
+<a name="apex_commercetax_TaxEngineContext_methods"><!-- --></a>
+  <h2 class="helpHead2">TaxEngineContext Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Learn more about the available methods with the <samp class="codeph ">TaxEngineContext</samp> class.</div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph apex_code">TaxEngineContext</samp> class includes these
+        methods.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_getNamedUri">getNamedUri()</a></strong><br>
+Retrieves the value of the NamedUri field of the <samp class="codeph ">TaxEngineContext</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_getRequest">getRequest()</a></strong><br>
+Gets the value of the <samp class="codeph ">TaxEngineContext</samp>'s Request field.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxEngineContext.htm#apex_commercetax_TaxEngineContext_getRequestType">getRequestType()</a></strong><br>
+Gets the value of the RequestType field of the <samp class="codeph ">TaxEngineContext</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_getNamedUri">
+<a name="apex_commercetax_TaxEngineContext_getNamedUri"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getNamedUri()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Retrieves the value of the NamedUri field of the <samp class="codeph ">TaxEngineContext</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span>
+          getNamedUri()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_getRequest">
+<a name="apex_commercetax_TaxEngineContext_getRequest"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getRequest()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gets the value of the <samp class="codeph ">TaxEngineContext</samp>'s Request field.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> commercetax.TaxEngineRequest getRequest()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type:
+        TaxEngineRequest</p>
+
+      <p class="p">An implemented instance of an external tax engine's interface for processing requests.
+        We've provided the <samp class="codeph ">TaxEngineRequest</samp> interface for you to
+        test within mock adapters with classes that implement it, such as <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxRequest.htm#apex_class_commercetax_CalculateTaxRequest" title="Represents a request to an external tax engine to calculate tax. Extends the TaxTransactionRequest class and is the top-level request class.">CalculateTaxRequest</a>. However,
+        don’t use it outside of a testing context.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxEngineContext_getRequestType">
+<a name="apex_commercetax_TaxEngineContext_getRequestType"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getRequestType()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gets the value of the RequestType field of the <samp class="codeph ">TaxEngineContext</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> commercetax.RequestType getRequestType()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_RequestType.htm" title="Shows the type of tax request made to the tax engine.">RequestType</a></p>
+<p class="p">Indicates whether the calculation request was for actual or calculated tax.</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

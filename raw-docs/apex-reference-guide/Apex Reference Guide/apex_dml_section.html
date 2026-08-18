@@ -1,0 +1,378 @@
+<a name="apex_dml_section"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Apex DML Operations</h1>
+
+    <div class="shortdesc">You can perform DML operations using the Apex DML statements or the methods of the
+            <samp class="codeph apex_code">Database</samp> class. For lead conversion, use the
+            <samp class="codeph apex_code">convertLead</samp> method of the <samp class="codeph apex_code">Database</samp> class. There is no DML counterpart for
+        it.</div>
+
+    
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_data_intro.htm" target="_blank" title="Apex Developer Guide: Working with Data in Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Working with Data in Apex</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm#apex_methods_system_database" title="Contains methods for creating and manipulating data.">Database Class</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_dml">
+<a name="apex_dml"><!-- --></a>
+   <h2 class="helpHead2">Apex DML Statements</h2>
+
+   
+   <div class="body">
+      <p class="p">Use Data Manipulation Language (DML) statements to insert, update, merge, delete, and
+         restore data in Salesforce.</p>
+
+      <p class="p">The following Apex DML statements are available:</p>
+
+      
+   </div>
+
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_insert">
+<a name="apex_dml_insert"><!-- --></a>
+<h3 class="helpHead3">Insert Statement</h3>
+
+
+<div class="body">
+<p class="p">The <samp class="codeph apex_code"><span class="statement">insert</span></samp> DML operation
+a<span class="ph" id="apex_dml_insertDef"><a name="apex_dml_insertDef"><!-- --></a>dds one or more sObjects, such as individual
+accounts or contacts, to your organization’s data.</span> <span class="ph" id="apex_dml_insertDef2"><a name="apex_dml_insertDef2"><!-- --></a><samp class="codeph apex_code"><span class="statement">insert</span></samp> is analogous to the INSERT statement in SQL.</span></p>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p">
+<samp class="codeph apex_code"><span class="statement">insert</span><var class="keyword varname"> sObject</var></samp><p class="p"><samp class="codeph apex_code"><span class="statement">insert</span><var class="keyword varname"> sObject[]</var></samp></p>
+</div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="p">The following example inserts an
+account named 'Acme':<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account newAcct = <span class="keyword">new</span> Account(name = <span class="string">'Acme'</span>);
+<span class="statement">try</span> {
+   <span class="statement">insert</span> newAcct;
+} <span class="statement">catch</span> (DmlException e) {
+<span class="onelineComment">// Process exception here</span>
+}</pre></div>
+</div>
+<div class="box message info" id="dmlException">
+<a name="dmlException"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div>
+</div>
+</div>
+
+</div>
+
+</div>
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_update">
+<a name="apex_dml_update"><!-- --></a>
+<h3 class="helpHead3">Update Statement</h3>
+
+
+<div class="body">
+<p class="p">The <samp class="codeph apex_code"><span class="statement">update</span></samp> DML operation <span class="ph" id="apex_dml_updateDef"><a name="apex_dml_updateDef"><!-- --></a>modifies one or more existing sObject records, such as individual accounts or
+                contacts, in your organization’s data.</span>
+            <span class="ph" id="apex_dml_updateDef2"><a name="apex_dml_updateDef2"><!-- --></a><samp class="codeph apex_code"><span class="statement">update</span></samp> is
+                analogous to the UPDATE statement in SQL.</span></p>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p">
+<samp class="codeph apex_code"><span class="statement">update</span><var class="keyword varname"> sObject</var></samp><p class="p"><samp class="codeph apex_code"><span class="statement">update</span><var class="keyword varname"> sObject[]</var></samp></p>
+</div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="p">The following example updates the <samp class="codeph apex_code">BillingCity</samp> field on a single account
+named 'Acme':<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Acme2'</span>);
+<span class="statement">insert</span>(a);
+
+Account myAcct = [SELECT Id, Name, BillingCity FROM Account WHERE Id = :a.Id];
+myAcct.BillingCity = <span class="string">'San Francisco'</span>; 
+
+<span class="statement">try</span> {
+    <span class="statement">update</span> myAcct;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}
+</pre></div>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_upsert">
+<a name="apex_dml_upsert"><!-- --></a>
+    <h3 class="helpHead3">Upsert Statement</h3>
+
+    
+    <div class="body">
+        <p class="p"><span class="ph" id="upsert_def"><a name="upsert_def"><!-- --></a>The <samp class="codeph apex_code"><span class="statement">upsert</span></samp> DML operation <span class="ph" id="apex_dml_upsertDef"><a name="apex_dml_upsertDef"><!-- --></a>creates new records and updates sObject records within a
+                    single statement,</span>
+                <span class="ph" id="apex_dml_upsertDef2"><a name="apex_dml_upsertDef2"><!-- --></a>using a specified field to determine the presence of
+                    existing objects, or the ID field if no field is specified.</span></span>
+        </p>
+
+        <div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p">
+<samp class="codeph apex_code"><span class="statement">upsert</span><var class="keyword varname"> sObject</var>​​
+                    [<var class="keyword varname">opt_field</var>]</samp><p class="p"><samp class="codeph apex_code"><span class="statement">upsert</span><var class="keyword varname"> sObject[]</var>​​
+                        [<var class="keyword varname">opt_field</var>]</samp></p>
+<p class="p">The <samp class="codeph apex_code"><span class="statement">upsert</span></samp> statement matches the sObjects with
+                existing records by comparing values of one field. If you don’t specify a field when
+                calling this statement, the <samp class="codeph apex_code"><span class="statement">upsert</span></samp> statement
+                uses the sObject’s ID to match the sObject with existing records in Salesforce.
+                Alternatively, you can specify a field to use for matching. For custom objects,
+                specify a custom field marked as external ID. For standard objects, you can specify
+                any field that has the <span class="keyword parmname">idLookup</span> attribute set to true. For
+                example, the Email field of Contact or User has the <span class="keyword parmname">idLookup</span>
+                attribute set. To check a field’s attribute, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/" target="_blank" title="HTML (New Window)">Object Reference for
+                Salesforce</a>.</p>
+<p class="p">Also, you can use foreign keys to upsert sObject records if
+                they have been set as reference fields. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/field_types.htm" target="_blank" title="html (New Window)">Field Types</a> in the <cite class="cite">Object
+                    Reference for Salesforce.</cite></p>
+<div class="p">The optional field parameter,
+                    <var class="keyword varname">opt_field</var>, is a field token (of type <samp class="codeph apex_code">Schema.SObjectField</samp>). For example, to specify
+                the MyExternalID custom field, the statement
+                is:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">upsert</span> sObjectList Account.Fields.MyExternalId__c;</pre></div>
+</div>
+<p class="p"><span class="ph" id="opt_external_id_1"><a name="opt_external_id_1"><!-- --></a>If the field used for matching doesn’t have the <samp class="codeph apex_code">Unique</samp> attribute set, the context user must
+                    have the “View All Records” object-level permission for the target
+                    object or the “View All Data” permission so that <samp class="codeph apex_code"><span class="statement">upsert</span></samp> doesn’t accidentally insert a
+                    duplicate record.</span></p>
+<div class="box message info" id="opt_external_id_3">
+<a name="opt_external_id_3"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Custom field matching is
+                case-insensitive only if the custom field has the <strong class="ph uicontrol">Unique</strong> and
+                    <strong class="ph uicontrol">Treat "ABC" and "abc" as duplicate values (case
+                    insensitive)</strong> attributes selected as part of the field definition. If
+                so, “ABC123” is matched with “abc123.” For more
+                information, see “Create Custom Fields” in the Salesforce online
+                help.</p>
+</div>
+</div></div></div>
+</div>
+</div>
+</div>
+
+        <div class="section" id="UpsertProcess">
+<a name="UpsertProcess"><!-- --></a><h4 class="helpHead4">How Upsert Chooses to Insert or Update</h4>
+
+            
+            <div class="p" id="upsert_process">
+<a name="upsert_process"><!-- --></a>Upsert uses the sObject record's primary key (the ID), an
+                idLookup field, or an external ID field to determine whether it should create a
+                record or update an existing one:<ul class="ul bulletList">
+                    <li class="li">If the key isn’t matched, a new object record is created.</li>
+
+                    <li class="li">If the key is matched once, the existing object record is updated. </li>
+
+                    <li class="li">If the key is matched multiple times, an error is generated and the object
+                        record isn’t inserted or updated. </li>
+
+                </ul>
+</div>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">This example performs an upsert of a list of accounts.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; acctList = <span class="keyword">new</span> List&lt;Account&gt;();
+<span class="onelineComment">// Fill the accounts list with some accounts</span>
+
+<span class="statement">try</span> {
+    <span class="statement">upsert</span> acctList;
+} <span class="statement">catch</span> (DmlException e) {
+   
+}</pre></div>
+
+            <p class="p">This next example performs an upsert of a list of accounts using a foreign key for
+                matching existing records, if any.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; acctList = <span class="keyword">new</span> List&lt;Account&gt;();
+<span class="onelineComment">// Fill the accounts list with some accounts</span>
+
+<span class="statement">try</span> {
+    <span class="onelineComment">// Upsert using an external ID field</span>
+    <span class="statement">upsert</span> acctList myExtIDField__c;
+} <span class="statement">catch</span> (DmlException e) {
+   
+}</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_delete">
+<a name="apex_dml_delete"><!-- --></a>
+    <h3 class="helpHead3">Delete Statement</h3>
+
+    
+    <div class="body">
+        <p class="p">The <samp class="codeph apex_code"><span class="statement">delete</span></samp> DML operation deletes one or more <span class="ph" id="apex_dml_deleteDef"><a name="apex_dml_deleteDef"><!-- --></a>existing sObject records, such as individual accounts or
+                contacts, from your organization’s data.</span>
+            <span class="ph" id="apex_dml_deleteDef2"><a name="apex_dml_deleteDef2"><!-- --></a><samp class="codeph apex_code"><span class="statement">delete</span></samp> is
+                analogous to the <samp class="codeph nolang">delete()</samp> statement in the SOAP
+                API.</span></p>
+
+        <div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p"><samp class="codeph apex_code"><span class="statement">delete</span><var class="keyword varname">
+                    sObject</var></samp></div>
+</div>
+
+        <p class="p"><samp class="codeph apex_code"><span class="statement">delete</span><var class="keyword varname"> sObject[]</var></samp></p>
+
+        <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">The following example deletes all accounts that are named 'DotCom':</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] doomedAccts = [SELECT Id, Name FROM Account 
+                         WHERE Name = <span class="string">'DotCom'</span>]; 
+<span class="statement">try</span> {
+    <span class="statement">delete</span> doomedAccts;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}
+</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_undelete">
+<a name="apex_dml_undelete"><!-- --></a>
+<h3 class="helpHead3">Undelete Statement</h3>
+
+
+<div class="body">
+<p class="p">The <samp class="codeph apex_code"><span class="statement">undelete</span></samp> DML operation r<span class="ph" id="apex_dml_undeleteDef"><a name="apex_dml_undeleteDef"><!-- --></a>estores one or more existing sObject records, such as
+                individual accounts or contacts, from your organization’s Recycle Bin.</span>
+            <span class="ph" id="apex_dml_undeleteDef2"><a name="apex_dml_undeleteDef2"><!-- --></a><samp class="codeph apex_code"><span class="statement">undelete</span></samp> is
+                analogous to the UNDELETE statement in SQL.</span></p>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p">
+<samp class="codeph apex_code"><span class="statement">undelete</span><var class="keyword varname"> sObject</var> | <var class="keyword varname">ID</var></samp><p class="p"><samp class="codeph apex_code"><span class="statement">undelete</span><var class="keyword varname"> sObject[]</var> | <var class="keyword varname">ID[]</var></samp></p>
+</div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="p">The following example undeletes an account named 'Universal Containers’. The <samp class="codeph apex_code">ALL ROWS</samp> keyword queries all rows for both top
+                level and aggregate relationships, including deleted records and archived
+                activities.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] savedAccts = [SELECT Id, Name FROM Account WHERE Name = <span class="string">'Universal Containers'</span> ALL ROWS]; 
+<span class="statement">try</span> {
+    <span class="statement">undelete</span> savedAccts;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}</pre></div>
+</div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic nested2" lang="en-us" lang="en-us" id="apex_dml_merge">
+<a name="apex_dml_merge"><!-- --></a>
+<h3 class="helpHead3">Merge Statement</h3>
+
+
+<div class="body">
+<p class="p"><span class="ph" id="merge_def"><a name="merge_def"><!-- --></a>The <samp class="codeph apex_code"><span class="statement">merge</span></samp> statement merges up to
+                three records of the same sObject type into one of the records, deleting the others,
+                and re-parenting any related records.</span></p>
+
+<div class="box message info" id="no_database_method">
+<a name="no_database_method"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This DML operation does not have a matching
+Database system method.</p>
+</div>
+</div></div></div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<div class="p">
+<samp class="codeph apex_code"><span class="statement">merge</span><var class="keyword varname"> sObject</var> <var class="keyword varname">sObject</var></samp><p class="p"><samp class="codeph apex_code"><span class="statement">merge</span><var class="keyword varname"> sObject</var> <var class="keyword varname">sObject[]</var></samp></p>
+<p class="p"><samp class="codeph apex_code"><span class="statement">merge</span><var class="keyword varname"> sObject</var> <var class="keyword varname">ID</var></samp></p>
+<p class="p"><samp class="codeph apex_code"><span class="statement">merge</span><var class="keyword varname"> sObject</var> <var class="keyword varname">ID[]</var></samp></p>
+<p class="p">The first
+parameter represents the master record into which the other records
+are to be merged. The second parameter represents the one or two other
+records that should be merged and then deleted. You can pass these
+other records into the <samp class="codeph apex_code"><span class="statement">merge</span></samp> statement as a single sObject record or ID, or as a list of two
+sObject records or IDs.</p>
+</div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">The following example merges two
+accounts named 'Acme Inc.' and 'Acme' into a single record:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; ls = <span class="keyword">new</span> List&lt;Account&gt;{<span class="keyword">new</span> Account(name=<span class="string">'Acme Inc.'</span>),<span class="keyword">new</span> Account(name=<span class="string">'Acme'</span>)};
+<span class="statement">insert</span> ls;
+Account masterAcct = [SELECT Id, Name FROM Account WHERE Name = <span class="string">'Acme Inc.'</span> LIMIT 1];
+Account mergeAcct = [SELECT Id, Name FROM Account WHERE Name = <span class="string">'Acme'</span> LIMIT 1];
+<span class="statement">try</span> {
+    <span class="statement">merge</span> masterAcct mergeAcct;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}
+</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

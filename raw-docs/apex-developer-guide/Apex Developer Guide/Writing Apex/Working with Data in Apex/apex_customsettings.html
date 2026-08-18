@@ -1,0 +1,178 @@
+<a name="apex_customsettings"><!-- --></a><h1 class="helpHead1">Custom Settings</h1><div class="body conbody">
+<div class="shortdesc">Custom settings are similar to custom objects. Application developers can create custom
+    sets of data and associate custom data for an organization, profile, or specific user. All
+    custom settings data is exposed in the application cache, which enables efficient access without
+    the cost of repeated queries to the database. Formula fields, validation rules, flows, Apex, and
+    SOAP API can then use this data.</div>
+
+    <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Protection
+      only applies to custom settings that are marked protected and installed to a subscriber
+      organization as part of a managed package. Otherwise, they are treated as public custom
+      settings and are readable for all profiles, including the guest user. Do not store secrets,
+      personally identifying information, or any private data in these settings. Use protected
+      custom settings only in managed packages. Outside of a managed package, use named credentials
+      or encrypted custom fields to store secrets like OAuth tokens, passwords, and other
+      confidential material. </p>
+</div>
+</div></div></div></div>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>While custom settings data is included in sandbox copies, it is treated as data for the
+      purposes of Apex test isolation. Apex tests must use <samp class="codeph apex_code">SeeAllData=<span class="keyword">true</span></samp> to see existing custom settings data in the organization. As a
+      best practice, create the required custom settings data in your test setup.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">There are two types of custom settings.</p>
+<ul class="ul bulletList">
+      <li class="li">
+<strong class="ph b">List Custom Settings: </strong>A type of custom setting that provides a reusable set of
+        static data that can be accessed across your organization. If you use a particular set of
+        data frequently within your application, putting that data in a list custom setting
+        streamlines access to it. Data in list settings doesn’t vary with profile or user, but is
+        available organization-wide. Examples of list data include two-letter state abbreviations,
+        international dialing prefixes, and catalog numbers for products. Because the data is
+        cached, access is low-cost and efficient: you don't have to use SOQL queries that count
+        against your governor limits.</li>
+
+      <li class="li">
+<strong class="ph b">HierarchyCustom Settings: </strong>A type of custom setting that uses a built-in
+        hierarchical logic that lets you personalize settings for specific profiles or users. The
+        hierarchy logic checks the organization, profile, and user settings for the current user and
+        returns the most specific, or “lowest,” value. In the hierarchy, settings for
+        an organization are overridden by profile settings, which, in turn, are overridden by user
+        settings. </li>
+
+    </ul>
+
+    <p class="p">To get custom setting data set record based on the lowest level fields defined in the
+      hierarchy, use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getInstance" target="_blank"><samp class="codeph apex_code">getinstance()</samp></a>
+      instance method for hierarchy custom settings.</p>
+
+    <p class="p">The following examples illustrate how you can use custom settings.</p>
+<ul class="ul bulletList">
+        <li class="li">A shipping application requires users to fill in the country codes for international
+          deliveries. By creating a list setting of all country codes, users have quick access to
+          this data without needing to query the database.</li>
+
+        <li class="li">An application displays a map of account locations, the best route to take, and traffic
+          conditions. This information is useful for sales reps, but account executives only want to
+          see account locations. By creating a hierarchy setting with custom checkbox fields for
+          route and traffic, you can enable this data for just the “Sales Rep”
+          profile.</li>
+
+      </ul>
+
+    <p class="p">You can create a custom setting in the Salesforce user interface: from Setup, enter
+        <kbd class="ph userinput">Custom Settings</kbd> in the Quick Find box, then select <strong class="ph uicontrol">Custom
+        Settings</strong>. After creating a custom setting and you’ve added fields,
+      provide data to your custom setting by clicking <strong class="ph uicontrol">Manage</strong> from the detail
+      page. Identify each data set with a name.</p>
+
+    <div class="p">For example, if you have a custom setting named Foundation_Countries__c with one text field
+      Country_Code__c, your data sets can look like the following:
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <tbody class="tbody">
+            <tr>
+              <td class="entry">Data Set Name</td>
+
+              <td class="entry">Country Code Field Value</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry">United States</td>
+
+              <td class="entry">USA</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry">Canada</td>
+
+              <td class="entry">CAN</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry">United Kingdom</td>
+
+              <td class="entry">GBR</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+</div>
+
+    <div class="p">You can also include a custom setting in a package. The visibility of the custom setting in
+      the package depends on the <span class="keyword parmname">Visibility</span> setting.<div class="box message info" id="cs_package_note">
+<a name="cs_package_note"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Only custom settings definitions are included in packages, not data. To include data, you
+        must populate the custom settings using Apex code run by the subscribing organization after
+        they’ve installed the package. </p>
+</div>
+</div></div></div>
+</div>
+</div>
+
+    <div class="p">Apex can access both custom setting types—list and hierarchy. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If
+          <strong class="ph uicontrol">Privacy</strong> for a custom setting is <span class="keyword parmname">Protected</span> and
+        the custom setting is contained in a managed package, the subscribing organization can’t
+        edit the values or access them using Apex.</p>
+</div>
+</div></div></div></div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Accessing a List Custom Setting</h2>
+
+      
+      <div class="p">The following example returns a map of custom settings data. The <samp class="codeph apex_code">getAll</samp> method returns values for all custom fields
+        associated with the list
+        setting.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<var class="keyword varname">String_dataset_name</var>, <var class="keyword varname">CustomSettingName</var>__c&gt; mcs = <var class="keyword varname">CustomSettingName</var>__c.getAll();</pre></div>
+</div>
+
+      <div class="p">The following example uses the <samp class="codeph apex_code">getValues</samp> method to
+        return all the field values associated with the specified data set. This method can be used
+        with both list and hierarchy custom settings, using different
+        parameters.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><var class="keyword varname">CustomSettingName</var>__c mc = <var class="keyword varname">CustomSettingName</var>__c.getValues(<var class="keyword varname">data_set_name</var>);</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Accessing a Hierarchy Custom Setting</h2>
+
+      
+      <div class="p">The following example uses the <samp class="codeph apex_code">getOrgDefaults</samp>
+        method to return the data set values for the organization level:
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><var class="keyword varname">CustomSettingName</var>__c mc = <var class="keyword varname">CustomSettingName</var>__c.getOrgDefaults();
+</pre></div>
+The following example uses the <samp class="codeph apex_code">getInstance</samp> method to return the data set values for the specified profile. The
+          <samp class="codeph apex_code">getInstance</samp> method can also be used with a user
+        ID.
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><var class="keyword varname">CustomSettingName</var>__c mc = <var class="keyword varname">CustomSettingName</var>__c.getInstance(<var class="keyword varname">Profile_ID</var>);</pre></div>
+</div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_custom_settings.htm" target="_blank" title="Apex Reference Guide: Custom Settings Methods - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Custom Settings Methods</a></div></li></ul>
+</div>
+</div>

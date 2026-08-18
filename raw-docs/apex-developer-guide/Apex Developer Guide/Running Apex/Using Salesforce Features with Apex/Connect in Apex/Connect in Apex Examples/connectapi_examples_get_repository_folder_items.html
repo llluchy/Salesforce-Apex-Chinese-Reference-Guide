@@ -1,0 +1,22 @@
+<a name="connectapi_examples_get_repository_folder_items"><!-- --></a><h1 class="helpHead1">Get Repository Folder Items</h1><div class="body refbody">
+<div class="shortdesc">Call a method to get a collection of repository folder items.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ContentHub_static_methods.htm#apex_ConnectAPI_ContentHub_getRepositoryFolderItems_1" target="_blank"><samp class="codeph apex_code">getRepositoryFolderItems(repositoryId, repositoryFolderId)</samp></a> to get the
+      collection of items in a repository folder. For files, we show the file’s name, size, external
+      URL, and download URL. For folders, we show the folder’s name, description, and external
+      URL.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">final</span> <span class="keyword">String</span> gDriveRepositoryId = <span class="string">'0XCxx00000000ODGAY'</span>, gDriveFolderId = <span class="string">'folder:0B0lTys1KmM3sSVJ2bjIzTGFqSWs'</span>;
+<span class="keyword">final</span> ConnectApi.RepositoryFolderItemsCollection folderItemsColl = ConnectApi.ContentHub.getRepositoryFolderItems(gDriveRepositoryId,gDriveFolderId);
+<span class="keyword">final</span> List&lt;ConnectApi.RepositoryFolderItem&gt; folderItems = folderItemsColl.items;
+System.debug(<span class="string">'Number of items in repository folder: '</span> + folderItems.size());
+<span class="statement">for</span>(ConnectApi.RepositoryFolderItem <span class="statement">item</span> : folderItems){
+   ConnectApi.RepositoryFileSummary fileSummary = <span class="statement">item</span>.file;
+   <span class="statement">if</span>(fileSummary != <span class="keyword">null</span>){
+      System.debug(<span class="keyword">String</span>.format(<span class="string">'File item - name: \'\'{0}\'\', size: {1}, external URL: \'\'{2}\'\', download URL: \'\'{3}\'\''</span>, <span class="keyword">new</span> <span class="keyword">String</span>[]{ fileSummary.name, <span class="keyword">String</span>.valueOf(fileSummary.contentSize), fileSummary.externalDocumentUrl, fileSummary.downloadUrl}));
+      }<span class="statement">else</span>{
+         ConnectApi.RepositoryFolderSummary folderSummary = <span class="statement">item</span>.folder;
+         System.debug(<span class="keyword">String</span>.format(<span class="string">'Folder item - name: \'\'{0}\'\', description: \'\'{1}\'\''</span>,  <span class="keyword">new</span> <span class="keyword">String</span>[]{ folderSummary.name, folderSummary.description}));
+      }
+}</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

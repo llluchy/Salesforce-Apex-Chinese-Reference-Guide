@@ -1,0 +1,130 @@
+<a name="langCon_apex_SObjects_accessing_fields"><!-- --></a><h1 class="helpHead1">Accessing SObject Fields</h1><div class="body">
+    <p class="p">As in Java, SObject fields can be accessed or changed with simple dot notation. For
+      example:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+a.Name = <span class="string">'Acme'</span>;    <span class="onelineComment">// Access the account name field and assign it 'Acme'</span></pre></div>
+
+    <p class="p">System-generated fields, such as <span class="keyword parmname">Created By</span> or <span class="keyword parmname">Last Modified
+        Date</span>, cannot be modified. If you try, the Apex runtime engine generates an error.
+      Additionally, formula field values and values for other fields that are read-only for the
+      context user cannot be changed.</p>
+
+    <p class="p">If you use the generic SObject type instead of a specific object, such as Account, you can
+      retrieve only the <span class="keyword parmname">Id</span> field using dot notation. You can set the
+        <span class="keyword parmname">Id</span> field for Apex code saved using Salesforce API version 27.0 and
+      later). Alternatively, you can use the generic SObject <samp class="codeph apex_code">put</samp> and <samp class="codeph apex_code">get</samp> methods. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject.htm" target="_blank">SObject Class</a>.</p>
+
+    <p class="p">This example shows how you can access the <span class="keyword parmname">Id</span> field and operations that
+      aren’t allowed on generic SObjects.</p>
+
+    <div class="codeSection nolang"><pre class="codeblock brush:plain">Account a = new Account(Name = 'Acme', BillingCity = 'San Francisco');
+insert a;
+sObject s = [SELECT Id, Name FROM Account WHERE Name = 'Acme' LIMIT 1];
+// This is allowed
+ID id = s.Id;
+// The following line results in an error when you try to save
+String x = s.Name;
+// This line results in an error when you try to save using API version 26.0 or earlier
+s.Id = [SELECT Id FROM Account WHERE Name = 'Acme' LIMIT 1].Id;</pre></div>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If your organization has enabled person accounts, you have two different kinds of
+      accounts: business accounts and person accounts. If your code creates a new account using
+        <samp class="codeph apex_code">name</samp>, a business account is created. If your code
+      uses <samp class="codeph apex_code">LastName</samp>, a person account is created. </p>
+</div>
+</div></div></div></div>
+
+    <div class="p">If you want to perform operations on an SObject, it is recommended that you first convert it
+      into a specific object. For
+      example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Acme'</span>, BillingCity = <span class="string">'San Francisco'</span>);
+<span class="statement">insert</span> a;
+sObject s = [SELECT Id, Name FROM Account WHERE Name = <span class="string">'Acme'</span> LIMIT 1];
+<span class="keyword">ID</span> id = s.<span class="keyword">ID</span>;
+Account convertedAccount = (Account)s;
+convertedAccount.name = <span class="string">'Acme2'</span>;
+<span class="statement">update</span> convertedAccount;
+Contact sal = <span class="keyword">new</span> Contact(FirstName = <span class="string">'Sal'</span>, Account = convertedAccount);
+</pre></div>
+</div>
+
+    <div class="p">The following example shows how you can use SOSL over a set of records to determine their
+      object types. Once you have converted the generic SObject record into a Contact, Lead, or
+      Account, you can modify its fields
+      accordingly:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> convertToCLA {
+    List&lt;Contact&gt; contacts = <span class="keyword">new</span> List&lt;Contact&gt;();
+    List&lt;Lead&gt; leads = <span class="keyword">new</span> List&lt;Lead&gt;();
+    List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;();
+ 
+    <span class="keyword">public</span> <span class="keyword">void</span> convertType(<span class="keyword">String</span> phoneNumber) {
+        List&lt;List&lt;SObject&gt;&gt; results = [FIND :phoneNumber 
+            IN Phone FIELDS 
+            RETURNING Contact(Id, Phone, FirstName, LastName), 
+            Lead(Id, Phone, FirstName, LastName), 
+            Account(Id, Phone, Name)];
+        List&lt;SObject&gt; records = <span class="keyword">new</span> List&lt;SObject&gt;();
+        records.addAll(results[0]); <span class="onelineComment">//add Contact results to our results super-set</span>
+        records.addAll(results[1]); <span class="onelineComment">//add Lead results</span>
+        records.addAll(results[2]); <span class="onelineComment">//add Account results</span>
+ 
+        <span class="statement">if</span> (!records.isEmpty()) { 
+            <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; records.size(); i++) { 
+                SObject record = records[i];
+                <span class="statement">if</span> (record.getSObjectType() == Contact.sObjectType) { 
+                    contacts.add((Contact) record);
+                } <span class="statement">else</span> <span class="statement">if</span> (record.getSObjectType() == Lead.sObjectType){ 
+                    leads.add((Lead) record);
+                } <span class="statement">else</span> <span class="statement">if</span> (record.getSObjectType() == Account.sObjectType) { 
+                    accounts.add((Account) record); 
+                }
+            }
+        }
+    }
+}</pre></div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Using SObject Fields</h2>
+
+      
+      <p class="p">SObject fields can be initially set or not set (unset); unset fields are not the same as
+        null or blank fields. When you perform a DML operation on an SObject, you can change a field
+        that is set; you can’t change unset fields.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To erase the current value of a field,  set the field to null.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">If an Apex method takes an SObject parameter, you can use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_isSet" target="_blank">System.isSet()</a> method to identify the set fields. If you
+        want to unset any fields to retain their values, first create an SObject instance. Then
+        apply only the fields you want to be part of the DML operation.</p>
+
+      <p class="p">This example code shows how SObject fields are identified as set or unset.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Contact nullFirst = <span class="keyword">new</span> Contact(LastName=<span class="string">'Codey'</span>, FirstName=<span class="keyword">null</span>);
+System.assertEquals(<span class="keyword">true</span>, nullFirst.isSet(<span class="string">'FirstName'</span>), <span class="string">'FirstName is set to a literal value, so it counts as set'</span>);
+Contact unsetFirst = <span class="keyword">new</span> Contact(LastName=<span class="string">'Astro'</span>);
+System.assertEquals(<span class="keyword">false</span>, unsetFirst.isSet(<span class="string">'FirstName'</span>), ‘FirstName <span class="statement">is</span> not set’);</pre></div>
+
+      <p class="p">An expression with SObject fields of type Boolean evaluates to true only if the SObject
+        field is true. If the field is false or null, the expression evaluates to false. This
+        example code shows an expression that checks if the <samp class="codeph apex_code">IsActive</samp> field of a Campaign object is null. Because this expression always
+        evaluates to false, the code in the <samp class="codeph apex_code"><span class="statement">if</span></samp> statement is
+        never executed. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Campaign cObj= <span class="keyword">new</span> Campaign(); 
+...
+   <span class="statement">if</span> (cObj.IsActive == <span class="keyword">null</span>) {
+  ... <span class="onelineComment">// IsActive is evaluated to false and this code block is not executed.</span>
+   }
+</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

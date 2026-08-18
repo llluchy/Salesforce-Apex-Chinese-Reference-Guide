@@ -1,0 +1,55 @@
+<a name="connectapi_examples_post_comment_richtext_inlineimage"><!-- --></a><h1 class="helpHead1">Post a Rich-Text Comment with Inline Image</h1><div class="body refbody">
+<div class="shortdesc">Make a call or use the ConnectApiHelper repository to post a comment with an already
+    uploaded, inline image.</div>
+
+    <div class="section"><div class="p">You can post rich-text comments with inline images and mentions two ways. Use the <a class="xref" href="https://github.com/forcedotcom/ConnectApiHelper" target="_blank" title="HTML (New Window)">ConnectApiHelper repository on GitHub</a> to write a single line
+      of code, or use this example, which calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postCommentToFeedElement_2" target="_blank"><samp class="codeph apex_code">postCommentToFeedElement(communityId, feedElementId, comment,
+          feedElementFileUpload)</samp></a>. In this example, the image file is existing
+      content that has already been uploaded to
+      Salesforce.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityId = <span class="keyword">null</span>;
+<span class="keyword">String</span> feedElementId = <span class="string">'0D5R0000000SBEr'</span>;
+<span class="keyword">String</span> imageId = <span class="string">'069R00000000IgQ'</span>;
+<span class="keyword">String</span> mentionedUserId = <span class="string">'005R0000000DiMz'</span>; 
+
+ConnectApi.CommentInput input = <span class="keyword">new</span> ConnectApi.CommentInput();
+ConnectApi.MessageBodyInput messageInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegment;
+ConnectApi.MentionSegmentInput mentionSegment;
+ConnectApi.MarkupBeginSegmentInput markupBeginSegment;
+ConnectApi.MarkupEndSegmentInput markupEndSegment;
+ConnectApi.InlineImageSegmentInput inlineImageSegment;
+
+messageInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+
+markupBeginSegment = <span class="keyword">new</span> ConnectApi.MarkupBeginSegmentInput();
+markupBeginSegment.markupType = ConnectApi.MarkupType.Bold;
+messageInput.messageSegments.add(markupBeginSegment);
+
+textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+textSegment.text = <span class="string">'Hello '</span>;
+messageInput.messageSegments.add(textSegment);
+
+mentionSegment = <span class="keyword">new</span> ConnectApi.MentionSegmentInput();
+mentionSegment.id = mentionedUserId;
+messageInput.messageSegments.add(mentionSegment);
+
+textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+textSegment.text = <span class="string">'!'</span>;
+messageInput.messageSegments.add(textSegment);
+
+markupEndSegment = <span class="keyword">new</span> ConnectApi.MarkupEndSegmentInput();
+markupEndSegment.markupType = ConnectApi.MarkupType.Bold;
+messageInput.messageSegments.add(markupEndSegment);
+
+inlineImageSegment = <span class="keyword">new</span> ConnectApi.InlineImageSegmentInput();
+inlineImageSegment.altText = <span class="string">'image one'</span>;
+inlineImageSegment.fileId = imageId;
+messageInput.messageSegments.add(inlineImageSegment);
+
+input.body = messageInput;
+
+ConnectApi.ChatterFeeds.postCommentToFeedElement(communityId, feedElementId, input, <span class="keyword">null</span>);</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

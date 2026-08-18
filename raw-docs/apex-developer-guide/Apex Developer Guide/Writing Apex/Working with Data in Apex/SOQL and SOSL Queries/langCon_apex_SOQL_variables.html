@@ -1,0 +1,126 @@
+<a name="langCon_apex_SOQL_variables"><!-- --></a><h1 class="helpHead1">Using Apex Variables in SOQL and SOSL Queries</h1><div class="body">
+      <p class="p"><span class="ph" id="bind_variable_def"><a name="bind_variable_def"><!-- --></a>SOQL and SOSL statements in Apex can reference Apex code
+            variables and expressions if they’re preceded by a colon (<samp class="codeph apex_code">:</samp>). This use of a local code variable within a SOQL
+            or SOSL statement is called a <dfn class="term">bind</dfn>. The Apex parser first evaluates the
+            local variable in code context before executing the SOQL or SOSL statement.</span> Bind
+         expressions can be used as: </p>
+
+      <ul class="ul bulletList">
+         <li class="li">The search string in <samp class="codeph apex_code">FIND</samp> clauses.</li>
+
+         <li class="li">The filter literals in <samp class="codeph apex_code">WHERE</samp> clauses.</li>
+
+         <li class="li">The value of the <samp class="codeph apex_code">IN</samp> or <samp class="codeph apex_code">NOT IN</samp> operator in <samp class="codeph apex_code">WHERE</samp> clauses, allowing filtering on a dynamic set of values. Note that
+            this is of particular use with a list of IDs or Strings, though it works with lists of
+            any type.</li>
+
+         <li class="li">The division names in <samp class="codeph apex_code">WITH DIVISION</samp>
+            clauses.</li>
+
+         <li class="li">The numeric value in <samp class="codeph apex_code">LIMIT</samp> clauses.</li>
+
+         <li class="li">The numeric value in <samp class="codeph apex_code">OFFSET</samp> clauses.</li>
+
+      </ul>
+
+      <p class="p">For example:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account A = <span class="keyword">new</span> Account(Name=<span class="string">'xxx'</span>);
+<span class="statement">insert</span> A;
+Account B;
+
+<span class="onelineComment">// A simple bind</span>
+B = [SELECT Id FROM Account WHERE Id = :A.Id];
+
+<span class="onelineComment">// A bind with arithmetic</span>
+B = [SELECT Id FROM Account 
+     WHERE Name = :(<span class="string">'x'</span> + <span class="string">'xx'</span>)];
+
+<span class="keyword">String</span> s = <span class="string">'XXX'</span>;
+
+<span class="onelineComment">// A bind with expressions</span>
+B = [SELECT Id FROM Account 
+     WHERE Name = :<span class="string">'XXXX'</span>.substring(0,3)];
+
+<span class="onelineComment">// A bind with INCLUDES clause</span>
+B = [SELECT Id FROM Account WHERE :A.TYPE INCLUDES (‘Customer – Direct; Customer – Channel’)];
+
+<span class="onelineComment">// A bind with an expression that is itself a query result</span>
+B = [SELECT Id FROM Account
+     WHERE Name = :[SELECT Name FROM Account
+                    WHERE Id = :A.Id].Name];
+
+Contact C = <span class="keyword">new</span> Contact(LastName=<span class="string">'xxx'</span>, AccountId=A.Id);
+<span class="statement">insert</span> <span class="keyword">new</span> Contact[]{C, <span class="keyword">new</span> Contact(LastName=<span class="string">'yyy'</span>, 
+                                    accountId=A.id)};
+
+<span class="onelineComment">// Binds in both the parent and aggregate queries</span>
+B = [SELECT Id, (SELECT Id FROM Contacts
+                 WHERE Id = :C.Id)
+     FROM Account
+     WHERE Id = :A.Id];
+
+<span class="onelineComment">// One contact returned</span>
+Contact D = B.Contacts;
+
+<span class="onelineComment">// A limit bind</span>
+<span class="keyword">Integer</span> i = 1;
+B = [SELECT Id FROM Account LIMIT :i];
+
+<span class="onelineComment">// An OFFSET bind</span>
+<span class="keyword">Integer</span> offsetVal = 10;
+List&lt;Account&gt; offsetList = [SELECT Id FROM Account OFFSET :offsetVal];
+
+<span class="onelineComment">// An IN-bind with an Id list. Note that a list of sObjects</span>
+<span class="onelineComment">// can also be used--the Ids of the objects are used for </span>
+<span class="onelineComment">// the bind</span>
+Contact[] cc = [SELECT Id FROM Contact LIMIT 2];
+Task[] tt = [SELECT Id FROM Task WHERE WhoId IN :cc];
+
+<span class="onelineComment">// An IN-bind with a String list</span>
+<span class="keyword">String</span>[] ss = <span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">'a'</span>, <span class="string">'b'</span>};
+Account[] aa = [SELECT Id FROM Account 
+                WHERE AccountNumber IN :ss];
+
+<span class="onelineComment">// A SOSL query with binds in all possible clauses</span>
+
+<span class="keyword">String</span> myString1 = <span class="string">'aaa'</span>;
+<span class="keyword">String</span> myString2 = <span class="string">'bbb'</span>;
+<span class="keyword">Integer</span> myInt3 = 11;
+<span class="keyword">String</span> myString4 = <span class="string">'ccc'</span>;
+<span class="keyword">Integer</span> myInt5 = 22;
+
+List&lt;List&lt;SObject&gt;&gt; searchList = [FIND :myString1 IN ALL FIELDS 
+                                  RETURNING 
+                                     Account (Id, Name WHERE Name LIKE :myString2
+                                              LIMIT :myInt3), 
+                                     Contact, 
+                                     Opportunity, 
+                                     Lead 
+                                  WITH DIVISION =:myString4 
+                                  LIMIT :myInt5];
+</pre></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+         <div class="p">Apex bind variables aren’t supported for the units
+            parameter in the <samp class="codeph nolang">DISTANCE</samp> function. This query
+            doesn’t work.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> units = <span class="string">'mi'</span>;
+List&lt;Account&gt; accountList = 
+    [SELECT <span class="keyword">ID</span>, Name, BillingLatitude, BillingLongitude 
+     FROM Account 
+     WHERE DISTANCE(My_Location_Field__c, GEOLOCATION(10,10), :units) &lt; 10]; </pre></div>
+</div>
+
+      </p>
+</div>
+</div></div></div></div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm" title="Working with Polymorphic Relationships in SOQL Queries">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_query_all_rows.htm" title="Querying All Records with a SOQL Statement">Next →</a></li>
+</ul></div>
+</div>

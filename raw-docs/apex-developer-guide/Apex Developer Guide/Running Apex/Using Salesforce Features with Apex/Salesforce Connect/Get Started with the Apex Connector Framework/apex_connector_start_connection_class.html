@@ -1,0 +1,311 @@
+<a name="apex_connector_start_connection_class"><!-- --></a><h1 class="helpHead1">Create a Sample  DataSource.Connection Class</h1><div class="body conbody">
+<div class="shortdesc">First, create a <samp class="codeph apex_code">DataSource.Connection</samp> class
+        to enable Salesforce to obtain the external system’s schema and to handle queries and
+        searches of the external data.</div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> SampleDataSourceConnection
+    <span class="keyword">extends</span> DataSource.Connection {
+    <span class="keyword">global</span> SampleDataSourceConnection(DataSource.ConnectionParams
+        connectionParams) {
+    }
+<span class="onelineComment">// Add implementation of abstract methods</span>
+<span class="onelineComment">// ...</span></pre></div>
+
+        <div class="p">The <samp class="codeph apex_code">DataSource.Connection</samp> class contains these methods.<ul class="ul bulletList">
+                <li class="li"><a class="xref" href="#section_query_method">query</a></li>
+
+                <li class="li"><a class="xref" href="#section_search_method">search</a></li>
+
+                <li class="li"><a class="xref" href="#section_sync_method">sync</a></li>
+
+                <li class="li"><a class="xref" href="#upsertRows_section">upsertRows</a></li>
+
+                <li class="li"><a class="xref" href="#deleteRows_section">deleteRows</a></li>
+
+                
+            </ul>
+</div>
+
+        <div class="section" id="section_sync_method">
+<a name="section_sync_method"><!-- --></a><h2 class="helpHead2"><span class="titlecodeph">sync</span></h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code"><samp class="codeph apex_code">sync()</samp></samp> method is invoked when an administrator clicks the
+                    <strong class="ph uicontrol">Validate and Sync</strong> button on the external data source
+                detail page. It returns information that describes the structural metadata on the
+                external system.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Changing the <samp class="codeph apex_code">sync</samp> method on the <samp class="codeph apex_code">DataSource.Connection</samp> class doesn’t
+                automatically resync any external objects.</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables =
+            <span class="keyword">new</span> List&lt;DataSource.Table&gt;();
+        List&lt;DataSource.Column&gt; columns;
+        columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+        columns.add(DataSource.Column.text(<span class="string">'Name'</span>, 255));
+        columns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>, 255));
+        columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        tables.add(DataSource.Table.get(<span class="string">'Sample'</span>, <span class="string">'Title'</span>,
+            columns));
+        <span class="statement">return</span> tables;
+    }
+<span class="onelineComment">// ...</span></pre></div>
+
+        </div>
+
+        <div class="section" id="section_query_method">
+<a name="section_query_method"><!-- --></a><h2 class="helpHead2"><span class="titlecodeph">query</span></h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">query</samp> method is invoked when a SOQL query
+                is executed on an external object. A SOQL query is automatically generated and
+                executed when a user opens an external object’s list view or detail page in
+                Salesforce. The <samp class="codeph apex_code">DataSource.QueryContext</samp> is
+                always only for a single table.</p>
+
+            <p class="p">This sample custom adapter uses a helper method in the <samp class="codeph apex_code">DataSource.QueryUtils</samp> class to filter and sort the results based on
+                the <samp class="codeph soql">WHERE</samp> and <samp class="codeph soql">ORDER
+                    BY</samp> clauses in the SOQL query.</p>
+
+            <p class="p">The <samp class="codeph apex_code">DataSource.QueryUtils</samp> class and its
+                helper methods can process query results locally within your Salesforce org. This
+                class is provided for your convenience to simplify the development of your
+                Salesforce Connect custom adapter for initial tests. However, the <samp class="codeph apex_code">DataSource.QueryUtils</samp> class and its methods
+                aren’t supported for use in production environments that use callouts to retrieve
+                data from external systems. Complete the filtering and sorting on the external
+                system before sending the query results to Salesforce. When possible, use
+                server-driven paging or another technique to have the external system determine the
+                appropriate data subsets according to the limit and offset clauses in the query.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(
+        DataSource.QueryContext context) {
+        <span class="statement">if</span> (context.tableSelection.columnsSelected.size() == 1 &amp;&amp;
+            context.tableSelection.columnsSelected.get(0).aggregation ==
+                DataSource.QueryAggregation.COUNT) {
+                List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = getRows(context);
+                List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; response =
+                    DataSource.QueryUtils.filter(context, getRows(context));
+                List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; countResponse =
+                    <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+                Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; countRow =
+                    <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+                countRow.put(
+                    context.tableSelection.columnsSelected.get(0).columnName,
+                    response.size());
+                countResponse.add(countRow);
+                <span class="statement">return</span> DataSource.TableResult.get(context,
+                    countResponse);
+        } <span class="statement">else</span> {
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; filteredRows =
+                DataSource.QueryUtils.filter(context, getRows(context));
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; sortedRows =
+                DataSource.QueryUtils.sort(context, filteredRows);
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; limitedRows =
+                DataSource.QueryUtils.applyLimitAndOffset(context,
+                    sortedRows);
+            <span class="statement">return</span> DataSource.TableResult.get(context, limitedRows);
+        }
+    }
+<span class="onelineComment">// ...</span></pre></div>
+
+        </div>
+
+        <div class="section" id="section_search_method">
+<a name="section_search_method"><!-- --></a><h2 class="helpHead2"><span class="titlecodeph">search</span></h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">search</samp> method is invoked by a SOSL query
+                of an external object or when a user performs a Salesforce global search that also
+                searches external objects. Because search can be federated over multiple objects,
+                the <samp class="codeph apex_code">DataSource.SearchContext</samp> can have
+                multiple tables selected. In this example, however, the custom adapter knows about
+                only one table.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.TableResult&gt; search(
+            DataSource.SearchContext context) {
+        List&lt;DataSource.TableResult&gt; results =
+            <span class="keyword">new</span> List&lt;DataSource.TableResult&gt;();
+        <span class="statement">for</span> (DataSource.TableSelection tableSelection :
+            context.tableSelections) {
+            results.add(DataSource.TableResult.get(tableSelection,
+                getRows(context)));
+        }
+        <span class="statement">return</span> results;
+    }
+<span class="onelineComment">// ...</span></pre></div>
+
+            <div class="p">The following is the <samp class="codeph apex_code">getRows</samp> helper method
+                that the search sample calls to get row values from the external system. The <samp class="codeph apex_code">getRows</samp> method makes use of other helper
+                methods: <ul class="ul bulletList">
+                    <li class="li">
+<samp class="codeph apex_code">makeGetCallout</samp> makes a callout to
+                        the external system.</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">foundRow</samp> populates a row based on
+                        values from the callout result. The <samp class="codeph apex_code">foundRow</samp> method is used to make any modifications to the
+                        returned field values, such as changing a field name or modifying a field
+                        value.</li>
+
+                </ul>
+</div>
+
+            <p class="p">These methods aren’t included in this snippet but are available in the full example
+                included in <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Connection.htm" target="_blank">Connection Class</a>. Typically, the filter
+                from <samp class="codeph apex_code">SearchContext</samp> or <samp class="codeph apex_code">QueryContext</samp> would be used to reduce the result
+                set, but for simplicity this example doesn’t make use of the context object.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="onelineComment">// Helper method to get record values from the external system for the Sample table.</span>
+    <span class="keyword">private</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; getRows () {
+        <span class="onelineComment">// Get row field values for the Sample table from the external system via a callout.</span>
+        HttpResponse response = makeGetCallout();
+        <span class="onelineComment">// Parse the JSON response and populate the rows.</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; m = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)JSON.deserializeUntyped(
+                response.getBody());
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; error = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)m.get(<span class="string">'error'</span>);
+        <span class="statement">if</span> (error != <span class="keyword">null</span>) {
+            throwException(string.valueOf(error.get(<span class="string">'message'</span>)));
+        }
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+        List&lt;<span class="keyword">Object</span>&gt; jsonRows = (List&lt;<span class="keyword">Object</span>&gt;)m.get(<span class="string">'value'</span>);
+        <span class="statement">if</span> (jsonRows == <span class="keyword">null</span>) {
+            rows.add(foundRow(m));
+        } <span class="statement">else</span> {
+            <span class="statement">for</span> (<span class="keyword">Object</span> jsonRow : jsonRows) {
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row = (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;)jsonRow;
+                rows.add(foundRow(row));
+            }
+        }
+        <span class="statement">return</span> rows;
+    }
+<span class="onelineComment">// ...</span></pre></div>
+
+        </div>
+
+        <div class="section" id="upsertRows_section">
+<a name="upsertRows_section"><!-- --></a><h2 class="helpHead2"><span class="titlecodeph">upsertRows</span></h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">upsertRows</samp> method is invoked when
+                external object records are created or updated. You can create or update external
+                object records through the Salesforce user interface or DML. The following example
+                provides a sample implementation for the <samp class="codeph apex_code">upsertRows</samp> method. The example uses the passed-in <samp class="codeph apex_code">UpsertContext</samp> to determine what table was
+                selected and performs the upsert only if the name of the selected table is <samp class="codeph nolang">Sample</samp>. The upsert operation is broken up into
+                either an insert of a new record or an update of an existing record. These
+                operations are performed in the external system using callouts. An array of <samp class="codeph apex_code">DataSource.UpsertResult</samp> is populated from the
+                results obtained from the callout responses. Note that because a callout is made for
+                each row, this example might hit the Apex callouts limit.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.UpsertResult&gt; upsertRows(DataSource.UpsertContext 
+            context) {
+       <span class="statement">if</span> (context.tableSelected == <span class="string">'Sample'</span>) {
+           List&lt;DataSource.UpsertResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.UpsertResult&gt;();
+           List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows = context.rows;
+           
+           <span class="statement">for</span> (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; row : rows){
+              <span class="onelineComment">// Make a callout to insert or update records in the external system.</span>
+              HttpResponse response;
+              <span class="onelineComment">// Determine whether to insert or update a record.</span>
+              <span class="statement">if</span> (row.get(<span class="string">'ExternalId'</span>) == <span class="keyword">null</span>){
+                 <span class="onelineComment">// Send a POST HTTP request to insert new external record.</span>
+                 <span class="onelineComment">// Make an Apex callout and get HttpResponse.</span>
+                 response = makePostCallout(
+                     <span class="string">'{"name":"'</span> + row.get(<span class="string">'Name'</span>) + <span class="string">'","ExternalId":"'</span> + 
+                     row.get(<span class="string">'ExternalId'</span>) + <span class="string">'"'</span>);
+              }
+              <span class="statement">else</span> {
+                 <span class="onelineComment">// Send a PUT HTTP request to update an existing external record.</span>
+                 <span class="onelineComment">// Make an Apex callout and get HttpResponse.</span>
+                 response = makePutCallout(
+                     <span class="string">'{"name":"'</span> + row.get(<span class="string">'Name'</span>) + <span class="string">'","ExternalId":"'</span> + 
+                     row.get(<span class="string">'ExternalId'</span>) + <span class="string">'"'</span>,
+                     <span class="keyword">String</span>.valueOf(row.get(<span class="string">'ExternalId'</span>)));
+              }
+         
+              <span class="onelineComment">// Check the returned response.</span>
+              <span class="onelineComment">// Deserialize the response.</span>
+              Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; m = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)JSON.deserializeUntyped(
+                      response.getBody());
+              <span class="statement">if</span> (response.getStatusCode() == 200){
+                  results.add(DataSource.UpsertResult.success(
+                          <span class="keyword">String</span>.valueOf(m.get(<span class="string">'id'</span>))));
+              } 
+              <span class="statement">else</span> {
+                 results.add(DataSource.UpsertResult.failure(
+                         <span class="keyword">String</span>.valueOf(m.get(<span class="string">'id'</span>)), 
+                         <span class="string">'The callout resulted in an error: '</span> + 
+                         response.getStatusCode()));
+              }
+           } 
+           <span class="statement">return</span> results;
+       } 
+       <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+<span class="onelineComment">// ...</span></pre></div>
+
+        </div>
+
+        <div class="section" id="deleteRows_section">
+<a name="deleteRows_section"><!-- --></a><h2 class="helpHead2"><span class="titlecodeph">deleteRows</span></h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">deleteRows</samp> method is invoked when
+                external object records are deleted. You can delete external object records through
+                the Salesforce user interface or DML. The following example provides a sample
+                implementation for the <samp class="codeph apex_code">deleteRows</samp> method.
+                The example uses the passed-in <samp class="codeph apex_code">DeleteContext</samp>
+                to determine what table was selected and performs the deletion only if the name of
+                the selected table is <samp class="codeph nolang">Sample</samp>. The deletion is
+                performed in the external system using callouts for each external ID. An array of
+                    <samp class="codeph apex_code">DataSource.DeleteResult</samp> is populated
+                from the results obtained from the callout responses. Note that because a callout is
+                made for each ID, this example might hit the Apex callouts limit.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// ...</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.DeleteResult&gt; deleteRows(DataSource.DeleteContext 
+            context) {
+       <span class="statement">if</span> (context.tableSelected == <span class="string">'Sample'</span>){
+           List&lt;DataSource.DeleteResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.DeleteResult&gt;();
+           <span class="statement">for</span> (<span class="keyword">String</span> externalId : context.externalIds){
+              HttpResponse response = makeDeleteCallout(externalId);
+              <span class="statement">if</span> (response.getStatusCode() == 200){
+                 results.add(DataSource.DeleteResult.success(externalId));
+              } 
+              <span class="statement">else</span> {
+                 results.add(DataSource.DeleteResult.failure(externalId, 
+                         <span class="string">'Callout delete error:'</span> 
+                         + response.getBody()));
+              }
+           }
+           <span class="statement">return</span> results;
+       }
+       <span class="statement">return</span> <span class="keyword">null</span>;
+     }
+<span class="onelineComment">// ...</span></pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_start_provider_class.htm" title="Create a Sample DataSource.Provider Class">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and Limits</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Connection.htm" target="_blank" title="Apex Reference Guide: Connection Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Connection Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_filters.htm" title="The DataSource.QueryContext contains one DataSource.TableSelection. The DataSource.SearchContext can have more than one TableSelection. Each TableSelection has a filter property that represents the WHERE clause in a SOQL or SOSL query.">Filters in the Apex Connector Framework</a></div></li>
+</ul>
+</div>
+</div>

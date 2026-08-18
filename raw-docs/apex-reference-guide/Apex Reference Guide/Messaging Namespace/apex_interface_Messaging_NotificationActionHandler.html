@@ -1,0 +1,221 @@
+<a name="apex_interface_Messaging_NotificationActionHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">NotificationActionHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc">Implement this interface to execute an action on a custom notification.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Messaging.htm" title="The Messaging namespace provides classes and methods for Salesforce notifications and email functionality.">Messaging</a></p>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Messaging_NotificationActionHandler.htm#apex_Messaging_NotificationActionHandler_methods">NotificationActionHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Messaging_NotificationActionHandler.htm#apex_interface_Messaging_NotificationActionHandler_Example">NotificationActionHandler Example Implementation</a></strong><br>
+This is an example implementation of the <samp class="codeph apex_code">Messaging.NotificationActionHandler</samp> interface.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Messaging_NotificationActionHandler_methods">
+<a name="apex_Messaging_NotificationActionHandler_methods"><!-- --></a>
+  <h2 class="helpHead2">NotificationActionHandler Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph ">NotificationActionHandler</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Messaging_NotificationActionHandler.htm#apex_Messaging_NotificationActionHandler_executeAction">executeAction(actionableNotification)</a></strong><br>
+Executes the actionable notification.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_NotificationActionHandler_executeAction">
+<a name="apex_Messaging_NotificationActionHandler_executeAction"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">executeAction(actionableNotification)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Executes the actionable notification.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Messaging.ActionResult
+          executeAction(Messaging.ActionableNotification actionableNotification)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">actionableNotification</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_ActionableNotification.htm#apex_class_Messaging_ActionableNotification" title="Contains information about an actionable custom notification.">Messaging.ActionableNotification</a></p>
+<p class="p">An actionable custom notification.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_ActionResult.htm#apex_class_Messaging_ActionResult" title="Contains information about the execution of an actionable notification.">Messaging.ActionResult</a></p>
+
+    </div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Messaging_NotificationActionHandler_Example">
+<a name="apex_interface_Messaging_NotificationActionHandler_Example"><!-- --></a>
+  <h2 class="helpHead2">NotificationActionHandler Example Implementation</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">This is an example implementation of the <samp class="codeph apex_code">Messaging.NotificationActionHandler</samp> interface.</div>
+
+    <div class="section">
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> CaseNotificationActionHandler <span class="keyword">implements</span> Messaging.NotificationActionHandler {
+    
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> ACTION_REASSIGN_TO_QUEUE = <span class="string">'reassignToQueue'</span>;
+   <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> DEFAULT_QUEUE_NAME = <span class="string">'Queue_Exec'</span>; <span class="onelineComment">// Default queue name, can be customized</span>
+    
+    <span class="keyword">global</span> Messaging.ActionResult executeAction(Messaging.ActionableNotification actionableNotification) {
+        <span class="statement">try</span> {
+            <span class="keyword">String</span> actionIdentifier = actionableNotification.getActionIdentifier();
+            <span class="keyword">String</span> targetId = actionableNotification.getTargetId();
+            
+            <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(actionIdentifier) || <span class="keyword">String</span>.isBlank(targetId)) {
+                <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                    .withSuccess(<span class="keyword">false</span>)
+                    .withMessage(<span class="string">'Action identifier and target ID are required'</span>)
+                    .withErrorCode(Messaging.ActionError.INVALID_ACTION_PARAMETERS)
+                    .build();
+            }
+            
+            <span class="onelineComment">// Validate that targetId is a valid Case ID</span>
+            <span class="statement">if</span> (!targetId.startsWith(<span class="string">'500'</span>)) {
+                <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                    .withSuccess(<span class="keyword">false</span>)
+                    .withMessage(<span class="string">'Target ID must be a valid Case ID'</span>)
+                    .withErrorCode(Messaging.ActionError.INVALID_ACTION_PARAMETERS)
+                    .build();
+            }
+            
+            <span class="statement">switch</span> on actionIdentifier {
+                when <span class="string">'reassignToQueue'</span> {
+                    <span class="statement">return</span> reassignCaseToQueue(targetId);
+                }
+                when <span class="statement">else</span> {
+                    <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                        .withSuccess(<span class="keyword">false</span>)
+                        .withMessage(<span class="string">'Unsupported action identifier: '</span> + actionIdentifier)
+                        .withErrorCode(Messaging.ActionError.ACTION_NOT_IMPLEMENTED)
+                        .build();
+                }
+            }
+        } <span class="statement">catch</span> (Exception e) {
+            <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                .withSuccess(<span class="keyword">false</span>)
+                .withMessage(<span class="string">'An unexpected error occurred: '</span> + e.getMessage())
+                .withErrorCode(Messaging.ActionError.INTERNAL_ERROR)
+                .build();
+        }
+    }
+    
+    <span class="keyword">private</span> Messaging.ActionResult reassignCaseToQueue(<span class="keyword">String</span> caseId) {
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Query the case to ensure it exists</span>
+            List&lt;Case&gt; cases = [SELECT Id, CaseNumber, OwnerId FROM Case WHERE Id = :caseId LIMIT 1];
+            
+            <span class="statement">if</span> (cases.isEmpty()) {
+                <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                    .withSuccess(<span class="keyword">false</span>)
+                    .withMessage(<span class="string">'Case not found with ID: '</span> + caseId)
+                    .withErrorCode(Messaging.ActionError.INVALID_ACTION_PARAMETERS)
+                    .build();
+            }
+            
+            Case caseToUpdate = cases[0];
+            
+            <span class="onelineComment">// Query for the queue to assign the case to</span>
+            List&lt;Group&gt; queues = [SELECT Id, Name FROM Group WHERE Type = <span class="string">'Queue'</span> AND DeveloperName = :DEFAULT_QUEUE_NAME LIMIT 1];
+            
+            <span class="statement">if</span> (queues.isEmpty()) {
+                <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                    .withSuccess(<span class="keyword">false</span>)
+                    .withMessage(<span class="string">'Queue not found: '</span> + DEFAULT_QUEUE_NAME)
+                    .withErrorCode(Messaging.ActionError.INVALID_STATE)
+                    .build();
+            }
+            
+            <span class="onelineComment">// Assign the case to the queue</span>
+            caseToUpdate.OwnerId = queues[0].Id;
+            <span class="statement">update</span> caseToUpdate;
+            
+            <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                .withSuccess(<span class="keyword">true</span>)
+                .withMessage(<span class="string">'Case '</span> + caseToUpdate.CaseNumber + <span class="string">' successfully assigned to queue: '</span> + DEFAULT_QUEUE_NAME)
+                .build();
+                
+        } <span class="statement">catch</span> (DmlException e) {
+            <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                .withSuccess(<span class="keyword">false</span>)
+                .withMessage(<span class="string">'Failed to update case: '</span> + e.getMessage())
+                .withErrorCode(Messaging.ActionError.ACCESS_DENIED)
+                .build();
+        } <span class="statement">catch</span> (Exception e) {
+            <span class="statement">return</span> <span class="keyword">new</span> Messaging.ActionResult.Builder()
+                .withSuccess(<span class="keyword">false</span>)
+                .withMessage(<span class="string">'Error reassigning case to queue: '</span> + e.getMessage())
+                .withErrorCode(Messaging.ActionError.INTERNAL_ERROR)
+                .build();
+        }
+    }
+}</pre></div>
+
+            <p class="p">The following example tests the implementation:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">global</span> <span class="keyword">class</span> TestNotificationActionHandler {
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testActionHandler() {
+
+        <span class="onelineComment">//Set up the data, for example creating a case</span>
+        Case newCase = <span class="keyword">new</span> Case(
+            Subject = <span class="string">'Important Case'</span>,
+            Status = <span class="string">'New'</span>,
+            Priority = <span class="string">'High'</span>
+        );
+        <span class="statement">insert</span> newCase;
+
+        <span class="onelineComment">//Set up Actionable Notification data</span>
+        Messaging.ActionableNotification notification =
+            <span class="keyword">new</span> Messaging.ActionableNotification.Builder()
+                .withNotificationTypeId(<span class="string">'0MLXXXXXXXXXXXX4AC'</span>)
+                .withActionIdentifier(<span class="string">'testAction'</span>)
+                .withRecipientId(UserInfo.getUserId())
+                .withSenderId(UserInfo.getUserId())
+                .withTargetId(newCase.Id)
+                .withTargetPageRef(<span class="string">'/lightning/r/Case/'</span> + newCase.Id + <span class="string">'/view'</span>)
+                .build();
+
+
+        Messaging.ActionResult result = Test.testNotificationActionHandler(<span class="keyword">new</span> CaseNotificationActionHandler(), notification);
+
+        <span class="onelineComment">//Insert assert statements here to verify your action</span>
+    }
+}</pre></div>
+
+        </div>
+
+  </div>
+
+</div>
+</div>

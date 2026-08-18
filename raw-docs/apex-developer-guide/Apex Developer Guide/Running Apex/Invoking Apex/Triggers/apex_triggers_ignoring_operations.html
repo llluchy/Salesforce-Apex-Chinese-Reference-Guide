@@ -1,0 +1,125 @@
+<a name="apex_triggers_ignoring_operations"><!-- --></a><h1 class="helpHead1">Operations That Don't Invoke Triggers</h1><div class="body refbody">
+<div class="shortdesc">Some operations don’t invoke triggers.</div>
+<div class="section">
+<p class="p">Triggers are invoked for Data Manipulation Language (DML) operations that the Java
+        application server initiates or processes. Therefore, some system bulk operations don't
+        invoke triggers. Some examples include:</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Inserts, updates, and deletes on person
+        accounts fire Account triggers, not Contact triggers.</p>
+</div>
+</div></div></div></div>
+<ul class="ul bulletList">
+        <li class="li">Cascading delete operations. Only records that initiate a <samp class="codeph apex_code"><span class="statement">delete</span></samp> cause trigger evaluation.</li>
+
+        <li class="li">Cascading updates of child records that are reparented as a result of a merge
+          operation</li>
+
+        <li class="li">Mass campaign status changes</li>
+
+        <li class="li">Mass division transfers</li>
+
+        <li class="li">Mass address updates</li>
+
+        <li class="li">Mass approval request transfers</li>
+
+        <li class="li">Mass email actions</li>
+
+        <li class="li">Modifying custom field data types</li>
+
+        <li class="li">Renaming or replacing picklists</li>
+
+        <li class="li">Managing price books</li>
+
+        <li class="li">Changing a user's default division with the transfer division option checked</li>
+
+        <li class="li">Changes to these objects:<ul class="ul bulletList">
+            <li class="li">BrandTemplate</li>
+
+            <li class="li">MassEmailTemplate</li>
+
+            <li class="li">Folder</li>
+
+          </ul>
+</li>
+
+        <li class="li">Update account triggers don't fire before or after a business account record type
+          changes to person account. They also don’t fire before or after a person account record
+          type changes to business account.</li>
+
+        <li class="li">Update triggers don’t fire on <samp class="codeph nolang">FeedItem</samp> when the
+            <samp class="codeph nolang">LikeCount</samp> counter increases.</li>
+
+      </ul>
+<p class="p">The <samp class="codeph apex_code">before</samp> triggers associated with these
+        operations fire during lead conversion only if validation and triggers for lead conversion
+        are enabled in the organization: </p>
+<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph apex_code"><span class="statement">insert</span></samp> of accounts, contacts, and
+          opportunities</li>
+
+        <li class="li">
+<samp class="codeph apex_code"><span class="statement">update</span></samp> of accounts and contacts</li>
+
+      </ul>
+<p class="p">Opportunity triggers don’t fire when: </p>
+<a name="ul_kpv_yhk_c3c"><!-- --></a><ul class="ul bulletList" id="ul_kpv_yhk_c3c">
+        <li class="li">The account owner changes as a result of the associated opportunity’s owner
+          changing.</li>
+
+        <li class="li">The opportunity owner changes as a result of the associated account’s owner
+          changing.</li>
+
+      </ul>
+<p class="p">The <samp class="codeph apex_code">before</samp> and <samp class="codeph apex_code">after</samp> triggers and the validation rules don't fire for an opportunity when:</p>
+<ul class="ul bulletList">
+        <li class="li">You modify an opportunity product on an opportunity.</li>
+
+        <li class="li">An opportunity product schedule changes an opportunity product, even if the opportunity
+          product changes the opportunity.</li>
+
+      </ul>
+<p class="p">However, roll-up summary fields do get updated, and workflow rules associated with the
+        opportunity do run. </p>
+<p class="p">The <samp class="codeph apex_code">getContent</samp> and
+          <samp class="codeph apex_code">getContentAsPDF</samp> PageReference methods aren't
+        allowed in triggers.</p>
+<p class="p">Note the following for the ContentVersion object:</p>
+<ul class="ul bulletList">
+        <li class="li">Content pack operations involving the ContentVersion object, including slides and slide
+          autorevision, don't invoke triggers. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Content packs are revised when a slide inside
+            the pack is revised.</p>
+</div>
+</div></div></div></div>
+</li>
+
+        <li class="li">Values for the <span class="keyword parmname">TagCsv</span> and <span class="keyword parmname">VersionData</span> fields
+          are only available in triggers if the request to create or update ContentVersion records
+          originates from the API.</li>
+
+        <li class="li">You can't use <samp class="codeph apex_code">before</samp> or <samp class="codeph apex_code">after <span class="statement">delete</span></samp> triggers with the ContentVersion
+          object.</li>
+
+      </ul>
+<p class="p">Triggers on the Attachment object don’t fire when:</p>
+<ul class="ul bulletList">
+        <li class="li">The attachment is created via Case Feed publisher.</li>
+
+        <li class="li">The user sends email via the Email related list and adds an attachment file.</li>
+
+      </ul>
+<p class="p">Triggers fire when the Attachment object is created via Email-to-Case or via the
+        UI.</p>
+</div>
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm" title="Triggers and Order of Execution">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_fields_not_updated.htm" title="Entity and Field Considerations in Triggers">Next →</a></li>
+</ul></div>
+</div>

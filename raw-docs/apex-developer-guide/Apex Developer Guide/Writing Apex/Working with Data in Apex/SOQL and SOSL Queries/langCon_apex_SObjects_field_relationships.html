@@ -1,0 +1,112 @@
+<a name="langCon_apex_SObjects_field_relationships"><!-- --></a><h1 class="helpHead1">Accessing sObject Fields Through Relationships</h1><div class="body">
+        <p class="p">sObject records represent relationships to other records with two fields: an ID and an
+            address that points to a representation of the associated sObject. For example, the
+            Contact sObject has both an <samp class="codeph apex_code">AccountId</samp> field of
+            type ID, and an <samp class="codeph apex_code">Account</samp> field of type Account
+            that points to the associated sObject record itself. </p>
+
+        <p class="p">The ID field can be used to change the account with which the contact is associated,
+            while the sObject reference field can be used to access data from the account. The
+            reference field is only populated as the result of a SOQL or SOSL query (see note). </p>
+
+        <p class="p">For example, the following Apex code shows how an account and a contact can be associated
+            with one another, and then how the contact can be used to modify a field on the
+            account:</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To provide the most complete example, this code uses some elements that are described
+            later in this guide:<ul class="ul bulletList">
+                <li class="li">For information on <samp class="codeph apex_code"><span class="statement">insert</span></samp> and <samp class="codeph apex_code"><span class="statement">update</span></samp>, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_dml_section.htm" target="_blank">Insert Statement</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_dml_section.htm" target="_blank">Update Statement</a>.</li>
+
+            </ul>
+</p>
+</div>
+</div></div></div></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Acme'</span>);
+<span class="statement">insert</span> a;  <span class="onelineComment">// Inserting the record automatically assigns a </span>
+           <span class="onelineComment">// value to its ID field</span>
+Contact c = <span class="keyword">new</span> Contact(LastName = <span class="string">'Weissman'</span>);
+c.AccountId = a.Id;
+<span class="onelineComment">// The new contact now points at the new account</span>
+<span class="statement">insert</span> c;
+
+<span class="onelineComment">// A SOQL query accesses data for the inserted contact, </span>
+<span class="onelineComment">// including a populated c.account field</span>
+c = [SELECT Account.Name FROM Contact WHERE Id = :c.Id];
+
+<span class="onelineComment">// Now fields in both records can be changed through the contact</span>
+c.Account.Name = <span class="string">'salesforce.com'</span>;
+c.LastName = <span class="string">'Roth'</span>;
+
+<span class="onelineComment">// To update the database, the two types of records must be </span>
+<span class="onelineComment">// updated separately</span>
+<span class="statement">update</span> c;         <span class="onelineComment">// This only changes the contact's last name</span>
+<span class="statement">update</span> c.Account; <span class="onelineComment">// This updates the account name</span></pre></div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The expression <samp class="codeph apex_code">c.Account.Name</samp>, and any other
+            expression that traverses a relationship, displays slightly different characteristics
+            when it is read as a value than when it is modified:<ul class="ul bulletList">
+                <li class="li">When being read as a value, if <samp class="codeph apex_code">c.Account</samp> is null, then <samp class="codeph apex_code">c.Account.Name</samp> evaluates to <samp class="codeph apex_code"><span class="keyword">null</span></samp>, but does <em class="ph i">not</em> yield a <samp class="codeph apex_code">NullPointerException</samp>. This design allows developers to navigate
+                    multiple relationships without the tedium of having to check for null
+                    values.</li>
+
+                <li class="li">When being modified, if <samp class="codeph apex_code">c.Account</samp> is
+                    null, then <samp class="codeph apex_code">c.Account.Name</samp>
+                    <em class="ph i">does</em> yield a <samp class="codeph apex_code">NullPointerException</samp>.</li>
+
+            </ul>
+</p>
+</div>
+</div></div></div></div>
+
+        <div class="p">In SOSL, you would access data for the inserted contact in a similar way to the SELECT
+            statement used in the previous SOQL
+            example.<div class="codeSection nolang"><pre class="codeblock brush:plain">List&lt;List&lt;SObject&gt;&gt; searchList = [FIND 'Acme' IN ALL FIELDS RETURNING Contact(id,Account.Name)]</pre></div>
+</div>
+
+        <p class="p">In addition, the sObject field key can be used with <samp class="codeph apex_code"><span class="statement">insert</span></samp>, <samp class="codeph apex_code"><span class="statement">update</span></samp>, or <samp class="codeph apex_code"><span class="statement">upsert</span></samp> to resolve foreign keys by external ID. For
+            example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account refAcct = <span class="keyword">new</span> Account(externalId__c = <span class="string">'12345'</span>);
+
+Contact c = <span class="keyword">new</span> Contact(Account = refAcct, LastName = <span class="string">'Kay'</span>);
+
+<span class="statement">insert</span> c;
+</pre></div>
+
+        <p class="p">This inserts a new contact with the <samp class="codeph apex_code">AccountId</samp>
+            equal to the account with the <samp class="codeph apex_code">external_id</samp> equal
+            to ‘12345’. If there is no such account, the insert fails. </p>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>
+            <p class="p">The following code is equivalent to the code above. However, because it uses a SOQL
+                query, it is not as efficient. If this code was called multiple times, it could
+                reach the execution limit for the maximum number of SOQL queries. For more
+                information on execution limits, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and Limits</a>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account refAcct = [SELECT Id FROM Account WHERE externalId__c=<span class="string">'12345'</span>];
+
+Contact c = <span class="keyword">new</span> Contact(Account = refAcct.Id);
+
+<span class="statement">insert</span> c;
+</pre></div>
+
+        </p>
+</div>
+</div></div></div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_working_with_results.htm" title="Working with SOQL and SOSL Query Results">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_foreign_key.htm" title="Understanding Foreign Key and Parent-Child Relationship SOQL Queries">Next →</a></li>
+</ul></div>
+</div>

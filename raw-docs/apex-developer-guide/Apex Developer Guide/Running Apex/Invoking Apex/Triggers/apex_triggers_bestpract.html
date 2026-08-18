@@ -1,0 +1,68 @@
+<a name="apex_triggers_bestpract"><!-- --></a><h1 class="helpHead1">Trigger and Bulk Request Best Practices</h1><div class="body" id="reduce_triggers">
+<a name="reduce_triggers"><!-- --></a>
+      <p class="p">A common development pitfall is the assumption that trigger invocations never include more
+         than one record. Apex triggers are optimized to operate in bulk, which, by definition,
+         requires developers to write logic that supports bulk operations. </p>
+
+      <div class="p">This is an example of a flawed programming pattern. It assumes that only one record is
+         pulled in during a trigger invocation. While this might support most user interface events,
+         it does not support bulk operations invoked through SOAP API or
+         Visualforce.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> MileageTrigger on Mileage__c (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+   User c = [SELECT Id FROM User WHERE mileageid__c = :Trigger.<span class="keyword">new</span>[0].id];
+}
+</pre></div>
+</div>
+
+      <div class="p">This is another example of a flawed programming pattern. It assumes that fewer than 100
+         records are in scope during a trigger invocation. If more than 100 queries are issued, the
+         trigger would exceed the SOQL query
+         limit.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> MileageTrigger on Mileage__c (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+   <span class="statement">for</span>(mileage__c m : Trigger.<span class="keyword">new</span>){ 
+      User c = [SELECT Id FROM user WHERE mileageid__c = :m.Id];
+   }
+}
+</pre></div>
+</div>
+
+      <p class="p">For more information on governor limits, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and
+            Limits</a>.</p>
+
+      <div class="p">This example demonstrates the correct pattern to support the bulk nature of triggers while
+         respecting the governor
+         limits:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Trigger MileageTrigger on Mileage__c (before <span class="statement">update</span>) {
+   Set&lt;<span class="keyword">ID</span>&gt; ids = Trigger.newMap.keySet();
+   List&lt;User&gt; c = [SELECT Id FROM user WHERE mileageid__c <span class="statement">in</span> :ids];
+}
+</pre></div>
+</div>
+
+      <p class="p">This pattern respects the bulk nature of the trigger by passing the <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp> collection to a set, then using the set in
+         a single SOQL query. This pattern captures all incoming records within the request while
+         limiting the number of SOQL queries. </p>
+
+      <div class="section">
+<h2 class="helpHead2">Best Practices for Designing Bulk Programs</h2>
+
+         
+         <div class="p">The following are the best practices for this design pattern:<ul class="ul bulletList">
+               <li class="li">Minimize the number of data manipulation language (DML) operations by adding
+                  records to collections and performing DML operations against these
+                  collections.</li>
+
+               <li class="li">Minimize the number of SOQL statements by preprocessing records and generating
+                  sets, which can be placed in single SOQL statement used with the <samp class="codeph apex_code">IN</samp> clause.</li>
+
+            </ul>
+</div>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_exceptions.htm" title="Trigger Exceptions">← Previous</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_intro_apex_limitation.htm" title="The Apex programming language is saved and runs in the cloud—the multitenant platform. Apex is tailored for data access and data manipulation on the platform, and it enables you to add custom business logic to system events. While it provides many benefits for automating business processes on the platform, it is not a general purpose programming language.">Developing Code in the Cloud</a></div></li></ul>
+</div>
+</div>

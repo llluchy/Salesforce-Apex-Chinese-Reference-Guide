@@ -1,0 +1,431 @@
+<a name="langCon_apex_primitives"><!-- --></a><h1 class="helpHead1">Primitive Data Types</h1><div class="body refbody">
+<div class="shortdesc">Apex uses the same primitive data types as SOAP API, except for higher-precision
+        Decimal type in certain cases.</div>
+
+        <div class="section" id="langCon_apex_primitives_intro">
+<a name="langCon_apex_primitives_intro"><!-- --></a>
+            <p class="p">All Apex variables, whether they’re class member variables or method
+                variables, are initialized to <samp class="codeph apex_code"><span class="keyword">null</span></samp>. Make
+                sure that you initialize your variables to appropriate values before using them. For
+                example, initialize a Boolean variable to <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+
+            <p class="p">Apex primitive data types include:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d148835e57">Data Type</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d148835e60">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Blob</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A collection of binary data stored as a single object. You can
+                                convert this data type to String or from String using the <samp class="codeph apex_code">toString</samp> and <samp class="codeph apex_code">valueOf</samp> methods, respectively.
+                                Blobs can be accepted as Web service arguments, stored in a document
+                                (the body of a document is a Blob), or sent as attachments. For more
+                                information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_crypto.htm" target="_blank">Crypto Class</a>. Salesforce
+                                supports Blob manipulation only with Apex class methods that are
+                                supplied by Salesforce.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Boolean</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A value that can only be assigned <samp class="codeph apex_code"><span class="keyword">true</span></samp>, <samp class="codeph apex_code"><span class="keyword">false</span></samp>,
+                                or <samp class="codeph apex_code"><span class="keyword">null</span></samp>. For
+                                example: <samp class="codeph apex_code"><span class="keyword">Boolean</span> isWinner = <span class="keyword">true</span>;</samp>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Date</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A value that indicates a particular day. Unlike Datetime values,
+                                Date values contain no information about time. Always create date
+                                values with a system static method. <p class="p">You can add or subtract an
+                                    Integer value from a Date value, returning a Date value.
+                                    Addition and subtraction of Integer values are the only
+                                    arithmetic functions that work with Date values. You can’t
+                                    perform arithmetic functions that include two or more Date
+                                    values. Instead, use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_date.htm" target="_blank">Date methods</a>.
+                                    </p>
+<p class="p">Use the <samp class="codeph ">String.valueOf()</samp> method to obtain the date without
+                                    an appended timestamp. Using an implicit string conversion with
+                                    a Date value results in the date with the timestamp appended.
+                                </p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Datetime</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A value that indicates a particular day and time, such as a
+                                timestamp. Always create datetime values with a system static
+                                method. <p class="p">You can add or subtract an Integer or Double value from a
+                                    Datetime value, returning a Date value. Addition and subtraction
+                                    of Integer and Double values are the only arithmetic functions
+                                    that work with Datetime values. You can’t perform arithmetic
+                                    functions that include two or more Datetime values. Instead, use
+                                    the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_datetime.htm" target="_blank">Datetime
+                                methods</a>.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Decimal</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A number that includes a decimal point. Decimal is an arbitrary
+                                precision number. Currency fields are automatically assigned the
+                                type Decimal. <div class="p">If you don’t explicitly set the number of decimal
+                                    places for a Decimal, the item from which the Decimal is created
+                                    determines the Decimal’s scale. <dfn class="term">Scale</dfn> is a count of
+                                    decimal places. Use the <samp class="codeph apex_code">setScale</samp> method to set a Decimal’s scale.<a name="decimal_not_set_scale"><!-- --></a><ul class="ul bulletList" id="decimal_not_set_scale">
+                                        <li class="li">If the Decimal is created as part of a query, the scale
+                                            is based on the scale of the field returned from the
+                                            query.</li>
+
+                                        <li class="li">If the Decimal is created from a String, the scale is
+                                            the number of characters after the decimal point of the
+                                            String.</li>
+
+                                        <li class="li">If the Decimal is created from a non-decimal number, the
+                                            number is first converted to a String. The scale is then
+                                            set using the number of characters after the decimal
+                                            point.</li>
+
+                                    </ul>
+</div>
+<p class="p">Two Decimal objects that are numerically equivalent
+                                    but differ in scale (such as 1.1 and 1.10) generally don’t have
+                                    the same hashcode. Use caution when such Decimal objects are
+                                    used in Sets or as Map keys.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Double</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A 64-bit number that includes a decimal point. Doubles have a
+                                minimum value of -<span class="ph" id="long_max"><a name="long_max"><!-- --></a>2<sup class="ph sup">63</sup></span> and a
+                                maximum value of <span class="ph" id="long_min"><a name="long_min"><!-- --></a>2<sup class="ph sup">63</sup>-1</span>. For
+                                example, see <a class="xref" href="#ex_double">Double declaration</a>.
+                                Scientific notation (e) for Doubles isn’t supported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type"><span class="ph" id="id_type"><a name="id_type"><!-- --></a>ID</span></td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">Any valid 18-character Lightning Platform record identifier. For
+                                    example: <samp class="codeph apex_code"><span class="keyword">ID</span> id=<span class="string">'00300000003T2PGAA0'</span>;</samp><p class="p">If
+                                    you set <samp class="codeph apex_code"><span class="keyword">ID</span></samp> to a
+                                    15-character value, Apex converts the value to its 18-character
+                                    representation. All invalid <samp class="codeph apex_code"><span class="keyword">ID</span></samp> values are rejected with a runtime
+                                    exception.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Integer</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A 32-bit number that doesn’t include a decimal point. Integers
+                                have a minimum value of <span class="ph" id="int_min"><a name="int_min"><!-- --></a>-2,147,483,648</span> and a
+                                maximum value of <span class="ph" id="int_max"><a name="int_max"><!-- --></a>2,147,483,647</span>. For
+                                example: <samp class="codeph apex_code"><span class="keyword">Integer</span> i = 1;</samp>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Long</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A 64-bit number that doesn’t include a decimal point. Longs have
+                                a minimum value of -2<sup class="ph sup">63</sup> and a maximum value of
+                                    2<sup class="ph sup">63</sup>-1. Use this data type when you need a range of
+                                values wider than the range provided by Integer. For
+                                example: <samp class="codeph apex_code"><span class="keyword">Long</span> l = 2147483648L;</samp>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Object</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">
+                                <p class="p">Any data type that is supported in Apex. Apex supports primitive
+                                    data types (such as Integer), user-defined custom classes, the
+                                    sObject generic type, or an sObject specific type (such as
+                                    Account). All Apex data types inherit from Object.</p>
+
+                                <p class="p">You can cast an object that represents a more specific data type
+                                    to its underlying data type. For examples—including
+                                    casting to a user-defined class named
+                                    <samp class="codeph apex_code">MyApexClass</samp>—see
+                                    <a class="xref" href="#ex_obj_int">Casting an Object to an Integer</a> and
+                                    <a class="xref" href="#ex_obj_class">Casting an Object to a user-defined class
+                                        (MyApexClass)</a>.</p>
+
+                                
+                                
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">String</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">Any set of characters surrounded by single quotes. For example,
+                                    <samp class="codeph apex_code"><span class="keyword">String</span> s = <span class="string">'The quick
+</span>                                    brown fox jumped over the lazy dog.<span class="string">';</span></samp><p class="p"><strong class="ph b">String
+                                        size</strong>: The limit on the number of characters is governed
+                                    by the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">heap size limit</a>.
+                                        </p>
+<p class="p"><strong class="ph b">Empty Strings and Trailing Whitespace</strong>: sObject
+                                    String field values follow the same rules as in SOAP API: they
+                                    can never be empty (only <samp class="codeph apex_code"><span class="keyword">null</span></samp>), and they can never include leading and
+                                    trailing whitespace. These conventions are necessary for
+                                    database storage.</p>
+<p class="p">Conversely, Strings in Apex can be
+                                        <samp class="codeph apex_code"><span class="keyword">null</span></samp> or empty and
+                                    can include leading and trailing whitespace, which can be used
+                                    to construct a message.</p>
+<p class="p"><strong class="ph b">EscapeSequences</strong>: All
+                                    Strings in Apex use the same escape sequences as SOQL strings:
+                                        <samp class="codeph apex_code">\b</samp> (backspace),
+                                        <samp class="codeph apex_code">\t</samp> (tab), <samp class="codeph apex_code">\n</samp> (line feed), <samp class="codeph apex_code">\f</samp> (form feed), <samp class="codeph apex_code">\r</samp> (carriage
+                                        return),<samp class="codeph apex_code">\s</samp>
+                                        (space),<samp class="codeph apex_code">\<span class="string">"</span></samp> (double
+                                    quote), <samp class="codeph apex_code">\<span class="string">'</span></samp> (single
+                                    quote), and <samp class="codeph apex_code">\\</samp>
+                                    (backslash). </p>
+<p class="p"><strong class="ph b">Comparison Operators</strong>: Unlike Java,
+                                    Apex Strings support using the comparison operators <samp class="codeph apex_code">==</samp>, <samp class="codeph apex_code">!=</samp>, <samp class="codeph apex_code">&lt;</samp>, <samp class="codeph apex_code">&lt;=</samp>, <samp class="codeph apex_code">&gt;</samp>, and <samp class="codeph apex_code">&gt;=</samp>. Because Apex uses SOQL
+                                    comparison semantics, results for Strings are collated according
+                                    to the context user’s locale and aren’t case-sensitive. For more
+                                    information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_expressions_operators_understanding.htm" target="_blank">Expression
+                                    Operators</a>.</p>
+<p class="p"><strong class="ph b">String Methods</strong>: As in Java,
+                                    Strings can be manipulated with several standard methods. For
+                                    more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_string.htm" target="_blank">String
+                                        Class</a>.</p>
+<p class="p"><strong class="ph b">Multiline Strings</strong>: To represent a
+                                    block of text that spans multiple lines, use a multiline string.
+                                    A multiline string starts with three single quotes (<samp class="codeph apex_code"><span class="string">''</span><span class="string">'</span></samp>) immediately followed by
+                                    a new line. To terminate a multiline string, use three single
+                                    quotes (<samp class="codeph apex_code"><span class="string">''</span><span class="string">'</span></samp>). For
+                                    example. For more information, see <a class="xref" href="#ex_multiline">Multiline String declaration</a> and the <a class="xref" href="#apex_langCon_apex_primitives_multiline_str">Multiline String Usage</a> section.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d148835e57" data-title="Data Type">Time</td>
+
+                            <td class="entry" headers="d148835e60" data-title="Description">A value that indicates a particular time. Always create time
+                                values with a system static method. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_time.htm" target="_blank">Time Class</a>.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+            <div class="example" id="ex_double">
+<a name="ex_double"><!-- --></a><h2 class="helpHead2">Double data type declaration</h2>
+<div class="exampleblock">
+                
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Double</span> pi = 3.14159;
+<span class="keyword">Double</span> e = 2.7182818284D;</pre></div>
+
+            </div>
+</div>
+
+            <div class="example" id="ex_obj_int">
+<a name="ex_obj_int"><!-- --></a><h2 class="helpHead2">Casting an Object to an Integer</h2>
+<div class="exampleblock">
+                
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Object</span> obj = 10;
+<span class="onelineComment">// Cast the object to an integer.</span>
+<span class="keyword">Integer</span> i = (<span class="keyword">Integer</span>)obj;
+Assert.areEqual(10, i);</pre></div>
+
+            </div>
+</div>
+
+            <div class="example" id="ex_obj_class">
+<a name="ex_obj_class"><!-- --></a><h2 class="helpHead2">Casting an Object to a user-defined class (MyApexClass)</h2>
+<div class="exampleblock">
+                
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Object</span> obj = <span class="keyword">new</span> MyApexClass();
+<span class="onelineComment">// Cast the object to the MyApexClass custom type.</span>
+MyApexClass mc = (MyApexClass)obj;
+<span class="onelineComment">// Access a method on the user-defined class.</span>
+mc.someClassMethod();</pre></div>
+
+            </div>
+</div>
+
+            <div class="example" id="ex_multiline">
+<a name="ex_multiline"><!-- --></a><h2 class="helpHead2">Multiline String declaration</h2>
+<div class="exampleblock">
+                
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> multilineStr = <span class="string">''</span><span class="string">'
+</span>{
+    <span class="string">"Name"</span> : <span class="string">"John Doe"</span>,
+    <span class="string">"Type"</span> : <span class="string">"New Customer"</span>
+}<span class="string">''</span><span class="string">';</span></pre></div>
+
+            </div>
+</div>
+
+            <div class="section">
+            <p class="p">In addition, two non-standard primitive data types can’t be used as variable or
+                method types, but do appear in system static methods:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">AnyType. The <samp class="codeph apex_code">valueOf</samp> static method
+                    converts an sObject field of type AnyType to a standard primitive. AnyType is
+                    used within the Lightning Platform database exclusively for sObject fields in
+                    field history tracking tables.</li>
+
+                <li class="li">Currency. The <samp class="codeph apex_code">Currency.newInstance</samp>
+                    static method creates a literal of type Currency. This method is for use solely
+                    within SOQL and SOSL <samp class="codeph apex_code">WHERE</samp> clauses to
+                    filter against sObject currency fields. You can’t instantiate Currency in any
+                    other type of Apex.</li>
+
+            </ul>
+
+            <p class="p">For more information on the AnyType data type, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/field_types.htm" target="_blank" title="html (New Window)">Field Types</a> in the <cite class="cite">Object
+                    Reference for Salesforce</cite>.</p>
+
+        </div>
+
+        <div class="section" id="apex_langCon_apex_primitives_multiline_str">
+<a name="apex_langCon_apex_primitives_multiline_str"><!-- --></a><h2 class="helpHead2">Multiline String Usage</h2>
+
+            
+            <p class="p">Line Breaks: Line breaks are automatically translated into newline sequences in the
+                resulting string.</p>
+
+            <p class="p">Whitespace: Any whitespace before the leftmost non-whitespace character of the string
+                is stripped. Trailing whitespace on each line is also stripped. During compilation,
+                whitespace stripping occurs before escape sequences are processed.</p>
+
+            <p class="p">In this example, the initial eight whitespace characters, represented as periods, on
+                each line are stripped. This removal occurs because the <samp class="codeph apex_code">&lt;</samp> character is the leftmost non-whitespace
+                character in the string. The trailing whitespace characters found on the first,
+                third, and fifth lines of the string are also stripped.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> str = <span class="string">''</span><span class="string">'
+</span>. . . . . . . . &lt;html&gt; . . .
+. . . . . . . . . . . . &lt;body&gt;
+. . . . . . . . . . . . . . . . &lt;p&gt;Hello, world&lt;/p&gt; . . .
+. . . . . . . . . . . . &lt;/body&gt;
+. . . . . . . . &lt;/html&gt; . . .
+. . . . . . . .<span class="string">''</span><span class="string">';</span></pre></div>
+
+            <p class="p">Escape Sequences: Multiline strings support the same escape sequences as regular Apex
+                strings. </p>
+
+            <p class="p">Use the <samp class="codeph apex_code">\s</samp> escape sequence at the end of a
+                line to create intentional trailing whitespace. In this example, three trailing
+                whitespace characters are preserved on the first and fifth lines of the string. The
+                trailing whitespace on the third line of the string is stripped.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> str = <span class="string">''</span><span class="string">'
+</span>. . . . . . . . &lt;html&gt; . . . . \s
+. . . . . . . . . . . . &lt;body&gt;
+. . . . . . . . . . . . . . . . &lt;p&gt;Hello, world&lt;/p&gt; . . . .
+. . . . . . . . . . . . &lt;/body&gt;
+. . . . . . . . &lt;/html&gt; . . . . \s
+. . . . . . . .<span class="string">''</span><span class="string">';</span></pre></div>
+
+            <p class="p"> Multiline strings additionally support the <samp class="codeph apex_code">\</samp>
+                (concatenate) sequence at the end of lines. The <samp class="codeph apex_code">\</samp> escape sequence concatenates multiple lines and prevents the
+                insertion of a newline sequence between them. For example, this multiline string
+                compiles as one line.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> str = <span class="string">''</span><span class="string">'
+</span>    This <span class="statement">is</span> a string that doesn<span class="string">'t fit on one line \
+</span>    but I don<span class="string">'t want it to contain newlines \
+</span>....so I am using <span class="statement">this</span> escape sequence to \
+....prevent them from being inserted<span class="string">''</span><span class="string">';
+</span></pre></div>
+
+            <p class="p">Unlike regular Apex strings, multiline strings also support unescaped single quotes
+                    (<samp class="codeph apex_code"><span class="string">'</span></samp>). However, to use a single quote
+                directly before the closing single quotes ( <samp class="codeph apex_code"><span class="string">''</span><span class="string">'</span></samp>), first escape the single quote. (<samp class="codeph apex_code">\<span class="string">''</span><span class="string">''</span></samp>). For example, the second single quote in this multiline string
+                requires an escape character, whereas the first one doesn’t.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">String</span> str = <span class="string">''</span><span class="string">'
+</span>    I want a single quote here <span class="string">'
+</span>    And also right before the string ends\<span class="string">''</span><span class="string">''</span>;</pre></div>
+
+            <p class="p"><strong class="ph b">SOQL Queries</strong>: In SOQL and SOSL queries, you can use multiline strings stored
+                in variables. However, unlike regular string literals, you can’t use multiline
+                literals in SOQL or SOSL queries, except in bind expressions. For example, this
+                pattern is unsupported.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Unsupported SOQL Query</span>
+List&lt;Account&gt; accs = [SELECT Id FROM Account 
+                      WHERE Name = <span class="string">''</span><span class="string">'
+</span>                                   ExampleOne
+                                   <span class="string">''</span><span class="string">'
+</span>                      WITH USER_MODE
+                     ];
+</pre></div>
+
+            <p class="p">Otherwise, you can use multiline literals anywhere you can use regular string
+                literals, such as annotation parameters, variable assignments, and method argument
+                values. </p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 16.0 and later, Apex uses the higher-precision Decimal data type in
+                certain types such as currency.</p>
+
+            <p class="p">In API version 15.0 and later, Apex classes and triggers produce a runtime error if
+                you assign a String value that is too long for the field.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_data_types.htm" title="Data Types">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections.htm" title="Collections">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_expressions_operators_understanding.htm" title="Expressions can be joined to one another with operators to create compound expressions.">Expression Operators</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_defining_methods.htm" title="Learn how to define Apex methods. Understand the differences between passing method arguments by value and passing method arguments by reference.">Class Methods</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/primitive_data_types.htm" target="_blank" title="Object Reference for the Salesforce Platform: Primitive
+                            Data Types - HTML (New Window)"><em class="ph i">Object Reference for the Salesforce Platform</em>: Primitive
+                            Data Types</a></div></li>
+</ul>
+</div>
+</div>

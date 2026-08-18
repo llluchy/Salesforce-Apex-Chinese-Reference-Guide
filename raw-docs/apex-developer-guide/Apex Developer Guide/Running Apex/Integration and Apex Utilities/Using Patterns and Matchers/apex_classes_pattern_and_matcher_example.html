@@ -1,0 +1,87 @@
+<a name="apex_classes_pattern_and_matcher_example"><!-- --></a><h1 class="helpHead1">Pattern and Matcher Example</h1><div class="body">
+<p class="p">The Matcher class <samp class="codeph apex_code">end</samp> method
+returns the position in the match string after the last character
+that was matched. You would use this when you are parsing a string
+and want to do additional work with it after you have found a match,
+such as find the next match.</p>
+
+<p class="p">In regular expression syntax, <samp class="codeph apex_code">?</samp> means match once or not at all, and <samp class="codeph apex_code">+</samp> means match 1 or more times. </p>
+
+<p class="p">In the following example, the string passed in with the Matcher
+object matches the pattern since <samp class="codeph apex_code">(a(b)?)</samp> matches the string <samp class="codeph apex_code"><span class="string">'ab'</span></samp> - <samp class="codeph apex_code"><span class="string">'a'</span></samp> followed by <samp class="codeph apex_code"><span class="string">'b'</span></samp> once. It then matches the last <samp class="codeph apex_code"><span class="string">'a'</span></samp> - <samp class="codeph apex_code"><span class="string">'a'</span></samp> followed by <samp class="codeph apex_code"><span class="string">'b'</span></samp> not at all.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">pattern myPattern = pattern.compile(<span class="string">'(a(b)?)+'</span>); 
+matcher myMatcher = myPattern.matcher(<span class="string">'aba'</span>);
+System.assert(myMatcher.matches() &amp;&amp; myMatcher.hitEnd());
+
+<span class="onelineComment">// We have two groups: group 0 is always the whole pattern, and group 1 contains </span>
+<span class="onelineComment">// the substring that most recently matched--in this case, 'a'. </span>
+<span class="onelineComment">// So the following is true:</span>
+
+System.assert(myMatcher.groupCount() == 2 &amp;&amp;
+              myMatcher.group(0) == <span class="string">'aba'</span> &amp;&amp; 
+              myMatcher.group(1) == <span class="string">'a'</span>);
+ 
+<span class="onelineComment">// Since group 0 refers to the whole pattern, the following is true:</span>
+
+System.assert(myMatcher.end() == myMatcher.end(0));
+
+<span class="onelineComment">// Since the offset after the last character matched is returned by end, </span>
+<span class="onelineComment">// and since both groups used the last input letter, that offset is 3</span>
+<span class="onelineComment">// Remember the offset starts its count at 0. So the following is also true:</span>
+
+System.assert(myMatcher.end() == 3 &amp;&amp; 
+              myMatcher.end(0) == 3 &amp;&amp; 
+              myMatcher.end(1) == 3);</pre></div>
+
+<p class="p">In the following example, email addresses are normalized and duplicates
+are reported if there is a different top-level domain name or subdomain
+for similar email addresses. For example, <samp class="codeph nolang">john@fairway.smithco</samp> is normalized to <samp class="codeph nolang">john@smithco</samp>.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">class</span> normalizeEmailAddresses{
+
+    <span class="keyword">public</span> <span class="keyword">void</span> hasDuplicatesByDomain(Lead[] leads) {
+           <span class="onelineComment">// This pattern reduces the email address to 'john@smithco' </span>
+           <span class="onelineComment">// from 'john@*.smithco.com' or 'john@smithco.*'</span>
+        Pattern emailPattern = Pattern.compile(<span class="string">'(?&lt;=@)((?![\\w]+\\.[\\w]+$)
+</span>                                               [\\w]+\\.)|(\\.[\\w]+$)<span class="string">');
+</span>           <span class="onelineComment">// Define a set for emailkey to lead:</span>
+        Map&lt;<span class="keyword">String</span>,Lead&gt; leadMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,Lead&gt;();
+                <span class="statement">for</span>(Lead lead:leads) {
+                    <span class="onelineComment">// Ignore leads with a null email</span>
+                    <span class="statement">if</span>(lead.Email != <span class="keyword">null</span>) {
+                           <span class="onelineComment">// Generate the key using the regular expression</span>
+                       <span class="keyword">String</span> emailKey = emailPattern.matcher(lead.Email).replaceAll(<span class="string">''</span>);
+                           <span class="onelineComment">// Look for duplicates in the batch</span>
+                       <span class="statement">if</span>(leadMap.containsKey(emailKey)) 
+                            lead.email.addError(<span class="string">'Duplicate found in batch'</span>);
+                       <span class="statement">else</span> {
+                           <span class="onelineComment">// Keep the key in the duplicate key custom field</span>
+                            lead.Duplicate_Key__c = emailKey;
+                            leadMap.put(emailKey, lead);
+                       }
+                 }
+             }
+                <span class="onelineComment">// Now search the database looking for duplicates </span>
+                <span class="statement">for</span>(Lead[] leadsCheck:[SELECT Id, duplicate_key__c FROM Lead WHERE 
+                duplicate_key__c IN :leadMap.keySet()]) {
+               <span class="statement">for</span>(Lead lead:leadsCheck) {
+               <span class="onelineComment">// If there's a duplicate, add the error.</span>
+                   <span class="statement">if</span>(leadMap.containsKey(lead.Duplicate_Key__c)) 
+                      leadMap.get(lead.Duplicate_Key__c).email.addError(<span class="string">'Duplicate found 
+</span>                         <span class="statement">in</span> salesforce(Id: <span class="string">' + lead.Id + '</span>)<span class="string">');
+</span>            }
+        }
+    }
+ }
+</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_pattern_and_matcher_pattern_methods.htm" target="_blank" title="Apex Reference Guide: Pattern Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Pattern Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_pattern_and_matcher_matcher_methods.htm" target="_blank" title="Apex Reference Guide: Matcher Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Matcher Class</a></div></li>
+</ul>
+</div>
+</div>

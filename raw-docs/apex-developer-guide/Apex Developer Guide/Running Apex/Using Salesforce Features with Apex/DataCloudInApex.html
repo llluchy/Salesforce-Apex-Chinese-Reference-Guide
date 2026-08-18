@@ -1,0 +1,85 @@
+<a name="DataCloudInApex"><!-- --></a><h1 class="helpHead1">Data 360 In Apex</h1><div class="body conbody">
+<div class="shortdesc">You can use Apex with Data 360 objects, with constraints and considerations that are
+        detailed in this topic . Further, you can mock SOQL query responses for Data 360 data model
+        objects (DMOs) in Apex testing by using SOQL stub methods and a test class.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Using SOQL in Apex with Data 360 Objects</h2>
+<p class="p">Static SOQL is supported with Data 360 data model objects (DMOs) as a more direct alternative to
+                using either dynamic SOQL or ConnectAPI. Additionally, SOQL queries against DMOs
+                using Apex <samp class="codeph ">Database.QueryLocator</samp> or in FOR loops
+                is supported in API version 61.0 and later. In versions earlier than 61.0, only the
+                first 201 records are returned. Batch Apex is blocked against DMOs when using
+                    <samp class="codeph ">QueryLocators</samp>, but is supported when using
+                    <samp class="codeph ">Iterable</samp>.</p>
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Running SOQL queries against DMOs can result in Data Services credits being
+                consumed from your Data 360 subscription. For more information on how usage is
+                billed, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=data.c360_a_data_usage_types.htm&amp;language=en_US" target="_blank">Data 360 Billable Usage Types</a>. Use caution
+                when using FOR loops, query locators, recursion, or any mechanism that can result in
+                multiple queries to Data 360.</p>
+</div>
+</div></div></div></div>
+<p class="p">A static SOQL query against Data 360 from Apex is considered a callout and is subject to the same
+                restrictions as HTTP callouts from Apex. For example, if there is pending DML, this
+                sample code can result in an unexpected exception with this message: <samp class="codeph ">UnexpectedException: A callout was unsuccessful because of
+                    pending uncommitted work related to a process, flow, or Apex operation. Commit
+                    or roll back the work, and then try again.</samp></p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain id="codeblock_i3x_4nx_2dc"><a name="codeblock_i3x_4nx_2dc"><!-- --></a>insert new Account(Name='Test');
+List&lt;ssot_Account_dlm&gt; dmo1 = [Select Id from ssot_Account_dlm];
+</pre></div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Security Considerations</h2>
+
+            
+            <p class="p">You must consider field- and record-level access when using Apex with Data 360 data
+                model objects (DMOs). DMOs in all data spaces are accessible from Apex in system
+                mode, even when a permission set for the data space isn’t explicitly assigned.
+                Read-only object-level access checks are supported if the user has access to the
+                data space. There’s currently no support for field-level security or for
+                record-level access control. Apex features, such as WITH USER_MODE, WITH
+                SECURITY_ENFORCED, describe calls, and <samp class="codeph ">
+                    Security.stripInaccessible()</samp>, can check only object-level access for
+                DMOs.</p>
+
+            <p class="p">Starting with API version 61.0, you can get information on a specific DMO using
+                    <samp class="codeph ">SObjectType.getDescribe()</samp>. There’s no
+                field-level security to be enforced because all fields on DMOs that are accessed by
+                field describes and security model checks are read only. You can’t use <samp class="codeph ">Schema.getGlobalDescribe()</samp> to discover exposed DMOs.
+                Instead, use the <samp class="codeph ">Schema.describeSObjects(List&lt;String&gt;)</samp> method with the known DMO
+                API names.</p>
+
+        </div>
+
+        <div class="section">
+            <p class="p">This example uses static SOQL with the <var class="keyword varname">UnifiedIndividual__dlm</var> Data
+                360 object.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>//Static SOQL example
+List&lt;UnifiedIndividual__dlm&gt; unifiedIndividuals = [
+      SELECT
+        Id,
+        ssot__FirstName__c,
+        ssot__LastName__c,
+        ssot__Email__c,
+        ssot__SkyMilesBalance__c,
+        ssot__MedallionStatus__c
+      FROM UnifiedIndividual__dlm
+      WHERE ssot__CompanyId__c = :companyId
+    ];
+
+</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/MockSOQLTestsForDMOs.htm">Mock SOQL Tests for Data 360 Data Model Objects</a></strong><br>
+You can mock SOQL query responses for Data 360 data model objects (DMOs) in Apex         testing by using the new SOQL stub methods and a new test class. Use static or dynamic SOQL         queries against DMOs and return mock records in a testing context.</li>
+</ul>
+</div>

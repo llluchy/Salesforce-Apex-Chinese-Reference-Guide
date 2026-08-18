@@ -1,0 +1,80 @@
+<a name="apex_analytics_filter_reports"><!-- --></a><h1 class="helpHead1">Filter Reports</h1><div class="body conbody">
+<div class="shortdesc">To get specific results on the fly, you can filter reports through the
+        API.</div>
+
+        <div class="section">
+            <p class="p">Changes to filters that are made through the API don’t affect the source
+                report definition. Using the API, you can filter with up to 20 custom field filters
+                and add filter logic (such as AND and OR). But standard filters (such as range),
+                filtering by row limit, and cross filters are unavailable.</p>
+
+            <p class="p">Before you filter a report, it’s helpful to check the following filter values
+                in the metadata.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">The <samp class="codeph apex_code">ReportTypeColumn.getFilterable</samp>
+                    method tells you whether a field can be filtered.</li>
+
+                <li class="li">The <samp class="codeph apex_code">ReportTypeColumn.filterValues</samp> method
+                    returns all filter values for a field.</li>
+
+                <li class="li">The <samp class="codeph apex_code">ReportManager.dataTypeFilterOperatorMap</samp> method lists the field
+                    data types that you can use to filter the report.</li>
+
+                <li class="li">The <samp class="codeph apex_code">ReportMetadata.getReportFilters</samp>
+                    method lists all filters that exist in the report.</li>
+
+            </ul>
+
+            <p class="p">You can filter reports during synchronous or asynchronous report runs.</p>
+
+        </div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+            <div class="p">To filter a report, set filter values in the report metadata and then run the report.
+                The following example retrieves the report metadata, overrides the filter value, and
+                runs the report. The example:<ol class="ol enumList">
+                    <li class="li">Retrieves the report filter object from the metadata by using the <samp class="codeph apex_code">ReportMetadata.getReportFilters</samp>
+                        method.</li>
+
+                    <li class="li">Sets the value in the filter to a specific date by using the <samp class="codeph apex_code">ReportFilter.setValue</samp> method and runs
+                        the report.</li>
+
+                    <li class="li">Overrides the filter value to a different date and runs the report
+                        again.</li>
+
+                </ol>
+The output for the example shows the differing grand total values, based on the
+                date filter that was applied.</div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the report ID</span>
+List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where 
+    DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+<span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+
+<span class="onelineComment">// Get the report metadata</span>
+Reports.ReportDescribeResult describe = Reports.ReportManager.describeReport(reportId);
+Reports.ReportMetadata reportMd = describe.getReportMetadata();
+
+<span class="onelineComment">// Override filter and run report</span>
+Reports.ReportFilter filter = reportMd.getReportFilters()[0];
+filter.setValue(<span class="string">'2013-11-01'</span>);
+Reports.ReportResults results = Reports.ReportManager.runReport(reportId, reportMd);
+Reports.ReportFactWithSummaries factSum = 
+    (Reports.ReportFactWithSummaries)results.getFactMap().get(<span class="string">'T!T'</span>);
+System.debug(<span class="string">'Value for November: '</span> + factSum.getAggregates()[0].getLabel());
+
+<span class="onelineComment">// Override filter and run report</span>
+filter = reportMd.getReportFilters()[0];
+filter.setValue(<span class="string">'2013-10-01'</span>);
+results = Reports.ReportManager.runReport(reportId, reportMd);
+factSum = (Reports.ReportFactWithSummaries)results.getFactMap().get(<span class="string">'T!T'</span>);
+System.debug(<span class="string">'Value for October: '</span> + factSum.getAggregates()[0].getLabel());
+</pre></div>
+
+        </div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

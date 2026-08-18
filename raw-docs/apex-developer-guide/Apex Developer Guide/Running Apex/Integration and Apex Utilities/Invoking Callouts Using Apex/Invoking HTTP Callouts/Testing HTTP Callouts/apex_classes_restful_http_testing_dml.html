@@ -1,0 +1,104 @@
+<a name="apex_classes_restful_http_testing_dml"><!-- --></a><h1 class="helpHead1">Performing DML Operations and Mock Callouts</h1><div class="body refbody">
+<div class="section" id="mock_callout_dml_intro">
+<a name="mock_callout_dml_intro"><!-- --></a><p class="p">By default, callouts aren’t
+allowed after DML operations in the same transaction because DML operations
+result in pending uncommitted work that prevents callouts from executing.
+Sometimes, you might want to insert test data in your test method
+using DML before making a callout. To enable this, enclose the portion
+of your code that performs the callout within <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> statements. The <samp class="codeph apex_code">Test.startTest</samp> statement must appear
+before the <samp class="codeph apex_code">Test.setMock</samp> statement.
+Also, the calls to DML operations must not be part of the <samp class="codeph apex_code">Test.startTest</samp>/<samp class="codeph apex_code">Test.stopTest</samp> block.</p>
+<p class="p">DML operations
+that occur after mock callouts are allowed and don’t require
+any changes in test methods.</p>
+</div>
+
+<div class="section">
+<p class="p">The DML operations support works for all implementations
+of mock callouts using: the <samp class="codeph apex_code">HttpCalloutMock</samp> interface and static resources (<samp class="codeph apex_code">StaticResourceCalloutMock</samp> or <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp>). The following example uses an implemented <samp class="codeph apex_code">HttpCalloutMock</samp> interface but you
+can apply the same technique when using static resources.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Performing DML Before Mock Callouts</h2>
+<p class="p">This example is based on the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_httpcalloutmock.htm">HttpCalloutMock</a> example provided earlier. The example shows how to use <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> statements to allow
+DML operations to be performed in a test method before mock callouts.
+The test method (<samp class="codeph apex_code">testCallout</samp>) first inserts a test account, calls <samp class="codeph apex_code">Test.startTest</samp>, sets the mock callout mode using <samp class="codeph apex_code">Test.setMock</samp>, calls a method that
+performs the callout, verifies the mock response values, and finally,
+calls <samp class="codeph apex_code">Test.stopTest</samp>.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> CalloutClassTest {
+     <span class="keyword">@isTest</span> <span class="keyword">static</span> <span class="keyword">void</span> testCallout() {
+<strong class="ph b">        // Perform some DML to insert test data</strong>
+<strong class="ph b">        Account testAcct = new Account('Test Account');</strong>
+<strong class="ph b">        insert testAcct;</strong>
+
+<strong class="ph b">        // Call Test.startTest before performing callout</strong>
+<strong class="ph b">        // but after setting test data.</strong>
+<strong class="ph b">        Test.startTest();</strong>
+
+<strong class="ph b">        // Set mock callout class </strong>
+<strong class="ph b">        Test.setMock(HttpCalloutMock.class, new MockHttpResponseGenerator());</strong>
+        
+        <span class="onelineComment">// Call method to test.</span>
+        <span class="onelineComment">// This causes a fake response to be sent</span>
+        <span class="onelineComment">// from the class that implements HttpCalloutMock. </span>
+        HttpResponse res = CalloutClass.getInfoFromExternalService();
+        
+        <span class="onelineComment">// Verify response received contains fake values</span>
+        <span class="keyword">String</span> contentType = res.getHeader(<span class="string">'Content-Type'</span>);
+        System.assert(contentType == <span class="string">'application/json'</span>);
+        <span class="keyword">String</span> actualValue = res.getBody();
+        <span class="keyword">String</span> expectedValue = <span class="string">'{"example":"test"}'</span>;
+        System.assertEquals(actualValue, expectedValue);
+        System.assertEquals(200, res.getStatusCode());
+
+<strong class="ph b">        Test.stopTest();</strong>
+    }
+}</pre></div>
+</div>
+
+<div class="section" id="mock_callout_async">
+<a name="mock_callout_async"><!-- --></a><h2 class="helpHead2">Asynchronous Apex and Mock Callouts</h2>
+<div class="p">Similar to DML, asynchronous Apex operations result in pending uncommitted work that prevents
+                callouts from being performed later in the same transaction. Examples of
+                asynchronous Apex operations are calls to future methods, batch Apex, or scheduled
+                Apex. These asynchronous calls are typically enclosed within <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> statements in test methods so that
+                they execute after <samp class="codeph apex_code">Test.stopTest</samp>. In this
+                case, mock callouts can be performed after the asynchronous calls and no changes are
+                necessary. But if the asynchronous calls aren’t enclosed within <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> statements, you’ll get an
+                exception because of uncommitted work pending. To prevent this exception, do either
+                of the following:<ul class="ul bulletList">
+                    <li class="li">Enclose the asynchronous call within <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp>
+                        statements.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Test.startTest();
+MyClass.asyncCall();
+Test.stopTest();
+
+Test.setMock(..); <span class="onelineComment">// Takes two arguments</span>
+MyClass.mockCallout();</pre></div>
+</li>
+
+                    <li class="li">Follow the same rules as with DML calls: Enclose the portion of your code
+                        that performs the callout within <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> statements. The <samp class="codeph apex_code">Test.startTest</samp> statement must appear before the <samp class="codeph apex_code">Test.setMock</samp> statement. Also, the
+                        asynchronous calls must not be part of the <samp class="codeph apex_code">Test.startTest</samp>/<samp class="codeph apex_code">Test.stopTest</samp>
+                        block.<div class="codeSection apex_code"><pre class="codeblock brush:apex">MyClass.asyncCall();
+
+Test.startTest();
+Test.setMock(..); <span class="onelineComment">// Takes two arguments</span>
+MyClass.mockCallout();
+Test.stopTest();
+</pre></div>
+</li>
+
+                </ul>
+</div>
+<p class="p">Asynchronous calls that occur after mock callouts are
+allowed and don’t require any changes in test methods.</p>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm" target="_blank" title="Apex Reference Guide: Test Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Test Class</a></div></li></ul>
+</div>
+</div>

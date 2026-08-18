@@ -1,0 +1,682 @@
+<a name="apex_class_commercetax_CalculateTaxResponse"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">CalculateTaxResponse Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets
+            the values of the tax transaction following a response from the external tax engine.
+            Extends the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AbstractTransactionResponse.htm#apex_class_commercetax_AbstractTransactionResponse" title="Abstract class that contains methods for setting tax fields based on the external tax provider's response. Response classes that extend AbstractTransactionResponse inherit these methods.">AbstractTransactionResponse</a> class and is the top-level response
+        class.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercetax.htm" title="Manage the communication between Salesforce and an external tax engine.">CommerceTax</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span>(requestType == commercetax.RequestType.CalculateTax){
+             commercetax.calculatetaxtype type = request.taxtype;
+             <span class="keyword">String</span> docCode=<span class="string">''</span>;
+             <span class="statement">if</span>(request.DocumentCode == <span class="string">'simulateEmptyDocumentCode'</span>)
+                 docCode = <span class="string">''</span>;
+             <span class="statement">else</span> <span class="statement">if</span>(request.DocumentCode != <span class="keyword">null</span>)
+                 docCode =request.DocumentCode;
+             <span class="statement">else</span> <span class="statement">if</span>(request.ReferenceEntityId != <span class="keyword">null</span>) docCode = request.ReferenceEntityId;
+             <span class="statement">else</span> docCode =  <span class="keyword">String</span>.valueOf(getRandomInteger(0,2147483647));
+             commercetax.CalculateTaxResponse response = <span class="keyword">new</span> commercetax.CalculateTaxResponse();
+             <span class="statement">if</span>(request.isCommit == <span class="keyword">true</span>) {
+                 response.setStatus(commercetax.TaxTransactionStatus.Committed);
+             } <span class="statement">else</span> {
+                 response.setStatus(commercetax.TaxTransactionStatus.Uncommitted);
+             }
+             response.setDocumentCode(docCode);
+             response.setReferenceDocumentCode(request.referenceDocumentCode);
+             response.setTaxType(type);
+             response.setStatusDescription(<span class="string">'statusDescription'</span>);
+             <span class="statement">if</span>(request.sellerDetails.code == <span class="string">'testSellerCode'</span>) {
+                 response.setDescription(<span class="string">'SellerCode fetched from TaxEngine entity'</span>);
+             }
+             <span class="statement">else</span> {
+                 response.setDescription(<span class="string">'description'</span>);
+             }
+            response.setEffectiveDate(system.now());
+            <span class="statement">if</span>(request.transactionDate == <span class="keyword">null</span>) {
+               response.setTransactionDate(system.now());
+            } <span class="statement">else</span> {
+               response.setTransactionDate(request.transactionDate);
+            }
+            <span class="statement">if</span>(request.taxTransactionType == <span class="keyword">null</span>) {
+                response.setTaxTransactionType(commercetax.TaxTransactionType.Debit);
+            } <span class="statement">else</span> {
+                response.setTaxTransactionType(request.taxTransactionType);
+            }
+             <span class="statement">if</span>(request.currencyIsoCode == <span class="keyword">null</span> || request.currencyIsoCode == <span class="string">''</span>) {
+                response.setCurrencyIsoCode(<span class="string">'USD'</span>);
+             } <span class="statement">else</span> {
+                response.setCurrencyIsoCode(request.currencyIsoCode);
+             }
+             response.setReferenceEntityId(request.ReferenceEntityId);
+}</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_methods">CalculateTaxResponse Methods</a></strong><br>
+Learn more about the available methods with the <samp class="codeph ">CalculateTaxResponse</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_methods">
+<a name="apex_commercetax_CalculateTaxResponse_methods"><!-- --></a>
+  <h2 class="helpHead2">CalculateTaxResponse Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Learn more about the available methods with the <samp class="codeph ">CalculateTaxResponse</samp> class.</div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph ">CalculateTaxResponse</samp> class includes these
+        methods.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setAddresses">setAddresses(addresses)</a></strong><br>
+Sets the value of the Addresses field using the addresses contained       in an instance of the AddressesResponse     class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setAmountDetails">setAmountDetails(amountDetails)</a></strong><br>
+Sets the value of the AmountDetails field using an instance of <samp class="codeph ">AmountDetailsResponse</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setCurrencyIsoCode">setCurrencyIsoCode(currencyIsoCode)</a></strong><br>
+Sets the value of the CurrencyIsoCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setDescription">setDescription(dscptn)</a></strong><br>
+Sets the value of the Description field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setDocumentCode">setDocumentCode(documentCode)</a></strong><br>
+Sets the value of the DocumentCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setEffectiveDate">setEffectiveDate(effectiveDate)</a></strong><br>
+Sets the value of the EffectiveDate field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setLineItems">setLineItems(lineItems)</a></strong><br>
+Sets the value of the LineItems field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setReferenceDocumentCode">setReferenceDocumentCode(referenceDocumentCode)</a></strong><br>
+Sets the value of the ReferenceDocumentCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setReferenceEntityId">setReferenceEntityId(referenceEntityId)</a></strong><br>
+Sets the value of the ReferenceEntityId field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setStatus">setStatus(status)</a></strong><br>
+Sets the value of the Status field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setStatusDescription">setStatusDescription(statusDescription)</a></strong><br>
+Sets the value of the StatusDescription field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setTaxTransactionId">setTaxTransactionId(taxTrxnId)</a></strong><br>
+Sets the value of the TaxTransactionId field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setTaxTransactionType">setTaxTransactionType(taxTransactionType)</a></strong><br>
+Sets the value of the TaxTransactionType field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setTaxType">setTaxType(taxType)</a></strong><br>
+Sets the value of the TaxType field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CalculateTaxResponse.htm#apex_commercetax_CalculateTaxResponse_setTransactionDate">setTransactionDate(transactionDate)</a></strong><br>
+Sets the value of the TransactionDate field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setAddresses">
+<a name="apex_commercetax_CalculateTaxResponse_setAddresses"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setAddresses(addresses)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the Addresses field using the addresses contained
+      in an instance of the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AddressesResponse.htm#apex_class_commercetax_AddressesResponse" title="Sets the tax address fields based on a response from the external tax engine. Contains setter methods for the Ship From, Ship To, and Sold To addresses.">AddressesResponse</a>
+    class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAddresses(commercetax.AddressesResponse
+          addresses)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">addresses</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AddressesResponse.htm#apex_class_commercetax_AddressesResponse" title="Sets the tax address fields based on a response from the external tax engine. Contains setter methods for the Ship From, Ship To, and Sold To addresses.">AddressesResponse</a></p>
+<p class="p">Contains Ship To, Ship From, and Sold To addresses.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setAmountDetails">
+<a name="apex_commercetax_CalculateTaxResponse_setAmountDetails"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setAmountDetails(amountDetails)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the AmountDetails field using an instance of <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AmountDetailsResponse.htm#apex_class_commercetax_AmountDetailsResponse" title="Sets tax amount fields based on a response from the external tax engine."><samp class="codeph ">AmountDetailsResponse</samp></a>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAmountDetails(commercetax.AmountDetailsResponse
+          amountDetails)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">amountDetails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AmountDetailsResponse.htm#apex_class_commercetax_AmountDetailsResponse" title="Sets tax amount fields based on a response from the external tax engine.">AmountDetailsResponse</a></p>
+<p class="p">The tax amount details for a line item on which tax was calculated.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setCurrencyIsoCode">
+<a name="apex_commercetax_CalculateTaxResponse_setCurrencyIsoCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setCurrencyIsoCode(currencyIsoCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the CurrencyIsoCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setCurrencyIsoCode(<span class="keyword">String</span>
+      currencyIsoCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">currencyIsoCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Three-letter ISO 4217 currency code associated with a tax object.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setDescription">
+<a name="apex_commercetax_CalculateTaxResponse_setDescription"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setDescription(dscptn)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the Description field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setDescription(<span class="keyword">String</span>
+      dscptn)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">dscptn</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Optional description for providing more information about the calculate tax
+            response.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setDocumentCode">
+<a name="apex_commercetax_CalculateTaxResponse_setDocumentCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setDocumentCode(documentCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the DocumentCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setDocumentCode(<span class="keyword">String</span>
+      documentCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">documentCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Code</p>
+<p class="p">for a tax document that’s created by the tax engine for the calculation
+            process.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setEffectiveDate">
+<a name="apex_commercetax_CalculateTaxResponse_setEffectiveDate"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setEffectiveDate(effectiveDate)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the EffectiveDate field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setEffectiveDate(<span class="keyword">Datetime</span>
+      effectiveDate)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">effectiveDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+<p class="p">The date a tax calculation action takes effect. This parameter is optional and is
+            provided only for recordkeeping purpose. Additionally, this parameter is used to
+            determine the tax rates or rules and overrides the transaction date. For example, if the
+            tax calculation request is placed on January 3 and the transaction date is January 1,
+            you can set the effective date as January 1.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setLineItems">
+<a name="apex_commercetax_CalculateTaxResponse_setLineItems"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setLineItems(lineItems)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the LineItems field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setLineItems(List&lt;commercetax.LineItemResponse&gt;
+          lineItems)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">lineItems</var></strong>:<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_class_commercetax_LineItemResponse" title="Response class that stores details of a list of one or more line items on which the tax engine has calculated tax.">LineItemResponse</a>&gt;</p>
+<p class="p">Response object that the tax adapter populates from the response of the external tax
+            engine.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setReferenceDocumentCode">
+<a name="apex_commercetax_CalculateTaxResponse_setReferenceDocumentCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setReferenceDocumentCode(referenceDocumentCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the ReferenceDocumentCode field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setReferenceDocumentCode(<span class="keyword">String</span>
+      referenceDocumentCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">referenceDocumentCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Code</p>
+<p class="p">for a reference document used in the tax calculation process.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setReferenceEntityId">
+<a name="apex_commercetax_CalculateTaxResponse_setReferenceEntityId"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setReferenceEntityId(referenceEntityId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the ReferenceEntityId field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setReferenceEntityId(<span class="keyword">String</span>
+      referenceEntityId)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">referenceEntityId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">ID of an entity related to the line items submitted for tax calculation. For example,
+            if order items were sent for tax calculation, you could use the ID of their parent
+            order.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setStatus">
+<a name="apex_commercetax_CalculateTaxResponse_setStatus"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setStatus(status)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the Status field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setStatus(commercetax.TaxTransactionStatus
+          status)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">status</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_TaxTransactionStatus.htm" title="Shows whether the tax transaction has been committed or uncommitted.">TaxTransactionStatus</a></p>
+<p class="p">Indicates whether a tax transaction has been committed.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setStatusDescription">
+<a name="apex_commercetax_CalculateTaxResponse_setStatusDescription"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setStatusDescription(statusDescription)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the StatusDescription field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setStatusDescription(<span class="keyword">String</span>
+      statusDescription)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">statusDescription</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Optional value for providing more information about a tax transaction's status.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setTaxTransactionId">
+<a name="apex_commercetax_CalculateTaxResponse_setTaxTransactionId"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxTransactionId(taxTrxnId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the TaxTransactionId field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span>
+          setTaxTransactionId(<span class="keyword">String</span>
+      taxTrxnId)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxTrxnId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID of the
+            Salesforce
+            tax transaction entity that stores information about the tax
+            calculation transaction.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setTaxTransactionType">
+<a name="apex_commercetax_CalculateTaxResponse_setTaxTransactionType"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxTransactionType(taxTransactionType)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the TaxTransactionType field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setTaxTransactionType(commercetax.TaxTransactionType
+          taxTransactionType)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxTransactionType</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_TaxTransactionType.htm" title="Shows whether the tax transaction is for a credit or debit transaction.">TaxTransactionType</a></p>
+<p class="p">Whether the tax transaction was for a credit, debit, or voided transaction.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setTaxType">
+<a name="apex_commercetax_CalculateTaxResponse_setTaxType"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxType(taxType)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the TaxType field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setTaxType(commercetax.CalculateTaxType
+          taxType)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxType</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_CalculateTaxType.htm" title="Shows whether a tax calculation request is for estimated or actual tax.">CalculateTaxType</a></p>
+<p class="p">Indicates whether a tax calculation request is for estimated or actual tax.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_CalculateTaxResponse_setTransactionDate">
+<a name="apex_commercetax_CalculateTaxResponse_setTransactionDate"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTransactionDate(transactionDate)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the value of the TransactionDate field of the <samp class="codeph ">CalculateTaxResponse</samp> object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTransactionDate(<span class="keyword">Datetime</span>
+      transactionDate)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">transactionDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+<p class="p">The date that the tax transaction occurred.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

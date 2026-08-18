@@ -1,0 +1,152 @@
+<a name="apex_testing_best_practices"><!-- --></a><h1 class="helpHead1">Testing Best Practices</h1><div class="body">
+    <div class="p">Good tests do the following:<ul class="ul bulletList">
+        <li class="li">Cover as many lines of code as possible. Before you can deploy Apex<span class="ph"> or
+            package it for AppExchange</span>, the following must be true.<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+            <ul class="ul bulletList">
+              <li class="li">Unit tests must cover at least 75% of your Apex code, and all of those tests must
+                complete successfully. <div class="p">Note the following. <ul class="ul bulletList">
+                    <li class="li">When deploying Apex to a production organization, each unit test in your
+                      organization namespace is executed by default.</li>
+
+                    <li class="li"><span class="ph" id="DebugNotInCodeCoverage"><a name="DebugNotInCodeCoverage"><!-- --></a>Calls to <samp class="codeph apex_code">System.debug</samp> aren’t counted as part of Apex code
+                      coverage.</span></li>
+
+                    <li class="li">Test methods and test classes aren’t counted as part of Apex code
+                      coverage.</li>
+
+                    <li class="li">While only 75% of your Apex code must be covered by tests, don’t focus on
+                      the percentage of code that is covered. Instead, make sure that every use case
+                      of your application is covered, including positive and negative cases, as well
+                      as bulk and single records. This approach ensures that 75% or more of your
+                      code is covered by unit tests.</li>
+
+                    <li class="li">Tests don’t run in parallel in metadata deployments, package installations,
+                      or change set deployments.</li>
+
+                  </ul>
+</div>
+</li>
+
+              <li class="li">Every trigger must have some test coverage.</li>
+
+              <li class="li">All classes and triggers must compile successfully.</li>
+
+            </ul>
+
+          </p>
+</div>
+</div></div></div></div>
+</li>
+
+        <li class="li">If code uses conditional logic (including ternary operators), execute each branch.</li>
+
+        <li class="li">Make calls to methods using both valid and invalid inputs.</li>
+
+        <li class="li">Complete successfully without throwing any exceptions, unless those errors are expected
+          and caught in a <samp class="codeph apex_code"><span class="statement">try</span>…<span class="statement">catch</span></samp> block.</li>
+
+        <li class="li">Always handle all exceptions that are caught, instead of merely catching the
+          exceptions.</li>
+
+        <li class="li">Use the methods of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Assert.htm" target="_blank">Assert class</a> to prove that the code behaves
+          properly.</li>
+
+        <li class="li">Use the <samp class="codeph apex_code">runAs</samp> method to test your application
+          in different user contexts.</li>
+
+        <li class="li">Exercise bulk trigger functionality—use at least 20 records in your tests.</li>
+
+        <li class="li">Use the <samp class="codeph apex_code">ORDER BY</samp> keywords to ensure that the
+          records are returned in the expected order.</li>
+
+        <li class="li">Not assume that record IDs are in sequential order.<p class="p">Record IDs aren’t created in
+            ascending order unless you insert multiple records with the same request. For example,
+            if you create an account A, and receive the ID <samp class="codeph nolang">001D000000IEEmT</samp>, then create account B, the ID of account B need not be
+            sequentially higher.</p>
+</li>
+
+        <li class="li">Set up test data: <ul class="ul bulletList">
+            <li class="li">Create the necessary data in test classes, so the tests don’t have to rely on data
+                            in a particular organization.</li>
+
+            <li class="li">Create all test data before calling the <samp class="codeph apex_code">Test.startTest</samp> method.</li>
+
+            <li class="li">Since tests don't commit, you don't have to delete any data.</li>
+
+          </ul>
+</li>
+
+        <li class="li">Write comments stating not only what must be tested, but the assumptions the tester made
+          about the data, the expected outcome, and so on.</li>
+
+        <li class="li">Test the classes in your application individually. Never test your entire application in
+          a single test.</li>
+
+      </ul>
+</div>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To protect the privacy of your data, make sure that test error messages and exception
+            details don’t contain any personal data. The Apex exception handler and testing
+            framework can’t determine if sensitive data is contained in user-defined messages and
+            details. To include personal data in custom Apex exceptions, we recommend that you
+            create an Exception subclass with new properties that holds the personal data. Then,
+            don’t include subclass property information in the exception's message string.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">If you’re running many tests, test the classes in your organization
+            individually in the Salesforce user interface instead of using the <strong class="ph uicontrol">Run All
+                Tests</strong> button to run them all together. </p>
+
+    <div class="section">
+<h2 class="helpHead2">Best Practices for Parallel Test Execution</h2>
+
+      
+      
+      <div class="p">Tests that are started from the Salesforce user interface (including the Developer Console)
+        run in parallel. Parallel test execution can speed up test run time. Sometimes, parallel
+        test execution results in data contention issues, and you can turn off parallel execution in
+        those cases. In particular, data contention issues and
+          <samp class="ph systemoutput">UNABLE_TO_LOCK_ROW</samp> errors can occur in the following cases:<ul class="ul bulletList">
+          <li class="li">When tests update the same records at the same time. Updating the same records
+            typically occurs when tests don’t create their own data and turn off data
+            isolation to access the organization’s data.</li>
+
+          <li class="li">When a deadlock occurs in tests that are running in parallel and that try to create
+            records with duplicate index field values. A deadlock occurs when two running tests are
+            waiting for each other to roll back data. Such a wait can happen if two tests insert
+            records with the same unique index field values.</li>
+
+        </ul>
+</div>
+
+      <div class="p">You can prevent receiving those errors by turning off parallel test execution in the
+        Salesforce user interface:<ol class="ol enumList">
+          <li class="li">From Setup, enter <kbd class="ph userinput">Apex Test</kbd>.</li>
+
+          <li class="li">Click <strong class="ph uicontrol">Options...</strong>.</li>
+
+          <li class="li">In the Apex Test Execution Options dialog, select <strong class="ph uicontrol">Disable Parallel Apex
+              Testing</strong> and then click <strong class="ph uicontrol">OK</strong>.</li>
+
+        </ol>
+</div>
+
+      <p class="p">Test classes annotated with <samp class="codeph apex_code">IsTest(IsParallel=<span class="keyword">true</span>)</samp>
+                indicate that the test class can run concurrently with more than the default number
+                of concurrent test classes. This annotation overrides default settings.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_code_coverage_best_pract.htm" title="Consider the following code coverage tips and best practices.">Code Coverage Best Practices</a></div></li></ul>
+</div>
+</div>

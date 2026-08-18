@@ -1,0 +1,86 @@
+<a name="apex_classes_perms_enforcing"><!-- --></a><h1 class="helpHead1">Enforce Object and Field Permissions</h1><div class="body conbody">
+<div class="shortdesc">Apex generally runs in user context by default, meaning that the current user’s
+        permissions and field-level security (FLS) are enforced during code execution. To ignore the
+        FLS and object permissions of the current user, you must explicitly set a database operation
+        or query to run in system mode. For fine-grained control, you can check the current user’s
+        permissions for an object or a field, and then perform a specific DML operation or a query
+        only if the user has sufficient permissions.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Set an Access Mode for Database Operations</h2>
+
+            
+            <p class="p">You can run database operations and SOQL queries in either user mode or system mode.
+                See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm" title="Apex database operations run in user mode by default, which means that they apply the sharing rules, field-level security (FLS), and object permissions of the running user. Database operations only ignore FLS and object permissions if you explicitly set them to run in system mode.">Set an Access Mode for Database Operations</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Check Field-Level Permissions</h2>
+
+            
+            <p class="p">You can also enforce object-level and field-level permissions in your code by
+                explicitly calling the access control methods of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank">Schema.DescribeSObjectResult</a> and the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_fields_describe.htm" target="_blank">Schema.DescribeFieldResult</a> classes. See
+                    <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_field_object_describe.htm" title="At the most granular level, you can enforce object-level and field-level permissions in your code by explicitly calling the Schema.DescribeSObjectResult and the Schema.DescribeFieldResult methods to check the current user’s access permission levels.">Enforce Security with Field and SObject Describe Methods</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Considerations</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">Object-level and field-level permissions are distinct from sharing rules, which
+                    enforce specific record access. They can coexist. If sharing rules are defined
+                    in Salesforce, you can enforce them at the class level by declaring the class
+                    with the <samp class="codeph apex_code">with sharing</samp> keyword. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a>. If you call the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank">Schema.DescribeSObjectResult</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_fields_describe.htm" target="_blank">Schema.DescribeFieldResult</a> access
+                    control methods, the verification of object and field-level permissions is
+                    performed in addition to the sharing rules that are in effect. Sometimes, the
+                    access level granted by a sharing rule can conflict with an object-level or
+                    field-level permission. In that case, object-level and field-level permissions
+                    take precedence over sharing rules.</li>
+
+                <li class="li">Orgs with Experience Cloud sites enabled provide various settings to hide a
+                    user’s personal information from other users. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.users_manage_personal_info_visibility.htm&amp;type=5&amp;language=en_US" target="_blank">Manage Personal User Information
+                        Visibility</a> and <a class="xref" href="https://help.salesforce.com/articleView?id=networks_contact_info_visibility.htm&amp;language=en_US" target="_blank">Share Personal Contact Information Within
+                        Experience Cloud Sites</a>. These settings aren’t enforced in Apex, even
+                    with security features such as the <samp class="codeph apex_code">WITH
+                        USER_MODE</samp> clause or the <samp class="codeph apex_code">stripInaccessible</samp> method. To hide specific fields on the User
+                    object in Apex, follow the example code outlined in <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.communities_dev.meta/communities_dev/communities_dev_pii_settings.htm" target="_blank" title="HTML (New Window)">Comply with a User’s
+                        Personal Information Visibility Settings</a>.</li>
+
+                <li class="li">Automated Process users can’t perform Object and FLS checks in custom code
+                    unless appropriate permission sets are explicitly applied to those users.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section" id="section_qp5_rtq_53c">
+<a name="section_qp5_rtq_53c"><!-- --></a><h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 67.0 and later, Apex runs in user context by default, meaning that the
+                current user’s permissions and field-level security (FLS) are enforced during code
+                execution. In API version 66.0 and earlier, system mode is the default.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm">Set an Access Mode for Database Operations</a></strong><br>
+Apex database operations run in user mode by default, which means that they apply the         sharing rules, field-level security (FLS), and object permissions of the running user.         Database operations only ignore FLS and object permissions if you explicitly set them to run         in system mode.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_with_security_stripInaccessible.htm">Enforce Security with the stripInaccessible Method</a></strong><br>
+Use the <samp class="codeph apex_code">stripInaccessible</samp> method to enforce     field-level and object-level data protection by stripping fields and relationship fields from     query and subquery results that the user can’t access. The method can also be used to remove     inaccessible sObject fields before DML operations to avoid exceptions and to sanitize sObjects     that have been deserialized from an untrusted source.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_field_object_describe.htm">Enforce Security with Field and SObject Describe Methods</a></strong><br>
+At the most granular level, you can enforce object-level and field-level permissions in   your code by explicitly calling the <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> and the   <samp class="codeph apex_code">Schema.DescribeFieldResult</samp> methods to check the current user’s access permission   levels.</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.security_data_access_mgmt.htm&amp;type=5&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Set Up Your Users’ Object, User, and Field
+                            Permissions</a></div></li></ul>
+</div>
+</div>

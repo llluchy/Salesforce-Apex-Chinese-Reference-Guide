@@ -1,0 +1,416 @@
+<a name="apex_process_plugin_example_lead_convert"><!-- --></a><h1 class="helpHead1">Sample Process.Plugin Implementation for Lead Conversion</h1><div class="body refbody">
+<div class="shortdesc">In this example, an Apex class implements
+        the <samp class="codeph apex_code">Process.Plugin</samp> interface and converts a lead
+        into an account, contact, and optionally, an opportunity. Test methods for the plug-in are
+        also included. This implementation can be called from a flow via a legacy Apex action.</div>
+
+        <div class="section">
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>We recommend using the <samp class="codeph apex_code">@InvocableMethod</samp> annotation instead of the <samp class="codeph apex_code">Process.Plugin</samp> interface.<ul class="ul bulletList">
+          <li class="li">The interface doesn’t support Blob, Collection, and sObject, data types, and it
+            doesn’t support bulk operations. After you implement the interface on a class, the class
+            can be referenced only from flows.</li>
+
+          <li class="li"> The annotation supports all data types and bulk operations. After you implement the
+            annotation on a class, the class can be referenced from flows, processes, and the Custom
+            Invocable Actions REST API endpoint.</li>
+
+          <li class="li">Legacy Apex actions aren’t supported in auto-layout in Flow Builder. Legacy Apex
+            actions are only available to be added in free-form in Flow Builder. Existing actions
+            can be edited in both auto-layout and free-form mode.</li>
+
+          <li class="li">You can customize how invocable actions created with <samp class="codeph apex_code">@InvocableMethod</samp> appear in Flow Builder by using the
+            InvocableActionExtension metadata file. Control parameter order, add picklists, create
+            custom headers, and build partial custom property editors.</li>
+
+        </ul>
+</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Converts a lead as an action in a flow.</span>
+<span class="keyword">global</span> <span class="keyword">class</span> VWFConvertLead <span class="keyword">implements</span> Process.Plugin {
+    <span class="onelineComment">// This method runs when called by a flow's legacy Apex action.</span>
+    <span class="keyword">global</span> Process.PluginResult invoke(
+        Process.PluginRequest request) {
+            
+        <span class="onelineComment">// Set up variables to store input parameters from </span>
+        <span class="onelineComment">// the flow.</span>
+        <span class="keyword">String</span> leadID = (<span class="keyword">String</span>) request.inputParameters.get(
+            <span class="string">'LeadID'</span>);
+        <span class="keyword">String</span> contactID = (<span class="keyword">String</span>) 
+            request.inputParameters.get(<span class="string">'ContactID'</span>);
+        <span class="keyword">String</span> accountID = (<span class="keyword">String</span>) 
+            request.inputParameters.get(<span class="string">'AccountID'</span>);
+        <span class="keyword">String</span> convertedStatus = (<span class="keyword">String</span>) 
+            request.inputParameters.get(<span class="string">'ConvertedStatus'</span>);
+        <span class="keyword">Boolean</span> overWriteLeadSource = (<span class="keyword">Boolean</span>) 
+            request.inputParameters.get(<span class="string">'OverwriteLeadSource'</span>);
+        <span class="keyword">Boolean</span> createOpportunity = (<span class="keyword">Boolean</span>) 
+            request.inputParameters.get(<span class="string">'CreateOpportunity'</span>);
+        <span class="keyword">String</span> opportunityName = (<span class="keyword">String</span>) 
+            request.inputParameters.get(<span class="string">'ContactID'</span>);
+        <span class="keyword">Boolean</span> sendEmailToOwner = (<span class="keyword">Boolean</span>) 
+            request.inputParameters.get(<span class="string">'SendEmailToOwner'</span>);   
+        
+        <span class="onelineComment">// Set the default handling for booleans. </span>
+        <span class="statement">if</span> (overWriteLeadSource == <span class="keyword">null</span>) 
+            overWriteLeadSource = <span class="keyword">false</span>;
+        <span class="statement">if</span> (createOpportunity == <span class="keyword">null</span>) 
+            createOpportunity = <span class="keyword">true</span>;
+        <span class="statement">if</span> (sendEmailToOwner == <span class="keyword">null</span>) 
+            sendEmailToOwner = <span class="keyword">false</span>;
+        
+        <span class="onelineComment">// Convert the lead by passing it to a helper method.</span>
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; result = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        result = convertLead(leadID, contactID, accountID, 
+            convertedStatus, overWriteLeadSource, 
+            createOpportunity, opportunityName, 
+            sendEmailToOwner);
+ 
+        <span class="statement">return</span> <span class="keyword">new</span> Process.PluginResult(result); 
+    }
+    
+    <span class="onelineComment">// This method describes the plug-in and its inputs from</span>
+    <span class="onelineComment">// and outputs to the flow.</span>
+    <span class="onelineComment">// Implementing this method makes the class available </span>
+    <span class="onelineComment">// in Flow Builder as a legacy Apex action.</span>
+    <span class="keyword">global</span> Process.PluginDescribeResult describe() {
+        <span class="onelineComment">// Set up plugin metadata</span>
+        Process.PluginDescribeResult result = <span class="keyword">new</span> 
+            Process.PluginDescribeResult();
+        result.description = 
+            <span class="string">'The LeadConvert Flow Plug-in converts a lead into '</span> + 
+            <span class="string">'an account, a contact, and '</span> + 
+            <span class="string">'(optionally)an opportunity.'</span>;
+        result.tag = <span class="string">'Lead Management'</span>;
+        
+        <span class="onelineComment">// Create a list that stores both mandatory and optional </span>
+        <span class="onelineComment">// input parameters from the flow.</span>
+        <span class="onelineComment">// NOTE: Only primitive types (STRING, NUMBER, etc.) are </span>
+        <span class="onelineComment">// supported. Collections aren't supported.</span>
+        result.inputParameters = <span class="keyword">new</span> 
+            List&lt;Process.PluginDescribeResult.InputParameter&gt;{
+            <span class="onelineComment">// Lead ID (mandatory)</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'LeadID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING, 
+                <span class="keyword">true</span>),
+            <span class="onelineComment">// Account Id (optional)</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'AccountID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING, 
+                <span class="keyword">false</span>),
+            <span class="onelineComment">// Contact ID (optional)</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'ContactID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING, 
+                <span class="keyword">false</span>),            
+            <span class="onelineComment">// Status to use once converted</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'ConvertedStatus'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING, 
+                <span class="keyword">true</span>),
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'OpportunityName'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING, 
+                <span class="keyword">false</span>),
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'OverwriteLeadSource'</span>, 
+                Process.PluginDescribeResult.ParameterType.BOOLEAN, 
+                <span class="keyword">false</span>),
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'CreateOpportunity'</span>, 
+                Process.PluginDescribeResult.ParameterType.BOOLEAN, 
+                <span class="keyword">false</span>),
+            <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(
+                <span class="string">'SendEmailToOwner'</span>, 
+                Process.PluginDescribeResult.ParameterType.BOOLEAN, 
+                <span class="keyword">false</span>)                                                   
+        };
+
+        <span class="onelineComment">// Create a list that stores output parameters sent </span>
+        <span class="onelineComment">// to the flow.</span>
+        result.outputParameters = <span class="keyword">new</span> List&lt;
+            Process.PluginDescribeResult.OutputParameter&gt;{
+            <span class="onelineComment">// Account ID of the converted lead</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(
+                <span class="string">'AccountID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING),
+            <span class="onelineComment">// Contact ID of the converted lead</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(
+                <span class="string">'ContactID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING),
+            <span class="onelineComment">// Opportunity ID of the converted lead</span>
+            <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(
+                <span class="string">'OpportunityID'</span>, 
+                Process.PluginDescribeResult.ParameterType.STRING)                
+        };
+
+        <span class="statement">return</span> result;
+    }
+        
+    <span class="multilineComment">/**
+     * Implementation of the LeadConvert plug-in.
+     * Converts a given lead with several options:
+     * leadID - ID of the lead to convert
+     * contactID - 
+     * accountID - ID of the Account to attach the converted 
+     *  Lead/Contact/Opportunity to.
+     * convertedStatus - 
+     * overWriteLeadSource - 
+     * createOpportunity - true if you want to create a new 
+     *  Opportunity upon conversion
+     * opportunityName - Name of the new Opportunity.
+     * sendEmailtoOwner - true if you are changing owners upon 
+     *  conversion and want to notify the new Opportunity owner.
+     *
+     * returns: a Map with the following output:
+     * AccountID - ID of the Account created or attached 
+     *  to upon conversion.
+     * ContactID - ID of the Contact created or attached 
+     *  to upon conversion.
+     * OpportunityID - ID of the Opportunity created 
+     *  upon conversion.
+     */</span>
+    <span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; convertLead (
+                               <span class="keyword">String</span> leadID,
+                               <span class="keyword">String</span> contactID,
+                               <span class="keyword">String</span> accountID,
+                               <span class="keyword">String</span> convertedStatus,
+                               <span class="keyword">Boolean</span> overWriteLeadSource,
+                               <span class="keyword">Boolean</span> createOpportunity,
+                               <span class="keyword">String</span> opportunityName,
+                               <span class="keyword">Boolean</span> sendEmailToOwner
+        ) {
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; result = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+                                
+        <span class="statement">if</span> (leadId == <span class="keyword">null</span>) <span class="statement">throw</span> <span class="keyword">new</span> ConvertLeadPluginException(
+            <span class="string">'Lead Id cannot be null'</span>);
+        
+        <span class="onelineComment">// check for multiple leads with the same ID</span>
+        Lead[] leads = [Select Id, FirstName, LastName, Company 
+            From Lead where Id = :leadID];
+        <span class="statement">if</span> (leads.size() &gt; 0) {
+            Lead l = leads[0];
+            <span class="onelineComment">// CheckAccount = true, checkContact = false</span>
+            <span class="statement">if</span> (accountID == <span class="keyword">null</span> &amp;&amp; l.Company != <span class="keyword">null</span>) {
+                Account[] accounts = [Select Id, Name FROM Account 
+                    where Name = :l.Company LIMIT 1];
+                <span class="statement">if</span> (accounts.size() &gt; 0) {
+                    accountId = accounts[0].id;
+                }
+            }
+            
+            <span class="onelineComment">// Perform the lead conversion.</span>
+            Database.LeadConvert lc = <span class="keyword">new</span> Database.LeadConvert();
+            lc.setLeadId(leadID);
+            lc.setOverwriteLeadSource(overWriteLeadSource);
+            lc.setDoNotCreateOpportunity(!createOpportunity);
+            lc.setConvertedStatus(convertedStatus);
+            <span class="statement">if</span> (sendEmailToOwner != <span class="keyword">null</span>) lc.setSendNotificationEmail(
+                sendEmailToOwner);
+            <span class="statement">if</span> (accountId != <span class="keyword">null</span> &amp;&amp; accountId.length() &gt; 0) 
+                lc.setAccountId(accountId);
+            <span class="statement">if</span> (contactId != <span class="keyword">null</span> &amp;&amp; contactId.length() &gt; 0) 
+                lc.setContactId(contactId);
+            <span class="statement">if</span> (createOpportunity) {
+                lc.setOpportunityName(opportunityName);
+            }
+            
+            Database.LeadConvertResult lcr = Database.convertLead(
+                lc, <span class="keyword">true</span>);
+            <span class="statement">if</span> (lcr.isSuccess()) {
+                result.put(<span class="string">'AccountID'</span>, lcr.getAccountId());
+                result.put(<span class="string">'ContactID'</span>, lcr.getContactId());
+                <span class="statement">if</span> (createOpportunity) {
+                    result.put(<span class="string">'OpportunityID'</span>, 
+                        lcr.getOpportunityId());
+                }
+            } <span class="statement">else</span> {
+                <span class="keyword">String</span> error = lcr.getErrors()[0].getMessage();
+                <span class="statement">throw</span> <span class="keyword">new</span> ConvertLeadPluginException(error);
+            }
+        } <span class="statement">else</span> { 
+            <span class="statement">throw</span> <span class="keyword">new</span> ConvertLeadPluginException(
+                <span class="string">'No leads found with Id : "'</span> + leadId + <span class="string">'"'</span>);
+        }
+        <span class="statement">return</span> result;
+    }
+        
+    <span class="onelineComment">// Utility exception class</span>
+    <span class="keyword">class</span> ConvertLeadPluginException <span class="keyword">extends</span> Exception {}
+}</pre></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Test class for the lead convert Apex plug-in.</span>
+<span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> VWFConvertLeadTest {
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> basicTest() {
+        <span class="onelineComment">// Create test lead</span>
+        Lead testLead = <span class="keyword">new</span> Lead(
+           Company=<span class="string">'Test Lead'</span>,FirstName=<span class="string">'John'</span>,LastName=<span class="string">'Doe'</span>);
+        <span class="statement">insert</span> testLead;
+    
+        LeadStatus convertStatus = 
+           [Select Id, MasterLabel from LeadStatus 
+           where IsConverted=<span class="keyword">true</span> limit 1]; 
+        
+        <span class="onelineComment">// Create test conversion</span>
+        VWFConvertLead aLeadPlugin = <span class="keyword">new</span> VWFConvertLead();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; outputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+
+        inputParams.put(<span class="string">'LeadID'</span>,testLead.<span class="keyword">ID</span>);
+        inputParams.put(<span class="string">'ConvertedStatus'</span>, 
+           convertStatus.MasterLabel);
+
+        Process.PluginRequest request = <span class="keyword">new</span> 
+           Process.PluginRequest(inputParams);
+        Process.PluginResult result;
+        result = aLeadPlugin.invoke(request);
+        
+        Lead aLead = [select name, id, isConverted 
+                       from Lead where id = :testLead.<span class="keyword">ID</span>];
+        System.Assert(aLead.isConverted);
+        
+    }
+
+     <span class="multilineComment">/*
+      * This tests lead conversion with 
+      * the Account ID specified.
+      */</span>
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> basicTestwithAccount() {
+
+        <span class="onelineComment">// Create test lead</span>
+        Lead testLead = <span class="keyword">new</span> Lead(
+            Company=<span class="string">'Test Lead'</span>,FirstName=<span class="string">'John'</span>,LastName=<span class="string">'Doe'</span>);
+        <span class="statement">insert</span> testLead;
+        
+        Account testAccount = <span class="keyword">new</span> Account(name=<span class="string">'Test Account'</span>);
+        <span class="statement">insert</span> testAccount;
+    
+           <span class="onelineComment">// System.debug('ACCOUNT BEFORE' + testAccount.ID);</span>
+
+        LeadStatus convertStatus = [Select Id, MasterLabel 
+                    from LeadStatus where IsConverted=<span class="keyword">true</span> limit 1]; 
+        
+        <span class="onelineComment">// Create test conversion</span>
+        VWFConvertLead aLeadPlugin = <span class="keyword">new</span> VWFConvertLead();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; outputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+
+        inputParams.put(<span class="string">'LeadID'</span>,testLead.<span class="keyword">ID</span>);
+        inputParams.put(<span class="string">'AccountID'</span>,testAccount.<span class="keyword">ID</span>);
+        inputParams.put(<span class="string">'ConvertedStatus'</span>,
+            convertStatus.MasterLabel);
+
+        Process.PluginRequest request = <span class="keyword">new</span> 
+            Process.PluginRequest(inputParams);
+        Process.PluginResult result;
+        result = aLeadPlugin.invoke(request);
+        
+        Lead aLead = 
+            [select name, id, isConverted, convertedAccountID 
+             from Lead where id = :testLead.<span class="keyword">ID</span>];
+        System.Assert(aLead.isConverted);
+        <span class="onelineComment">//System.debug('ACCOUNT AFTER' + aLead.convertedAccountID);</span>
+        System.AssertEquals(testAccount.<span class="keyword">ID</span>, aLead.convertedAccountID);
+    }
+
+    <span class="multilineComment">/*
+     * This tests lead conversion with the Account ID specified.
+    */</span>
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> basicTestwithAccounts() {
+
+        <span class="onelineComment">// Create test lead</span>
+        Lead testLead = <span class="keyword">new</span> Lead(
+            Company=<span class="string">'Test Lead'</span>,FirstName=<span class="string">'John'</span>,LastName=<span class="string">'Doe'</span>);
+        <span class="statement">insert</span> testLead;
+        
+        Account testAccount1 = <span class="keyword">new</span> Account(name=<span class="string">'Test Lead'</span>);
+        <span class="statement">insert</span> testAccount1;
+        Account testAccount2 = <span class="keyword">new</span> Account(name=<span class="string">'Test Lead'</span>);
+        <span class="statement">insert</span> testAccount2;
+
+           <span class="onelineComment">// System.debug('ACCOUNT BEFORE' + testAccount.ID);</span>
+
+        LeadStatus convertStatus = [Select Id, MasterLabel 
+            from LeadStatus where IsConverted=<span class="keyword">true</span> limit 1]; 
+        
+        <span class="onelineComment">// Create test conversion</span>
+        VWFConvertLead aLeadPlugin = <span class="keyword">new</span> VWFConvertLead();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; outputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+
+        inputParams.put(<span class="string">'LeadID'</span>,testLead.<span class="keyword">ID</span>);
+        inputParams.put(<span class="string">'ConvertedStatus'</span>,
+            convertStatus.MasterLabel);
+
+        Process.PluginRequest request = <span class="keyword">new</span> 
+            Process.PluginRequest(inputParams);
+        Process.PluginResult result;
+        result = aLeadPlugin.invoke(request);
+        
+        Lead aLead = 
+            [select name, id, isConverted, convertedAccountID 
+            from Lead where id = :testLead.<span class="keyword">ID</span>];
+        System.Assert(aLead.isConverted);
+    }
+
+
+     <span class="multilineComment">/*
+      * -ve Test
+      */</span>    
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> errorTest() {
+
+        <span class="onelineComment">// Create test lead</span>
+        <span class="onelineComment">// Lead testLead = new Lead(Company='Test Lead',</span>
+        <span class="onelineComment">//   FirstName='John',LastName='Doe');</span>
+        LeadStatus convertStatus = [Select Id, MasterLabel 
+            from LeadStatus where IsConverted=<span class="keyword">true</span> limit 1]; 
+        
+        <span class="onelineComment">// Create test conversion</span>
+        VWFConvertLead aLeadPlugin = <span class="keyword">new</span> VWFConvertLead();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; outputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        inputParams.put(<span class="string">'LeadID'</span>,<span class="string">'00Q7XXXXxxxxxxx'</span>);
+        inputParams.put(<span class="string">'ConvertedStatus'</span>,convertStatus.MasterLabel);
+
+        Process.PluginRequest request = <span class="keyword">new</span> 
+            Process.PluginRequest(inputParams);
+        Process.PluginResult result;
+        <span class="statement">try</span> {
+            result = aLeadPlugin.invoke(request);    
+        }
+        <span class="statement">catch</span> (Exception e) {
+          System.debug(<span class="string">'EXCEPTION'</span> + e);
+          System.AssertEquals(1,1);
+        }
+        
+    }
+    
+    
+     <span class="multilineComment">/*
+      * This tests the describe() method
+      */</span> 
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> describeTest() {
+
+        VWFConvertLead aLeadPlugin = 
+            <span class="keyword">new</span> VWFConvertLead();
+        Process.PluginDescribeResult result = 
+            aLeadPlugin.describe();
+        
+        System.AssertEquals(
+            result.inputParameters.size(), 8);
+        System.AssertEquals(
+            result.OutputParameters.size(), 3);
+        
+     }
+
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,148 @@
+<a name="apex_classes_restful_http"><!-- --></a><h1 class="helpHead1">HTTP Classes</h1><div class="body">
+        <p class="p">These classes expose the HTTP request and response functionality.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_http.htm" target="_blank"><samp class="codeph apex_code">Http
+                        Class</samp></a>. Use this class to initiate an HTTP request and
+                response.</li>
+
+            <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm" target="_blank">HttpRequest Class</a>: Use this class to
+                programmatically create HTTP requests like GET, POST, PATCH, PUT, and DELETE. </li>
+
+            <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm" target="_blank">HttpResponse Class</a>: Use this class to
+                handle the HTTP response returned by <samp class="codeph apex_code">HTTP</samp>.</li>
+
+        </ul>
+
+        <div class="p">The <samp class="codeph apex_code">HttpRequest</samp> and <samp class="codeph apex_code">HttpResponse</samp> classes support these elements.<ul class="ul bulletList">
+                <li class="li">HttpRequest<ul class="ul bulletList">
+                        <li class="li">HTTP request types, such as GET, POST, PATCH, PUT, DELETE, TRACE,
+                            CONNECT, HEAD, and OPTIONS</li>
+
+                        <li class="li">Request headers if needed</li>
+
+                        <li class="li">Read and connection timeouts</li>
+
+                        <li class="li">Redirects if needed</li>
+
+                        <li class="li">Content of the message body</li>
+
+                    </ul>
+</li>
+
+                <li class="li">
+<samp class="codeph apex_code">HttpResponse</samp><ul class="ul bulletList">
+                        <li class="li">The HTTP status code</li>
+
+                        <li class="li">Response headers if needed</li>
+
+                        <li class="li">Content of the response body</li>
+
+                    </ul>
+</li>
+
+            </ul>
+</div>
+
+        <p class="p">This example makes an HTTP GET request to the external server passed to the <samp class="codeph apex_code">getCalloutResponseContents</samp> method in the
+                <var class="keyword varname">url</var> parameter. This example also accesses the body of the
+            returned response.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> HttpCalloutSample {
+
+  <span class="onelineComment">// Pass in the endpoint to be used using the string url</span>
+  <span class="keyword">public</span> <span class="keyword">String</span> getCalloutResponseContents(<span class="keyword">String</span> url) {
+
+    <span class="onelineComment">// Instantiate a new Http object</span>
+    Http h = <span class="keyword">new</span> Http();
+
+     <span class="onelineComment">// Instantiate a new HTTP request, specify the method (GET) as well as the endpoint</span>
+    HttpRequest req = <span class="keyword">new</span> HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod(<span class="string">'GET'</span>);
+
+    <span class="onelineComment">// Send the request, and return a response</span>
+    HttpResponse res = h.send(req);
+    <span class="statement">return</span> res.getBody();
+  }
+}
+</pre></div>
+
+        <p class="p" id="asyncCallout"><a name="asyncCallout"><!-- --></a>The previous example runs synchronously, meaning no further processing
+            happens until the external web service returns a response. Alternatively, you can use
+            the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_future.htm" title="Use the Future annotation to identify methods that run asynchronously. A future method runs when Salesforce has available resources.">@future annotation</a> to make the
+            callout run asynchronously.</p>
+
+        <p class="p">This example makes an HTTP POST request to the external server passed to the <samp class="codeph apex_code">getPostCalloutResponseContents</samp> method in the
+                <var class="keyword varname">url</var> parameter. Replace <var class="keyword varname">Your_JSON_Content</var> with
+            the JSON content that you want to send in the callout.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> HttpPostCalloutSample {
+
+  <span class="onelineComment">// Pass in the endpoint to be used using the string url</span>
+  <span class="keyword">public</span> <span class="keyword">String</span> getPostCalloutResponseContents(<span class="keyword">String</span> url) {
+
+    <span class="onelineComment">// Instantiate a new Http object</span>
+    Http h = <span class="keyword">new</span> Http();
+
+    <span class="onelineComment">// Instantiate a new HTTP request</span>
+    <span class="onelineComment">// Specify request properties such as the endpoint, the POST method, etc. </span>
+    HttpRequest req = <span class="keyword">new</span> HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod(<span class="string">'POST'</span>);
+    req.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+    req.setBody(<span class="string">'{</span><var class="keyword varname">Your_JSON_Content</var>}<span class="string">');
+</span>
+    <span class="onelineComment">// Send the request, and return a response</span>
+    HttpResponse res = h.send(req);
+    <span class="statement">return</span> res.getBody();
+  }
+}
+</pre></div>
+
+        <p class="p">To access an external server from an endpoint or a redirect endpoint, add the remote site
+            to a list of authorized remote sites. Log in to Salesforce and from Setup, in the Quick
+            Find box, enter <kbd class="ph userinput">Remote Site Settings</kbd>, and then select
+                <strong class="ph uicontrol">Remote Site Settings</strong>.</p>
+
+        <p class="p">Use the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_xml_dom.htm" title="Apex provides classes that enable you to work with XML content using the DOM (Document Object Model).">XML classes</a> or <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json_overview.htm" title="JavaScript Object Notation (JSON) support in Apex enables the serialization of Apex objects into JSON format and the deserialization of serialized JSON content.">JSON classes</a> to parse XML or JSON content in the
+            body of a request created by <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm" target="_blank"><samp class="codeph apex_code">HttpRequest</samp></a>, or a response accessed by <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm" target="_blank"><samp class="codeph apex_code">HttpResponse</samp></a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Considerations</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">The AJAX proxy handles redirects and authentication challenges (401/407
+                    responses) automatically. For more information about the AJAX proxy, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.ajax.meta/ajax/sforce_api_ajax_queryresultiterator.htm#ajax_proxy" target="_blank" title="HTML (New Window)">AJAX Toolkit
+                    documentation</a>.</li>
+
+                <li class="li">You can set the endpoint as a named credential URL. A named credential URL
+                    contains the scheme <samp class="codeph nolang">callout:</samp>, the name of
+                    the named credential, and an optional path. For example: <samp class="codeph nolang">callout:</samp><var class="keyword varname">My_Named_Credential</var><samp class="codeph nolang">/</samp><var class="keyword varname">some_path</var>. A named
+                    credential specifies the URL of a callout endpoint and its required
+                    authentication parameters in one definition. Salesforce manages all
+                    authentication for Apex callouts that specify a named credential as the callout
+                    endpoint so that your code doesn’t have to. You can also skip remote site
+                    settings, which are otherwise required for callouts to external sites, for the
+                    site defined in the named credential. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" target="_blank">Named Credentials as Callout
+                    Endpoints</a>.</li>
+
+                <li class="li">When you set a request body in the callout, set the method to <samp class="codeph nolang">POST</samp>. If you set a request body and the request
+                    method is <samp class="codeph nolang">GET</samp>, a <samp class="codeph nolang">POST</samp> request is performed.</li>
+
+                <li class="li">Callouts are blocked if you have pending uncommitted transactions from DML
+                    operations, queueable jobs (that are queued with <samp class="codeph ">System.enqueueJob</samp>), <samp class="codeph ">Database.executeBatch</samp>, or future methods.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing.htm" title="Testing HTTP Callouts">Next →</a></li>
+</ul></div>
+</div>

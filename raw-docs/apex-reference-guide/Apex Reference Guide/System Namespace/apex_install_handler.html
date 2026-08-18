@@ -1,0 +1,258 @@
+<a name="apex_install_handler"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1" id="InstallHandlerInterface-04F7C89C">
+<a name="InstallHandlerInterface-04F7C89C"><!-- --></a>InstallHandler Interface</h1>
+
+  
+  
+  <div class="body">
+<div class="shortdesc">Enables custom code to run after a managed package installation or upgrade.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p" id="apex_install_handler_p1"><a name="apex_install_handler_p1"><!-- --></a>App developers can implement this interface to specify Apex
+        code that runs automatically after a subscriber installs or upgrades a managed package. The
+        package install or upgrade can be customized based on details of the subscriber’s
+        organization. For instance, you can use the script to populate custom settings, create
+        sample data, send an email to the installer, notify an external system, or kick off a batch
+        operation to populate a new field across a large set of data.</p>
+
+      <p class="p">The post install script is invoked after tests have been run, and is subject to default
+        governor limits. It runs as a special system user that represents your package, so all
+        operations performed by the script appear to be done by your package. You can access this
+        user by using UserInfo. You only see this user at runtime, not while running tests. </p>
+
+      <p class="p">If the script fails, the install or upgrade is aborted. Any errors in the script are
+        emailed to the user specified in the <strong class="ph uicontrol">Notify on Apex Error</strong> field of
+        the package. If no user is specified, the install or upgrade details are  unavailable. </p>
+
+      <div class="p">The post install script has the following additional properties.<ul class="ul bulletList">
+          <li class="li">It can initiate batch, scheduled, and future jobs.</li>
+
+          <li class="li">It can’t access Session IDs.</li>
+
+          <li class="li">It can only perform callouts using an async operation. The callout occurs after the
+            script is run and the install is complete and committed.</li>
+
+          <li class="li">It can’t call another Apex class in the package if that Apex class uses the <samp class="codeph nolang">with sharing</samp> keyword. This keyword can prevent the
+            package from successfully installing. To learn more, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">Apex Developer Guide</a>.</li>
+
+        </ul>
+</div>
+
+      <div class="p">The <samp class="codeph apex_code">InstallHandler</samp> interface has a single method
+        called <samp class="codeph apex_code">onInstall</samp>, which specifies the actions to be
+        performed on install or
+        upgrade.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">interface</span> InstallHandler {
+  <span class="keyword">void</span> onInstall(InstallContext context)
+};
+</pre></div>
+</div>
+
+      <div class="p">The <samp class="codeph apex_code">onInstall</samp> method takes a context object as its
+        argument, which provides the following information.<ul class="ul bulletList">
+          <li class="li">The org ID of the organization in which the installation takes place.</li>
+
+          <li class="li">The user ID of the user who initiated the installation.</li>
+
+          <li class="li">The version number of the previously installed package (specified using the <samp class="codeph apex_code">Version</samp> class). The version is always a three-part
+            number, such as 1.2.0.</li>
+
+          <li class="li">Whether the installation is an upgrade.</li>
+
+          <li class="li">Whether the installation is a push.</li>
+
+        </ul>
+</div>
+
+      <div class="p">The context argument is an object whose type is the <samp class="codeph apex_code">InstallContext</samp> interface. This interface is automatically implemented by the
+        system. The following definition of the <samp class="codeph apex_code">InstallContext</samp> interface shows the methods you can call on the context
+        argument.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">interface</span> InstallContext { 
+  <span class="keyword">ID</span> organizationId();
+  <span class="keyword">ID</span> installerId();
+  <span class="keyword">Boolean</span> isUpgrade();
+  <span class="keyword">Boolean</span> isPush(); 
+  Version previousVersion();
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_install_handler.htm#apex_System_InstallHandler_methods">InstallHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_install_handler.htm#apex_install_handler_example">InstallHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_InstallHandler_methods">
+<a name="apex_System_InstallHandler_methods"><!-- --></a>
+<h2 class="helpHead2">InstallHandler Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">InstallHandler</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_install_handler.htm#apex_System_InstallHandler_onInstall">onInstall(context)</a></strong><br>
+Specifies the actions to be performed on install/upgrade.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_InstallHandler_onInstall">
+<a name="apex_System_InstallHandler_onInstall"><!-- --></a>
+<h3 class="helpHead3">onInstall(context)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies the actions to be performed on install/upgrade.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void onInstall(InstallContext context)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>: Type: System.InstallContext</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_install_handler_example">
+<a name="apex_install_handler_example"><!-- --></a>
+<h2 class="helpHead2" id="InstallHandlerInterface-04F7C89C">
+<a name="InstallHandlerInterface-04F7C89C"><!-- --></a>InstallHandler Example Implementation</h2>
+
+
+<div class="body">
+ <div class="section">
+<div class="p">The following sample post install script performs
+      these actions on package install/upgrade.<ul class="ul bulletList">
+        <li class="li">
+          <p class="p">If the previous version is null, that is, the package is being installed for the first
+            time, the script:</p>
+
+          <ul class="ul bulletList">
+            <li class="li">Creates a new Account called Newco and verifies that it was created.</li>
+
+            <li class="li">Creates a new instance of the custom object Survey, called Client Satisfaction
+              Survey.</li>
+
+            <li class="li">Sends an email message to the subscriber confirming installation of the
+              package.</li>
+
+          </ul>
+
+        </li>
+
+        <li class="li">If the previous version is 1.0, the script creates a new instance of Survey called
+          ”Upgrading from Version 1.0”.</li>
+
+        <li class="li">If the package is an upgrade, the script creates a new instance of Survey called ”Sample
+          Survey during Upgrade”.</li>
+
+        <li class="li">If the upgrade is being pushed, the script creates a new instance of Survey called
+          ”Sample Survey during Push”.</li>
+
+      </ul>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> PostInstallClass <span class="keyword">implements</span> InstallHandler {
+  <span class="keyword">global</span> <span class="keyword">void</span> onInstall(InstallContext context) {
+    <span class="statement">if</span>(context.previousVersion() == <span class="keyword">null</span>) {
+      Account a = <span class="keyword">new</span> Account(name=<span class="string">'Newco'</span>);
+      <span class="statement">insert</span>(a);
+      
+      Survey__c obj = <span class="keyword">new</span> Survey__c(name=<span class="string">'Client Satisfaction Survey'</span>);
+      <span class="statement">insert</span> obj;
+               
+      User u = [Select Id, Email from User where Id =:context.installerID()];   
+      <span class="keyword">String</span> toAddress= u.Email;
+      <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[]{toAddress};
+      Messaging.SingleEmailMessage mail = 
+        <span class="keyword">new</span> Messaging.SingleEmailMessage();
+      mail.setToAddresses(toAddresses);
+      mail.setReplyTo(<span class="string">'support@package.dev'</span>);
+      mail.setSenderDisplayName(<span class="string">'My Package Support'</span>);
+      mail.setSubject(<span class="string">'Package install successful'</span>);
+      mail.setPlainTextBody(<span class="string">'Thanks for installing the package.'</span>);
+      Messaging.sendEmail(<span class="keyword">new</span> Messaging.Email[] { mail });
+      }
+    <span class="statement">else</span>
+      <span class="statement">if</span>(context.previousVersion().compareTo(<span class="keyword">new</span> Version(1,0)) == 0) {
+      Survey__c obj = <span class="keyword">new</span> Survey__c(name=<span class="string">'Upgrading from Version 1.0'</span>);
+      <span class="statement">insert</span>(obj);
+      }
+    <span class="statement">if</span>(context.isUpgrade()) {
+      Survey__c obj = <span class="keyword">new</span> Survey__c(name=<span class="string">'Sample Survey during Upgrade'</span>);
+      <span class="statement">insert</span> obj;
+      }
+    <span class="statement">if</span>(context.isPush()) {
+      Survey__c obj = <span class="keyword">new</span> Survey__c(name=<span class="string">'Sample Survey during Push'</span>);
+      <span class="statement">insert</span> obj;
+      }
+    }
+  }
+</pre></div>
+</div>
+<div class="p">You can test a post install script using the new
+        <samp class="codeph apex_code">testInstall</samp> method of the <samp class="codeph apex_code">Test</samp> class. This method takes the following arguments.<ul class="ul bulletList">
+        <li class="li">A class that implements the <samp class="codeph apex_code">InstallHandler</samp>
+          interface.</li>
+
+        <li class="li">A <samp class="codeph apex_code">Version</samp> object that specifies the version
+          number of the existing package.</li>
+
+        <li class="li">An optional Boolean value that is <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the
+          installation is a push. The default is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+
+      </ul>
+</div>
+<div class="p">This sample shows how to test a post install script
+      implemented in the <samp class="codeph apex_code">PostInstallClass</samp> Apex
+      class.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">static</span> <span class="keyword">void</span> testInstallScript() {
+  PostInstallClass postinstall = <span class="keyword">new</span> PostInstallClass();
+    Test.testInstall(postinstall, <span class="keyword">null</span>);
+    Test.testInstall(postinstall, <span class="keyword">new</span> Version(1,0), <span class="keyword">true</span>);
+    List&lt;Account&gt; a = [Select id, name from Account where name =<span class="string">'Newco'</span>];
+    System.assertEquals(1, a.size(), <span class="string">'Account not found'</span>);
+  }
+</pre></div>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>

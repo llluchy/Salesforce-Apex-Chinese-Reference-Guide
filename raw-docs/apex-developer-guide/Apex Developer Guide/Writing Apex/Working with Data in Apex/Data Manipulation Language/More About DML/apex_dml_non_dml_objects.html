@@ -1,0 +1,80 @@
+<a name="apex_dml_non_dml_objects"><!-- --></a><h1 class="helpHead1">sObjects That Don’t Support DML Operations</h1><div class="body">
+      <p class="p">Your organization contains standard objects provided by Salesforce and custom objects that
+         you created. These objects can be accessed in Apex as instances of the sObject data type.
+         You can query these objects and perform DML operations on them. However, some standard
+         objects don’t support DML operations although you can still obtain them in queries. The
+         following is a non-exhaustive list of such objects:</p>
+
+      <ul class="ul bulletList">
+         <li class="li">AccountTerritoryAssignmentRule</li>
+
+         <li class="li">AccountTerritoryAssignmentRuleItem</li>
+
+         <li class="li">ApexComponent</li>
+
+         <li class="li">ApexPage</li>
+
+         <li class="li">BusinessHours</li>
+
+         <li class="li">BusinessProcess</li>
+
+         <li class="li">CategoryNode</li>
+
+         <li class="li">CurrencyType</li>
+
+         <li class="li">DatedConversionRate</li>
+
+         <li class="li">NetworkMember (allows <samp class="codeph nolang">update</samp> only)</li>
+
+         <li class="li">ProcessInstance</li>
+
+         <li class="li">Profile</li>
+
+         <li class="li">RecordType</li>
+
+         <li class="li">SelfServiceUser</li>
+
+         <li class="li">StaticResource</li>
+
+         <li class="li">Territory2</li>
+
+         <li class="li">UserAccountTeamMember </li>
+
+         <li class="li">UserPreference</li>
+
+         <li class="li">UserTerritory</li>
+
+         <li class="li">WebLink</li>
+
+      </ul>
+
+      <div class="section">
+         <p class="p">The following are special cases of DML operations on objects.</p>
+
+         <ul class="ul bulletList">
+            <li class="li">If an Account record has a record type of Person Account, the Name field can’t be
+               modified with DML operations.</li>
+
+            <li class="li">All standard and custom objects can also be accessed through the SOAP API.
+               ProcessInstance is an exception. You can’t create, update, or delete
+               ProcessInstance in the SOAP API.</li>
+
+            <li class="li">DML operations aren't supported on Data Cloud data model objects (DMOs). For details
+               on using Apex with Data Cloud objects, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataCloudInApex.htm" target="_blank">Data Cloud in Apex</a>. </li>
+
+            <li class="li">To determine if DML is supported on your specific object, use the <samp class="codeph apex_code">Schema.describeSObjects()</samp>method as shown in this
+               sample code.
+               <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain id="codeblock_sxq_jrv_52c"><a name="codeblock_sxq_jrv_52c"><!-- --></a>// This example describes the ApexPage object. Replace it with your
+// objects(s) in the results list to check if DML is permitted.
+List&lt;Schema.DescribeSobjectResult&gt; results = Schema.describeSObjects(new List&lt;string&gt;    {'ApexPage'}, SObjectDescribeOptions.DEFERRED);
+DescribeSObjectResult d = results[0];
+System.debug('isCreateable():' + d.isCreateable());
+System.debug('isUpdateable():' + d.isUpdateable());
+System.debug('isQueryable(): ' + d.isQueryable());</pre></div>
+</li>
+
+         </ul>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links"></div>

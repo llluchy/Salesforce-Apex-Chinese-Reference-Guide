@@ -1,0 +1,28 @@
+<a name="connectapi_examples_post_comment_feed_element_2"><!-- --></a><h1 class="helpHead1">Post a Comment with a Mention</h1><div class="body refbody">
+<div class="shortdesc">Make call or use the ConnectApiHelper repository to post a comment with a
+    mention.</div>
+
+    <div class="section"><div class="p">You can post comments with mentions two ways. Use the <a class="xref" href="https://github.com/forcedotcom/ConnectApiHelper" target="_blank" title="HTML (New Window)">ConnectApiHelper repository on GitHub</a> to write a single line
+      of code, or use this example, which calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postCommentToFeedElement_2" target="_blank"><samp class="codeph apex_code">postCommentToFeedElement(communityId, feedElementId, comment,
+          feedElementFileUpload)</samp></a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityId = <span class="keyword">null</span>;
+<span class="keyword">String</span> feedElementId = <span class="string">'0D5D0000000KtW3'</span>;
+
+ConnectApi.CommentInput commentInput = <span class="keyword">new</span> ConnectApi.CommentInput();
+ConnectApi.MentionSegmentInput mentionSegmentInput = <span class="keyword">new</span> ConnectApi.MentionSegmentInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+textSegmentInput.text = <span class="string">'Does anyone in this group have an idea? '</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+mentionSegmentInput.id = <span class="string">'005D00000000oOT'</span>;
+messageBodyInput.messageSegments.add(mentionSegmentInput);
+
+commentInput.body = messageBodyInput;
+
+ConnectApi.Comment commentRep = ConnectApi.ChatterFeeds.postCommentToFeedElement(communityId, feedElementId, commentInput, <span class="keyword">null</span>);</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

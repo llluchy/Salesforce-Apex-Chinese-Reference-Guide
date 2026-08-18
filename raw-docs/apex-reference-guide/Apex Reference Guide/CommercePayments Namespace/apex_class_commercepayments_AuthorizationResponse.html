@@ -1,0 +1,470 @@
+<a name="apex_class_commercepayments_AuthorizationResponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">AuthorizationResponse Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Response sent by the payment gateway adapter for an authorization
+            service.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">
+<p class="p">The constructor of this class takes no arguments. For
+                example:</p>
+<samp class="codeph apex_code">CommercePayments.AuthorizationResponse
+                authr = <span class="keyword">new</span> CommercePayments.AuthorizationResponse();</samp><p class="p">Contains information about the payment gateway’s response following an
+                authorization transaction. The gateway adapter uses the payment gateway’s response
+                to populate the <samp class="codeph apex_code">AuthorizationResponse</samp>
+                fields. The payments platform uses the information from this class to construct the
+                authorization gateway response shown to the user.</p>
+</div>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">private</span> commercepayments.GatewayResponse createAuthResponse(HttpResponse response, <span class="keyword">Double</span> amount) {
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; mapOfResponseValues = (Map
+                            &lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) JSON.deserializeUntyped(response.getBody());
+
+        commercepayments.AuthorizationResponse authResponse = <span class="keyword">new</span> commercepayments.AuthorizationResponse();
+
+        <span class="keyword">String</span> resultCode = (<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'resultCode'</span>);
+
+        <span class="statement">if</span>(resultCode != <span class="keyword">null</span>){
+            system.debug(<span class="string">'Response - success'</span>);
+            <span class="statement">if</span>(resultCode.equals(<span class="string">'Authorised'</span>)){
+                system.debug(<span class="string">'status - authorised'</span>);
+                authResponse.setGatewayAuthCode((<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'authCode'</span>));
+                authResponse.setSalesforceResultCodeInfo(<span class="keyword">new</span> commercepayments.SalesforceResultCodeInfo(commercepayments.SalesforceResultCode.Success));
+            } <span class="statement">else</span> {
+                <span class="onelineComment">//Sample returns 200 with refused status in some cases</span>
+                system.debug(<span class="string">'status - refused'</span>);
+                authResponse.setGatewayResultCodeDescription((<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'refusalReason'</span>));
+                authResponse.setSalesforceResultCodeInfo(<span class="keyword">new</span> commercepayments.SalesforceResultCodeInfo(commercepayments.SalesforceResultCode.Decline));
+            }
+            authResponse.setGatewayReferenceNumber((<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'pspReference'</span>));
+            authResponse.setAmount(amount);
+            authResponse.setGatewayDate(system.now());
+            <span class="statement">return</span> authResponse;
+        } <span class="statement">else</span> {
+            system.debug(<span class="string">'Response - failed'</span>);
+            system.debug(<span class="string">'Validation error'</span>);
+            <span class="keyword">String</span> statusCode = (<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'errorType'</span>);
+            <span class="keyword">String</span> message = (<span class="keyword">String</span>)mapOfResponseValues.get(<span class="string">'message'</span>);
+            commercepayments.GatewayErrorResponse error = <span class="keyword">new</span> commercepayments.GatewayErrorResponse(statusCode, message);
+            <span class="statement">return</span> error;
+        }
+    }</pre></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_methods">AuthorizationResponse Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_methods">
+<a name="apex_commercepayments_AuthorizationResponse_methods"><!-- --></a><h2 class="helpHead2">AuthorizationResponse Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">AuthorizationResponse</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setAmount">setAmount(amount)</a></strong><br>
+Sets the amount of the authorization. Must be a non-zero     value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setAsync">setAsync(async)</a></strong><br>
+Indicates whether the gateway response is received asynchronously (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). When set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the authorize       payment method remains in a pending state until the async notification is     received.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setAuthorizationExpirationDate">setAuthorizationExpirationDate(authExpDate)</a></strong><br>
+Sets the expiration date of the authorization     request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayAuthCode">setGatewayAuthCode(gatewayAuthCode)</a></strong><br>
+Sets the authorization code that the gateway returned. Maximum length       of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayAvsCode">setGatewayAvsCode(gatewayAvsCode)</a></strong><br>
+Sets the AVS (address verification system) result code information       that the gateway returned. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayDate">setGatewayDate(gatewayDate)</a></strong><br>
+Sets the date that the authorization occurred. Some gateways don’t       send this value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayMessage">setGatewayMessage(gatewayMessage)</a></strong><br>
+Sets error messages that the gateway returned for the authorization       request. Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayReferenceDetails">setGatewayReferenceDetails(gatewayReferenceDetails)</a></strong><br>
+Stores  data that you can use for subsequent authorizations. You can       use any data that isn’t normalized in financial entities. This field has a maximum length of       1000 characters and can store data as JSON or XML. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayReferenceNumber">setGatewayReferenceNumber(gatewayReferenceNumber)</a></strong><br>
+Sets the unique gateway reference number for the transaction that the       gateway returned. Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayResultCode">setGatewayResultCode(gatewayResultCode)</a></strong><br>
+Sets a gateway-specific result code. The code can be mapped to a       Salesforce-specific result code. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setGatewayResultCodeDescription">setGatewayResultCodeDescription(gatewayResultCodeDescription)</a></strong><br>
+Sets a description of the gateway-specific result code that a payment       gateway returned. Maximum length of 1000 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setPaymentMethodResponse">setPaymentMethodTokenizationResponse(paymentMethodTokenizationResponse)</a></strong><br>
+Sets information from the gateway about the tokenized payment       method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationResponse.htm#apex_commercepayments_AuthorizationResponse_setSalesforceResultCodeInfo">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</a></strong><br>
+Sets the Salesforce-specific result code information. Payment gateways       have many response codes for payment calls. Salesforce uses the result code information to map       payment gateway codes to a predefined set of standard Salesforce result     codes.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setAmount">
+<a name="apex_commercepayments_AuthorizationResponse_setAmount"><!-- --></a><h3 class="helpHead3">setAmount(amount)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the amount of the authorization. Must be a non-zero
+    value.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAmount(<span class="keyword">Double</span> amount)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">amount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setAsync">
+<a name="apex_commercepayments_AuthorizationResponse_setAsync"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setAsync(async)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the gateway response is received asynchronously (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). When set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the authorize
+      payment method remains in a pending state until the async notification is
+    received.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setAsync(Boolean async)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">async</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setAuthorizationExpirationDate">
+<a name="apex_commercepayments_AuthorizationResponse_setAuthorizationExpirationDate"><!-- --></a><h3 class="helpHead3">setAuthorizationExpirationDate(authExpDate)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the expiration date of the authorization
+    request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAuthorizationExpirationDate(<span class="keyword">Datetime</span>
+          authExpDate)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">authExpDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayAuthCode">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayAuthCode"><!-- --></a><h3 class="helpHead3">setGatewayAuthCode(gatewayAuthCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the authorization code that the gateway returned. Maximum length
+      of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayAuthCode(<span class="keyword">String</span>
+        gatewayAuthCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayAuthCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The authorization code returned by the gateway.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayAvsCode">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayAvsCode"><!-- --></a><h3 class="helpHead3">setGatewayAvsCode(gatewayAvsCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the AVS (address verification system) result code information
+      that the gateway returned. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayAvsCode(<span class="keyword">String</span> gatewayAvsCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayAvsCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Used to verify</p>
+<p class="p">the address mapped to a payment method when the payments platform
+            requests tokenization from the payment gateway.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayDate">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayDate"><!-- --></a><h3 class="helpHead3">setGatewayDate(gatewayDate)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the date that the authorization occurred. Some gateways don’t
+      send this value.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayDate(<span class="keyword">Datetime</span> gatewayDate)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayMessage">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayMessage"><!-- --></a><h3 class="helpHead3">setGatewayMessage(gatewayMessage)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets error messages that the gateway returned for the authorization
+      request. Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayMessage(<span class="keyword">String</span> gatewayMessage)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayMessage</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayReferenceDetails">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayReferenceDetails"><!-- --></a><h3 class="helpHead3">setGatewayReferenceDetails(gatewayReferenceDetails)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores  data that you can use for subsequent authorizations. You can
+      use any data that isn’t normalized in financial entities. This field has a maximum length of
+      1000 characters and can store data as JSON or XML. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayReferenceDetails(<span class="keyword">String</span>
+          gatewayReferenceDetails)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceDetails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayReferenceNumber">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayReferenceNumber"><!-- --></a><h3 class="helpHead3">setGatewayReferenceNumber(gatewayReferenceNumber)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the unique gateway reference number for the transaction that the
+      gateway returned. Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayReferenceNumber(<span class="keyword">String</span>
+          gatewayReferenceNumber)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceNumber</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Unique authorization ID created by the payment gateway.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayResultCode">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayResultCode"><!-- --></a><h3 class="helpHead3">setGatewayResultCode(gatewayResultCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a gateway-specific result code. The code can be mapped to a
+      Salesforce-specific result code. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayResultCode(<span class="keyword">String</span>
+          gatewayResultCode)</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Gateway-specific result code.</p>
+<p class="p">Must be used to map a Salesforce-specific result code.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setGatewayResultCodeDescription">
+<a name="apex_commercepayments_AuthorizationResponse_setGatewayResultCodeDescription"><!-- --></a><h3 class="helpHead3">setGatewayResultCodeDescription(gatewayResultCodeDescription)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a description of the gateway-specific result code that a payment
+      gateway returned. Maximum length of 1000 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayResultCodeDescription(<span class="keyword">String</span>
+          gatewayResultCodeDescription)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCodeDescription</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Description of the gateway’s result code. Use this field to learn more about why the gateway
+            returned a certain result code.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setPaymentMethodResponse">
+<a name="apex_commercepayments_AuthorizationResponse_setPaymentMethodResponse"><!-- --></a>
+  <h3 class="helpHead3">setPaymentMethodTokenizationResponse(paymentMethodTokenizationResponse)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets information from the gateway about the tokenized payment
+      method.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setPaymentMethodTokenizationResponse(commercepayments.PaymentMethodTokenizationResponse
+          paymentMethodTokenizationResponse)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">paymentMethodTokenizationResponse</var></strong>: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationResponse.htm#apex_class_commercepayments_PaymentMethodTokenizationResponse" title="Gateway response sent by payment gateway adapters for the payment method tokenization request. The response includes the payment method’s token ID value.">PaymentMethodTokenizationResponse</a> Gateway response sent by payment gateway adapters for the payment method tokenization
+            request.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationResponse_setSalesforceResultCodeInfo">
+<a name="apex_commercepayments_AuthorizationResponse_setSalesforceResultCodeInfo"><!-- --></a><h3 class="helpHead3">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Salesforce-specific result code information. Payment gateways
+      have many response codes for payment calls. Salesforce uses the result code information to map
+      payment gateway codes to a predefined set of standard Salesforce result
+    codes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo
+          salesforceResultCodeInfo)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">salesforceResultCodeInfo</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SalesforceResultCodeInfo.htm#apex_class_commerce_payments_SalesforceResultCodeInfo" title="Stores Salesforce result code information from payment gateway adapters.">SalesforceResultCodeInfo</a></p>
+<p class="p">Description of the Salesforce result code value.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

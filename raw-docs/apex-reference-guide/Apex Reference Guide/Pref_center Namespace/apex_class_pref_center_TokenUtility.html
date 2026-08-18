@@ -1,0 +1,171 @@
+<a name="apex_class_pref_center_TokenUtility"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">TokenUtility Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Generate authentication tokens to access preference
+        forms.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<div class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_pref_center.htm" title="The Pref_center namespace provides an interface, classes, and methods to create and retrieve data in forms in Preference Manager. Preference Manager, previously called Preference Center, is a feature within the Privacy Center app.">Pref_center</a></div>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">Call the <samp class="codeph ">generateToken()</samp> method to generate a single
+                token for a specified Salesforce record ID:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Individual individual = [SELECT Id FROM Individual LIMIT 1];
+<span class="keyword">String</span> token = pref_center.TokenUtility.generateToken(individual.Id);
+<span class="onelineComment">// Do something with the token</span>
+System.debug(token)</pre></div>
+
+      <p class="p">Call the <samp class="codeph ">generateTokens()</samp> method to generate tokens in
+                bulk when given a list of Salesforce record IDs:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Id&gt; individualIds = <span class="keyword">new</span> List&lt;Id&gt;();
+<span class="onelineComment">// Get Ids of Individuals who have not opted out of tracking</span>
+<span class="statement">for</span> (Individual individual : [SELECT Id FROM Individual WHERE HasOptedOutTracking = <span class="keyword">false</span>]) {
+    individualIds.add(individual.Id);    
+}
+<span class="onelineComment">// Generate tokens for the list of Individual record Ids</span>
+Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; tokens = pref_center.TokenUtility.generateTokens(individualIds);
+<span class="keyword">String</span> firstIndividualId = individualIds[0];
+<span class="onelineComment">// The returned Map has the input record Id as key and the corresponding token as value</span>
+<span class="keyword">String</span> tokenForFirstIndividual = tokens.get(firstIndividualId);
+<span class="onelineComment">// Do something with the token</span>
+System.debug(tokenForFirstIndividual);</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_pref_center_TokenUtility.htm#apex_pref_center_TokenUtility_methods">TokenUtility Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_pref_center_TokenUtility_methods">
+<a name="apex_pref_center_TokenUtility_methods"><!-- --></a><h2 class="helpHead2">TokenUtility Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">TokenUtility</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_pref_center_TokenUtility.htm#apex_pref_center_TokenUtility_generateToken">generateToken(tokenValue, tokenType)</a></strong><br>
+Returns the authentication token for the specified token value using       the given token type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_pref_center_TokenUtility.htm#apex_pref_center_TokenUtility_generateToken_2">generateToken(tokenValue)</a></strong><br>
+Returns the authentication token for the specified token value using       the default <samp class="codeph apex_code">standard</samp> token type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_pref_center_TokenUtility.htm#apex_pref_center_TokenUtility_generateTokens">generateTokens(tokenValues, tokenType)</a></strong><br>
+Returns the authentication tokens in the form of a map, where the map       key is the input value to be tokenized and the map value is the corresponding token. The given       token type is used to generate the tokens.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_pref_center_TokenUtility.htm#apex_pref_center_TokenUtility_generateTokens_2">generateTokens(tokenValues)</a></strong><br>
+Returns the generated tokens in the form of a map. This method uses       the default standard token type to generate the tokens.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_pref_center_TokenUtility_generateToken">
+<a name="apex_pref_center_TokenUtility_generateToken"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">generateToken(tokenValue, tokenType)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the authentication token for the specified token value using
+      the given token type.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> generateToken(<span class="keyword">String</span> tokenValue, pref_center.TokenType tokenType)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenValue</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The value passed to <samp class="codeph ">LoadParameters.getRecordId()</samp> and <samp class="codeph apex_code">SubmitParameters.getRecordId()</samp>. Identifies the entity
+            that the preference form is acting on.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_pref_center_TokenType.htm" title="Defines the types of values supported by the TokenUtility methods.">pref_center.TokenType</a> Specifies the type of the value to be encrypted with authentication tokens.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_pref_center_TokenUtility_generateToken_2">
+<a name="apex_pref_center_TokenUtility_generateToken_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">generateToken(tokenValue)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the authentication token for the specified token value using
+      the default <samp class="codeph apex_code">standard</samp> token type.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> generateToken(<span class="keyword">String</span> tokenValue)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenValue</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Identifies the entity that the preference form is acting on. The value passed to
+              <samp class="codeph apex_code">LoadParameters.getRecordId() </samp>and <samp class="codeph apex_code">SubmitParameters.getRecordId()</samp>.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_pref_center_TokenUtility_generateTokens">
+<a name="apex_pref_center_TokenUtility_generateTokens"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">generateTokens(tokenValues, tokenType)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the authentication tokens in the form of a map, where the map
+      key is the input value to be tokenized and the map value is the corresponding token. The given
+      token type is used to generate the tokens.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; generateTokens(List&lt;<span class="keyword">String</span>&gt; tokenValues, pref_center.TokenType tokenType)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenValues</var></strong>: Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; The values passed to <samp class="codeph apex_code">LoadParameters.getRecordId()
+            </samp>and <samp class="codeph apex_code">SubmitParameters.getRecordId()</samp>.
+            Identifies the entity that the preference form is acting on. Contains multiple values to
+            be encrypted with authentication tokens.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_pref_center_TokenType.htm" title="Defines the types of values supported by the TokenUtility methods.">pref_center.TokenType</a> Specifies the type of the value to be encrypted with authentication tokens.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Map&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_pref_center_TokenUtility_generateTokens_2">
+<a name="apex_pref_center_TokenUtility_generateTokens_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">generateTokens(tokenValues)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the generated tokens in the form of a map. This method uses
+      the default standard token type to generate the tokens.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; generateTokens(List&lt;<span class="keyword">String</span>&gt; tokenValues)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenValues</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; The list of string values passed to <samp class="codeph apex_code">LoadParameters.getRecordId()</samp> and <samp class="codeph apex_code">SubmitParameters.getRecordId().</samp> Contains multiple values to be encrypted
+            with authentication tokens.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;, where the map key is the input value to be
+        tokenized and the map value is the corresponding token.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

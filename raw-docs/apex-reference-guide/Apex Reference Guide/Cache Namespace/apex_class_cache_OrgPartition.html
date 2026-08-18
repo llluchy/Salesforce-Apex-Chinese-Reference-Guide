@@ -1,0 +1,216 @@
+<a name="apex_class_cache_OrgPartition"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">OrgPartition Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Contains methods to manage cache values in the org cache of a specific partition.
+        Unlike the session cache, the org cache is not tied to any session. It’s available to the
+        org across requests and to all users.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_cache.htm" title="The Cache namespace contains methods for managing the platform cache.">Cache</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">This class extends <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Partition.htm#apex_class_cache_Partition" title="Base class of Cache.OrgPartition and Cache.SessionPartition. Use the subclasses to manage the cache partition for org caches and session caches.">Cache.Partition</a> and inherits all its non-static
+                methods. Utility methods for creating and validating keys aren’t supported and can
+                be called only from the <samp class="codeph apex_code">Cache.Partition</samp>
+                parent class. For a list of <samp class="codeph apex_code">Cache.Partition</samp>
+                methods, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Partition.htm#apex_cache_Partition_methods">Partition Methods</a>.</p>
+
+            <p class="p">To get an org partition, call <samp class="codeph apex_code">Cache.Org.getPartition</samp> and pass in a fully qualified partition name,
+                as follows.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Cache.OrgPartition orgPartition = Cache.Org.getPartition(<span class="string">'namespace.myPartition'</span>);</pre></div>
+
+            <p class="p">See <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Partition.htm#key_format_section">Cache Key Format for Partition
+                    Methods</a>.</p>
+
+            <p class="p">The org cache supports concurrent reads and writes across multiple simultaneous Apex
+                transactions, but the results can be indeterminate. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_platform_cache_limitations.htm" target="_blank">Platform Cache Considerations</a> in the
+                    <cite class="cite">Apex Developer Guide</cite>.</p>
+
+            <p class="p">Org cache operations are atomic transactions. If the Apex request that the cache
+                operations run in fails, then all cache operations in that request are rolled back.
+                See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_platform_cache_internals.htm" target="_blank">Platform Cache Internals</a> in the <cite class="cite">Apex Developer Guide</cite>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This class is the controller for a sample Visualforce page (shown in the subsequent
+                code sample). The controller shows how to use the methods of <samp class="codeph apex_code">Cache.OrgPartition</samp> to manage a cache value on a
+                particular partition. The controller takes inputs from the Visualforce page for the
+                partition name, key name for a counter, and initial counter value. The controller
+                contains default values for these inputs. When you click
+                    <strong class="ph uicontrol">Rerender</strong> on the Visualforce page, the <samp class="codeph apex_code">go()</samp> method is invoked and increases the counter
+                by one. When you click <strong class="ph uicontrol">Remove Key</strong>, the counter key is removed
+                from the cache. The counter value gets reset to its initial value when it’s re-added
+                to the cache.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If another user logs in and runs this sample, the user gets the cache values that
+                were last added or updated by the previous user. For example, if the counter value
+                was five, the next user sees the counter value as increased to six.</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> OrgPartitionController {
+  
+    <span class="onelineComment">// Name of a partition</span>
+    <span class="keyword">String</span> partitionInput = <span class="string">'local.myPartition'</span>;
+    <span class="onelineComment">// Name of the key</span>
+    <span class="keyword">String</span> counterKeyInput = <span class="string">'counter'</span>;
+    <span class="onelineComment">// Key initial value</span>
+    <span class="keyword">Integer</span> counterInitValue = 0;
+    <span class="onelineComment">// Org partition object</span>
+    Cache.OrgPartition orgPartition;
+               
+    <span class="onelineComment">// Constructor of the controller for the Visualforce page. </span>
+    <span class="keyword">public</span> OrgPartitionController() {  
+    }
+            
+    <span class="onelineComment">// Adds counter value to the cache.</span>
+    <span class="onelineComment">// This method is called when the Visualforce page loads.</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> init() {
+        <span class="onelineComment">// Create the partition instance based on the partition name</span>
+        orgPartition = getPartition();
+
+        <span class="onelineComment">// Create the partition instance based on the partition name</span>
+        <span class="onelineComment">// given in the Visualforce page or the default value.</span>
+        orgPartition = Cache.Org.getPartition(partitionInput);
+        
+        <span class="onelineComment">// Add counter to the cache with an initial value </span>
+        <span class="onelineComment">//  or increment it if it's already there.</span>
+        <span class="statement">if</span> (!orgPartition.contains(counterKeyInput)) {
+            orgPartition.put(counterKeyInput, counterInitValue);
+        } <span class="statement">else</span> {
+            orgPartition.put(counterKeyInput, getCounter() + 1);
+        }        
+    }
+        
+    <span class="onelineComment">// Returns the org partition based on the partition name</span>
+    <span class="onelineComment">// given in the Visualforce page or the default value.</span>
+    <span class="keyword">private</span> Cache.OrgPartition getPartition() {
+       <span class="statement">if</span> (orgPartition == <span class="keyword">null</span>) {
+            orgPartition = Cache.Org.getPartition(partitionInput);
+       }
+       
+       <span class="statement">return</span> orgPartition;
+     }
+        
+
+    <span class="onelineComment">// Return counter from the cache.</span>
+    <span class="keyword">public</span> <span class="keyword">Integer</span> getCounter() {
+        <span class="statement">return</span> (<span class="keyword">Integer</span>)getPartition().get(counterKeyInput);
+    }
+    
+    <span class="onelineComment">// Invoked by the Submit button to save input values</span>
+    <span class="onelineComment">//  supplied by the user.</span>
+    <span class="keyword">public</span> PageReference save() {
+        <span class="onelineComment">// Reset the initial key value in the cache</span>
+        getPartition().put(counterKeyInput, counterInitValue);
+
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+   
+    <span class="onelineComment">// Method invoked by the Rerender button on the Visualforce page.</span>
+    <span class="onelineComment">// Updates the values of various cached values.</span>
+    <span class="onelineComment">// Increases the values of counter and the MyData counter if those </span>
+    <span class="onelineComment">//   cache values are still in the cache.</span>
+    <span class="keyword">public</span> PageReference go() {
+        <span class="onelineComment">// Get the org partition object</span>
+        orgPartition = getPartition();
+        <span class="onelineComment">// Increase the cached counter value or set it to 0 </span>
+        <span class="onelineComment">//  if it's not cached.        </span>
+        <span class="statement">if</span> (orgPartition.contains(counterKeyInput)) {
+            orgPartition.put(counterKeyInput, getCounter() + 1);
+        } <span class="statement">else</span> {
+            orgPartition.put(counterKeyInput, counterInitValue);
+        }        
+    
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    
+    <span class="onelineComment">// Method invoked by the Remove button on the Visualforce page.</span>
+    <span class="onelineComment">// Removes the datetime cached value from the org cache.</span>
+    <span class="keyword">public</span> PageReference remove() {
+        getPartition().remove(counterKeyInput);
+
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    
+    <span class="onelineComment">// Get and set methods for accessing variables</span>
+    <span class="onelineComment">// that correspond to the input text fields on</span>
+    <span class="onelineComment">// the Visualforce page.</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getPartitionInput() {
+        <span class="statement">return</span> partitionInput;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">String</span> getCounterKeyInput() {
+        <span class="statement">return</span> counterKeyInput;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">Integer</span> getCounterInitValue() {
+        <span class="statement">return</span> counterInitValue;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setPartitionInput(<span class="keyword">String</span> partition) {
+        <span class="statement">this</span>.partitionInput = partition;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setCounterKeyInput(<span class="keyword">String</span> keyName) {
+        <span class="statement">this</span>.counterKeyInput = keyName;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setCounterInitValue(<span class="keyword">Integer</span> counterValue) {
+        <span class="statement">this</span>.counterInitValue = counterValue;
+    }
+}</pre></div>
+
+            <p class="p">This is the Visualforce page that corresponds to the <samp class="codeph apex_code">OrgPartitionController</samp> class.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"OrgPartitionController"</span><span class="attribute"> action=</span><span class="string">"{!init}"</span>&gt;
+
+    <span class="tag">&lt;apex:form</span> &gt;
+        <span class="tag">&lt;br/</span>&gt;Partition with Namespace Prefix: <span class="tag">&lt;apex:inputText</span><span class="attribute"> value=</span><span class="string">"{!partitionInput}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Counter Key Name: <span class="tag">&lt;apex:inputText</span><span class="attribute"> value=</span><span class="string">"{!counterKeyInput}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Counter Initial Value: <span class="tag">&lt;apex:inputText</span><span class="attribute"> value=</span><span class="string">"{!counterInitValue}"</span>/&gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> action=</span><span class="string">"{!save}"</span><span class="attribute"> value=</span><span class="string">"Save Key Input Values"</span>/&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+
+    <span class="tag">&lt;apex:outputPanel</span><span class="attribute"> id=</span><span class="string">"output"</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;Cached Counter: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!counter}"</span>/&gt;
+    <span class="tag">&lt;/apex:outputPanel</span>&gt;
+    
+    <span class="tag">&lt;br/</span>&gt;
+    <span class="tag">&lt;apex:form</span> &gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"go"</span><span class="attribute"> action=</span><span class="string">"{!go}"</span><span class="attribute"> value=</span><span class="string">"Rerender"</span><span class="attribute"> rerender=</span><span class="string">"output"</span>/&gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"remove"</span><span class="attribute"> action=</span><span class="string">"{!remove}"</span><span class="attribute"> value=</span><span class="string">"Remove Key"</span><span class="attribute"> rerender=</span><span class="string">"output"</span>/&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cache_namespace_overview.htm" target="_blank" title="Apex Developer Guide: Platform Cache - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Platform Cache</a></div></li></ul>
+</div>
+</div>
+</div>

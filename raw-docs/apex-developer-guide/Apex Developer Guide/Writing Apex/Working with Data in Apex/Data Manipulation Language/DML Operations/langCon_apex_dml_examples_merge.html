@@ -1,0 +1,192 @@
+<a name="langCon_apex_dml_examples_merge"><!-- --></a><h1 class="helpHead1">Merging Records</h1><div class="body conbody">
+<div class="shortdesc">When you have duplicate lead, contact, case, or account records in the database,
+        cleaning up your data and consolidating the records is a good idea. You can merge up to
+        three records of the same sObject type. The <samp class="codeph apex_code"><span class="statement">merge</span></samp>
+        operation merges the duplicate records into the main record, deletes the duplicate records,
+        and reparents any related records.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Use the <span class="titlecodeph">merge</span> Statement</h2>
+
+            
+            <p class="p">This example shows how to merge a duplicate account record into a main account
+                record. The duplicate account has a related contact, which is moved to the main
+                account record after the <samp class="codeph apex_code"><span class="statement">merge</span></samp> operation.
+                After merging, the duplicate record is deleted and only the main record remains in
+                the database.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Insert new accounts</span>
+List&lt;Account&gt; ls = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="keyword">new</span> Account(Name = <span class="string">'Acme Inc.'</span>),
+    <span class="keyword">new</span> Account(Name = <span class="string">'Acme'</span>)
+};                                        
+<span class="statement">insert</span> <span class="statement">as</span> user ls;
+
+<span class="onelineComment">// Queries to get the inserted accounts </span>
+Account mainAcct = [
+    SELECT Id, Name 
+    FROM Account 
+    WHERE Name = <span class="string">'Acme Inc.'</span> 
+    WITH USER_MODE 
+    LIMIT 1
+];
+
+Account dupAcct = [
+    SELECT Id, Name 
+    FROM Account 
+    WHERE Name = <span class="string">'Acme'</span> 
+    WITH USER_MODE 
+    LIMIT 1
+];
+
+<span class="onelineComment">// Add a contact to the account to be merged</span>
+Contact c = <span class="keyword">new</span> Contact(FirstName = <span class="string">'Joe'</span>, LastName = <span class="string">'Merged'</span>);
+c.AccountId = dupAcct.Id;
+<span class="statement">insert</span> <span class="statement">as</span> user c;
+
+<span class="statement">try</span> {
+    <span class="statement">merge</span> mainAcct dupAcct;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception</span>
+    System.debug(<span class="string">'An unexpected error has occurred: '</span> + e.getMessage()); 
+}
+
+<span class="onelineComment">// After the account is merged with the main account,</span>
+<span class="onelineComment">// the related contact is moved to the main record.</span>
+mainAcct = [
+    SELECT Id, Name, (SELECT FirstName, LastName FROM Contacts) 
+    FROM Account 
+    WHERE Name = <span class="string">'Acme Inc.'</span>  
+    WITH USER_MODE 
+    LIMIT 1
+];
+
+Assert.isTrue(mainAcct.getSObjects(<span class="string">'Contacts'</span>).size() &gt; 0);
+Assert.areEqual(<span class="string">'Joe'</span>, mainAcct.getSObjects(<span class="string">'Contacts'</span>)[0].get(<span class="string">'FirstName'</span>));
+Assert.areEqual(<span class="string">'Merged'</span>, mainAcct.getSObjects(<span class="string">'Contacts'</span>)[0].get(<span class="string">'LastName'</span>));
+
+<span class="onelineComment">// Verify that the duplicate record is deleted</span>
+Account[] result = [SELECT Id, Name FROM Account WHERE Id = :dupAcct.Id WITH USER_MODE];
+Assert.areEqual(0, result.size());</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Use the <span class="titlecodeph">Database.merge</span> Method</h2>
+
+            
+            <p class="p">This second example is similar to the previous example, except that it uses the
+                    <samp class="codeph apex_code">Database.<span class="statement">merge</span></samp> method instead of the
+                    <samp class="codeph apex_code"><span class="statement">merge</span></samp> statement. The last argument of
+                    <samp class="codeph apex_code">Database.<span class="statement">merge</span></samp> is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>, so any errors encountered in this
+                operation are returned in the merge result without throwing exceptions. In the
+                example, a main account and two duplicate account records are created. One of the
+                duplicate account records has a child contact record. Through the merge operation,
+                the contact is moved to the main account record, and the other records are
+                deleted.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> To use the AccountContactRelation sObject in this example, enable the “Allow
+                users to relate a contact to multiple accounts” setting in your org. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=sales.shared_contacts_set_up.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Set Up Contacts to
+                    Multiple Accounts</a>.</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create main account</span>
+Account main = <span class="keyword">new</span> Account(Name = <span class="string">'Account1'</span>);
+<span class="statement">insert</span> <span class="statement">as</span> user main;
+
+<span class="onelineComment">// Create duplicate accounts</span>
+List&lt;Account&gt; duplicates = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="onelineComment">// Duplicate account </span>
+    <span class="keyword">new</span> Account(Name = <span class="string">'Account1, Inc.'</span>),
+    <span class="onelineComment">// Second duplicate account</span>
+    <span class="keyword">new</span> Account(Name = <span class="string">'Account 1'</span>)
+};
+<span class="statement">insert</span> <span class="statement">as</span> user duplicates;
+
+<span class="onelineComment">// Create child contact and associate it with first account</span>
+Contact c = <span class="keyword">new</span> Contact(FirstName = <span class="string">'Joe'</span>, LastName = <span class="string">'Smith'</span>, AccountId = duplicates[0].Id);
+<span class="statement">insert</span> <span class="statement">as</span> user c;
+
+<span class="onelineComment">// Get the account contact relation ID, which is created when a contact is created on "Account1, Inc." </span>
+AccountContactRelation resultAcrel = [
+    SELECT Id 
+    FROM AccountContactRelation 
+    WHERE ContactId = :c.Id 
+    WITH USER_MODE 
+    LIMIT 1
+];
+
+<span class="onelineComment">// Merge duplicate accounts into main account</span>
+Database.MergeResult[] results = Database.<span class="statement">merge</span>(main, duplicates, <span class="keyword">false</span>);
+
+<span class="statement">for</span> (Database.MergeResult res : results) {
+    <span class="statement">if</span> (res.isSuccess()) {
+        <span class="onelineComment">// Get the main record ID from the result and validate it</span>
+        System.debug(<span class="string">'Main record ID: '</span> + res.getId());
+        Assert.areEqual(main.Id, res.getId());              
+        
+        <span class="onelineComment">// Get the IDs of the merged records and display them</span>
+        List&lt;Id&gt; mergedIds = res.getMergedRecordIds();
+        System.debug(<span class="string">'IDs of merged records: '</span> + mergedIds);                
+        
+        <span class="onelineComment">// Get the ID of the reparented record and validate that this is the contact ID.</span>
+        System.debug(<span class="string">'Reparented record ID: '</span> + res.getUpdatedRelatedIds());
+
+        <span class="onelineComment">// Make sure there are two IDs (contact ID and account contact relation ID); the order isn't defined</span>
+        Assert.areEqual(2, res.getUpdatedRelatedIds().size());    
+        <span class="keyword">Boolean</span> flag1 = <span class="keyword">false</span>;
+        <span class="keyword">Boolean</span> flag2 = <span class="keyword">false</span>;
+
+        <span class="onelineComment">// Because the order of the IDs isn't defined, the ID can be at index 0 or 1 of the array         </span>
+        <span class="statement">if</span> (resultAcrel.Id == res.getUpdatedRelatedIds()[0] || resultAcrel.Id == res.getUpdatedRelatedIds()[1]) {
+            flag1 = <span class="keyword">true</span>;
+        }
+        
+        <span class="statement">if</span> (c.Id == res.getUpdatedRelatedIds()[0] || c.Id == res.getUpdatedRelatedIds()[1]) {
+            flag2 = <span class="keyword">true</span>;
+        }
+            
+        Assert.isTrue(flag1); 
+        Assert.isTrue(flag2);  
+            
+    } <span class="statement">else</span> {
+        <span class="statement">for</span> (Database.Error err : res.getErrors()) {
+            <span class="onelineComment">// Write each error to the debug output</span>
+            System.debug(err.getMessage());
+        }
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Merge Considerations</h2>
+
+            
+            <p class="p">When merging sObject records, consider these rules and guidelines:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Only leads, contacts, cases, and accounts can be merged. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dml_non_dml_objects.htm">sObjects That Don’t Support DML Operations</a>.</li>
+
+                <li class="li">You can pass a main record and up to two additional sObject records to a single
+                        <samp class="codeph apex_code"><span class="statement">merge</span></samp> method.</li>
+
+                <li class="li">Field values on the main record, including null and empty field values, always
+                    supersede the corresponding field values on the records to be merged. Therefore,
+                    if a field value on the main record is empty, the resulting field value remains
+                    empty after the <samp class="codeph apex_code"><span class="statement">merge</span></samp> operation
+                    regardless of the field value on the duplicate record. To preserve a field value
+                    from a duplicate record, manually set this field value on the main record before
+                    performing the merge.</li>
+
+                <li class="li">External ID fields can’t be used with <samp class="codeph apex_code"><span class="statement">merge</span></samp>.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

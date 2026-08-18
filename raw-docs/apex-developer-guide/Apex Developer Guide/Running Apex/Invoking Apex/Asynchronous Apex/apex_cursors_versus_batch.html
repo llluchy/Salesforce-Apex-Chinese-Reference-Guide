@@ -1,0 +1,112 @@
+<a name="apex_cursors_versus_batch"><!-- --></a><h1 class="helpHead1">Large Data Processing with Cursors and Queueable Apex Versus Batch Apex</h1><div class="body conbody">
+<div class="shortdesc">Apex Cursors combined with chained Queueable Apex jobs are a
+        powerful alternative to Batch Apex for processing large volumes of records. Cursors provide
+        the record-traversal capabilities of Batch Apex, but offer greater flexibility in handling
+        parallel jobs. With Batch Apex, only five active Batch Apex jobs are allowed at one time in
+        your org. Jobs beyond this limit are placed in the Flex Queue, which is limited to 100
+        additional jobs. In orgs with high volumes of background processing, jobs can accumulate in
+        the Flex Queue and delay critical work.</div>
+
+        <div class="section">
+<p class="p">With Apex Cursors, you create a pointer to a large SOQL query result set of up to 50 million
+                rows. The cursor can traverse the result set in chunks across multiple transactions.
+                If you combine a Cursor with a chained Queueable job, each execution processes one
+                or more chunks of records and then re-enqueues itself to handle the next chunk,
+                until all records are processed. This approach has two key advantages over Batch
+                Apex:</p>
+<ul class="ul bulletList">
+                <li class="li">No parallel batch slot consumption. A chained Queueable job chain counts as a
+                    single logical process. It doesn’t consume Batch Apex slots or accumulate in the
+                    Flex Queue.</li>
+
+                <li class="li">Flexibility at scale. Queueable jobs with Cursors can scale the chunk size to
+                    adapt to different processing requirements for individual records.</li>
+
+            </ul>
+<p class="p">For a sample implementation, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cursors.htm" target="_blank">Apex Cursors</a>.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex Cursors and Batch Apex query locators (<samp class="codeph apex_code">Database.getQueryLocator()</samp>) both establish a fixed set of resulting
+                record IDs when they’re created. Subsequent record updates don’t affect the existing
+                set of record IDs. For example, if an object field is updated such that the record
+                no longer meets the initial <samp class="codeph apex_code">WHERE</samp> clause of
+                the SOQL query, the record ID remains in the result set. Similarly, subsequent
+                changes to record sharing rules don’t alter the result set.</p>
+</div>
+</div></div></div></div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Cursors and Queueables Versus Batch Apex</h2>
+
+            
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry">Detail</td>
+
+                            <td class="entry"><strong class="ph b">Batch Apex</strong></td>
+
+                            <td class="entry"><strong class="ph b">Cursors+Queueable</strong></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry">Parallel Batch Slot Usage</td>
+
+                            <td class="entry">Yes. Counts against the 5-job limit.</td>
+
+                            <td class="entry">No</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry">Flex Queue Contention</td>
+
+                            <td class="entry">Yes</td>
+
+                            <td class="entry">No</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry">Execution Model</td>
+
+                            <td class="entry">Ordered and sequential with a fixed scope size</td>
+
+                            <td class="entry">Developer-defined order, sequence, and fetch size</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry">Error Isolation</td>
+
+                            <td class="entry">Per Batch chunk</td>
+
+                            <td class="entry">Transaction Finalizer Per Queueable transaction via a Transaction
+                                Finalizer</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_queueing_jobs.htm" target="_blank" title="Apex Developer Guide: Queueable Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide:</em> Queueable Apex</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cursors.htm" target="_blank" title="Apex Developer Guide: Apex Cursors - HTML (New Window)"><em class="ph i">Apex Developer Guide:</em> Apex Cursors</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch.htm" target="_blank" title="Apex Developer Guide: Batch Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide:</em> Batch Apex</a></div></li>
+<li><div><a class="link" href="https://architect.salesforce.com/docs/architect/decision-guides/guide/async-processing.html" target="_blank" title="Salesforce Architecture Center: Asynchronous Processing - HTML (New Window)"><em class="ph i">Salesforce Architecture Center:</em> Asynchronous Processing</a></div></li>
+</ul>
+</div>
+</div>

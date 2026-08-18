@@ -1,0 +1,417 @@
+<a name="apex_methods_system_schema"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Schema Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Contains methods for obtaining schema describe information.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Schema_methods">
+<a name="apex_System_Schema_methods"><!-- --></a>
+<h2 class="helpHead2">Schema Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Schema</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_getGlobalDescribe">getGlobalDescribe()</a></strong><br>
+Returns a map of all sObject names (keys) to sObject tokens (values) for the standard and custom objects defined in your organization.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_describeDataCategoryGroups">describeDataCategoryGroups(sObjectNames)</a></strong><br>
+Returns a list of the category groups associated with the specified objects.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_describeSObjects">describeSObjects(sObjectTypes)</a></strong><br>
+Describes metadata (field list and object properties) for the specified sObject or array of sObjects.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_schema_describeSObjects_2">describeSObjects(SObjectTypes, SObjectDescribeOptions)</a></strong><br>
+Describes metadata such as field list and object properties for the       specified list of SObjects. The default describe option for this method is       SObjectDescribeOptions.DEFERRED, which indicates lazy initialization of describe attributes on       first use.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_describeTabs">describeTabs()</a></strong><br>
+Returns information about the standard and custom apps available to the running user. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_schema.htm#apex_System_Schema_describeDataCategoryGroupStructures">describeDataCategoryGroupStructures(pairs,topCategoriesOnly)</a></strong><br>
+Returns available category groups along with their data category structure for         objects specified in the request.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Schema_getGlobalDescribe">
+<a name="apex_System_Schema_getGlobalDescribe"><!-- --></a>
+<h3 class="helpHead3">getGlobalDescribe()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a map of all sObject names (keys) to sObject tokens
+(values) for the standard and custom objects defined in your organization.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>, Schema.SObjectType&gt;
+getGlobalDescribe()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_SObjectType.htm#apex_class_Schema_SObjectType" title="A Schema.sObjectType object is returned from the field describe result using the getReferenceTo method, or from the sObject describe result using the getSObjectType method.">Schema.SObjectType</a>&gt;</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">For more information on accessing SObjects, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dynamic_global_describe.htm" target="_blank">Accessing All sObjects</a>.</p>
+
+    </div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, Schema.SObjectType&gt; gd = 
+Schema.getGlobalDescribe(); </pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Schema_describeDataCategoryGroups">
+<a name="apex_System_Schema_describeDataCategoryGroups"><!-- --></a>
+<h3 class="helpHead3">describeDataCategoryGroups(sObjectNames)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Returns a list of the category groups
+associated with the specified objects.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Schema.DescribeDataCategoryGroupResult&gt;
+     describeDataCategoryGroups(List&lt;<span class="keyword">String</span>&gt; sObjectNames)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sObjectNames</var></strong>: Type: List&lt;String&gt;</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;Schema.DescribeDataCategoryGroupResult&gt;</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">You can specify one of the
+following sObject names:</p>
+<ul class="ul bulletList">
+<li class="li">KnowledgeArticleVersion—to retrieve category groups associated
+with article types.</li>
+
+<li class="li">Question—to retrieve category groups associated with questions.</li>
+
+</ul>
+<p class="p">For more information and code examples using describeDataCategoryGroups, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dynamic_data_categories.htm" target="_blank">Accessing All Data Categories Associated with an
+                sObject</a>.</p>
+<p class="p">For additional information about articles and questions, see “Work with Articles and
+    Translations” in the Salesforce online help. </p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Schema_describeSObjects">
+<a name="apex_System_Schema_describeSObjects"><!-- --></a>
+<h3 class="helpHead3">describeSObjects(sObjectTypes)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Describes metadata (field list and object properties) for
+the specified sObject or array of sObjects.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Schema.DescribeSObjectResult&gt;
+                    describeSObjects(List&lt;<span class="keyword">String</span>&gt; sObjectTypes)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sObjectTypes</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; The <var class="keyword varname">sObjectTypes</var> argument is a list of sObject type names you want to
+                        describe.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject_describe.htm#apex_methods_system_sobject_describe" title="Contains methods for describing SObjects. None of the methods take an argument.">Schema.DescribeSObjectResult</a>&gt;</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This method is similar to
+the <samp class="codeph apex_code">getDescribe</samp> method on
+the <samp class="codeph apex_code">Schema.sObjectType</samp> token.
+Unlike the <samp class="codeph apex_code">getDescribe</samp> method,
+this method allows you to specify the sObject type dynamically and
+describe more than one sObject at a time.</p>
+<p class="p">You can first call <samp class="codeph apex_code">getGlobalDescribe</samp> to retrieve a list
+    of all objects for your organization, then iterate through the list and use <samp class="codeph apex_code">describeSObjects</samp> to obtain metadata about individual
+    objects.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult[] descResult = Schema.describeSObjects(
+                                                                   <span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">'Account'</span>,<span class="string">'Contact'</span>});</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_schema_describeSObjects_2">
+<a name="apex_System_schema_describeSObjects_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">describeSObjects(SObjectTypes,
+      SObjectDescribeOptions)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Describes metadata such as field list and object properties for the
+      specified list of SObjects. The default describe option for this method is
+      SObjectDescribeOptions.DEFERRED, which indicates lazy initialization of describe attributes on
+      first use.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Schema.DescribeSObjectResult&gt;
+          describeSObjects(List&lt;<span class="keyword">String</span>&gt; SObjectTypes, <span class="keyword">Object</span>
+        SObjectDescribeOptions)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">SObjectTypes</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; The list of SObject types to describe.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">SObjectDescribeOptions</var></strong>: Type: Object The effective describe option used for the SObject.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject_describe.htm#apex_methods_system_sobject_describe" title="Contains methods for describing SObjects. None of the methods take an argument.">Schema.DescribeSObjectResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Schema_describeTabs">
+<a name="apex_System_Schema_describeTabs"><!-- --></a>
+<h3 class="helpHead3">describeTabs()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns information about the standard and custom apps
+available to the running user. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Schema.DescribeTabSetResult&gt;
+describeTabs()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_class_schema_describetabsetresult" title="Contains metadata information about a Salesforce Classic standard or custom app available in the Salesforce user interface.">Schema.DescribeTabSetResult</a>&gt;</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">An app is a group of tabs that works as a unit to provide application functionality. For example,
+                two of the standard Salesforce apps are
+                “Sales” and “Service.”</p>
+<p class="p">The <samp class="codeph apex_code">describeTabs</samp> method
+returns the minimum required metadata that can be used to render apps
+in another user interface. Typically, this call is used by partner
+applications to render Salesforce data in another user interface, such as in a mobile or connected
+app.</p>
+<p class="p">In the Salesforce user interface, users have access to standard apps (and can also have access to
+                custom apps) as listed in the Salesforce app menu at the top of the page. Selecting
+                an app name in the menu allows the user to switch between the listed apps at any
+                time.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The “All Tabs” tab isn’t included in the
+list of described tabs.</p>
+</div>
+</div></div></div></div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">This example shows how to call the <samp class="codeph apex_code">describeTabs</samp> method.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeTabSetResult[] tabSetDesc = Schema.describeTabs();</pre></div>
+
+            <p class="p">This longer example shows how to obtain describe metadata information for the Sales
+                app. For each tab, the example gets describe information, such as the icon URL,
+                whether the tab is custom or not, and colors. The describe information is written to
+                the debug output.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get tab set describes for each app</span>
+List&lt;Schema.DescribeTabSetResult&gt; tabSetDesc = Schema.describeTabs();
+
+<span class="onelineComment">// Iterate through each tab set describe for each app and display the info</span>
+<span class="statement">for</span>(DescribeTabSetResult tsr : tabSetDesc) {
+    <span class="keyword">String</span> appLabel = tsr.getLabel();
+    System.debug(<span class="string">'Label: '</span> + appLabel);
+    System.debug(<span class="string">'Logo URL: '</span> + tsr.getLogoUrl());
+    System.debug(<span class="string">'isSelected: '</span> + tsr.isSelected());
+    <span class="keyword">String</span> ns = tsr.getNamespace();
+    <span class="statement">if</span> (ns == <span class="string">''</span>) {
+        System.debug(<span class="string">'The '</span> + appLabel + <span class="string">' app has no namespace defined.'</span>);
+    }
+    <span class="statement">else</span> {
+        System.debug(<span class="string">'Namespace: '</span> + ns);
+    }
+    
+    <span class="onelineComment">// Display tab info for the Sales app</span>
+    <span class="statement">if</span> (appLabel == <span class="string">'Sales'</span>) {
+        List&lt;Schema.DescribeTabResult&gt; tabDesc = tsr.getTabs();
+        System.debug(<span class="string">'-- Tab information for the Sales app --'</span>);
+        <span class="statement">for</span>(Schema.DescribeTabResult tr : tabDesc) {
+            System.debug(<span class="string">'getLabel: '</span> + tr.getLabel());
+            System.debug(<span class="string">'getColors: '</span> + tr.getColors());
+            System.debug(<span class="string">'getIconUrl: '</span> + tr.getIconUrl());
+            System.debug(<span class="string">'getIcons: '</span> + tr.getIcons());
+            System.debug(<span class="string">'getMiniIconUrl: '</span> + tr.getMiniIconUrl());
+            System.debug(<span class="string">'getSobjectName: '</span> + tr.getSobjectName());
+            System.debug(<span class="string">'getUrl: '</span> + tr.getUrl());
+            System.debug(<span class="string">'isCustom: '</span> + tr.isCustom());
+        }
+    }
+}
+
+<span class="onelineComment">// Example debug statement output</span>
+<span class="onelineComment">// DEBUG|Label: Sales</span>
+<span class="onelineComment">// DEBUG|Logo URL: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/seasonLogos/2014_winter_aloha.png
+<span class="onelineComment">// DEBUG|isSelected: true</span>
+<span class="onelineComment">// DEBUG|The Sales app has no namespace defined.// DEBUG|-- Tab information for the Sales app --</span>
+<span class="onelineComment">// (This is an example debug output for the Accounts tab.)</span>
+<span class="onelineComment">// DEBUG|getLabel: Accounts</span>
+<span class="onelineComment">// DEBUG|getColors: (Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme4;], </span>
+<span class="onelineComment">//       Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme3;], </span>
+<span class="onelineComment">//       Schema.DescribeColorResult[getColor=236FBD;getContext=primary;getTheme=theme2;])</span>
+<span class="onelineComment">// DEBUG|getIconUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts32.png
+<span class="onelineComment">// DEBUG|getIcons: (Schema.DescribeIconResult[getContentType=image/png;getHeight=32;getTheme=theme3;</span>
+<span class="onelineComment">//       getUrl=https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts32.png;getWidth=32;], 
+<span class="onelineComment">//       Schema.DescribeIconResult[getContentType=image/png;getHeight=16;getTheme=theme3;</span>
+<span class="onelineComment">//       getUrl=https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts16.png;getWidth=16;])
+<span class="onelineComment">// DEBUG|getMiniIconUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/icon/accounts16.png
+<span class="onelineComment">// DEBUG|getSobjectName: Account</span>
+<span class="onelineComment">// DEBUG|getUrl: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/001/o
+<span class="onelineComment">// DEBUG|isCustom: false</span></pre></div>
+
+        </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Schema_describeDataCategoryGroupStructures">
+<a name="apex_System_Schema_describeDataCategoryGroupStructures"><!-- --></a>
+    <h3 class="helpHead3"><span class="titlecodeph">describeDataCategoryGroupStructures(pairs,topCategoriesOnly)</span></h3>
+
+    
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns available category groups along with their data category structure for
+        objects specified in the request.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+                    List&lt;Schema.DescribeDataCategoryGroupStructureResult&gt; describeDataCategory
+                    GroupStructures(List&lt;Schema.DataCategoryGroupSobjectTypePair&gt; pairs,<span class="keyword">Boolean</span>
+                    topCategoriesOnly)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">pairs</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_DataCategoryGroupSobjectTypePair.htm#apex_class_Schema_DataCategoryGroupSobjectTypePair" title="Specifies a category group and an associated object.">Schema.DataCategoryGroupSobjectTypePair</a>&gt; The <var class="keyword varname">pairs</var> argument is one or more category groups and objects to query
+                        Schema.DataCategoryGroupSobjectTypePairs. Visible data categories are
+                        retrieved for the specified object. For more information on data category
+                        group visibility, see “Data Category Visibility” in Salesforce
+                        Help.</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">topCategoriesOnly</var></strong>: <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+ Use <samp class="codeph ">true</samp> to return  only the top visible
+                        category and <samp class="codeph ">false</samp> to return all the
+                        visible categories,  depending on the user's data category group visibility
+                        settings. For more information on data category group visibility, see Data
+                        Category Visibility in Salesforce Help.</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_DescribeDataCategoryGroupStructureResult.htm#apex_class_Schema_DescribeDataCategoryGroupStructureResult" title="Contains the category groups and categories associated with KnowledgeArticleVersion and Question.">Schema.Describe​DataCategoryGroupStructureResult</a>&gt;</p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+</div>

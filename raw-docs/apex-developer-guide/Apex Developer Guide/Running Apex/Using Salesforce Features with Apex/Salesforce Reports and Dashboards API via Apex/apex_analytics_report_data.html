@@ -1,0 +1,66 @@
+<a name="apex_analytics_report_data"><!-- --></a><h1 class="helpHead1">Get Report Data</h1><div class="body conbody">
+<div class="shortdesc">You can use the <samp class="codeph apex_code">ReportResults</samp> class to get the fact map, which contains data that’s associated
+with a report.</div>
+
+<div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+<div class="p">To access data values of the fact map, you can map grouping
+value keys to the corresponding fact map keys. In the following example,
+imagine that you have an opportunity report that’s grouped
+by close month, and you’ve summarized the amount field. To
+get the value for the summary amount for the first grouping in the
+report: <ol class="ol enumList">
+<li class="li">Get the first down-grouping in the report by using the <samp class="codeph apex_code">ReportResults.getGroupingsDown</samp> method
+and accessing the first <samp class="codeph apex_code">GroupingValue</samp> object.</li>
+
+<li class="li">Get the grouping key value from the <samp class="codeph apex_code">GroupingValue</samp> object by using the <samp class="codeph apex_code">getKey</samp> method.</li>
+
+<li class="li">Construct a fact map key by appending <samp class="codeph apex_code"><span class="string">'!T'</span></samp>to this key value. The resulting fact map key represents
+the summary value for the first down-grouping.</li>
+
+<li class="li">Get the fact map from the report results by using the fact map
+key.</li>
+
+<li class="li">Get the first summary amount value by using the <samp class="codeph apex_code">ReportFact.getAggregates</samp> method and
+accessing the first <samp class="codeph apex_code">SummaryValue</samp> object.</li>
+
+<li class="li">Get the field value from the first data cell of the first row
+of the report by using the <samp class="codeph apex_code">ReportFactWithDetails.getRows</samp> method.</li>
+
+</ol>
+</div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the report ID</span>
+List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where 
+    DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+<span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+
+<span class="onelineComment">// Run a report synchronously</span>
+Reports.reportResults results = Reports.ReportManager.runReport(reportId, <span class="keyword">true</span>);
+
+<span class="onelineComment">// Get the first down-grouping in the report</span>
+Reports.Dimension dim = results.getGroupingsDown();
+Reports.GroupingValue groupingVal = dim.getGroupings()[0];
+System.debug(<span class="string">'Key: '</span> + groupingVal.getKey());
+System.debug(<span class="string">'Label: '</span> + groupingVal.getLabel());
+System.debug(<span class="string">'Value: '</span> + groupingVal.getValue());
+
+<span class="onelineComment">// Construct a fact map key, using the grouping key value</span>
+<span class="keyword">String</span> factMapKey = groupingVal.getKey() + <span class="string">'!T'</span>;
+
+<span class="onelineComment">// Get the fact map from the report results</span>
+Reports.ReportFactWithDetails factDetails =
+    (Reports.ReportFactWithDetails)results.getFactMap().get(factMapKey);
+
+<span class="onelineComment">// Get the first summary amount from the fact map</span>
+Reports.SummaryValue sumVal = factDetails.getAggregates()[0];
+System.debug(<span class="string">'Summary Value: '</span> + sumVal.getLabel());
+
+<span class="onelineComment">// Get the field value from the first data cell of the first row of the report</span>
+Reports.ReportDetailRow detailRow = factDetails.getRows()[0];
+System.debug(detailRow.getDataCells()[0].getLabel());
+</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

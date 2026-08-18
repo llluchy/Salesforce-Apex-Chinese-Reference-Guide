@@ -1,0 +1,35 @@
+<a name="connectapi_examples_post_feed_element_batch"><!-- --></a><h1 class="helpHead1">Post a Batch of Feed Elements</h1><div class="body refbody">
+<div class="shortdesc">Use a trigger to call a method to bulk post to the feeds of accounts.</div>
+
+            <div class="section"><div class="p">This trigger calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElementBatch_1" target="_blank"><samp class="codeph apex_code">postFeedElementBatch(communityId, feedElements)</samp></a> to
+                  bulk post to the feeds of newly inserted
+                  accounts.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> postFeedItemToAccount on Account (after <span class="statement">insert</span>) {
+    Account[] accounts = Trigger.<span class="keyword">new</span>;
+    
+    <span class="onelineComment">// Bulk post to the account feeds.</span>
+
+    List&lt;ConnectApi.BatchInput&gt; batchInputs = <span class="keyword">new</span> List&lt;ConnectApi.BatchInput&gt;();
+
+    <span class="statement">for</span> (Account a : accounts) {
+        ConnectApi.FeedItemInput input = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+
+        input.subjectId = a.id;
+        
+        ConnectApi.MessageBodyInput body = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+        body.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+        ConnectApi.TextSegmentInput textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+        textSegment.text = <span class="string">'Let\'s win the '</span> + a.name + <span class="string">' account.'</span>;
+
+        body.messageSegments.add(textSegment);
+        input.body = body;
+
+        ConnectApi.BatchInput batchInput = <span class="keyword">new</span> ConnectApi.BatchInput(input);
+        batchInputs.add(batchInput);
+    }
+
+    ConnectApi.ChatterFeeds.postFeedElementBatch(Network.getNetworkId(), batchInputs);
+}</pre></div>
+</div></div>
+
+      </div><div id="sfdc:seealso" class="related-links"></div>

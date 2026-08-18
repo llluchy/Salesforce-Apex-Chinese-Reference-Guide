@@ -1,0 +1,48 @@
+<a name="apex_classes_annotation_rest_resource"><!-- --></a><h1 class="helpHead1">RestResource Annotation</h1><div class="body">
+  <p class="p"><span class="ph" id="def"><a name="def"><!-- --></a>The <samp class="codeph apex_code"><span class="keyword">@RestResource</span></samp> annotation is used at
+    the class level and enables you to expose an Apex class as a REST
+    resource.</span></p>
+
+  <div class="p">Some considerations when using this annotation:<a name="url_mapping"><!-- --></a><ul class="ul bulletList" id="url_mapping">
+        <li class="li">The URL mapping is relative to
+            <span class="ph filepath">https://<var class="keyword varname">instance</var>.salesforce.com/services/apexrest/</span>.</li>
+
+        <li class="li">The URL mapping can contain a wildcard (*).</li>
+
+        <li class="li">The URL mapping is case-sensitive. For example, a URL mapping for <samp class="codeph nolang">my_url</samp> matches a REST resource containing <samp class="codeph nolang">my_url</samp> and not <samp class="codeph nolang">My_Url</samp>.</li>
+
+        <li class="li">To use this annotation, your Apex class must be defined as global.</li>
+
+      </ul>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">URL Guidelines</h2>
+<p class="p">URL path mappings are as follows:</p>
+<ul class="ul bulletList">
+        <li class="li">The path must begin with a forward slash (/).</li>
+
+        <li class="li">The path can be up to 255 characters long.</li>
+
+        <li class="li">A wildcard (*) that appears in a path must be preceded by a forward slash (/).
+          Additionally, unless the wildcard is the last character in the path, it must be followed
+          by a forward slash (/).</li>
+
+      </ul>
+<p class="p">The rules for mapping URLs are:</p>
+<ul class="ul bulletList">
+    <li class="li">An exact match always wins. </li>
+
+    <li class="li">If no exact match is found, find all the patterns with wildcards that match, and then select
+     the longest (by string length) of those.</li>
+
+    <li class="li">If no wildcard match is found, an HTTP response status code 404 is returned.</li>
+
+   </ul>
+<p class="p">The URL for a namespaced class contains the namespace. For example, if your class is in namespace
+          <samp class="codeph nolang">abc</samp> and the class is mapped to <samp class="codeph nolang">your_url</samp>, then the API URL is modified as follows:
+            <span class="ph filepath">https://<var class="keyword varname">instance</var>.salesforce.com/services/apexrest/abc/your_url/</span>.
+        In the case of a URL collision, the namespaced class is always used.</p>
+</div>
+
+ </div>

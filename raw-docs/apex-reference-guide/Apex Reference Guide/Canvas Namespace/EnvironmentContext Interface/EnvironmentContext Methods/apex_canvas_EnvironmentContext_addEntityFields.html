@@ -1,0 +1,76 @@
+<a name="apex_canvas_EnvironmentContext_addEntityFields"><!-- --></a><h1 class="helpHead1">addEntityFields(fieldNames)</h1><div class="body refbody">
+<div class="shortdesc">Adds a set of fields to the list of object fields that are returned in the signed
+  request Record object when the component appears on a Visualforce page that’s placed on an
+  object.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> addEntityFields(Set&lt;<span class="keyword">String</span>&gt;
+    fieldNames)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Parameters</h2>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">fieldNames</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">SET</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The set of object field names that you need to add to the list of returned fields. If an
+      item in the set is ‘*’, all fields that the user has permission to view are
+      added.</p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <p class="p">When you use the <samp class="codeph apex_page"><span class="tag">&lt;apex:canvasApp</span>&gt;</samp> component to
+    display a canvas app on a Visualforce page, and that page is associated with an object (placed
+    on the page layout, for example), you can specify fields to be returned from the related object.
+    See the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/" target="_blank" title="HTML (New Window)">Canvas Developer
+     Guide</a></cite> for more information on the Record object.</p>
+
+   <p class="p">Use <samp class="codeph apex_code">addEntityFields()</samp> to add a set of one or more
+    fields to the list of object fields that are returned in the signed request Record object. By
+    default the list of fields includes ID. You can add fields by name or add all fields that the
+    user has permission to view by adding a set that includes ‘*’ as one of the
+    strings.</p>
+
+   <p class="p">You can inspect the configured list of fields by using <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_canvas_EnvironmentContext_getEntityFields.htm" title="Retrieves the list of object fields that are returned in the signed request Record object when the component appears on a Visualforce page that’s placed on an object.">Canvas.EnvironmentContext.<samp class="codeph apex_code">getEntityFields()</samp></a>.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+   
+   <p class="p">This example adds the Name, BillingAddress, and YearStarted fields to the list of object
+    fields. This example assumes that the canvas app will appear in a Visualforce page that’s
+    associated with the Account page layout.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Canvas.EnvironmentContext env = renderContext.getEnvironmentContext();
+
+<span class="onelineComment">// Add Name, BillingAddress and YearStarted to fields (assumes we'll run from the Account detail page)</span>
+Set&lt;<span class="keyword">String</span>&gt; fields = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;{<span class="string">'Name'</span>,<span class="string">'BillingAddress'</span>,<span class="string">'YearStarted'</span>};
+env.addEntityFields(fields);</pre></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

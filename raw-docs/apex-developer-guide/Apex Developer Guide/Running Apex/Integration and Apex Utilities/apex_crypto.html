@@ -1,0 +1,153 @@
+<a name="apex_crypto"><!-- --></a><h1 class="helpHead1">Securing Your Data </h1><div class="body conbody">
+<div class="shortdesc">You can secure your data by using the methods provided by the
+            <samp class="codeph apex_code">Crypto</samp> class.</div>
+
+        <p class="p">The methods in the <samp class="codeph apex_code">Crypto</samp> class provide standard
+            algorithms for creating digests, message authentication codes, and signatures, as well
+            as encrypting and decrypting information. These alogorithms can be used for securing
+            content in Salesforce or for integrating with external services such as Google or Amazon
+            WebServices (AWS).</p>
+
+        <div class="box message info" id="note_mh5_bmv_2fc">
+<a name="note_mh5_bmv_2fc"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The code excerpts on this page are written to
+            highlight the use of the Crypto class. A production-level implementation would
+            incorporate more plaintext key security. Refer to Strengthen Your Data’s Security with
+            Shield Platform Encryption in Salesforce Help.</p>
+</div>
+</div></div></div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example Integrating Amazon WebServices </h2>
+
+            
+            <p class="p">This example demonstrates an integration of Amazon WebServices with Salesforce.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> HMacAuthCallout {
+
+   <span class="keyword">public</span> <span class="keyword">void</span> testAlexaWSForAmazon() {
+ 
+   <span class="onelineComment">// The date format is yyyy-MM-dd'T'HH:mm:ss.SSS'Z'</span>
+      DateTime d = System.now();
+      <span class="keyword">String</span> timestamp = <span class="string">''</span>+ d.year() + <span class="string">'-'</span> +
+      d.month() + <span class="string">'-'</span> +
+      d.day() + <span class="string">'\'T\''</span> +
+      d.hour() + <span class="string">':'</span> +
+      d.minute() + <span class="string">':'</span> +
+      d.second() + <span class="string">'.'</span> +
+      d.millisecond() + <span class="string">'\'Z\''</span>;
+      <span class="keyword">String</span> timeFormat = d.formatGmt(timestamp);
+
+      <span class="keyword">String</span> urlEncodedTimestamp = EncodingUtil.urlEncode(timestamp, <span class="string">'UTF-8'</span>);
+      <span class="keyword">String</span> action = <span class="string">'UrlInfo'</span>;
+      <span class="keyword">String</span> inputStr = action + timeFormat;
+      <span class="keyword">String</span> algorithmName = <span class="string">'HMacSHA1'</span>;
+      <span class="keyword">Blob</span> mac = Crypto.generateMac(algorithmName,  <span class="keyword">Blob</span>.valueOf(inputStr), 
+                                                    <span class="keyword">Blob</span>.valueOf(<span class="string">'your_signing_key'</span>));
+      <span class="keyword">String</span> macUrl = EncodingUtil.urlEncode(EncodingUtil.base64Encode(mac), <span class="string">'UTF-8'</span>);
+ 
+      <span class="keyword">String</span> urlToTest = <span class="string">'amazon.com'</span>;
+      <span class="keyword">String</span> version = <span class="string">'2005-07-11'</span>; 
+      <span class="keyword">String</span> endpoint = <span class="string">'http://awis.amazonaws.com/'</span>;
+      <span class="keyword">String</span> accessKey = <span class="string">'your_key'</span>;
+ 
+      HttpRequest req = <span class="keyword">new</span> HttpRequest();
+      req.setEndpoint(endpoint +
+                      <span class="string">'?AWSAccessKeyId='</span> + accessKey +
+                      <span class="string">'&amp;Action='</span> + action +
+                      <span class="string">'&amp;ResponseGroup=Rank&amp;Version='</span> + version +
+                      <span class="string">'&amp;Timestamp='</span> + urlEncodedTimestamp +
+                      <span class="string">'&amp;Url='</span> + urlToTest +
+                      <span class="string">'&amp;Signature='</span> + macUrl);
+ 
+      req.setMethod(<span class="string">'GET'</span>);
+      Http http = <span class="keyword">new</span> Http();
+      <span class="statement">try</span> {
+         HttpResponse res = http.send(req);
+         System.debug(<span class="string">'STATUS:'</span>+res.getStatus());
+         System.debug(<span class="string">'STATUS_CODE:'</span>+res.getStatusCode());
+         System.debug(<span class="string">'BODY: '</span>+res.getBody());
+      } <span class="statement">catch</span>(System.CalloutException e) {
+         System.debug(<span class="string">'ERROR: '</span>+ e);
+      }
+   }
+}
+</pre></div>
+
+        </div>
+
+        <div class="section" id="encrypt_decrypt_example">
+<a name="encrypt_decrypt_example"><!-- --></a><h2 class="helpHead2">Example Encrypting and Decrypting </h2>
+
+            
+            <p class="p">This example uses the <samp class="codeph apex_code">encryptWithManagedIV</samp>
+                and <samp class="codeph apex_code">decryptWithManagedIV</samp> methods and the
+                    <samp class="codeph apex_code">generateAesKey</samp> method of the <samp class="codeph apex_code">Crypto</samp> class.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Use generateAesKey to generate the private key</span>
+<span class="keyword">Blob</span> cryptoKey = Crypto.generateAesKey(256);
+
+<span class="onelineComment">// Generate the data to be encrypted.</span>
+<span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Test data to encrypted'</span>);
+
+<span class="onelineComment">// Encrypt the data and have Salesforce generate the initialization vector </span>
+<span class="keyword">Blob</span> encryptedData = Crypto.encryptWithManagedIV(<span class="string">'AES256'</span>, cryptoKey, data);
+
+<span class="onelineComment">// Decrypt the data</span>
+<span class="keyword">Blob</span> decryptedData = Crypto.decryptWithManagedIV(<span class="string">'AES256'</span>, cryptoKey, encryptedData);</pre></div>
+
+            <div class="p">This example shows how to write a unit test for the <samp class="codeph apex_code">encryptWithManagedIV</samp> and <samp class="codeph apex_code">decryptWithManagedIV</samp> Crypto methods.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> CryptoTest {
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testValidDecryption() {
+
+        <span class="onelineComment">// Use generateAesKey to generate the private key</span>
+        <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+        <span class="onelineComment">// Generate the data to be encrypted.</span>
+        <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Test data'</span>);
+        <span class="onelineComment">// Generate an encrypted form of the data using base64 encoding</span>
+        <span class="keyword">String</span> b64Data = EncodingUtil.base64Encode(data);
+        <span class="onelineComment">// Encrypt and decrypt the data</span>
+        <span class="keyword">Blob</span> encryptedData = Crypto.encryptWithManagedIV(<span class="string">'AES128'</span>, key, data);
+        <span class="keyword">Blob</span> decryptedData = Crypto.decryptWithManagedIV(<span class="string">'AES128'</span>, key, encryptedData);
+        <span class="keyword">String</span> b64Decrypted = EncodingUtil.base64Encode(decryptedData);
+        <span class="onelineComment">// Verify that the strings still match</span>
+        System.assertEquals(b64Data, b64Decrypted);
+    }
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testInvalidDecryption() {
+        <span class="onelineComment">// Verify that you must use the same key size for encrypting data</span>
+        <span class="onelineComment">// Generate two private keys, using different key sizes</span>
+        <span class="keyword">Blob</span> keyOne = Crypto.generateAesKey(128);
+        <span class="keyword">Blob</span> keyTwo = Crypto.generateAesKey(256);
+        <span class="onelineComment">// Generate the data to be encrypted.</span>
+        <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Test data'</span>);
+        <span class="onelineComment">// Encrypt the data using the first key </span>
+        <span class="keyword">Blob</span> encryptedData = Crypto.encryptWithManagedIV(<span class="string">'AES128'</span>, keyOne, data);
+        <span class="statement">try</span> {
+         <span class="onelineComment">// Try decrypting the data using the second key   </span>
+            Crypto.decryptWithManagedIV(<span class="string">'AES256'</span>, keyTwo, encryptedData);
+            System.assert(<span class="keyword">false</span>);
+        } <span class="statement">catch</span>(SecurityException e) {
+            System.assertEquals(<span class="string">'Given final block not properly padded'</span>, e.getMessage());
+        }
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_crypto.htm" target="_blank" title="Apex Reference Guide: Crypto Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Crypto Class</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=xcloud.security_pe_overview.htm&amp;type=5&amp;language=en_US" target="_blank" title="Salesforce Help: Strengthen Your Data’s Security with
+                            Shield Platform Encryption - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Strengthen Your Data’s Security with
+                            Shield Platform Encryption</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_encodingUtil.htm" target="_blank" title="Apex Reference Guide: EncodingUtil Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: EncodingUtil Class</a></div></li>
+</ul>
+</div>
+</div>

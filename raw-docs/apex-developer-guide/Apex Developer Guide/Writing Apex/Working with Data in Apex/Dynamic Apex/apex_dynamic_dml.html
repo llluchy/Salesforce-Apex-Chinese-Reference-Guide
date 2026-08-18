@@ -1,0 +1,150 @@
+<a name="apex_dynamic_dml"><!-- --></a><h1 class="helpHead1">Dynamic DML</h1><div class="body">
+<p class="p">In addition to querying describe information and building SOQL
+queries at runtime, you can also create sObjects dynamically, and
+insert them into the database using DML.</p>
+
+<p class="p">To create a new sObject of a given type, use the <samp class="codeph apex_code">newSObject</samp> method on an sObject token.
+Note that the token must be cast into a concrete sObject type (such
+as Account). For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get a new account</span>
+Account a = <span class="keyword">new</span> Account();
+<span class="onelineComment">// Get the token for the account</span>
+Schema.sObjectType tokenA = a.getSObjectType();
+<span class="onelineComment">// The following produces an error because the token is a generic sObject, not an Account</span>
+<span class="onelineComment">// Account b = tokenA.newSObject();</span>
+<span class="onelineComment">// The following works because the token is cast back into an Account</span>
+Account b = (Account)tokenA.newSObject();
+</pre></div>
+
+<p class="p">Though the sObject token <samp class="codeph apex_code">tokenA</samp> is a token of Account,
+it is considered an sObject because it is accessed separately. It must be cast back into the
+concrete sObject type Account to use the <samp class="codeph apex_code">newSObject</samp> method.
+For more information on casting, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_casting.htm" title="In general, all type information is available at run time. This means that Apex enables casting, that is, a data type of one class can be assigned to a data type of another class, but only if one class is a subclass of the other class. Use casting when you want to convert an object from one data type to another.">Classes and Casting</a>.</p>
+
+<p class="p">You can also specify an ID with <samp class="codeph apex_code">newSObject</samp> to create an sObject that references an existing
+record that you can update later. For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">SObject s = Database.query(<span class="string">'SELECT Id FROM account LIMIT 1'</span>)[0].getSObjectType().
+                                       newSObject([SELECT Id FROM Account LIMIT 1][0].Id);</pre></div>
+
+<p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Schema_SObjectType.htm" target="_blank">SObjectType Class</a>.</p>
+
+<div class="section" id="createSobjectsDynamically">
+<a name="createSobjectsDynamically"><!-- --></a><h2 class="helpHead2"><span class="ph" id="sObjectCreationSectionTitle"><a name="sObjectCreationSectionTitle"><!-- --></a>Dynamic sObject Creation Example</span></h2>
+<p class="p">This example shows how to obtain the sObject token through
+the <samp class="codeph apex_code">Schema.getGlobalDescribe</samp> method and then creates a new sObject using the <samp class="codeph apex_code">newSObject</samp> method on the token.<span class="ph" id="testMethodAlso"><a name="testMethodAlso"><!-- --></a> This example also contains a test method that
+verifies the dynamic creation of an account.</span></p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ex_DynamicSObjectCreation"><a name="ex_DynamicSObjectCreation"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> DynamicSObjectCreation {
+    <span class="keyword">public</span> <span class="keyword">static</span> sObject createObject(<span class="keyword">String</span> typeName) {
+        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(typeName);
+        <span class="statement">if</span> (targetType == <span class="keyword">null</span>) {
+            <span class="onelineComment">// throw an exception</span>
+        }
+        
+        <span class="onelineComment">// Instantiate an sObject with the type passed in as an argument</span>
+        <span class="onelineComment">//  at run time.</span>
+        <span class="statement">return</span> targetType.newSObject(); 
+    }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ex_DynamicSObjectCreationTest"><a name="ex_DynamicSObjectCreationTest"><!-- --></a><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> DynamicSObjectCreationTest {
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> testObjectCreation() {
+        <span class="keyword">String</span> typeName = <span class="string">'Account'</span>;
+        <span class="keyword">String</span> acctName = <span class="string">'Acme'</span>;
+        
+        <span class="onelineComment">// Create a new sObject by passing the sObject type as an argument.</span>
+        Account a = (Account)DynamicSObjectCreation.createObject(typeName);        
+        System.assertEquals(typeName, <span class="keyword">String</span>.valueOf(a.getSobjectType()));
+        <span class="onelineComment">// Set the account name and insert the account.</span>
+        a.Name = acctName;
+        <span class="statement">insert</span> a;
+
+        <span class="onelineComment">// Verify the new sObject got inserted.</span>
+        Account[] b = [SELECT Name from Account WHERE Name = :acctName];
+        system.assert(b.size() &gt; 0);
+    }
+}</pre></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_get_put_field_values"><a name="apex_get_put_field_values"><!-- --></a>Setting and Retrieving
+Field Values</span></h2>
+<p class="p">Use the <samp class="codeph apex_code">get</samp> and <samp class="codeph apex_code">put</samp> methods on an object to set or retrieve values for fields using either the API name of
+the field expressed as a String, or the field's token. In the following example, the API name of the
+field <samp class="codeph apex_code">AccountNumber</samp> is used:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">SObject s = [SELECT AccountNumber FROM Account LIMIT 1];
+<span class="keyword">Object</span> o = s.get(<span class="string">'AccountNumber'</span>);
+s.put(<span class="string">'AccountNumber'</span>, <span class="string">'abc'</span>);
+</pre></div>
+<p class="p">The following example uses the <samp class="codeph apex_code">AccountNumber</samp> field's token instead:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeFieldResult dfr = Schema.sObjectType.Account.fields.AccountNumber;
+Sobject s = Database.query(<span class="string">'SELECT AccountNumber FROM Account LIMIT 1'</span>);
+s.put(dfr.getsObjectField(), <span class="string">'12345'</span>);
+</pre></div>
+<p class="p">The Object scalar data type can be used as a generic
+data type to set or retrieve field values on an sObject. This is equivalent
+to the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/field_types.htm" target="_blank" title="HTML (New Window)">anyType</a> field type.
+Note that the Object data type is different from the sObject data
+type, which can be used as a generic type for any sObject. </p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="short_trunc_note"><a name="short_trunc_note"><!-- --></a>Apex classes and triggers saved (compiled) using API version 15.0
+and higher produce a runtime error if you assign a String value that is too long for the field.</span>
+</p>
+</div>
+</div></div></div></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_get_put_foreign_keys"><a name="apex_get_put_foreign_keys"><!-- --></a>Setting and Retrieving
+Foreign Keys</span></h2>
+<p class="p">Apex supports populating foreign keys by name (or external ID) in the same way as the API. To set
+or retrieve the scalar ID value of a foreign key, use the <samp class="codeph apex_code">get</samp> or <samp class="codeph apex_code">put</samp> methods. </p>
+<p class="p">To set or retrieve the <em class="ph i">record</em> associated with a foreign key, use the <samp class="codeph apex_code">getSObject</samp> and <samp class="codeph apex_code">putSObject</samp> methods. Note that these methods must be used with the sObject data
+type, not Object. For example: </p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">SObject c = 
+   Database.query(<span class="string">'SELECT Id, FirstName, AccountId, Account.Name FROM Contact LIMIT 1'</span>);
+SObject a = c.getSObject(<span class="string">'Account'</span>);
+</pre></div>
+<p class="p">There is no need to specify the external ID for a parent sObject value while working with child
+sObjects. If you provide an ID in the parent sObject, it is ignored by the DML operation. Apex
+assumes the foreign key is populated through a relationship SOQL query, which always returns a
+parent object with a populated ID. If you have an ID, use it with the child object. </p>
+<p class="p">For example, suppose that custom object C1 has a foreign key <samp class="codeph apex_code">C2__c</samp> that links to a parent custom object C2. You want to create a C1
+                object and have it associated with a C2 record named 'AW Computing' (assigned to the
+                value <samp class="codeph apex_code">C2__r</samp>). You do not need the ID of the
+                'AW Computing' record, as it is populated through the relationship of parent to
+                child. For example: </p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">insert</span> <span class="keyword">new</span> C1__c(Name = <span class="string">'x'</span>, C2__r = <span class="keyword">new</span> C2__c(Name = <span class="string">'AW Computing'</span>));
+</pre></div>
+<p class="p">If you had assigned a value to the ID for <samp class="codeph apex_code">C2__r</samp>, it
+                would be ignored. If you do have the ID, assign it to the object (<samp class="codeph apex_code">C2__c</samp>), not the record.</p>
+<div class="p">You can also access foreign keys using dynamic Apex. The following example shows how to get the
+values from a subquery in a parent-to-child relationship using dynamic
+Apex:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> queryString = <span class="string">'SELECT Id, Name, '</span> + 
+           <span class="string">'(SELECT FirstName, LastName FROM Contacts LIMIT 1) FROM Account'</span>;
+SObject[] queryParentObject = Database.query(queryString);
+         
+<span class="statement">for</span> (SObject parentRecord : queryParentObject){ 
+    <span class="keyword">Object</span> ParentFieldValue = parentRecord.get(<span class="string">'Name'</span>); 
+    <span class="onelineComment">// Prevent a null relationship from being accessed</span>
+    SObject[] childRecordsFromParent = parentRecord.getSObjects(<span class="string">'Contacts'</span>);
+    <span class="statement">if</span> (childRecordsFromParent != <span class="keyword">null</span>) {
+        <span class="statement">for</span> (SObject childRecord : childRecordsFromParent){ 
+            <span class="keyword">Object</span> ChildFieldValue1 = childRecord.get(<span class="string">'FirstName'</span>); 
+            <span class="keyword">Object</span> ChildFieldValue2 = childRecord.get(<span class="string">'LastName'</span>); 
+            System.debug(<span class="string">'Account Name: '</span> + ParentFieldValue + 
+            <span class="string">'. Contact Name: '</span>+ ChildFieldValue1 + <span class="string">' '</span> + ChildFieldValue2);
+        }
+    }              
+}</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_sosl.htm" title="Dynamic SOSL">← Previous</a></li>
+</ul></div>
+</div>

@@ -1,0 +1,336 @@
+<a name="apex_interface_Auth_ConfigurableSelfRegHandler"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">ConfigurableSelfRegHandler Interface</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gives you more control over how customers or partners self-register
+      for your Experience Cloud site by creating a class that implements <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp>. You choose the user
+      information to collect, and how users identify themselves—with their email address,
+      phone number, or another identifier. When verified, you create a customer or partner user and
+      log in the user to your Experience Cloud site.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">You set up site self-registration declaratively on the Login &amp; Registration (L&amp;R)
+        page of the Administration workspace. When combined with a configurable self-registration
+        setup, the handler class can programmatically fill in user fields, including custom fields,
+        and determine how to create a user and log them in.</p>
+
+      <p class="p">When you select the Configurable Self-Reg Page registration page, you choose the user
+        fields to collect from the self-registration form, such as last name, first name, username,
+        nickname, mobile, or email. You also determine the verification method that the user
+        identifies themselves with, which can be email, mobile, or neither. Salesforce generates the
+          <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp> handler, which
+        contains logic on how to create an Experience Cloud site member. Modify the handler to
+        change how users are created, and how collected user information is used.</p>
+
+      <p class="p">You can add custom logic to ensure that the email or phone number is unique to the customer
+        or partner who's registering. For example, you can add a custom unique field, and write a
+        copy of the email or phone number to it. You can also change how the user is created. By
+        default, the user is created as a contact associated with the account that you select on the
+        L&amp;R page.</p>
+
+      <p class="p">The generated <samp class="codeph apex_code">ConfigurableSelfRegHandler</samp> is located
+        on the Setup Apex Classes page, and begins with
+          <span class="ph filepath">AutocreatedConfigSelfReg</span>, for example,
+          <span class="ph filepath">AutocreatedConfigSelfReg1532475901849</span>.</p>
+
+      <p class="p">For an example, see <a class="xref" href="#apex_interface_Auth_ConfigurableSelfRegHandler_Example" title="This Apex code implements the Auth.ConfigurableSelfRegHandler interface. After the customer or partner fills out the sign-up page and submits it, the handler is invoked to create an Experience Cloud member with the supplied information. If the registration process requires email or phone verification, the verification process finishes before the Auth.ConfigurableSelfRegHandler.createUser is invoked. If verification isn’t required, createUser is invoked when the customer or partner submits the page.">ConfigurableSelfRegHandler Example Implementation</a>. For more details, see
+          <a class="xref" href="https://help.salesforce.com/articleView?id=identity_about_customers_partners.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Salesforce Customer Identity</a>
+        in <cite class="cite">Salesforce Help</cite>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfigurableSelfRegHandler.htm#apex_Auth_ConfigurableSelfRegHandler_methods">ConfigurableSelfRegHandler Method</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfigurableSelfRegHandler.htm#apex_interface_Auth_ConfigurableSelfRegHandler_Example">ConfigurableSelfRegHandler Example Implementation</a></strong><br>
+This Apex code implements the <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp> interface. After the customer or partner fills         out the sign-up page and submits it, the handler is invoked to create an Experience Cloud         member with the supplied information. If the registration process requires email or phone         verification, the verification process finishes before the <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler.createUser</samp> is invoked. If verification isn’t         required, <samp class="codeph apex_code">createUser</samp> is invoked when the customer or         partner submits the page.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_ConfigurableSelfRegHandler_methods">
+<a name="apex_Auth_ConfigurableSelfRegHandler_methods"><!-- --></a>
+  <h2 class="helpHead2">ConfigurableSelfRegHandler Method</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following is the method for <samp class="codeph apex_code">ConfigurableSelfRegHandler</samp>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfigurableSelfRegHandler.htm#apex_Auth_ConfigurableSelfRegHandler_createUser">createUser(accountId, profileId, registrationAttributes, password)</a></strong><br>
+Create a community member from the information that the visitor       provided on your community’s self-registration page.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConfigurableSelfRegHandler_createUser">
+<a name="apex_Auth_ConfigurableSelfRegHandler_createUser"><!-- --></a>
+  <h3 class="helpHead3">createUser(accountId, profileId, registrationAttributes, password)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Create a community member from the information that the visitor
+      provided on your community’s self-registration page.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Id createUser(Id accountId, Id profileId,
+          Map&lt;Schema.SObjectField,<span class="keyword">String</span>&gt; registrationAttributes, <span class="keyword">String</span>
+        password)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">accountId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">Default account with which the new user is associated. This value comes from the
+            Account field setting on Login and Registration (L&amp;R) page under Registration Page
+            Configuration.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">profileID</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">Profile to assign</p>
+<p class="p">the new user. This value comes from the Profile field setting on the
+            L&amp;R page under Registration Page Configuration.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">registrationAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;Schema.sObjectField,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A map of attributes that the registering user entered on the self-registration page.
+            The fields that appear on the self-registration page come from the User Fields selected
+            on the L&amp;R page when the registration type is Configurable Self-Reg Page.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">password</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The password entered by the user if “Include Password” is selected on the L&amp;R
+            page. (If a password isn’t entered, the handler must generate one because a password is
+            required to create a user.)</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+
+      <p class="p">Returns an identifier for the created User object. <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp> inserts a user and then returns the ID of that
+        user.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Auth_ConfigurableSelfRegHandler_Example">
+<a name="apex_interface_Auth_ConfigurableSelfRegHandler_Example"><!-- --></a>
+    <h2 class="helpHead2">ConfigurableSelfRegHandler Example Implementation</h2>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">This Apex code implements the <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp> interface. After the customer or partner fills
+        out the sign-up page and submits it, the handler is invoked to create an Experience Cloud
+        member with the supplied information. If the registration process requires email or phone
+        verification, the verification process finishes before the <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler.createUser</samp> is invoked. If verification isn’t
+        required, <samp class="codeph apex_code">createUser</samp> is invoked when the customer or
+        partner submits the page.</div>
+
+        <div class="section" id="configuconfigurable_code_example">
+<a name="configuconfigurable_code_example"><!-- --></a>
+            <p class="p">Verification occurs by email if the admin chose Email as the verification method when
+                setting up the Configurable Self-Reg handler on the Login &amp; Registration
+                (L&amp;R) page. When a visitor clicks the sign-up link from the login page,
+                Salesforce prompts for an email address and then sends a one-time password to the
+                specified email address. If the visitor enters the verification code successfully on
+                the verify page, the user is created and logged in. Likewise, if the admin chose
+                Text Message as the verification method on the L&amp;R page, the visitor is prompted
+                to enter a phone number. Salesforce sends a challenge (verification code) via SMS to
+                the user. If successful, the user is created and logged in. Requiring verification
+                before creating a user reduces the number of dummy users cluttering your org.</p>
+
+            <p class="p">The <samp class="codeph apex_code">Auth.ConfigurableSelfRegHandler</samp> class
+                contains logic for generating the user fields required to create a user in case the
+                user doesn’t supply them. The handler generates default values, ensuring that the
+                values are unique by appending a timestamp. You can modify the handler to make sure
+                that the email address and phone number of the customer or partner are also
+                unique.</p>
+
+        </div>
+
+        <div class="section">
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> AutocreatedConfigSelfReg <span class="keyword">implements</span> Auth.ConfigurableSelfRegHandler {
+
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">Long</span> CURRENT_TIME = <span class="keyword">Datetime</span>.now().getTime();
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span>[] UPPERCASE_CHARS = <span class="string">'ABCDEFGHIJKLMNOPQRSTUVWXYZ'</span>.split(<span class="string">''</span>);
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span>[] LOWERCASE_CHARS = <span class="string">'abcdefghijklmnopqrstuvwxyz'</span>.split(<span class="string">''</span>);
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span>[] NUMBER_CHARS = <span class="string">'1234567890'</span>.split(<span class="string">''</span>);
+    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span>[] SPECIAL_CHARS = <span class="string">'!#$%-_=+&lt;&gt;'</span>.split(<span class="string">''</span>);
+
+    <span class="onelineComment">// This method is called once after verification (if any was configured).</span>
+    <span class="onelineComment">// This method should create a user and insert it.</span>
+    <span class="onelineComment">// Password can be null.</span>
+    <span class="onelineComment">// Return null or throw an exception to fail creation.</span>
+    <span class="keyword">global</span> Id createUser(Id accountId, Id profileId, Map&lt;SObjectField, <span class="keyword">String</span>&gt; registrationAttributes, <span class="keyword">String</span> password) {
+        User u = <span class="keyword">new</span> User();
+        u.ProfileId = profileId;
+        <span class="statement">for</span> (SObjectField field : registrationAttributes.keySet()) {
+            <span class="keyword">String</span> value = registrationAttributes.get(field);
+            u.put(field, value);
+        }
+
+        u = handleUnsetRequiredFields(u);
+        generateContact(u, accountId);
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(password)) {
+            password = generateRandomPassword();
+        }
+        Site.validatePassword(u, password, password);
+        <span class="statement">if</span> (u.contactId == <span class="keyword">null</span>) {
+            <span class="statement">return</span> Site.createExternalUser(u, accountId, password);
+        }
+        u.languagelocalekey = UserInfo.getLocale();
+        u.localesidkey = UserInfo.getLocale();
+        u.emailEncodingKey = <span class="string">'UTF-8'</span>;
+        u.timeZoneSidKey = UserInfo.getTimezone().getID();
+        <span class="statement">insert</span> u;
+        System.setPassword(u.Id, password);
+        <span class="statement">return</span> u.id;
+    }
+    <span class="onelineComment">// Method to autogenerate a password if one isn't passed in.</span>
+    <span class="onelineComment">// By setting a password for a user, we won't send a </span>
+    <span class="onelineComment">// welcome email to set the password.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateRandomPassword() {
+        <span class="keyword">String</span>[] characters = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;(UPPERCASE_CHARS);
+        characters.addAll(LOWERCASE_CHARS);
+        characters.addAll(NUMBER_CHARS);
+        characters.addAll(SPECIAL_CHARS);
+        <span class="keyword">String</span> newPassword = <span class="string">''</span>;
+        <span class="keyword">Boolean</span> needsUpper = <span class="keyword">true</span>, needsLower = <span class="keyword">true</span>, needsNumber = <span class="keyword">true</span>, needsSpecial = <span class="keyword">true</span>;
+        <span class="statement">while</span> (newPassword.length() &lt; 50) {
+            <span class="keyword">Integer</span> randomInt = generateRandomInt(characters.size());
+            <span class="keyword">String</span> c = characters[randomInt];
+            <span class="statement">if</span> (needsUpper &amp;&amp; c.isAllUpperCase()) {
+                needsUpper = <span class="keyword">false</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (needsLower &amp;&amp; c.isAllLowerCase()) {
+                needsLower = <span class="keyword">false</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (needsNumber &amp;&amp; c.isNumeric()) {
+                needsNumber = <span class="keyword">false</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (needsSpecial &amp;&amp; !c.isAlphanumeric()) {
+                needsSpecial = <span class="keyword">false</span>;
+            }
+            newPassword += c; 
+        }
+        newPassword = addMissingPasswordRequirements(newPassword, needsLower, needsUpper, needsNumber, needsSpecial);
+        <span class="statement">return</span> newPassword;
+    }
+
+    <span class="keyword">private</span> <span class="keyword">String</span> addMissingPasswordRequirements(<span class="keyword">String</span> password, <span class="keyword">Boolean</span> addLowerCase, <span class="keyword">Boolean</span> addUpperCase, <span class="keyword">Boolean</span> addNumber, <span class="keyword">Boolean</span> addSpecial) {
+        <span class="statement">if</span> (addLowerCase) {
+            password += LOWERCASE_CHARS[generateRandomInt(LOWERCASE_CHARS.size())];
+        }
+        <span class="statement">if</span> (addUpperCase) {
+            password += UPPERCASE_CHARS[generateRandomInt(UPPERCASE_CHARS.size())];
+        }
+        <span class="statement">if</span> (addNumber) {
+            password += NUMBER_CHARS[generateRandomInt(NUMBER_CHARS.size())];
+        }
+        <span class="statement">if</span> (addSpecial) {
+            password += SPECIAL_CHARS[generateRandomInt(SPECIAL_CHARS.size())];
+        }
+        <span class="statement">return</span> password;
+    }
+   <span class="onelineComment">// Generates a random number from 0 up to, but not including, max.</span>
+    <span class="keyword">private</span> <span class="keyword">Integer</span> generateRandomInt(<span class="keyword">Integer</span> max) {
+        <span class="statement">return</span> Math.mod(Math.abs(Crypto.getRandomInteger()), max);
+    }
+
+    <span class="onelineComment">// Loops over required fields that were not passed in to </span>
+    <span class="onelineComment">// set to some default value.</span>
+    <span class="keyword">private</span> User handleUnsetRequiredFields(User u) {
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(u.LastName)){
+            u.LastName = generateLastName();
+        }
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(u.Username)) {
+            u.Username = generateUsername();
+        }
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(u.Email)) {
+            u.Email = generateEmail();
+        }
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(u.Alias)) {
+            u.Alias = generateAlias();
+        }
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(u.CommunityNickname)) {
+            u.CommunityNickname = generateCommunityNickname();
+        }
+        <span class="statement">return</span> u;
+    }
+    <span class="onelineComment">// Method to construct a contact for a user.</span>
+    <span class="keyword">private</span> <span class="keyword">void</span> generateContact(User u, Id accountId) {
+        <span class="onelineComment">// Add logic here if you want to build your own </span>
+        <span class="onelineComment">// contact for the use.</span>
+    }
+   <span class="onelineComment">// Default implementation to try to provide uniqueness.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateAlias() {
+        <span class="keyword">String</span> timeString = <span class="keyword">String</span>.valueOf(CURRENT_TIME);
+        <span class="statement">return</span> timeString.substring(timeString.length() - 8);
+    }
+    <span class="onelineComment">// Default implementation to try to provide uniqueness.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateLastName() {
+        <span class="statement">return</span> <span class="string">'ExternalUser'</span> + CURRENT_TIME;
+    }
+    <span class="onelineComment">// Default implementation to try to provide uniqueness.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateUsername() {
+        <span class="statement">return</span> <span class="string">'externaluser'</span> + CURRENT_TIME + <span class="string">'@company.com'</span>;
+    }
+    <span class="onelineComment">// Default implementation to try to provide uniqueness.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateEmail() {
+        <span class="statement">return</span> <span class="string">'externaluser'</span> + CURRENT_TIME + <span class="string">'@company.com'</span>;
+    }
+    <span class="onelineComment">// Default implementation to try to provide uniqueness.</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> generateCommunityNickname() {
+        <span class="statement">return</span> <span class="string">'ExternalUser'</span> + CURRENT_TIME;
+    }
+}</pre></div>
+
+            
+        </div>
+
+    </div>
+
+</div>
+</div>

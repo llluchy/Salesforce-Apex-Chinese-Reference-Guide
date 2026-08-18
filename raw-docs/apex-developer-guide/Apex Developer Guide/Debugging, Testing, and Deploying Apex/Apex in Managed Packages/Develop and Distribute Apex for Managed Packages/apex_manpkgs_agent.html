@@ -1,0 +1,265 @@
+<a name="apex_manpkgs_agent"><!-- --></a><h1 class="helpHead1">Design Managed Apex for Agentforce</h1><div class="body conbody">
+<div class="shortdesc">As an independent software vendor (ISV) developer, you can build custom agent actions
+  using Apex and distribute them in managed packages. To ensure that subscriber admins can
+  declaratively configure your Apex agent actions and that Agentforce can invoke the actions at run
+  time, follow these requirements and recommendations.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Use Global Apex</h2>
+
+            
+            <p class="p">For Agentforce to use Apex <a class="xref" href="https://help.salesforce.com/s/articleView?id=ai.copilot_actions.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">agent actions</a> in
+                managed packages, these Apex members must have the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm"><samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier</a>.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">The Apex class containing the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="Use the InvocableMethod annotation to identify methods that can be run as invocable actions."><samp class="codeph apex_code">@InvocableMethod</samp></a> that
+                    defines the agent action.</li>
+
+                <li class="li">The input wrapper class that defines the parameters an admin can configure for
+                    the action, and the output wrapper class that defines the structured result
+                    returned to Agentforce.</li>
+
+                <li class="li">All <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="To identify variables used by invocable methods in custom classes, use the InvocableVariable annotation."><samp class="codeph apex_code">@InvocableVariable</samp></a> members within
+                    these input and output wrapper classes.</li>
+
+                <li class="li">Any custom Apex data types used as properties in your wrapper classes.</li>
+
+            </ul>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>If any of these Apex members aren’t <samp class="codeph apex_code"><span class="keyword">global</span></samp>, then the Apex agent action can’t be
+                invoked by Agentforce at run time.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">These Apex members must be <samp class="codeph apex_code"><span class="keyword">global</span></samp> because
+                Agentforce agents currently can’t be packaged directly, and therefore can’t have a
+                namespace. By definition, this means that Apex agent actions don’t have access to
+                    non-<samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex, such as <samp class="codeph apex_code"><span class="keyword">public</span></samp> Apex, that’s part of a managed package
+                and does have a namespace.</p>
+
+            <p class="p">Importantly, managed <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex is subject
+                to stricter manageability rules than managed non-<samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex. See the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm#manpkgs_global_manageability_rules">Global Apex Manageability Rules</a> section of
+                    <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global Apex in Managed Packages</a>.</p>
+
+            <p class="p">Although <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex is required for any
+                direct entry point to an agent action, delegate any business logic or heavy lifting
+                to <samp class="codeph apex_code"><span class="keyword">public</span></samp> classes and methods. See the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm#manpkgs_global_entry_points_section">Delegate from Thin Global Entry Points</a> section of <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global
+                    Apex in Managed Packages</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Use @InvocableMethod to Define the Action</h2>
+
+            
+            <p class="p">To define an Apex agent action, use the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="Use the InvocableMethod annotation to identify methods that can be run as invocable actions."><samp class="codeph apex_code">@InvocableMethod</samp></a> annotation
+                and follow these requirements.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Your Apex method must be <samp class="codeph apex_code"><span class="keyword">global</span>
+                    <span class="keyword">static</span></samp>.</li>
+
+                <li class="li">Your Apex method must be annotated with <samp class="codeph nolang">@InvocableMethod (label='<var class="keyword varname">Your Action Name</var>'
+                            description='<var class="keyword varname">Clear, concise description of what the action
+                            does</var>' category='<var class="keyword varname">Your ISV App
+                        Name</var>')</samp>.<ul class="ul bulletList">
+                        <li class="li">Use clear and descriptive <samp class="codeph nolang">label</samp> and
+                                <samp class="codeph apex_code">description</samp> modifiers. The
+                            Agentforce reasoning engine uses them to determine when to invoke the
+                            action. Subscriber admins configuring Agentforce also use them to help
+                            decide which <a class="xref" href="https://help.salesforce.com/s/articleView?id=ai.copilot_topics.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">agent
+                                topics</a> to add the action to.</li>
+
+                        <li class="li">Use the <samp class="codeph apex_code">category</samp> modifier to
+                            help organize actions. We recommend using your ISV app name.</li>
+
+                    </ul>
+</li>
+
+            </ul>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Only one method in a class can have the <samp class="codeph apex_code">@InvocableMethod</samp> annotation. Create a separate <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex class for each agent action in your
+                managed package.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Structure Inputs and Outputs with Global Wrapper Classes</h2>
+
+            
+            <p class="p">In addition to the requirements of using <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex and the <samp class="codeph apex_code">@InvocableMethod</samp> annotation, we also recommend using custom <samp class="codeph apex_code"><span class="keyword">global</span></samp> classes to structure input and output
+                parameters. By using parameter objects, you avoid changing the <samp class="codeph apex_code"><span class="keyword">global</span></samp> method signature when you modify the
+                parameters of the agent action. To learn how to use this pattern, see the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm#manpkgs_global_parameter_obj">Use Parameter Objects for Global Method Inputs and
+                    Return Types</a> section of <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global
+                    Apex in Managed Packages</a>. Then review these targeted guidelines to
+                implement Apex agent actions using this pattern.</p>
+
+            <p class="p">Because you can’t change managed <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+                method signatures, make signatures flexible.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Define <samp class="codeph apex_code"><span class="keyword">global</span></samp> inner Apex classes to
+                    serve as containers for input and output parameters. These classes can be in the
+                    same top-level class as the invocable method.</li>
+
+                <li class="li">Annotate both input and output classes with <samp class="codeph apex_code">@JsonAccess(serializable=<span class="string">'always'</span> deserializable=<span class="string">'always'</span>)</samp>. The
+                        <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_JsonAccess.htm" title="The @JsonAccess annotation defined at Apex class level controls whether instances of the class can be serialized or deserialized. If the annotation restricts the JSON or XML serialization and deserialization, a runtime JSONException exception is thrown.">@JsonAccess annotation</a> governs the serialization and
+                    deserialization of managed Apex. Because Agentforce serializes and deserializes
+                    complex Apex types from an unmanaged context at run time, both <samp class="codeph apex_code">@JsonAccess</samp> parameters must be set to
+                        <samp class="codeph apex_code"><span class="string">'always'</span></samp>.</li>
+
+                <li class="li">Within these input and output classes, declare <samp class="codeph apex_code"><span class="keyword">global</span></samp> member variables annotated with <samp class="codeph apex_code">@InvocableVariable(label=<span class="string">'</span><var class="keyword varname">User-Friendly
+                            Name</var><span class="string">' description='</span><var class="keyword varname">Description of this
+                            parameter</var><span class="string">' required=true/false)</span></samp>.<ul class="ul bulletList">
+                        <li class="li">Use clear and descriptive <samp class="codeph apex_code">label</samp>
+                            and <samp class="codeph apex_code">description</samp> modifiers, so
+                            that subscribers can configure the inputs declaratively, and Agentforce
+                            can understand the output.</li>
+
+                        <li class="li">Set the <samp class="codeph apex_code">required</samp> modifier as
+                                <samp class="codeph nolang">true</samp> or <samp class="codeph nolang">false</samp> to specify whether the input is
+                            required for the agent action to run. This modifier also helps
+                            subscriber admins configure your actions.</li>
+
+                    </ul>
+</li>
+
+                <li class="li">Define the invocable method to accept a <samp class="codeph apex_code">List</samp> of its input class type, for example <samp class="codeph apex_code">List&lt;MyInputAction&gt; requests</samp>.</li>
+
+                <li class="li">Define the  invocable method to return a <samp class="codeph apex_code">List</samp> of its output class type, for example <samp class="codeph apex_code">List&lt;MyOutputAction&gt; results</samp>.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example Code for an Apex Agent Action</h2>
+
+            
+            <p class="p">In this example, the <samp class="codeph apex_code">getCoordinates</samp> method is
+                defined as an <samp class="codeph apex_code">@InvocableMethod</samp> so it can be
+                invoked by Agentforce. The method accepts a list of <samp class="codeph apex_code">GeocodingRequest</samp> objects and returns a corresponding list of <samp class="codeph apex_code">GeocodingResponse</samp> objects. The input and output
+                wrapper classes are both annotated with <samp class="codeph apex_code">@JsonAccess(serializable=<span class="string">'always'</span> deserializable=<span class="string">'always'</span>)</samp> so
+                Agentforce can serialize and deserialize the objects from an unmanaged context. The
+                properties of both wrapper classes are defined as <samp class="codeph apex_code">@InvocableVariable</samp> so an admin can configure them declaratively. The
+                    <samp class="codeph apex_code">label</samp> and <samp class="codeph apex_code">description</samp> modifiers in both <samp class="codeph nolang">@InvocableMethod</samp> and <samp class="codeph apex_code">@InvocableVariable</samp> are important because they help the Agentforce
+                reasoning engine to understand how to use the action.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// --- ISV's Managed Package Code ---</span>
+<span class="onelineComment">// --- 1. The Global Entrypoint Class ---</span>
+<span class="onelineComment">// This class contains the @InvocableMethod and the input/output wrapper classes.</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> GeocodingAction {
+    <span class="onelineComment">// This method is the thin, global entry point that delegates any business logic to a separate public class.</span>
+        @InvocableMethod(
+            label=<span class="string">'Get Coordinates for Address'</span>
+            description=<span class="string">'Retrieves the latitude and longitude for a given street address.'</span>
+            category=<span class="string">'My ISV App Name'</span>
+        )
+        <span class="keyword">global</span> <span class="keyword">static</span> List&lt;GeocodingResponse&gt; getCoordinates(List&lt;GeocodingRequest&gt; requests) {
+            <span class="onelineComment">// Delegate the entire list to the internal logic class to ensure</span>
+            <span class="onelineComment">// any callouts or DML can be performed in bulk.</span>
+                GeocodingLogic logic = <span class="keyword">new</span> GeocodingLogic();
+                <span class="statement">return</span> logic.performGeocoding(requests);
+        }
+    
+        <span class="onelineComment">// --- Input Wrapper Inner Class ---</span>
+        <span class="onelineComment">// Defines the parameters an admin can configure for this action.</span>
+        @JsonAccess(serializable=<span class="string">'always'</span> deserializable=<span class="string">'always'</span>)
+        <span class="keyword">global</span> with sharing <span class="keyword">class</span> GeocodingRequest {
+            @InvocableVariable(label=<span class="string">'Street'</span> required=<span class="keyword">true</span>)
+            <span class="keyword">global</span> <span class="keyword">String</span> street;
+    
+            @InvocableVariable(label=<span class="string">'City'</span> required=<span class="keyword">true</span>)
+            <span class="keyword">global</span> <span class="keyword">String</span> city;
+    
+            @InvocableVariable(label=<span class="string">'State/Province'</span> required=<span class="keyword">true</span>)
+            <span class="keyword">global</span> <span class="keyword">String</span> state;
+    
+            @InvocableVariable(label=<span class="string">'Postal Code'</span> required=<span class="keyword">true</span>)
+            <span class="keyword">global</span> <span class="keyword">String</span> postalCode;
+        }
+    
+        <span class="onelineComment">// --- Output Wrapper Inner Class ---</span>
+        <span class="onelineComment">// Defines the structured result returned to Agentforce.</span>
+        @JsonAccess(serializable=<span class="string">'always'</span> deserializable=<span class="string">'always'</span>)
+        <span class="keyword">global</span> with sharing <span class="keyword">class</span> GeocodingResponse {
+            @InvocableVariable(label=<span class="string">'Was Successful'</span>)
+            <span class="keyword">global</span> <span class="keyword">Boolean</span> isSuccess;
+    
+            @InvocableVariable(label=<span class="string">'Latitude'</span>)
+            <span class="keyword">global</span> <span class="keyword">Decimal</span> latitude;
+    
+            @InvocableVariable(label=<span class="string">'Longitude'</span>)
+            <span class="keyword">global</span> <span class="keyword">Decimal</span> longitude;
+    
+            @InvocableVariable(label=<span class="string">'Error Message'</span>)
+            <span class="keyword">global</span> <span class="keyword">String</span> errorMessage;
+        }
+    
+    <span class="onelineComment">// Static factory methods for creating consistent results.</span>
+        <span class="keyword">public</span> <span class="keyword">static</span> GeocodingResponse success(<span class="keyword">Decimal</span> lat, <span class="keyword">Decimal</span> lon) {
+            GeocodingResponse result = <span class="keyword">new</span> GeocodingResponse();
+            result.isSuccess = <span class="keyword">true</span>;
+            result.latitude = lat;
+            result.longitude = lon;
+            <span class="statement">return</span> result;
+        }
+
+        <span class="keyword">public</span> <span class="keyword">static</span> GeocodingResponse error(<span class="keyword">String</span> message) {
+            GeocodingResponse result = <span class="keyword">new</span> GeocodingResponse();
+            result.isSuccess = <span class="keyword">false</span>;
+            result.errorMessage = message;
+            <span class="statement">return</span> result;
+        }
+}
+
+
+<span class="onelineComment">// --- 2. The Internal Logic Class (Public, not Global) ---</span>
+<span class="onelineComment">// This is where the actual business logic lives.</span>
+<span class="onelineComment">// It's separate from the global entry point class for better organization and testing.</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> GeocodingLogic {
+    <span class="onelineComment">// Since we defined the inputs and outputs as inner classes, we use dot notation to reference them.</span>
+    <span class="keyword">public</span> List&lt;GeocodingAction.GeocodingResponse&gt; performGeocoding(List&lt;GeocodingAction.GeocodingRequest&gt; requests) {
+        List&lt;GeocodingAction.GeocodingResponse&gt; results = <span class="keyword">new</span> List&lt;GeocodingAction.GeocodingResponse&gt;();
+
+        <span class="onelineComment">// This method would contain your complex, bulkified business logic.</span>
+        <span class="onelineComment">// For example, you can aggregate all requests into a single callout</span>
+        <span class="onelineComment">// to an external geocoding service.</span>
+
+        <span class="onelineComment">// For this simplified example, we loop and return mock results.</span>
+        <span class="statement">for</span> (GeocodingAction.GeocodingRequest req : requests) {
+            <span class="onelineComment">// In a real implementation, you would perform a callout and handle errors.</span>
+            <span class="statement">if</span> (req.postalCode == <span class="string">'94105'</span>) {
+                results.add(GeocodingAction.success(37.7749, -122.4194));
+            } <span class="statement">else</span> {
+                results.add(GeocodingAction.error(<span class="string">'Address could not be found.'</span>));
+            }
+        }
+        <span class="statement">return</span> results;
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global Apex in Managed Packages</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm">Access Modifiers</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="Use the InvocableMethod annotation to identify methods that can be run as invocable actions.">InvocableMethod Annotation</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="To identify variables used by invocable methods in custom classes, use the InvocableVariable annotation.">InvocableVariable Annotation</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm" title="Apex database operations run in user mode by default, which means that they apply the sharing rules, field-level security (FLS), and object permissions of the running user. Database operations only ignore FLS and object permissions if you explicitly set them to run in system mode.">Set an Access Mode for Database Operations</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/blogs/2024/03/build-custom-copilot-actions-using-apex" target="_blank"><em class="ph i">Salesforce Developers Blog</em>: Build Custom Agent Actions Using Apex</a></div></li>
+</ul>
+</div>
+</div>

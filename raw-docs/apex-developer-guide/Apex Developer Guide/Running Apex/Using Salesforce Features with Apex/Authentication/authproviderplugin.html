@@ -1,0 +1,288 @@
+<a name="authproviderplugin"><!-- --></a><h1 class="helpHead1">Create a Custom Authentication Provider Plug-in</h1><div class="body conbody">
+<div class="shortdesc">You can use Apex to create a custom OAuth-based authentication provider plug-in for
+        single sign-on (SSO) to Salesforce.</div>
+
+        <p class="p"> Out of the box, Salesforce supports several external authentication providers for single
+            sign-on, including Facebook, Google, LinkedIn, and service providers that implement the
+            OpenID Connect protocol. By creating a plug-in with Apex, you can add your own
+            OAuth-based authentication provider. Your users can then use the SSO credentials they
+            already use for non-Salesforce applications with your Salesforce orgs.</p>
+
+        <p class="p">Before you create your Apex class, you create a custom metadata type record for your
+            authentication provider. For details, see <a class="xref" href="https://help.salesforce.com/HTViewHelpDoc?id=sso_provider_plugin_custom.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Create a Custom External Authentication
+                Provider</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Sample Classes</h2>
+
+            
+            <div class="p">This example extends the abstract class <samp class="codeph nolang">Auth.AuthProviderPluginClass</samp> to configure an external authentication
+                provider called Concur. Build the sample classes and sample test classes in the
+                following order.<ol class="ol enumList">
+                    <li class="li">Concur</li>
+
+                    <li class="li">ConcurTestStaticVar</li>
+
+                    <li class="li">MockHttpResponseGenerator</li>
+
+                    <li class="li">ConcurTestClass</li>
+
+                </ol>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph nolang">Auth.AuthProviderPluginClass</samp>
+                    class doesn't include a method for single logout. You can easily configure
+                    single logout in Setup. For steps, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.security_auth_slo_oidc_rp_configuring.htm&amp;language=en_US" target="_blank">Configure OpenID Connect Single Logout with
+                        Salesforce as the Relying Party</a> in <cite class="cite">Salesforce Help</cite>.
+                    Alternatively, create custom methods for single logout.</p>
+</div>
+</div></div></div></div>
+</div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> Concur <span class="keyword">extends</span> Auth.AuthProviderPluginClass {
+               
+               <span class="keyword">public</span> <span class="keyword">String</span> redirectUrl; <span class="onelineComment">// use this URL for the endpoint that the authentication provider calls back to for configuration</span>
+               <span class="keyword">private</span> <span class="keyword">String</span> key;
+               <span class="keyword">private</span> <span class="keyword">String</span> secret;
+               <span class="keyword">private</span> <span class="keyword">String</span> authUrl;    <span class="onelineComment">// application redirection to the Concur website for authentication and authorization</span>
+               <span class="keyword">private</span> <span class="keyword">String</span> accessTokenUrl; <span class="onelineComment">// uri to get the new access token from concur  using the GET verb</span>
+               <span class="keyword">private</span> <span class="keyword">String</span> customMetadataTypeApiName; <span class="onelineComment">// api name for the custom metadata type created for this auth provider</span>
+               <span class="keyword">private</span> <span class="keyword">String</span> userAPIUrl; <span class="onelineComment">// api url to access the user in concur</span>
+               <span class="keyword">private</span> <span class="keyword">String</span> userAPIVersionUrl; <span class="onelineComment">// version of the user api url to access data from concur</span>
+               
+       
+               <span class="keyword">global</span> <span class="keyword">String</span> getCustomMetadataType() {
+                   <span class="statement">return</span> customMetadataTypeApiName;
+               }
+       
+               <span class="keyword">global</span> PageReference initiate(Map&lt;string,string&gt; authProviderConfiguration, <span class="keyword">String</span> stateToPropagate) {
+                   authUrl = authProviderConfiguration.get(<span class="string">'Auth_Url__c'</span>);
+                   key = authProviderConfiguration.get(<span class="string">'Key__c'</span>);
+                   <span class="onelineComment">//Here the developer can build up a request of some sort</span>
+                   <span class="onelineComment">//Ultimately they’ll return a URL where we will redirect the user</span>
+                   <span class="keyword">String</span> url = authUrl + <span class="string">'?client_id='</span>+ key +<span class="string">'&amp;scope=USER,EXPRPT,LIST&amp;redirect_uri='</span>+ redirectUrl + <span class="string">'&amp;state='</span> + stateToPropagate;
+                   <span class="statement">return</span> <span class="keyword">new</span> PageReference(url);
+                }
+        
+               <span class="keyword">global</span> Auth.AuthProviderTokenResponse handleCallback(Map&lt;string,string&gt; authProviderConfiguration, Auth.AuthProviderCallbackState state ) {
+                   <span class="onelineComment">//Here, the developer will get the callback with actual protocol.  </span>
+                   <span class="onelineComment">//Their responsibility is to return a new object called AuthProviderToken</span>
+                   <span class="onelineComment">//This will contain an optional accessToken and refreshToken</span>
+                   key = authProviderConfiguration.get(<span class="string">'Key__c'</span>);
+                   secret = authProviderConfiguration.get(<span class="string">'Secret__c'</span>);
+                   accessTokenUrl = authProviderConfiguration.get(<span class="string">'Access_Token_Url__c'</span>);
+                   
+                   Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; queryParams = state.queryParameters;
+                   <span class="keyword">String</span> code = queryParams.get(<span class="string">'code'</span>);
+                   <span class="keyword">String</span> sfdcState = queryParams.get(<span class="string">'state'</span>);
+                   
+                   HttpRequest req = <span class="keyword">new</span> HttpRequest();
+                   <span class="keyword">String</span> url = accessTokenUrl+<span class="string">'?code='</span> + code + <span class="string">'&amp;client_id='</span> + key + <span class="string">'&amp;client_secret='</span> + secret;
+                   req.setEndpoint(url);
+                   req.setHeader(<span class="string">'Content-Type'</span>,<span class="string">'application/xml'</span>);
+                   req.setMethod(<span class="string">'GET'</span>);
+                   
+                   Http http = <span class="keyword">new</span> Http();
+                   HTTPResponse res = http.send(req);
+                   <span class="keyword">String</span> responseBody = res.getBody();
+                   <span class="keyword">String</span> accessToken = getTokenValueFromResponse(responseBody, <span class="string">'AccessToken'</span>, <span class="keyword">null</span>);
+                   <span class="onelineComment">//Parse access token value</span>
+                   <span class="keyword">String</span> refreshToken = getTokenValueFromResponse(responseBody, <span class="string">'RefreshToken'</span>, <span class="keyword">null</span>);
+                   <span class="onelineComment">//Parse refresh token value</span>
+                   
+                   <span class="statement">return</span> <span class="keyword">new</span> Auth.AuthProviderTokenResponse(<span class="string">'Concur'</span>, accessToken, <span class="string">'refreshToken'</span>, sfdcState);
+                   <span class="onelineComment">//don’t hard-code the refresh token value!</span>
+                }
+    
+    
+                 <span class="keyword">global</span> Auth.UserData  getUserInfo(Map&lt;string,string&gt; authProviderConfiguration, Auth.AuthProviderTokenResponse response) { 
+                     <span class="onelineComment">//Here the developer is responsible for constructing an Auth.UserData object</span>
+                     <span class="keyword">String</span> token = response.oauthToken;
+                     HttpRequest req = <span class="keyword">new</span> HttpRequest();
+                     userAPIUrl = authProviderConfiguration.get(<span class="string">'API_User_Url__c'</span>);
+                     userAPIVersionUrl = authProviderConfiguration.get(<span class="string">'API_User_Version_Url__c'</span>);
+                     req.setHeader(<span class="string">'Authorization'</span>, <span class="string">'OAuth '</span> + token);
+                     req.setEndpoint(userAPIUrl);
+                     req.setHeader(<span class="string">'Content-Type'</span>,<span class="string">'application/xml'</span>);
+                     req.setMethod(<span class="string">'GET'</span>);
+                     
+                     Http http = <span class="keyword">new</span> Http();
+                     HTTPResponse res = http.send(req);
+                     <span class="keyword">String</span> responseBody = res.getBody();
+                     <span class="keyword">String</span> id = getTokenValueFromResponse(responseBody, <span class="string">'LoginId'</span>,userAPIVersionUrl);
+                     <span class="keyword">String</span> fname = getTokenValueFromResponse(responseBody, <span class="string">'FirstName'</span>, userAPIVersionUrl);
+                     <span class="keyword">String</span> lname = getTokenValueFromResponse(responseBody, <span class="string">'LastName'</span>, userAPIVersionUrl);
+                     <span class="keyword">String</span> flname = fname + <span class="string">' '</span> + lname;
+                     <span class="keyword">String</span> uname = getTokenValueFromResponse(responseBody, <span class="string">'EmailAddress'</span>, userAPIVersionUrl);
+                     <span class="keyword">String</span> locale = getTokenValueFromResponse(responseBody, <span class="string">'LocaleName'</span>, userAPIVersionUrl);
+                     Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; provMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+                     provMap.put(<span class="string">'what1'</span>, <span class="string">'noidea1'</span>);
+                     provMap.put(<span class="string">'what2'</span>, <span class="string">'noidea2'</span>);
+                     <span class="statement">return</span> <span class="keyword">new</span> Auth.UserData(id, fname, lname, flname, uname,
+                          <span class="string">'what'</span>, locale, <span class="keyword">null</span>, <span class="string">'Concur'</span>, <span class="keyword">null</span>, provMap);
+                }
+                
+                <span class="keyword">private</span> <span class="keyword">String</span> getTokenValueFromResponse(<span class="keyword">String</span> response, <span class="keyword">String</span> token, <span class="keyword">String</span> ns) {
+                    Dom.Document docx = <span class="keyword">new</span> Dom.Document();
+                    docx.load(response);
+                    <span class="keyword">String</span> ret = <span class="keyword">null</span>;
+
+                    dom.XmlNode xroot = docx.getrootelement() ;
+                    <span class="statement">if</span>(xroot != <span class="keyword">null</span>){
+                       ret = xroot.getChildElement(token, ns).getText();
+                    }
+                    <span class="statement">return</span> ret;
+                }  
+    
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Sample Test Classes</h2>
+
+            
+            <p class="p">The following example contains test classes for the Concur class.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ConcurTestClass {
+
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> OAUTH_TOKEN = <span class="string">'testToken'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> STATE = <span class="string">'mocktestState'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> REFRESH_TOKEN = <span class="string">'refreshToken'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LOGIN_ID = <span class="string">'testLoginId'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> USERNAME = <span class="string">'testUsername'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> FIRST_NAME = <span class="string">'testFirstName'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LAST_NAME = <span class="string">'testLastName'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EMAIL_ADDRESS = <span class="string">'testEmailAddress'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LOCALE_NAME = <span class="string">'testLocalName'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> FULL_NAME = FIRST_NAME + <span class="string">' '</span> + LAST_NAME;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> PROVIDER = <span class="string">'Concur'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> REDIRECT_URL = <span class="string">'http://localhost/services/authcallback/orgId/Concur'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KEY = <span class="string">'testKey'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> SECRET = <span class="string">'testSecret'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> STATE_TO_PROPOGATE  = <span class="string">'testState'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> ACCESS_TOKEN_URL = <span class="string">'http://www.dummyhost.com/accessTokenUri'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> API_USER_VERSION_URL = <span class="string">'http://www.dummyhost.com/user/20/1'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> AUTH_URL = <span class="string">'http://www.dummy.com/authurl'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> API_USER_URL = <span class="string">'www.concursolutions.com/user/api'</span>;
+
+    <span class="onelineComment">// in the real world scenario , the key and value would be read from the (custom fields in) custom metadata type record</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; setupAuthProviderConfig () {
+            Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+           authProviderConfiguration.put(<span class="string">'Key__c'</span>, KEY);
+           authProviderConfiguration.put(<span class="string">'Auth_Url__c'</span>, AUTH_URL);
+           authProviderConfiguration.put(<span class="string">'Secret__c'</span>, SECRET);
+           authProviderConfiguration.put(<span class="string">'Access_Token_Url__c'</span>, ACCESS_TOKEN_URL);
+           authProviderConfiguration.put(<span class="string">'API_User_Url__c'</span>,API_USER_URL);
+           authProviderConfiguration.put(<span class="string">'API_User_Version_Url__c'</span>,API_USER_VERSION_URL);
+           authProviderConfiguration.put(<span class="string">'Redirect_Url__c'</span>,REDIRECT_URL);
+           <span class="statement">return</span> authProviderConfiguration;
+          
+    }
+
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testInitiateMethod() {
+           <span class="keyword">String</span> stateToPropogate = <span class="string">'mocktestState'</span>;
+           Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = setupAuthProviderConfig();
+           Concur concurCls = <span class="keyword">new</span> Concur();
+           concurCls.redirectUrl = authProviderConfiguration.get(<span class="string">'Redirect_Url__c'</span>);
+           
+           PageReference expectedUrl =  <span class="keyword">new</span> PageReference(authProviderConfiguration.get(<span class="string">'Auth_Url__c'</span>) + <span class="string">'?client_id='</span>+ 
+                                               authProviderConfiguration.get(<span class="string">'Key__c'</span>) +<span class="string">'&amp;scope=USER,EXPRPT,LIST&amp;redirect_uri='</span>+ 
+                                               authProviderConfiguration.get(<span class="string">'Redirect_Url__c'</span>) + <span class="string">'&amp;state='</span> + 
+                                               STATE_TO_PROPOGATE);
+           PageReference actualUrl = concurCls.initiate(authProviderConfiguration, STATE_TO_PROPOGATE);
+           System.assertEquals(expectedUrl.getUrl(), actualUrl.getUrl());
+       }
+    
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testHandleCallback() {
+           Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = setupAuthProviderConfig();
+           Concur concurCls = <span class="keyword">new</span> Concur();
+           concurCls.redirectUrl = authProviderConfiguration.get(<span class="string">'Redirect_Url_c'</span>);
+
+           Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> ConcurMockHttpResponseGenerator());
+
+           Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; queryParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+           queryParams.put(<span class="string">'code'</span>,<span class="string">'code'</span>);
+           queryParams.put(<span class="string">'state'</span>,authProviderConfiguration.get(<span class="string">'State_c'</span>));
+           Auth.AuthProviderCallbackState cbState = <span class="keyword">new</span> Auth.AuthProviderCallbackState(<span class="keyword">null</span>,<span class="keyword">null</span>,queryParams);
+           Auth.AuthProviderTokenResponse actualAuthProvResponse = concurCls.handleCallback(authProviderConfiguration, cbState);
+           Auth.AuthProviderTokenResponse expectedAuthProvResponse = <span class="keyword">new</span> Auth.AuthProviderTokenResponse(<span class="string">'Concur'</span>, OAUTH_TOKEN, REFRESH_TOKEN, <span class="keyword">null</span>);
+           
+           System.assertEquals(expectedAuthProvResponse.provider, actualAuthProvResponse.provider);
+           System.assertEquals(expectedAuthProvResponse.oauthToken, actualAuthProvResponse.oauthToken);
+           System.assertEquals(expectedAuthProvResponse.oauthSecretOrRefreshToken, actualAuthProvResponse.oauthSecretOrRefreshToken);
+           System.assertEquals(expectedAuthProvResponse.state, actualAuthProvResponse.state);
+           
+
+    }
+    
+    
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testGetUserInfo() {
+           Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = setupAuthProviderConfig();
+           Concur concurCls = <span class="keyword">new</span> Concur();
+                      
+           Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> ConcurMockHttpResponseGenerator());
+
+           Auth.AuthProviderTokenResponse response = <span class="keyword">new</span> Auth.AuthProviderTokenResponse(PROVIDER, OAUTH_TOKEN ,<span class="string">'sampleOauthSecret'</span>, STATE);
+           Auth.UserData actualUserData = concurCls.getUserInfo(authProviderConfiguration, response) ;
+           
+           Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; provMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+           provMap.put(<span class="string">'key1'</span>, <span class="string">'value1'</span>);
+           provMap.put(<span class="string">'key2'</span>, <span class="string">'value2'</span>);
+                     
+           Auth.UserData expectedUserData = <span class="keyword">new</span> Auth.UserData(LOGIN_ID, FIRST_NAME, LAST_NAME, FULL_NAME, EMAIL_ADDRESS,
+                          <span class="keyword">null</span>, LOCALE_NAME, <span class="keyword">null</span>, PROVIDER, <span class="keyword">null</span>, provMap);
+          
+           System.assertNotEquals(expectedUserData,<span class="keyword">null</span>);
+           System.assertEquals(expectedUserData.firstName, actualUserData.firstName);
+           System.assertEquals(expectedUserData.lastName, actualUserData.lastName);
+           System.assertEquals(expectedUserData.fullName, actualUserData.fullName);
+           System.assertEquals(expectedUserData.email, actualUserData.email);
+           System.assertEquals(expectedUserData.username, actualUserData.username);
+           System.assertEquals(expectedUserData.locale, actualUserData.locale);
+           System.assertEquals(expectedUserData.provider, actualUserData.provider);
+           System.assertEquals(expectedUserData.siteLoginUrl, actualUserData.siteLoginUrl);
+    }
+    
+    
+   <span class="onelineComment">// implementing a mock http response generator for concur </span>
+   <span class="keyword">public</span>  <span class="keyword">class</span> ConcurMockHttpResponseGenerator <span class="keyword">implements</span> HttpCalloutMock {
+     <span class="keyword">public</span> HTTPResponse respond(HTTPRequest req) {
+        <span class="keyword">String</span> namespace = API_USER_VERSION_URL;
+        <span class="keyword">String</span> prefix = <span class="string">'mockPrefix'</span>;
+
+        Dom.Document doc = <span class="keyword">new</span> Dom.Document();
+        Dom.XmlNode xmlNode =  doc.createRootElement(<span class="string">'mockRootNodeName'</span>, namespace, prefix);
+        xmlNode.addChildElement(<span class="string">'LoginId'</span>, namespace, prefix).addTextNode(LOGIN_ID);
+        xmlNode.addChildElement(<span class="string">'FirstName'</span>, namespace, prefix).addTextNode(FIRST_NAME);
+        xmlNode.addChildElement(<span class="string">'LastName'</span>, namespace, prefix).addTextNode(LAST_NAME);
+        xmlNode.addChildElement(<span class="string">'EmailAddress'</span>, namespace, prefix).addTextNode(EMAIL_ADDRESS);
+        xmlNode.addChildElement(<span class="string">'LocaleName'</span>, namespace, prefix).addTextNode(LOCALE_NAME);            
+        xmlNode.addChildElement(<span class="string">'AccessToken'</span>, <span class="keyword">null</span>, <span class="keyword">null</span>).addTextNode(OAUTH_TOKEN);
+        xmlNode.addChildElement(<span class="string">'RefreshToken'</span>, <span class="keyword">null</span>, <span class="keyword">null</span>).addTextNode(REFRESH_TOKEN);
+        System.debug(doc.toXmlString());
+        <span class="onelineComment">// Create a fake response</span>
+        HttpResponse res = <span class="keyword">new</span> HttpResponse();
+        res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/xml'</span>);
+        res.setBody(doc.toXmlString());
+        res.setStatusCode(200);
+        <span class="statement">return</span> res;
+    }
+   
+  }
+}</pre></div>
+
+        </div>
+
+        
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_Auth_AuthProviderPlugin.htm" target="_blank" title="Apex Reference Guide: AuthProviderPlugin Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: AuthProviderPlugin Interface</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=sso_provider_plugin_custom.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Create a Custom External Authentication Provider - HTML (New Window)">Salesforce Help: Create a Custom External Authentication Provider</a></div></li>
+</ul>
+</div>
+</div>

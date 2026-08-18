@@ -1,0 +1,83 @@
+<a name="apex_interface_functions_FunctionCallback"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FunctionCallback Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Represents the callback Salesforce calls when an asynchronous, queued
+      Function invocation has completed.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_functions.htm" title="The Functions namespace provides classes and methods used to invoke and manage Salesforce Functions.">functions</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">When invoking Functions asynchronously via <samp class="codeph apex_code">Function.invoke(payload, callback)</samp>, you provide your own class that implements
+        FunctionCallback.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionCallback.htm#apex_functions_FunctionCallback_methods">FunctionCallback Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionCallback.htm#apex_interface_functions_FunctionCallback_Example">FunctionCallback Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_functions_FunctionCallback_methods">
+<a name="apex_functions_FunctionCallback_methods"><!-- --></a><h2 class="helpHead2">FunctionCallback Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">FunctionCallback</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionCallback.htm#apex_functions_FunctionCallback_handleResponse">handleResponse(var1)</a></strong><br>
+Called when an asynchronous Function invocation has     completed.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_FunctionCallback_handleResponse">
+<a name="apex_functions_FunctionCallback_handleResponse"><!-- --></a><h3 class="helpHead3">handleResponse(var1)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Called when an asynchronous Function invocation has
+    completed.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> handleResponse(functions.FunctionInvocation var1)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">var1</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocation.htm#apex_interface_functions_FunctionInvocation" title="Use FunctionInvocation to get the status and results of a synchronous or asynchronous Function invocation.">functions.FunctionInvocation</a> The result parameter contains JSON response information and error information.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_functions_FunctionCallback_Example">
+<a name="apex_interface_functions_FunctionCallback_Example"><!-- --></a><h2 class="helpHead2">FunctionCallback Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">This is an example implementation of the <samp class="codeph apex_code">functions.FunctionCallback</samp> interface.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyCallback
+  <span class="keyword">implements</span> functions.FunctionCallback {
+    <span class="keyword">public</span> <span class="keyword">void</span> handleResponse(functions.FunctionInvocation result) {
+      <span class="onelineComment">// Handle result of function invocation</span>
+      <span class="keyword">String</span> jsonResponse = result.getResponse();
+      System.debug(<span class="string">'Got response '</span> + jsonResponse);
+      JSONParser parser = JSON.createParser(jsonResponse);
+      <span class="onelineComment">// Process JSON using your own data class...</span>
+    }
+}</pre></div>
+<p class="p">The following example uses this implementation when invoking a Function asynchronously:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">myFunction.invoke(<span class="string">'{ "accountName" : "Acct", "contactName" : "MyContact", "opportunityName" : "Oppty" }'</span>, <span class="keyword">new</span> MyCallback());</pre></div>
+</div>
+</div>
+</div>
+</div>

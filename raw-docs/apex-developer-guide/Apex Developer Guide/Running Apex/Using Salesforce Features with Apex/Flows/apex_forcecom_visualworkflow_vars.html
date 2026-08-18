@@ -1,0 +1,33 @@
+<a name="apex_forcecom_visualworkflow_vars"><!-- --></a><h1 class="helpHead1">Getting Flow Variables</h1><div class="body conbody">
+<div class="shortdesc">You can retrieve flow variables for a specific flow in Apex.</div>
+
+      <p class="p"> The <samp class="codeph apex_code">Flow.Interview</samp> Apex class provides the <samp class="codeph apex_code">getVariableValue</samp> method for retrieving a flow variable,
+         which can be in the flow embedded in the Visualforce page, or in a separate flow that is
+         called by a subflow element. This example shows how to use this method to obtain breadcrumb
+         (navigation) information from the flow embedded in the Visualforce page. If that flow
+         contains subflow elements, and each of the referenced flows also contains a
+            <var class="keyword varname">vaBreadCrumb</var> variable, the Visualforce page can provide users with
+         breadcrumbs regardless of which flow the interview is running.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="flow_getVariableValue_codesample"><a name="flow_getVariableValue_codesample"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> SampleContoller {
+
+   <span class="onelineComment">// Instance of the flow</span>
+   <span class="keyword">public</span> Flow.Interview.Flow_Template_Gallery myFlow {get; set;}
+
+   <span class="keyword">public</span> <span class="keyword">String</span> getBreadCrumb() {
+      <span class="keyword">String</span> aBreadCrumb;
+      <span class="statement">if</span> (myFlow==<span class="keyword">null</span>) { <span class="statement">return</span> <span class="string">'Home'</span>;}
+      <span class="statement">else</span> aBreadCrumb = (<span class="keyword">String</span>) myFlow.getVariableValue(<span class="string">'vaBreadCrumb'</span>);
+
+      <span class="statement">return</span>(aBreadCrumb==<span class="keyword">null</span> ? <span class="string">'Home'</span>: aBreadCrumb);
+
+   }
+}
+</pre></div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/flow_interview_class.htm" target="_blank" title="Apex Reference Guide: Interview Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Interview Class</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,651 @@
+<a name="apex_class_sfsqlquery_Row"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Row Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Wraps a single Data 360 SQL query result row and provides typed accessor methods for retrieving column values by name or by 0-based index. <samp class="codeph ">Row</samp> instances are produced by <samp class="codeph ">SqlRowIterator</samp> and <samp class="codeph ">SqlQueueable</samp>; you don't construct <samp class="codeph ">Row</samp> objects directly during normal usage.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Every typed accessor is available in two forms: by column name (<samp class="codeph ">String</samp>) or by 0-based column index (<samp class="codeph ">Integer</samp>). All typed accessors return <samp class="codeph ">null</samp> when the underlying value is null. The accessors throw <samp class="codeph ">IllegalArgumentException</samp> if the column name isn't found or if the column index is out of bounds. Duplicate column names in a result set cause <samp class="codeph ">getColumnIndex()</samp> to throw <samp class="codeph ">IllegalArgumentException</samp>.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Access column values by name and by index:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c, Name__c, CreatedDate__c FROM accounts__dlm LIMIT 10'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    <span class="keyword">String</span> id       = row.getString(<span class="string">'Id__c'</span>);
+    <span class="keyword">String</span> name     = row.getString(1);           <span class="onelineComment">// by index</span>
+    DateTime created = row.getDateTime(<span class="string">'CreatedDate__c'</span>);
+    System.debug(id + <span class="string">' '</span> + name + <span class="string">' '</span> + created);
+}</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_constructors">
+<a name="apex_sfsqlquery_Row_constructors"><!-- --></a>
+  <h2 class="helpHead2">Row Constructors</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are constructors for <samp class="codeph apex_code">Row</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_ctor">
+<a name="apex_sfsqlquery_Row_ctor"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">Row(rawRow, metadata)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">Row</samp> from a raw API row and column metadata. In normal usage you don't construct <samp class="codeph ">Row</samp> objects directly — they're produced by <samp class="codeph ">SqlRowIterator</samp> and <samp class="codeph ">SqlQueueable</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Row(ConnectApi.QuerySqlRow rawRow, List&lt;ConnectApi.QuerySqlMetadataItem&gt; metadata)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">rawRow</var></strong>:<p class="p">Type: ConnectApi.QuerySqlRow</p>
+<p class="p">Raw API row from a <samp class="codeph ">ConnectApi.QuerySqlPageOutput</samp> result.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">metadata</var></strong>:<p class="p">Type: List&lt;ConnectApi.QuerySqlMetadataItem&gt;</p>
+<p class="p">Column metadata for the result set, used to map column names to indexes.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_methods">
+<a name="apex_sfsqlquery_Row_methods"><!-- --></a>
+  <h2 class="helpHead2">Row Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">Row</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getBoolean">
+<a name="apex_sfsqlquery_Row_getBoolean"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getBoolean(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Boolean</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean getBoolean(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The column value as a <samp class="codeph ">Boolean</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getBoolean_2">
+<a name="apex_sfsqlquery_Row_getBoolean_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getBoolean(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Boolean</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean getBoolean(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The column value as a <samp class="codeph ">Boolean</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getColumnIndex">
+<a name="apex_sfsqlquery_Row_getColumnIndex"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getColumnIndex(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the 0-based index of the specified column name in the result set. Use this to look up an index once and then access multiple rows efficiently using index-based getters. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column names are repeated in the table.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer getColumnIndex(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the column to look up.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The 0-based column index, or <samp class="codeph ">-1</samp> if the column name is not found.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDate">
+<a name="apex_sfsqlquery_Row_getDate"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDate(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Date</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Date getDate(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_date.htm#apex_methods_system_date" title="Contains methods for the Date primitive data type.">Date</a></p>
+<p class="p">The column value as a <samp class="codeph ">Date</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDate_2">
+<a name="apex_sfsqlquery_Row_getDate_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDate(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Date</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Date getDate(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_date.htm#apex_methods_system_date" title="Contains methods for the Date primitive data type.">Date</a></p>
+<p class="p">The column value as a <samp class="codeph ">Date</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDateTime">
+<a name="apex_sfsqlquery_Row_getDateTime"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDateTime(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Datetime</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Datetime getDateTime(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+<p class="p">The column value as a <samp class="codeph ">Datetime</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDateTime_2">
+<a name="apex_sfsqlquery_Row_getDateTime_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDateTime(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Datetime</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Datetime getDateTime(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+<p class="p">The column value as a <samp class="codeph ">Datetime</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDecimal">
+<a name="apex_sfsqlquery_Row_getDecimal"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDecimal(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Decimal</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Decimal getDecimal(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+<p class="p">The column value as a <samp class="codeph ">Decimal</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDecimal_2">
+<a name="apex_sfsqlquery_Row_getDecimal_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDecimal(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Decimal</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Decimal getDecimal(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+<p class="p">The column value as a <samp class="codeph ">Decimal</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDouble">
+<a name="apex_sfsqlquery_Row_getDouble"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDouble(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Double</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Double getDouble(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">The column value as a <samp class="codeph ">Double</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getDouble_2">
+<a name="apex_sfsqlquery_Row_getDouble_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDouble(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Double</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Double getDouble(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">The column value as a <samp class="codeph ">Double</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getInteger">
+<a name="apex_sfsqlquery_Row_getInteger"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getInteger(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as an <samp class="codeph ">Integer</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer getInteger(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The column value as an <samp class="codeph ">Integer</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getInteger_2">
+<a name="apex_sfsqlquery_Row_getInteger_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getInteger(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as an <samp class="codeph ">Integer</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer getInteger(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The column value as an <samp class="codeph ">Integer</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getList">
+<a name="apex_sfsqlquery_Row_getList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getList(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">List&lt;Object&gt;</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Object&gt; getList(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List&lt;Object&gt;</a></p>
+<p class="p">The column value as a <samp class="codeph ">List&lt;Object&gt;</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getList_2">
+<a name="apex_sfsqlquery_Row_getList_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getList(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">List&lt;Object&gt;</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Object&gt; getList(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List&lt;Object&gt;</a></p>
+<p class="p">The column value as a <samp class="codeph ">List&lt;Object&gt;</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getLong">
+<a name="apex_sfsqlquery_Row_getLong"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getLong(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Long</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Long getLong(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+<p class="p">The column value as a <samp class="codeph ">Long</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getLong_2">
+<a name="apex_sfsqlquery_Row_getLong_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getLong(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Long</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Long getLong(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+<p class="p">The column value as a <samp class="codeph ">Long</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getObject">
+<a name="apex_sfsqlquery_Row_getObject"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getObject(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as an <samp class="codeph ">Object</samp>. Use this when the column type is unknown or when you need the raw untyped value. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object getObject(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Object.htm#apex_class_System_Object" title="Contains methods that are implemented by all Apex types.">Object</a></p>
+<p class="p">The column value as an <samp class="codeph ">Object</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getObject_2">
+<a name="apex_sfsqlquery_Row_getObject_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getObject(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as an <samp class="codeph ">Object</samp>. Use this when the column type is unknown or when you need the raw untyped value. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object getObject(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Object.htm#apex_class_System_Object" title="Contains methods that are implemented by all Apex types.">Object</a></p>
+<p class="p">The column value as an <samp class="codeph ">Object</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getRawRow">
+<a name="apex_sfsqlquery_Row_getRawRow"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getRawRow()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the underlying <samp class="codeph ">ConnectApi.QuerySqlRow</samp> object. Use this for direct access to the raw API response when the typed accessor methods don't meet your needs.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public ConnectApi.QuerySqlRow getRawRow()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type:  <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_row.htm" title="Represents data associated with the an SQL query output.">ConnectApi.QuerySqlRow</a></p>
+<p class="p">The underlying <samp class="codeph ">ConnectApi.QuerySqlRow</samp> for this row.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getString">
+<a name="apex_sfsqlquery_Row_getString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getString(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">String</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getString(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The column value as a <samp class="codeph ">String</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getString_2">
+<a name="apex_sfsqlquery_Row_getString_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getString(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">String</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getString(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The column value as a <samp class="codeph ">String</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getTime">
+<a name="apex_sfsqlquery_Row_getTime"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getTime(columnIndex)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the column at the specified 0-based index as a <samp class="codeph ">Time</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column index is out of bounds.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Time getTime(Integer columnIndex)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnIndex</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> 0-based column index.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_time.htm#apex_methods_system_time" title="Contains methods for the Time primitive data type.">Time</a></p>
+<p class="p">The column value as a <samp class="codeph ">Time</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_getTime_2">
+<a name="apex_sfsqlquery_Row_getTime_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getTime(columnName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified column as a <samp class="codeph ">Time</samp>. Returns <samp class="codeph ">null</samp> if the column value is null. Throws <samp class="codeph ">IllegalArgumentException</samp> if the column name is not found.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Time getTime(String columnName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">columnName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Column name.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_time.htm#apex_methods_system_time" title="Contains methods for the Time primitive data type.">Time</a></p>
+<p class="p">The column value as a <samp class="codeph ">Time</samp>, or <samp class="codeph ">null</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_Row_toString">
+<a name="apex_sfsqlquery_Row_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of this <samp class="codeph ">Row</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A string representation of this <samp class="codeph ">Row</samp>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

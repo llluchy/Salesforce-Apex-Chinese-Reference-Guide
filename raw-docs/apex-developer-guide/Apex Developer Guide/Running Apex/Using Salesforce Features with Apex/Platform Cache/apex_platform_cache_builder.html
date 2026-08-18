@@ -1,0 +1,80 @@
+<a name="apex_platform_cache_builder"><!-- --></a><h1 class="helpHead1">Safely Cache Values with the CacheBuilder Interface</h1><div class="body conbody">
+<div class="shortdesc">A Platform Cache best practice is to ensure that your Apex code handles cache misses
+    by testing for cache requests that return null. You can write this code yourself. Or, you can
+    use the <samp class="codeph apex_code">Cache.CacheBuilder</samp> interface, which makes it
+    easy to safely store and retrieve values to a session or org cache.</div>
+
+    <p class="p">Rather than just declaring what you want to cache in your Apex class, create an inner
+      class that implements the <samp class="codeph apex_code">CacheBuilder</samp> interface. The
+      interface has a single method, <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp>,
+      which you override by coding the logic that builds the cached value based on the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method’s argument.</p>
+
+    <p class="p">To retrieve a value that you’ve cached with <samp class="codeph apex_code">CacheBuilder</samp>, you don’t call the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span>
+        var)</samp> method directly. Instead, it’s called indirectly by Salesforce the first time
+      you reference the class that implements <samp class="codeph apex_code">CacheBuilder</samp>.
+      Subsequent calls get the value from the cache, as long as the value exists. If the value
+      doesn’t exist, the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method is called
+      again to build the value and then return it. As a result, you don’t execute <samp class="codeph apex_code">put()</samp> methods when using the <samp class="codeph apex_code">CacheBuilder</samp> interface. And because the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method checks for cache misses, you don’t have to write the
+      code to check for nulls yourself. </p>
+
+    <p class="p">Let’s look at an example. Suppose you’re coding an Apex controller class for a Visualforce
+      page. In the Apex class, you often run a SOQL query that looks up a User record based on a
+      user ID. SOQL queries can be expensive, and Salesforce user records don’t typically change
+      much, so the User information is a good candidate for <samp class="codeph apex_code">CacheBuilder</samp>. </p>
+
+    <p class="p">In your controller class, create an inner class that implements the <samp class="codeph apex_code">CacheBuilder</samp> interface and overrides the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method. Then add the SOQL code to the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method with the user ID as its
+      parameter.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">class</span> UserInfoCache <span class="keyword">implements</span> Cache.CacheBuilder {
+    <span class="keyword">public</span> <span class="keyword">Object</span> doLoad(<span class="keyword">String</span> userid) {
+        User u = (User)[SELECT Id, IsActive, username FROM User WHERE id =: userid];
+        <span class="statement">return</span> u;
+    }
+}</pre></div>
+
+    <p class="p">To retrieve the User record from the org cache, execute the <samp class="codeph apex_code">Org.get(cacheBuilder, key)</samp> method, passing it the <samp class="codeph apex_code">UserInfoCache</samp> class and the user ID. Similarly, use <samp class="codeph apex_code">Session.get(cacheBuilder, key)</samp> and <samp class="codeph apex_code">Partition.get(cacheBuilder, key)</samp> to retrieve the value from the session or
+      partition cache, respectively.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">User batman = (User) Cache.Org.get(UserInfoCache.<span class="keyword">class</span>, ‘00541000000ek4c<span class="string">');</span></pre></div>
+
+    <p class="p">When you run the <samp class="codeph apex_code">get()</samp> method, Salesforce searches
+      the cache using a unique key that consists of the strings 00541000000ek4c and UserInfoCache.
+      If Salesforce finds a cached value, it returns it. For this example, the cached value is a
+      User record associated with the ID 00541000000ek4c. If Salesforce doesn’t find a value, it
+      executes the <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method of
+        <span class="keyword parmname">UserInfoCache</span> again (and reruns the SOQL query), caches the User
+      record, and then returns it. </p>
+
+    <div class="section">
+<h2 class="helpHead2">CacheBuilder Coding Requirements</h2>
+
+      
+      <p class="p">Follow these requirements when you code a class that implements the <samp class="codeph apex_code">CacheBuilder</samp> interface.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">The <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method must take a
+            <samp class="codeph apex_code"><span class="keyword">String</span></samp> parameter, even if you do not use the
+          parameter in the method’s code. Salesforce uses the string, along with the class name, to
+          build a unique key for the cached value. </li>
+
+        <li class="li">The <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method can return any
+          value, including null. If a null value is returned, it is delivered directly to the
+          CacheBuilder consumer and <strong class="ph b">not</strong> cached. CacheBuilder consumers are expected to handle
+          null values gracefully. We recommend using null values to reflect a temporary failure to
+          re-build the cache key.</li>
+
+        <li class="li">The class that implements <samp class="codeph apex_code">CacheBuilder</samp> must be
+          non-static because Salesforce instantiates a new instance of the class and runs the
+            <samp class="codeph apex_code">doLoad(<span class="keyword">String</span> var)</samp> method to create the cached
+          value. </li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_cache_CacheBuilder.htm" target="_blank" title="Apex Reference Guide: CacheBuilder Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: CacheBuilder Interface</a></div></li></ul>
+</div>
+</div>

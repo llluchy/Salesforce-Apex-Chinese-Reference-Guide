@@ -1,0 +1,58 @@
+<a name="apex_canvas_RenderContext_getApplicationContext"><!-- --></a><h1 class="helpHead1">getApplicationContext()</h1><div class="body refbody">
+<div class="shortdesc">Retrieves the application context information.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Canvas.ApplicationContext
+                    getApplicationContext()</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_canvas_ApplicationContext.htm" title="Use this interface to retrieve application context information, such as the application version or URL.">Canvas.ApplicationContext</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Use this method to get the application context information for your canvas app.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following example implementation of the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_canvas_CanvasLifecycleHandler.htm" title="Implement this interface to control context information and add custom behavior during the application render phase.">CanvasLifecycleHandler</a>
+                onRender() method uses the provided RenderContext to retrieve the application
+                context information and then checks the namespace, version, and app URL.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> onRender(Canvas.RenderContext renderContext){
+    Canvas.ApplicationContext app = renderContext.getApplicationContext();
+    <span class="statement">if</span> (!<span class="string">'MyNamespace'</span>.equals(app.getNamespace())){
+        <span class="onelineComment">// This application is installed, add code as needed</span>
+        ...
+    }
+
+    <span class="onelineComment">// Check the application version</span>
+    <span class="keyword">Double</span> currentVersion = <span class="keyword">Double</span>.valueOf(app.getVersion());
+
+    <span class="statement">if</span> (currentVersion &lt;= 5){
+        <span class="onelineComment">// Add version specific code as needed</span>
+        ...
+        <span class="onelineComment">// Tell the canvas application to operate in deprecated mode</span>
+        app.setCanvasUrlPath(<span class="string">'/canvas?deprecated=true'</span>);
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

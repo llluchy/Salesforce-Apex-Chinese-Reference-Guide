@@ -1,0 +1,363 @@
+<a name="apex_classes_annotation_isTest"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">IsTest</span> Annotation</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation to
+        define classes and methods that only contain code used for testing your app.</div>
+
+        <p class="p" id="isTest_defn"><a name="isTest_defn"><!-- --></a>The <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation can take multiple modifiers within parentheses and separated by blanks.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>
+        annotation on methods is equivalent to the <samp class="codeph apex_code">testMethod</samp> keyword. As best practice, Salesforce recommends that you use <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> rather than <samp class="codeph apex_code">testMethod</samp>. The <samp class="codeph apex_code">testMethod</samp> keyword may
+        be versioned out in a future release.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">Classes and methods that are defined as <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>
+            can be either <samp class="codeph apex_code"><span class="keyword">private</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>. Classes defined as <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> must be top-level classes.</p>
+
+        <div class="box message info" id="codeLimits">
+<a name="codeLimits"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Classes defined with the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation don't count against your organization limit of 6 MB for
+            all Apex code. </p>
+</div>
+</div></div></div>
+</div>
+
+        <p class="p" id="isTestExampleText"><a name="isTestExampleText"><!-- --></a>Here’s an example of a private test class that contains two test
+            methods.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="isTestExampleCode"><a name="isTestExampleCode"><!-- --></a><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> MyTestClass {
+
+   <span class="onelineComment">// Methods for testing</span>
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test1() {
+      <span class="onelineComment">// Implement test code</span>
+   }
+
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test2() {
+      <span class="onelineComment">// Implement test code</span>
+   }
+
+}</pre></div>
+
+        <div class="p" id="PublicTestClassExample">
+<a name="PublicTestClassExample"><!-- --></a>Here’s an example of a public test class that contains
+            utility methods for test data
+            creation:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span> 
+<span class="keyword">public</span> <span class="keyword">class</span> TestUtil {
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> createTestAccounts() { 
+      <span class="onelineComment">// Create some test accounts</span>
+   }
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> createTestContacts() {
+      <span class="onelineComment">// Create some test contacts</span>
+   }
+
+}
+</pre></div>
+</div>
+
+        <p class="p">Classes defined as <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> can't be interfaces
+            or enums. </p>
+
+        <p class="p"><span class="ph" id="RunningTestLimitation"><a name="RunningTestLimitation"><!-- --></a>Methods of a public test class can only be called from a
+                running test, that is, a test method or code invoked by a test method. Non-test
+                requests can’t call public methods.</span>. To learn about the various ways you can
+            run test methods, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_unit_tests_running.htm" title="To verify the functionality of your Apex code, execute unit tests. You can run Apex test methods in the Developer Console, in Setup, in the Salesforce extensions for Visual Studio Code, or using the API.">Run Unit Test Methods</a>.</p>
+
+        <div class="section" id="SeeAllDataSection">
+<a name="SeeAllDataSection"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">@IsTest(SeeAllData=true)</span> Annotation</h2>
+<p class="p"><span class="ph" id="isTest_SeeAllData_defn"><a name="isTest_SeeAllData_defn"><!-- --></a>For Apex code saved using Salesforce API version
+                    24.0 and later, use the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation to grant test classes and
+                    individual test methods access to all data in the organization. The access
+                    includes pre-existing data that the test didn’t create. Starting with Apex code
+                    saved using Salesforce API version 24.0, test methods don’t have access to
+                    pre-existing data in the organization. However, test code saved against
+                    Salesforce API version 23.0 and earlier continues to have access to all data in
+                    the organization.</span> See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_data_access.htm" title="By default, Apex test methods (API version 24.0 and later) can’t access pre-existing org data such as standard objects, custom objects, and custom settings data. They can only access data that they create. However, objects that are used to manage your organization or metadata objects can still be accessed in your tests.">Isolation of Test Data from Organization Data in Unit Tests</a>.</p>
+<p class="p" id="SeeAllDataNotes"><a name="SeeAllDataNotes"><!-- --></a><strong class="ph b">Considerations:</strong></p>
+<ul class="ul bulletList">
+                <li class="li">If a test class is defined with the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation, the <samp class="codeph apex_code">SeeAllData=<span class="keyword">true</span></samp> applies to all test methods
+                    that don’t explicitly set the <samp class="codeph apex_code">SeeAllData</samp>
+                    keyword.</li>
+
+                <li class="li">The <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation
+                    is used to open up data access when applied at the class or method level.
+                    However, if the containing class has been annotated with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp>, annotating a
+                    method with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=false)</span></samp>
+                    is ignored for that method. In this case, that method still has access to all
+                    the data in the organization. Annotating a method with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> overrides, for
+                    that method, an <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=false)</span></samp> annotation on the class.</li>
+
+                <li class="li">
+<samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> and <samp class="codeph apex_code"><span class="keyword">@IsTest(IsParallel=true)</span></samp> annotations can’t
+                    be used together on the same Apex method.</li>
+
+            </ul>
+
+            <div class="p" id="SeeAllDataExample">
+<a name="SeeAllDataExample"><!-- --></a>This example shows how to define a test class with the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation. All the
+                test methods in this class have access to all data in the
+                organization.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_uym_kdp_pjc"><a name="codeblock_uym_kdp_pjc"><!-- --></a><span class="onelineComment">// All test methods in this class can access all data.</span>
+<span class="keyword">@IsTest(SeeAllData=true)</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestDataAccessClass {
+
+    <span class="onelineComment">// This test accesses an existing account. </span>
+    <span class="onelineComment">// It also creates and accesses a new test account.</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> myTestMethod1() {
+        <span class="onelineComment">// Query an existing account in the organization. </span>
+        Account a = [SELECT Id, Name FROM Account WHERE Name=<span class="string">'Acme'</span> LIMIT 1];
+        System.assert(a != <span class="keyword">null</span>);
+        
+        <span class="onelineComment">// Create a test account based on the queried account.</span>
+        Account testAccount = a.clone();
+        testAccount.Name = <span class="string">'Acme Test'</span>;
+        <span class="statement">insert</span> testAccount;
+        
+        <span class="onelineComment">// Query the test account that was inserted.</span>
+        Account testAccount2 = [SELECT Id, Name FROM Account 
+                                WHERE Name=<span class="string">'Acme Test'</span> LIMIT 1];
+        System.assert(testAccount2 != <span class="keyword">null</span>);
+    }
+       
+    
+    <span class="onelineComment">// Like the previous method, this test method can also access all data</span>
+    <span class="onelineComment">// because the containing class is annotated with @IsTest(SeeAllData=true).</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> myTestMethod2() {
+        <span class="onelineComment">// Can access all data in the organization.</span>
+   }
+  
+}</pre></div>
+</div>
+
+            <div class="p" id="SeeAllDataExample2">
+<a name="SeeAllDataExample2"><!-- --></a>This second example shows how to apply the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation on a test
+                method. Because the test method’s class isn’t annotated, you have to annotate the
+                method to enable access to all data for the method. The second test method doesn’t
+                have this annotation, so it can access only the data it creates. In addition, it can
+                access objects that are used to manage your organization, such as
+                users.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_rx3_4dp_pjc"><a name="codeblock_rx3_4dp_pjc"><!-- --></a><span class="onelineComment">// This class contains test methods with different data access levels.</span>
+<span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> ClassWithDifferentDataAccess {
+
+    <span class="onelineComment">// Test method that has access to all data.</span>
+    <span class="keyword">@IsTest(SeeAllData=true)</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testWithAllDataAccess() {
+        <span class="onelineComment">// Can query all data in the organization.      </span>
+    }
+    
+    <span class="onelineComment">// Test method that has access to only the data it creates</span>
+    <span class="onelineComment">// and organization setup and metadata objects.</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testWithOwnDataAccess() {
+        <span class="onelineComment">// This method can still access the User object.</span>
+        <span class="onelineComment">// This query returns the first user object.</span>
+        User u = [SELECT UserName,Email FROM User LIMIT 1]; 
+        System.debug(<span class="string">'UserName: '</span> + u.UserName);
+        System.debug(<span class="string">'Email: '</span> + u.Email);
+        
+        <span class="onelineComment">// Can access the test account that is created here.</span>
+        Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Test Account'</span>);
+        <span class="statement">insert</span> a;      
+        <span class="onelineComment">// Access the account that was just created.</span>
+        Account insertedAcct = [SELECT Id,Name FROM Account 
+                                WHERE Name=<span class="string">'Test Account'</span>];
+        System.assert(insertedAcct != <span class="keyword">null</span>);
+    }
+}</pre></div>
+</div>
+</div>
+
+        <div class="section" id="OnInstallTrue">
+<a name="OnInstallTrue"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">@IsTest(OnInstall=true)</span>
+                Annotation</h2>
+
+            
+            <p class="p" id="isTest_OnInstall_defn"><a name="isTest_OnInstall_defn"><!-- --></a>Use the <samp class="codeph apex_code"><span class="keyword">@IsTest(OnInstall=true)</span></samp> annotation to specify which Apex tests are
+                executed during package installation. This annotation is used for tests in managed
+                or unmanaged packages. Only test methods with this annotation, or methods that are
+                part of a test class that has this annotation, are executed during package
+                installation. <span class="ph" id="OnInstallExtra"><a name="OnInstallExtra"><!-- --></a>Tests annotated to run during package
+                    installation must pass in order for the package installation to succeed. It’s no
+                    longer possible to bypass a failing test during package installation. </span><span class="ph" id="ExcludedTests"><a name="ExcludedTests"><!-- --></a>A test method or a class that doesn't have this annotation,
+                    or that is annotated with <samp class="codeph apex_code"><span class="keyword">@IsTest(OnInstall=false)</span></samp> or <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>, isn’t executed during installation.</span>
+            </p>
+
+            <p class="p">Tests annotated with <samp class="codeph apex_code">IsTest(OnInstall=<span class="keyword">true</span>)</samp>
+                that run during package install and upgrade aren’t counted towards code coverage.
+                However, code coverage is tracked and counted during a package creation operation.
+                Because Apex code installed from a managed package is excluded from org level
+                requirements for code coverage, it’s unlikely that you’re affected. But, if you
+                track managed package test coverage, you must rerun these tests outside of the
+                package install or upgrade operation for code coverage statistics to be updated.
+                Package install isn’t blocked by code coverage requirements.</p>
+
+            <p class="p" id="OnInstallExample"><a name="OnInstallExample"><!-- --></a>This example shows how to annotate a test method that is
+                executed during package installation. In this example, <samp class="codeph apex_code">test1</samp> is executed but <samp class="codeph apex_code">test2</samp> and <samp class="codeph apex_code">test3</samp> isn’t.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="OnInstallCodeblock"><a name="OnInstallCodeblock"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> OnInstallClass {
+   <span class="onelineComment">// Implement logic for the class.</span>
+   <span class="keyword">public</span> <span class="keyword">void</span> method1(){
+      <span class="onelineComment">// Some code</span>
+   }
+}
+</pre></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="OnInstallCodeblockTest"><a name="OnInstallCodeblockTest"><!-- --></a><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> OnInstallClassTest {
+   <span class="onelineComment">// This test method will be executed</span>
+   <span class="onelineComment">// during the installation of the package.</span>
+   <span class="keyword">@IsTest(OnInstall=true)</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test1() {
+      <span class="onelineComment">// Some test code</span>
+   }
+
+   <span class="onelineComment">// Tests excluded from running during the</span>
+   <span class="onelineComment">// the installation of a package.</span>
+
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test2() {
+      <span class="onelineComment">// Some test code</span>
+   }
+
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test3() {
+      <span class="onelineComment">// Some test code</span>
+   }
+}
+</pre></div>
+
+        </div>
+
+        <div class="section" id="isParallelTrue">
+<a name="isParallelTrue"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">@IsTest(IsParallel=true)</span> Annotation</h2>
+<p class="p"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use
+                    the <samp class="codeph apex_code"><span class="keyword">@IsTest(IsParallel=true)</span></samp> annotation
+                    to indicate test classes that can run in
+                    parallel.</span></p>
+
+            <p class="p"><strong class="ph b">Considerations:</strong></p>
+<ul class="ul bulletList">
+                <li class="li">This annotation forces the test to run in parallel even if the org-wide <samp class="codeph ">Disable Parallel Apex Testing</samp> option is set.</li>
+
+                <li class="li">
+<samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> and <samp class="codeph apex_code"><span class="keyword">@IsTest(IsParallel=true)</span></samp> annotations can’t
+                    be used together on the same Apex method.</li>
+
+            </ul>
+<p class="p"><strong class="ph b">Restrictions:</strong></p>
+<ul class="ul bulletList">
+                <li class="li">Tests can’t call the <samp class="codeph ">Test.getStandardPricebookId()</samp>method.</li>
+
+                <li class="li">Tests can’t call the <samp class="codeph ">System.schedule()</samp> and
+                        <samp class="codeph ">System.enqueueJob()</samp> methods.</li>
+
+                <li class="li">Tests can’t insert a ContentNote SObject.</li>
+
+                <li class="li">Tests can’t create User or GroupMember SObjects.</li>
+
+                <li class="li">Tests can’t use the SObjects that are listed in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dml_non_mix_sobjects.htm" title="DML operations on certain sObjects, sometimes referred to as setup objects, can’t be mixed with DML on non-setup sObjects in the same transaction. This restriction exists because some sObjects affect the user’s access to records in the org. You must insert or update these types of sObjects in a different transaction to prevent operations from happening with incorrect access-level permissions. For example, you can’t update an account and a user role in a single transaction.">sObjects That Can't Be Used Together in DML
+                    Operations</a>.</li>
+
+            </ul>
+</div>
+
+        <div class="section" id="isCriticalTrue">
+<a name="isCriticalTrue"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">@IsTest(critical=true)</span> Annotation
+                (Beta)</h2>
+
+            
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p> The <samp class="codeph ">RunRelevantTests</samp> test
+                level and the associated <samp class="codeph apex_code"><span class="keyword">@IsTest</span>()</samp>
+                annotations are pilot or beta services that are subject to the Beta Services Terms
+                at Agreements — Salesforce.com or a written Unified Pilot Agreement if executed by
+                Customer, and applicable terms in the Product Terms Directory. Use of these pilot or
+                beta services are at the Customer’s sole discretion.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">If you set the deployment test level to <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_deploy_run_relevant_tests.htm" target="_blank"><samp class="codeph nolang">RunRelevantTests</samp></a>, use the <samp class="codeph apex_code"><span class="keyword">@IsTest(critical=true)</span></samp> annotation to guarantee that the test class
+                always runs during deployments, regardless of the deployment payload. This
+                annotation is available at the test class level in Salesforce API version 66.0 and
+                later. Using this annotation on a test method results in a compilation error.</p>
+
+            <p class="p">This example code shows a test class marked with the <samp class="codeph apex_code"><span class="keyword">@IsTest(critical=true)</span></samp> annotation. When you set the deployment test
+                level to <samp class="codeph nolang">RunRelevantTests</samp>, the tests in this
+                class always run.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest(critical=true)</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> AccountServiceTest {
+   <span class="onelineComment">// ...</span>
+}
+</pre></div>
+
+        </div>
+
+        <div class="section" id="isTestFor">
+<a name="isTestFor"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">@IsTest(testFor='...')</span> Annotation
+                (Beta)</h2>
+
+            
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p> The <samp class="codeph ">RunRelevantTests</samp> test
+                level and the associated <samp class="codeph apex_code"><span class="keyword">@IsTest</span>()</samp>
+                annotations are pilot or beta services that are subject to the Beta Services Terms
+                at Agreements — Salesforce.com or a written Unified Pilot Agreement if executed by
+                Customer, and applicable terms in the Product Terms Directory. Use of these pilot or
+                beta services are at the Customer’s sole discretion.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">If you set the deployment test level to <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_deploy_run_relevant_tests.htm" target="_blank"><samp class="codeph nolang">RunRelevantTests</samp></a>, use the
+                    <samp class="codeph apex_code"><span class="keyword">@IsTest(testFor='...')</span></samp> annotation to
+                guarantee that the tests in the class run whenever the deployment includes new or
+                modified versions of the referenced Apex components. This annotation is available at
+                the test class level in Salesforce API version 66.0 and later. Using this annotation
+                on a test method results in a compilation error.</p>
+
+            <p class="p">To use <samp class="codeph apex_code"><span class="keyword">@IsTest(testFor='...')</span></samp>, set the
+                    <samp class="codeph apex_code">testFor</samp> parameter to a comma-separated
+                string of Apex classes and Apex triggers. For Apex classes, use the format <samp class="codeph nolang">ApexClass:<var class="keyword varname">ClassName</var></samp>. For Apex
+                triggers, use the format <samp class="codeph nolang">ApexTrigger:<var class="keyword varname">TriggerName</var></samp>. If specifying a class
+                or trigger from a different namespace, use the fully qualified name, for example,
+                    <samp class="codeph nolang">ApexClass:<var class="keyword varname">MyNamespace</var>.<var class="keyword varname">ClassName</var></samp>.</p>
+
+            <p class="p">This example code shows a test class marked with the <samp class="codeph apex_code"><span class="keyword">@IsTest(testFor='...')</span></samp> annotation. If you set the deployment test
+                level to <samp class="codeph apex_code">RunRelevantTests</samp>, this test class
+                runs whenever <samp class="codeph apex_code">AccountHandler</samp> or <samp class="codeph apex_code">AccountTrigger</samp> are new or modified in the
+                deployment payload. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest(testFor='ApexClass:AccountHandler,ApexTrigger:AccountTrigger')</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> AccountHandlerTest {
+   <span class="onelineComment">// ...</span>
+}
+
+</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="InvocableVariable Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_JsonAccess.htm" title="JsonAccess Annotation">Next →</a></li>
+</ul></div>
+</div>

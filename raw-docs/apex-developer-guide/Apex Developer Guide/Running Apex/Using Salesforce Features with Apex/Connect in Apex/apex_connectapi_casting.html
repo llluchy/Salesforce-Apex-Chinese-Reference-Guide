@@ -1,0 +1,41 @@
+<a name="apex_connectapi_casting"><!-- --></a><h1 class="helpHead1">Casting <span class="titlecodeph">ConnectApi</span> Objects</h1><div class="body conbody">
+<div class="shortdesc">It may be useful to downcast some <samp class="codeph apex_code">ConnectApi</samp> output objects to a more
+specific type. </div>
+
+<p class="p">This technique is especially useful for message segments, feed item capabilities, and record
+			fields. <span class="ph" id="downcastMessageFeedItemAttachment"><a name="downcastMessageFeedItemAttachment"><!-- --></a>Message segments in a feed item are
+				typed as <samp class="codeph apex_code">ConnectApi.MessageSegment</samp>. Feed
+				item capabilities are typed as <samp class="codeph apex_code">ConnectApi.FeedItemCapability</samp>. Record fields are typed as <samp class="codeph apex_code">ConnectApi.AbstractRecordField</samp>. These classes
+				are all abstract and have several concrete subclasses. At runtime you can use
+					<samp class="codeph apex_code"><span class="statement">instanceof</span></samp> to check the concrete types
+				of these objects and then safely proceed with the corresponding downcast. When you
+				downcast, you must have a default case that handles unknown subclasses.</span></p>
+
+<div class="p">The following example downcasts a <samp class="codeph apex_code">ConnectApi.MessageSegment</samp> to a <samp class="codeph apex_code">ConnectApi.MentionSegment</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span>(segment <span class="statement">instanceof</span> ConnectApi.MentionSegment) {
+	ConnectApi.MentionSegment = (ConnectApi.MentionSegment)segment;
+}</pre></div>
+</div>
+
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>The composition of a feed can change between
+            releases. Write your code to handle instances of unknown subclasses.</p>
+</div>
+</div></div></div></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm" target="_blank" title="Apex Reference Guide: ChatterFeeds Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ChatterFeeds Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_feed_element_capabilities.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.FeedElementCapabilities - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.FeedElementCapabilities</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_msg_seg.htm" target="_blank" title="Apex Reference Guide: ConnectApi.MessageSegment - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ConnectApi.MessageSegment</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_abstractRecordView.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.AbstractRecordView - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.AbstractRecordView</a></div></li>
+</ul>
+</div>
+</div>

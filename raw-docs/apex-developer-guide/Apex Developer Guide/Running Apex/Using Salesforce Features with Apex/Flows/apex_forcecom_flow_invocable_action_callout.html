@@ -1,0 +1,41 @@
+<a name="apex_forcecom_flow_invocable_action_callout"><!-- --></a><h1 class="helpHead1">Making Callouts to External Systems from Invocable Actions</h1><div class="body conbody">
+<div class="shortdesc">When you define a method that runs as an invocable action in a screen flow and makes a
+  callout to an external system, use the <samp class="codeph apex_code"><span class="keyword">callout</span></samp>
+  modifier.</div>
+
+  <p class="p">When the method is executed as an invocable action, screen flows use this modifier to determine
+   whether the action can be executed safely in the current transaction. Flow admins can configure
+   the action to let the flow decide whether to execute the action in a new transaction or the
+   current one.</p>
+
+  <p class="p">When all of these conditions are met, the flow commits the current transaction, starts a new
+   transaction, and makes the call to an external system safely.</p>
+
+  <ul class="ul bulletList">
+   <li class="li">The method's callout modifier is <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</li>
+
+   <li class="li">The action's Transaction Control setting in a screen flow is configured to let the flow
+    decide.</li>
+
+   <li class="li">The current transaction has uncommitted work.</li>
+
+  </ul>
+
+  <p class="p">If any of these conditions are true, the flow executes the action in the current
+   transaction.</p>
+
+  <ul class="ul bulletList">
+   <li class="li">The callout modifier is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+
+   <li class="li">The action is executed by a non-screen flow.</li>
+
+   <li class="li">The current transaction doesn’t have uncommitted work.</li>
+
+  </ul>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="Use the InvocableMethod annotation to identify methods that can be run as invocable actions.">InvocableMethod Annotation</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,119 @@
+<a name="apex_commercepayments_sync_adapter_setup"><!-- --></a><h1 class="helpHead1">Set Up a Synchronous Payment Gateway Adapter</h1><div class="body taskbody">
+<div class="shortdesc">For payments transactions, you can configure Salesforce to interface with a synchronous
+  payment gateway adapter.</div>
+
+  <div class="section prereq p">
+   
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+     <tbody class="tbody">
+      <tr>
+       <td class="subHead">Available in: Salesforce Summer ’20 and later</td>
+
+      </tr>
+
+      <tr>
+       <td class="subHead">Available in: API 49.0 and later</td>
+
+      </tr>
+
+     </tbody>
+
+    </table>
+<br>
+</div>
+
+   <p class="p">To access the <samp class="codeph nolang">commercepayments</samp> API, you need the
+    PaymentPlatform org permission.</p>
+
+  </div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">Create your payment gateway adapter Apex classes. For instructions, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_commercepayments_sync_adapter_concept.htm" title="In synchronous payment configurations, the Salesforce payment platform sends transaction information to the gateway, and then waits for a gateway response that contains the final transaction status. Salesforce creates a transaction only if the transaction is successful in the gateway.">Building a Synchronous Gateway Adapter</a>.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Create a named credential.</span>
+    <ol type="a" class="ol substeps enumList">
+     <li class="li substep">
+      <span class="ph cmd">From Setup, in the Quick Find box, enter <kbd class="ph userinput">Named Credentials</kbd>, and
+       then select <strong class="ph uicontrol">New.</strong>.</span>
+     </li>
+
+     <li class="li substep">
+      <span class="ph cmd">Complete the required fields, including the URL for your payment gateway.</span>
+     </li>
+
+    </ol>
+
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Create a payment gateway provider. The PaymentGatewayProvider object stores details about
+     the payment gateway that Salesforce Payments communicates with when processing a
+     transaction.</span>
+    <ol type="a" class="ol substeps enumList">
+     <li class="li substep">
+      <span class="ph cmd">Generate an access token according to the instructions in <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/quickstart_connecting.htm" target="_blank" title="HTML (New Window)">Connect to Connect REST API Using
+        OAuth</a>.</span>
+      <div class="itemgroup info">The response includes the access token, specified in the <samp class="codeph nolang">access_token</samp> property, and the server instance, specified in the <samp class="codeph nolang">instance_url</samp> property. Use this information to make API calls
+       to build the payment gateway provider.</div>
+     </li>
+
+     <li class="li substep">
+      <span class="ph cmd">Execute a POST call to the resource using the domain in the <samp class="codeph nolang">instance_url</samp>. For example, <samp class="codeph nolang">https://<var class="keyword varname">instance_name</var>.my.salesforce.com/services/data/v<var class="keyword varname">api_version</var>/tooling/sobjects/PaymentGatewayProvider</samp>.</span>
+      <div class="itemgroup info">Use this payload as the request body, replacing <var class="keyword varname">value</var> with the
+       correct data.<div class="codeSection nolang"><pre class="codeblock brush:plain">{
+        "ApexAdapterId": "<var class="keyword varname">value</var>",
+        "DeveloperName": "<var class="keyword varname">value</var>",
+        "MasterLabel": "<var class="keyword varname">value</var>",
+        "IdempotencySupported": "<var class="keyword varname">value</var>",
+        "Comments": "<var class="keyword varname">value</var>"
+        }
+        
+        Example:
+        {
+        "ApexAdapterId": "01pxx0000004UU8AAM",
+        "DeveloperName": "MyNewGatewayProvider",
+        "MasterLabel": "My New Gateway Provider",
+        "IdempotencySupported": "Yes",
+        "Comments": "Custom made gateway provider."
+        }</pre></div>
+</div>
+     </li>
+
+    </ol>
+
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Create a payment gateway record. The PaymentGateway object stores information about the
+     connection to the external payment gateway. The record requires these field values.</span>
+    <ul class="ul choices bulletList">
+     <li class="li choice">Payment Gateway Name: Name of the external payment gateway.</li>
+
+     <li class="li choice">Merchant Credential ID: ID of the named credential that you created.</li>
+
+     <li class="li choice">Payment Gateway Provider ID: ID of the payment gateway provider that you
+      created.</li>
+
+     <li class="li choice">Status: Active</li>
+
+    </ul>
+
+   </li>
+
+  </ol>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_paymentgateway.htm" target="_blank" title="Object Reference for the Salesforce Platform: PaymentGateway - HTML (New Window)"><em class="ph i">Object Reference for the Salesforce Platform</em>: PaymentGateway</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_paymentgatewayprovider.htm" target="_blank" title="Object Reference for the Salesforce Platform:
+              PaymentGatewayProvider - HTML (New Window)"><em class="ph i">Object Reference for the Salesforce Platform</em>:
+              PaymentGatewayProvider</a></div></li>
+</ul>
+</div>
+</div>

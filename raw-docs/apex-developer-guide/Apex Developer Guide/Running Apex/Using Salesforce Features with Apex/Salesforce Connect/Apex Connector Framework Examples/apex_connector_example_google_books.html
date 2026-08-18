@@ -1,0 +1,355 @@
+<a name="apex_connector_example_google_books"><!-- --></a><h1 class="helpHead1">Google Books™ Custom Adapter for Salesforce Connect</h1><div class="body conbody">
+<div class="shortdesc">This example illustrates how to work around the requirements and limits of an
+        external system’s APIs: in this case, the Google Books API Family.</div>
+
+        <div class="p">To integrate with the Google Books™ service, we set up Salesforce Connect as follows.<ul class="ul bulletList">
+                <li class="li">The Google Books API allows a maximum of 40 returned results, so we develop our
+                    custom adapter to handle result sets with more than 40 rows.</li>
+
+                <li class="li">The Google Books API can sort only by search relevance and publish dates, so we
+                    develop our custom adapter to disable sorting on columns.</li>
+
+                <li class="li">To support OAuth, we set up our authentication settings in Salesforce so that
+                    the requested scope of permissions for access tokens includes
+                        <kbd class="ph userinput">https://www.googleapis.com/auth/books</kbd>.</li>
+
+                <li class="li">To allow Apex callouts, we define these remote sites in Salesforce:<ul class="ul bulletList">
+                        <li class="li">https://www.googleapis.com</li>
+
+                        <li class="li">https://books.google.com</li>
+
+                    </ul>
+</li>
+
+            </ul>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">BooksDataSourceConnection Class</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Extends the DataSource.Connection class to enable
+ *   Salesforce to sync the external system metadata
+ *   schema and to handle queries and searches of the external
+ *   data.
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> BooksDataSourceConnection <span class="keyword">extends</span>
+    DataSource.Connection {
+ 
+    <span class="keyword">private</span> DataSource.ConnectionParams connectionInfo;
+
+    <span class="onelineComment">// Constructor for BooksDataSourceConnection.</span>
+    <span class="keyword">global</span> BooksDataSourceConnection(DataSource.ConnectionParams
+                                    connectionInfo) {
+        <span class="statement">this</span>.connectionInfo = connectionInfo;
+    }
+
+    <span class="multilineComment">/**
+     *   Called when an external object needs to get a list of 
+     *   schema from the external data source, for example when 
+     *   the administrator clicks “Validate and Sync” in the 
+     *   user interface for the external data source.   
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables =
+            <span class="keyword">new</span> List&lt;DataSource.Table&gt;();
+        List&lt;DataSource.Column&gt; columns;
+        columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+        columns.add(getColumn(<span class="string">'title'</span>));
+        columns.add(getColumn(<span class="string">'description'</span>));
+        columns.add(getColumn(<span class="string">'publishedDate'</span>));
+        columns.add(getColumn(<span class="string">'publisher'</span>));
+        columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>, 255));
+        tables.add(DataSource.Table.get(<span class="string">'googleBooks'</span>, <span class="string">'title'</span>,
+                                        columns));
+        <span class="statement">return</span> tables;
+    }
+
+    <span class="multilineComment">/**
+     *   Google Books API v1 doesn't support sorting,
+     *   so we create a column with sortable = false.
+     **/</span>
+    <span class="keyword">private</span> DataSource.Column getColumn(<span class="keyword">String</span> columnName) {
+        DataSource.Column column = DataSource.Column.text(columnName,
+                                                        255);
+        column.sortable = <span class="keyword">false</span>;
+        <span class="statement">return</span> column;
+    }
+
+    <span class="multilineComment">/**
+     *   Called to query and get results from the external
+     *   system for SOQL queries, list views, and detail pages
+     *   for an external object that's associated with the
+     *   external data source.
+     *
+     *   The QueryContext argument represents the query to run
+     *   against a table in the external system.
+     *
+     *   Returns a list of rows as the query results.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(
+                    DataSource.QueryContext contexts) {
+        DataSource.Filter filter = contexts.tableSelection.filter;
+        <span class="keyword">String</span> url;
+        <span class="statement">if</span> (contexts.tableSelection.columnsSelected.size() == 1 &amp;&amp;
+        contexts.tableSelection.columnsSelected.get(0).aggregation ==
+            DataSource.QueryAggregation.COUNT) {
+            <span class="statement">return</span> getCount(contexts);
+        }
+
+        <span class="statement">if</span> (filter != <span class="keyword">null</span>) {
+            <span class="keyword">String</span> thisColumnName = filter.columnName;
+            <span class="statement">if</span> (thisColumnName != <span class="keyword">null</span> &amp;&amp;
+                thisColumnName.equals(<span class="string">'ExternalId'</span>)) {
+                url = <span class="string">'https://www.googleapis.com/books/v1/'</span> +
+                    <span class="string">'volumes?q='</span> + filter.columnValue +
+                    <span class="string">'&amp;maxResults=1&amp;id='</span> + filter.columnValue;
+                <span class="statement">return</span> DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>,
+                            contexts.tableSelection.tableSelected,
+                            getData(url));
+            }
+            <span class="statement">else</span> {
+                url = <span class="string">'https://www.googleapis.com/books/'</span> +
+                    <span class="string">'v1/volumes?q='</span> + filter.columnValue +
+                    <span class="string">'&amp;id='</span> + filter.columnValue +
+                    <span class="string">'&amp;maxResults=40'</span> + <span class="string">'&amp;startIndex='</span>;
+            }
+        } <span class="statement">else</span> {
+            url = <span class="string">'https://www.googleapis.com/books/v1/'</span> +
+                <span class="string">'volumes?q=america&amp;'</span> + <span class="string">'&amp;maxResults=40'</span> +
+                <span class="string">'&amp;startIndex='</span>;
+        }
+        <span class="multilineComment">/**
+         *   Google Books API v1 supports maxResults of 40
+         *   so we handle pagination explicitly in the else statement
+         *   when we handle more than 40 records per query.
+         **/</span>
+        <span class="statement">if</span> (contexts.maxResults &lt; 40) {
+            <span class="statement">return</span> DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>,
+                    contexts.tableSelection.tableSelected,
+                    getData(url + contexts.offset));
+        }
+        <span class="statement">else</span> {
+            <span class="statement">return</span> fetchData(contexts, url);
+        }
+     }
+
+    <span class="multilineComment">/**
+     *   Helper method to fetch results when maxResults is 
+     *   greater than 40 (the max value for maxResults supported 
+     *   by Google Books API v1).
+     **/</span>
+    <span class="keyword">private</span> DataSource.TableResult fetchData(
+        DataSource.QueryContext contexts, <span class="keyword">String</span> url) {
+        <span class="keyword">Integer</span> fetchSlot = (contexts.maxResults / 40) + 1;
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; data =
+            <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+        <span class="keyword">Integer</span> startIndex = contexts.offset;
+        <span class="statement">for</span>(<span class="keyword">Integer</span> count = 0; count &lt; fetchSlot; count++) {
+            data.addAll(getData(url + startIndex));
+            <span class="statement">if</span>(count == 0)
+                contexts.offset = 41;
+            <span class="statement">else</span>
+                contexts.offset += 40;
+        }
+ 
+        <span class="statement">return</span> DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>,
+                        contexts.tableSelection.tableSelected, data);
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to execute count() query.
+     **/</span>
+    <span class="keyword">private</span> DataSource.TableResult getCount(
+        DataSource.QueryContext contexts) {
+        <span class="keyword">String</span> url = <span class="string">'https://www.googleapis.com/books/v1/'</span> +
+                    <span class="string">'volumes?q=america&amp;projection=full'</span>;
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; response =
+            DataSource.QueryUtils.filter(contexts, getData(url));
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; countResponse =
+            <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; countRow =
+            <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+        countRow.put(
+            contexts.tableSelection.columnsSelected.get(0).columnName,
+            response.size());
+        countResponse.add(countRow);
+        <span class="statement">return</span> DataSource.TableResult.get(contexts, countResponse);
+    }
+
+    <span class="multilineComment">/**
+     *   Called to do a full text search and get results from
+     *   the external system for SOSL queries and Salesforce
+     *   global searches.
+     *
+     *   The SearchContext argument represents the query to run
+     *   against a table in the external system.
+     *
+     *   Returns results for each table that the SearchContext
+     *   requested to be searched.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.TableResult&gt; search(
+        DataSource.SearchContext contexts) {
+        List&lt;DataSource.TableResult&gt; results =
+            <span class="keyword">new</span> List&lt;DataSource.TableResult&gt;();
+
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i =0; i&lt; contexts.tableSelections.size();i++) {
+            <span class="keyword">String</span> entity = contexts.tableSelections[i].tableSelected;
+            <span class="keyword">String</span> url = <span class="string">'https://www.googleapis.com/books/v1'</span> +
+                        <span class="string">'/volumes?q='</span> + contexts.searchPhrase;
+            results.add(DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>,
+                                                entity,
+                                                getData(url)));
+        }
+
+        <span class="statement">return</span> results;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to parse the data.
+     *   Returns a list of rows from the external system.
+     **/</span>
+    <span class="keyword">public</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; getData(<span class="keyword">String</span> url) {
+        HttpResponse response = getResponse(url);
+        <span class="keyword">String</span> body = response.getBody();
+
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows =
+            <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; responseBodyMap =
+            (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)JSON.deserializeUntyped(body);
+
+    <span class="multilineComment">/**
+     *   Checks errors.
+     **/</span>        
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; error =
+            (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)responseBodyMap.get(<span class="string">'error'</span>);
+        <span class="statement">if</span> (error!=<span class="keyword">null</span>) {
+            List&lt;<span class="keyword">Object</span>&gt; errorsList =
+                (List&lt;<span class="keyword">Object</span>&gt;)error.get(<span class="string">'errors'</span>);
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; errors =
+                (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)errorsList[0];
+            <span class="keyword">String</span> messages = (<span class="keyword">String</span>)errors.get(<span class="string">'message'</span>);
+            <span class="statement">throw</span> <span class="keyword">new</span> DataSource.OAuthTokenExpiredException(messages);
+        }
+
+        List&lt;<span class="keyword">Object</span>&gt; sItems = (List&lt;<span class="keyword">Object</span>&gt;)responseBodyMap.get(<span class="string">'items'</span>);
+        <span class="statement">if</span> (sItems != <span class="keyword">null</span>) {
+            <span class="statement">for</span> (<span class="keyword">Integer</span> i=0; i&lt; sItems.size(); i++) {
+                Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; <span class="statement">item</span> =
+                    (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)sItems[i];
+                rows.add(createRow(<span class="statement">item</span>));
+            }
+        } <span class="statement">else</span> {
+            rows.add(createRow(responseBodyMap));
+        }
+ 
+        <span class="statement">return</span> rows;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to populate a row based on source data.
+     *
+     *   The item argument maps to the data that
+     *   represents a row.
+     *
+     *   Returns an updated map with the External ID and
+     *   Display URL values.
+     **/</span>
+    <span class="keyword">public</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; createRow(
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; <span class="statement">item</span>) {
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; row = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+        <span class="statement">for</span> ( <span class="keyword">String</span> key : <span class="statement">item</span>.keySet() ){
+            <span class="statement">if</span> (key == <span class="string">'id'</span>) {
+                row.put(<span class="string">'ExternalId'</span>, <span class="statement">item</span>.get(key));
+            } <span class="statement">else</span> <span class="statement">if</span> (key == <span class="string">'volumeInfo'</span>) {
+                Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; volumeInfoMap =
+                    (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)<span class="statement">item</span>.get(key);
+                row.put(<span class="string">'title'</span>, volumeInfoMap.get(<span class="string">'title'</span>));
+                row.put(<span class="string">'description'</span>,
+                        volumeInfoMap.get(<span class="string">'description'</span>));
+                row.put(<span class="string">'DisplayUrl'</span>,
+                        volumeInfoMap.get(<span class="string">'infoLink'</span>));
+                row.put(<span class="string">'publishedDate'</span>,
+                        volumeInfoMap.get(<span class="string">'publishedDate'</span>));
+                row.put(<span class="string">'publisher'</span>,
+                        volumeInfoMap.get(<span class="string">'publisher'</span>));
+            }
+        }
+        <span class="statement">return</span> row;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to make the HTTP GET call.
+     *   The url argument is the URL of the external system.
+     *   Returns the response from the external system.
+     **/</span>
+    <span class="keyword">public</span> HttpResponse getResponse(<span class="keyword">String</span> url) {
+        Http httpProtocol = <span class="keyword">new</span> Http();
+        HttpRequest request = <span class="keyword">new</span> HttpRequest();
+        request.setEndPoint(url);
+        request.setMethod(<span class="string">'GET'</span>);
+        request.setHeader(<span class="string">'Authorization'</span>, <span class="string">'Bearer '</span>+
+                        <span class="statement">this</span>.connectionInfo.oauthToken);
+        HttpResponse response = httpProtocol.send(request);
+        <span class="statement">return</span> response;
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">BooksDataSourceProvider Class</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Extends the DataSource.Provider base class to create a
+ *   custom adapter for Salesforce Connect. The class informs
+ *   Salesforce of the functional and authentication
+ *   capabilities that are supported by or required to connect
+ *   to an external system.
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> BooksDataSourceProvider <span class="keyword">extends</span>
+    DataSource.Provider {
+    <span class="multilineComment">/**
+     *   Declares the types of authentication that can be used
+     *   to access the external system.
+     **/</span>   
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.AuthenticationCapability&gt;
+        getAuthenticationCapabilities() {
+        List&lt;DataSource.AuthenticationCapability&gt; capabilities =
+            <span class="keyword">new</span> List&lt;DataSource.AuthenticationCapability&gt;();
+        capabilities.add(
+            DataSource.AuthenticationCapability.OAUTH);
+        capabilities.add(
+            DataSource.AuthenticationCapability.ANONYMOUS);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the functional capabilities that the
+     *   external system supports.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Capability&gt;
+        getCapabilities() {
+        List&lt;DataSource.Capability&gt; capabilities = <span class="keyword">new</span>
+            List&lt;DataSource.Capability&gt;();
+        capabilities.add(DataSource.Capability.ROW_QUERY);
+        capabilities.add(DataSource.Capability.SEARCH);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the associated DataSource.Connection class.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.Connection getConnection(
+        DataSource.ConnectionParams connectionParams) {
+        <span class="statement">return</span> <span class="keyword">new</span> BooksDataSourceConnection(connectionParams);
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

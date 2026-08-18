@@ -1,0 +1,119 @@
+<a name="apex_platform_cache_session_examples"><!-- --></a><h1 class="helpHead1">Store and Retrieve Values from the Session Cache</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">Cache.Session</samp> and <samp class="codeph apex_code"><samp class="codeph apex_code">Cache.SessionPartition</samp></samp>
+    classes to manage values in the session cache. To manage values in any partition, use the
+    methods in the <samp class="codeph apex_code">Cache.Session</samp> class. If you’re managing
+    cache values in one partition, use the <samp class="codeph apex_code">Cache.SessionPartition</samp> methods instead.</div>
+
+    <div class="section">
+<h2 class="helpHead2">
+<span class="titlecodeph">Cache.Session</span> Methods</h2>
+
+      
+      <p class="p">To store a value in the session cache, call the <samp class="codeph apex_code">Cache.Session.put()</samp> method and supply a key and value. The key name is in the
+        format <samp class="codeph nolang">namespace.partition.key</samp>. For example, for
+        namespace <strong class="ph b">ns1</strong>, partition <strong class="ph b">partition1</strong>, and key <strong class="ph b">orderDate</strong>, the fully
+        qualified key name is <samp class="codeph nolang">ns1.partition1.orderDate</samp>.</p>
+
+      <p class="p">This example stores a <samp class="codeph nolang">DateTime</samp> cache value with the
+        key <samp class="codeph nolang">orderDate</samp>. Next, the snippet checks if the <samp class="codeph nolang">orderDate</samp> key is in the cache, and if so, retrieves the value
+        from the cache.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Add a value to the cache</span>
+DateTime dt = DateTime.parse(<span class="string">'06/16/2015 11:46 AM'</span>);
+Cache.Session.put(<span class="string">'ns1.partition1.orderDate'</span>, dt);
+<span class="statement">if</span> (Cache.Session.contains(<span class="string">'ns1.partition1.orderDate'</span>)) {
+    DateTime cachedDt = (DateTime)Cache.Session.get(<span class="string">'ns1.partition1.orderDate'</span>);
+}
+</pre></div>
+
+      <p class="p">To refer to the default partition and the namespace of the invoking class, omit the <samp class="codeph nolang">namespace.partition</samp> prefix and specify the key name.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Cache.Session.put(<span class="string">'orderDate'</span>, dt);
+<span class="statement">if</span> (Cache.Session.contains(<span class="string">'orderDate'</span>)) {
+    DateTime cachedDt = (DateTime)Cache.Session.get(<span class="string">'orderDate'</span>);
+}</pre></div>
+
+      <p class="p">The <samp class="codeph nolang">local</samp> prefix refers to the namespace of the
+        current org where the code is running, regardless of whether the org has a namespace
+        defined. If the org has a namespace defined as ns1, the following two statements are
+        equivalent.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Cache.Session.put(<span class="string">'local.myPartition.orderDate'</span>, dt);
+Cache.Session.put(<span class="string">'ns1.myPartition.orderDate'</span>, dt);</pre></div>
+
+      <div class="box message info" id="local_packages">
+<a name="local_packages"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph nolang">local</samp> prefix in an
+        installed managed package refers to the namespace of the subscriber org and not the
+        package’s namespace. The cache <samp class="codeph apex_code">put</samp> calls are not
+        allowed in a partition that the invoking class doesn’t own.</p>
+</div>
+</div></div></div>
+</div>
+
+      <p class="p">The <samp class="codeph apex_code">put()</samp> method has multiple versions (or
+        overloads), and each version takes different parameters. For example, to specify that your
+        cached value can’t be overwritten by another namespace, set the last parameter of this
+        method to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. The following example also sets the
+        lifetime of the cached value (3600 seconds or 1 hour) and makes the value available to any
+        namespace.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Add a value to the cache with options</span>
+Cache.Session.put(<span class="string">'ns1.partition1.totalSum'</span>, <span class="string">'500'</span>, 3600, Cache.Visibility.ALL, <span class="keyword">true</span>);
+</pre></div>
+
+      <p class="p">To retrieve a cached value from the session cache, call the <samp class="codeph apex_code">Cache.Session.get()</samp> method. Because <samp class="codeph apex_code">Cache.Session.get()</samp> returns an object, we recommend that you cast the returned
+        value to a specific type.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get a cached value</span>
+<span class="keyword">Object</span> obj = Cache.Session.get(<span class="string">'ns1.partition1.orderDate'</span>);
+<span class="onelineComment">// Cast return value to a specific data type</span>
+DateTime dt2 = (DateTime)obj;</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">
+<span class="titlecodeph">Cache.SessionPartition</span> Methods</h2>
+
+      
+      <p class="p">If you’re managing cache values in one partition, use the <samp class="codeph apex_code">Cache.SessionPartition</samp> methods instead. After the partition object is obtained,
+        the process of adding and retrieving cache values is similar to using the <samp class="codeph apex_code">Cache.Session</samp> methods. The <samp class="codeph apex_code">Cache.SessionPartition</samp> methods are easier to use because you specify only the
+        key name without the namespace and partition prefix.</p>
+
+      <p class="p">First, get the session partition and specify the desired partition. The partition name
+        includes the namespace prefix: <samp class="codeph nolang">namespace.partition</samp>. You
+        can manage the cached values in that partition by adding and retrieving cache values on the
+        obtained partition object. The following example obtains the partition named myPartition in
+        the myNs namespace. Next, if the cache contains a value with the key <samp class="codeph nolang">BookTitle</samp>, this cache value is retrieved. A new value is
+        added with key <samp class="codeph nolang">orderDate</samp> and today’s date. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get partition</span>
+Cache.SessionPartition sessionPart = Cache.Session.getPartition(<span class="string">'myNs.myPartition'</span>);
+<span class="onelineComment">// Retrieve cache value from the partition</span>
+<span class="statement">if</span> (sessionPart.contains(<span class="string">'BookTitle'</span>)) {
+    <span class="keyword">String</span> cachedTitle = (<span class="keyword">String</span>)sessionPart.get(<span class="string">'BookTitle'</span>);
+}
+<span class="onelineComment">// Add cache value to the partition</span>
+sessionPart.put(<span class="string">'OrderDate'</span>, <span class="keyword">Date</span>.today());</pre></div>
+
+      <p class="p">This example calls the <samp class="codeph apex_code">get</samp> method on a partition in
+        one expression without assigning the partition instance to a variable.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Or use dot notation to call partition methods</span>
+<span class="keyword">String</span> cachedAuthor = (<span class="keyword">String</span>)Cache.Session.getPartition(<span class="string">'myNs.myPartition'</span>).get(<span class="string">'BookAuthor'</span>);
+</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_cache_Session.htm" target="_blank" title="Apex Reference Guide: Session Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Session Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_cache_SessionPartition.htm" target="_blank" title="Apex Reference Guide: SessionPartition Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: SessionPartition Class</a></div></li>
+</ul>
+</div>
+</div>

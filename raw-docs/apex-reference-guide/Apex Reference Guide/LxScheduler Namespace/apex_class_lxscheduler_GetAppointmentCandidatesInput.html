@@ -1,0 +1,187 @@
+<a name="apex_class_lxscheduler_GetAppointmentCandidatesInput"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">GetAppointmentCandidatesInput Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains information about the available service resources
+      (appointment candidates) based on work type group and service territories.</span></div>
+
+    <div class="section">
+      <p class="p">Set up Salesforce Scheduler before making requests. This setup includes creating or
+        configuring Service Resources, Service Territory Members, Work Type Groups, Work Types, Work
+        Type Group Members, and Service Territory Work Types. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_set_up.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Set Up Salesforce Scheduler</a> for more
+        information.</p>
+
+      <p class="p">The appointment time slots are determined based on multiple factors, such as field values,
+        scheduled appointments, absences, Scheduler Settings, and Scheduling Policies to determine
+        available time slots. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_how_are_time_slots_determined.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">How Salesforce Scheduler Determines
+          Available Time Slots</a> for more information.</p>
+
+    </div>
+
+    <div class="section">
+      <p class="p">The following factors are considered for returning start time and end time of
+        resources.</p>
+
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm">Resource Availability</dt>
+
+          <dd class="dd">Determined using service territory member, service territory, work type, and account
+            operating hours fields. </dd>
+
+        
+        
+          <dt class="dt dlterm">Resource Unavailability</dt>
+
+          <dd class="dd">Determined by resource absences, existing appointments that the resource is assigned
+            to. The resource must be marked as a required resource for the appointment with a status
+            that isn’t in closed, canceled, or completed.</dd>
+
+        
+        
+          <dt class="dt dlterm">Appointment Start Time Interval in the Scheduling Policy</dt>
+
+          <dd class="dd">Appointment start time interval field in the Scheduling Policy is used to determine
+            when the appointment can start. This interval can be 5, 10, 15, 20, 30, or 60. By
+            default, it’s set to 15.</dd>
+
+        
+        
+          <dt class="dt dlterm">Work Type Duration</dt>
+
+          <dd class="dd">The end time is calculated as start time + duration of the work type.</dd>
+
+        
+      </dl>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If asset scheduling is enabled, the response also includes asset-based
+        candidates.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_lxscheduler.htm" title="The LxScheduler namespace provides an interface and classes for integrating Salesforce Scheduler with external calendars.">LxScheduler</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      <p class="p">The constructor for this class can’t be called directly. Create an instance of this class
+        using the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_lxscheduler_GetAppointmentCandidatesInputBuilder.htm#apex_lxscheduler_GetAppointmentCandidatesInputBuilder_build" title="Returns an instance of the lxscheduler.GetAppointmentCandidatesInput object.">GetAppointmentCandidatesInputBuilder.build()</a> method.</p>
+</div>
+<div class="section">
+      <p class="p">This example shows how to get a list of available appointment candidates based on <samp class="codeph apex_code">workTypeGroupId</samp>:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Build input for GetAppointmentCandidates API</span>
+   lxscheduler.GetAppointmentCandidatesInput input = <span class="keyword">new</span> lxscheduler.GetAppointmentCandidatesInputBuilder()
+     .setWorkTypeGroupId(<span class="string">'0VSRM0000000ABc4AM'</span>)
+     .setTerritoryIds(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'0HhRM0000000FXd0AM'</span>})
+     .setStartTime(System.now().format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/New_York'</span>))
+     .setEndTime(System.now().addDays(5).format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/New_York'</span>))
+     .setAccountId(<span class="string">'001RM0000053iQgYAI'</span>)
+     .setSchedulingPolicyId(<span class="string">'0VrRM00000000Bx'</span>)
+     .setApiVersion(<span class="keyword">Double</span>.valueOf(<span class="string">'50.0'</span>))
+     .build();
+
+   <span class="keyword">String</span> response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);</pre></div>
+
+      <p class="p">This example shows how to get a list of available appointment candidates based on <samp class="codeph apex_code">workType</samp>:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Build WorkType</span>
+   lxscheduler.WorkType workType = <span class="keyword">new</span> lxscheduler.WorkTypeBuilder()
+     .setId(<span class="string">'08qRM0000000G9RYAU'</span>)
+     .build();
+
+   lxscheduler.GetAppointmentCandidatesInput input = <span class="keyword">new</span> lxscheduler.GetAppointmentCandidatesInputBuilder()
+     .setWorkType(workType)
+     .setTerritoryIds(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'0HhRM0000000FXd0AM'</span>})
+     .setStartTime(System.now().format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/New_York'</span>))
+     .setEndTime(System.now().addDays(5).format(<span class="string">'yyyy-MM-dd\'T\'HH:mm:ssZ'</span>,<span class="string">'America/New_York'</span>))
+     .setAccountId(<span class="string">'001RM0000053iQgYAI'</span>)
+     .setSchedulingPolicyId(<span class="string">'0VrRM00000000Bx'</span>)
+     .setApiVersion(<span class="keyword">Double</span>.valueOf(<span class="string">'50.0'</span>))
+     .build();
+
+   <span class="keyword">String</span> response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);</pre></div>
+
+      <p class="p">This example shows how to get a list of available candidate appointments based on <samp class="codeph apex_code">durationInMinutes</samp> and without the <samp class="codeph apex_code">workTypeGroupId</samp> or <samp class="codeph apex_code">workType</samp> fields:</p>
+
+      <div class="box message confirm" id="note_qnj_dv1_ycc">
+<a name="note_qnj_dv1_ycc"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+        <ul class="ul bulletList">
+          <li class="li">When you're using shifts: You must specify <samp class="codeph apex_code">workTypeGroupId</samp> or the ID of the work type. When you specify the ID of the
+            work type, all other Builder parameters are optional and Scheduler retrieves their
+            values from the database.</li>
+
+          <li class="li">When you're using operating hours: You don't need to specify <samp class="codeph apex_code">workTypeGroupId</samp> or the ID of the work type. Scheduler
+            applies <samp class="codeph apex_code">durationInMinutes</samp> and all other builder
+            parameters as you configure them.</li>
+
+        </ul>
+
+      </p>
+</div>
+</div></div></div>
+</div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Build SkillRequirement</span>
+   lxscheduler.SkillRequirement skillReq = <span class="keyword">new</span> lxscheduler.SkillRequirementBuilder()
+     .setSkillId(<span class="string">'0C5RM0000004EZS0A2'</span>)
+     .setSkillLevel(90)
+     .build();
+
+<span class="onelineComment">//Build WorkType</span>
+   lxscheduler.WorkType workType = <span class="keyword">new</span> lxscheduler.WorkTypeBuilder()
+     .setDurationInMinutes(15)
+     .setBlockTimeBeforeAppointmentInMinutes(5)
+     .setBlockTimeAfterAppointmentInMinutes(5)
+     .setTimeFrameStartInMinutes(10080)
+     .setTimeFrameEndInMinutes(40320)
+     .setOperatingHoursId(<span class="string">'0OHRM0000000FmG4AU'</span>)
+     .setSkillRequirements(<span class="keyword">new</span> List&lt;lxscheduler.SkillRequirement&gt;{skillReq})
+     .build();
+
+   lxscheduler.GetAppointmentCandidatesInput input = <span class="keyword">new</span> lxscheduler.GetAppointmentCandidatesInputBuilder()
+     .setWorkType(workType)
+     .setTerritoryIds(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'0HhRM0000000FXd0AM'</span>})
+     .setSchedulingPolicyId(<span class="string">'0VrRM00000000Bx'</span>)
+     .setApiVersion(<span class="keyword">Double</span>.valueOf(<span class="string">'50.0'</span>))
+     .build();
+
+   <span class="keyword">String</span> response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);</pre></div>
+
+    </div>
+
+    <div class="section">
+      <p class="p">This example shows a sample response of a list of available candidates:</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">
+[
+   {
+      "startTime": "2021-02-16T16:15:00.000+0000",
+      "endTime": "2021-02-16T16:16:00.000+0000",
+      "resources": [
+         "0Hnxx0000004C9BCAU"
+      ],
+      "territoryId": "0Hhxx0000004C92CAE"
+   },
+   {
+      "startTime": "2021-02-16T16:30:00.000+0000",
+      "endTime": "2021-02-16T16:31:00.000+0000",
+      "resources": [
+        "0Hnxx0000004C9BCAU"
+      ],
+      "territoryId": "0Hhxx0000004C92CAE"
+   },
+]</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links"></div>
+</div>

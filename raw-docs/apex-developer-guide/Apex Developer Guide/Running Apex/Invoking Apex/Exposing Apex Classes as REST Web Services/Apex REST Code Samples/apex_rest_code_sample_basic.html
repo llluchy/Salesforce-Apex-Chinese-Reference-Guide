@@ -1,0 +1,113 @@
+<a name="apex_rest_code_sample_basic"><!-- --></a><h1 class="helpHead1">Apex REST Basic Code Sample</h1><div class="body">
+<div class="shortdesc">This sample shows how to implement a simple REST API in Apex with three HTTP request
+    methods to delete, retrieve, and update a record.</div>
+
+    <div class="p">For more information about authenticating with <samp class="codeph nolang">cURL</samp>, see
+      the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/quickstart.htm" target="_blank" title="HTML (New Window)">Quick Start</a> section of the <cite class="cite">REST API
+        Developer Guide</cite>.<ol class="ol enumList">
+        <li class="li">Create an Apex class in your instance from Setup. Enter <kbd class="ph userinput">Apex
+            Classes</kbd> in the <span class="keyword parmname">Quick Find</span> box, select  <strong class="ph uicontrol">Apex
+            Classes</strong>, and then click <strong class="ph uicontrol">New</strong>. Add this code to the new
+          Apex
+          class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RestResource(urlMapping='/Account/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> MyRestResource {
+
+    <span class="keyword">@HttpDelete</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">void</span> doDelete() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        <span class="keyword">String</span> accountId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        Account account = [SELECT Id FROM Account WHERE Id = :accountId WITH USER_MODE];
+        <span class="statement">delete</span> <span class="statement">as</span> user account;
+    }
+  
+    <span class="keyword">@HttpGet</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> Account doGet() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        <span class="keyword">String</span> accountId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        Account result = [SELECT Id, Name, Phone, Website FROM Account WHERE Id = :accountId WITH USER_MODE];
+        <span class="statement">return</span> result;
+    }
+  
+  <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> doPost(<span class="keyword">String</span> name,
+        <span class="keyword">String</span> phone, <span class="keyword">String</span> website) {
+        Account account = <span class="keyword">new</span> Account();
+        account.Name = name;
+        account.phone = phone;
+        account.website = website;
+        <span class="statement">insert</span> <span class="statement">as</span> user account;
+        <span class="statement">return</span> account.Id;
+    }
+}</pre></div>
+</li>
+
+        <li class="li">To call the <samp class="codeph apex_code">doGet</samp> method from a client, open a
+          command-line window and execute the following <samp class="codeph nolang">cURL</samp>
+          command to retrieve an account by ID: <div class="p">
+<samp class="codeph nolang">curl -H
+              "Authorization: Bearer <strong class="ph b"><var class="keyword varname">sessionId</var></strong>"
+                  "https://<strong class="ph b"><var class="keyword varname">instance</var></strong>.salesforce.com/services/apexrest/Account/<strong class="ph b"><var class="keyword varname">accountId</var></strong>"</samp><ul class="ul bulletList">
+              <li class="li">Replace <strong class="ph b"><var class="keyword varname">sessionId</var></strong> with the <samp class="codeph xml"><span class="tag">&lt;sessionId</span>&gt;</samp> element that you noted in the login response.</li>
+
+              <li class="li">Replace <strong class="ph b"><var class="keyword varname">instance</var></strong> with your <samp class="codeph xml"><span class="tag">&lt;serverUrl</span>&gt;</samp> element.</li>
+
+              <li class="li">Replace <strong class="ph b"><var class="keyword varname">accountId</var></strong> with the ID of an account which exists
+                in your organization.</li>
+
+            </ul>
+</div>
+<p class="p">After calling the <samp class="codeph apex_code">doGet</samp> method,
+            Salesforce returns a JSON response with data such as the
+            following:</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">{
+  "attributes" : 
+    {
+      "type" : "Account",
+      "url" : "/services/data/v22.0/sobjects/Account/<strong class="ph b"><var class="keyword varname">accountId</var></strong>"
+    },
+  "Id" : "<strong class="ph b"><var class="keyword varname">accountId</var></strong>",
+  "Name" : "Acme"
+
+}</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph nolang">cURL</samp> examples in this section don't
+            use a namespaced Apex class so you don’t see the namespace in the URL.</p>
+</div>
+</div></div></div></div>
+</li>
+
+        <li class="li">Create a file called <span class="ph filepath">account.txt</span> to contain the data for the
+          account you will create in the next step.<div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+  <span class="string">"name"</span> : <span class="string">"Wingo Ducks"</span>,
+  <span class="string">"phone"</span> : <span class="string">"707-555-1234"</span>,
+  <span class="string">"website"</span> : <span class="string">"www.wingo.ca.us"</span>
+}</pre></div>
+</li>
+
+        <li class="li">Using a command-line window, execute the following <samp class="codeph nolang">cURL</samp> command to create a new account: <p class="p"><samp class="codeph nolang">curl -H
+              "Authorization: Bearer <strong class="ph b"><var class="keyword varname">sessionId</var></strong>" -H "Content-Type:
+              application/json" -d @account.txt
+              "https://<strong class="ph b"><var class="keyword varname">instance</var></strong>.salesforce.com/services/apexrest/Account/"</samp></p>
+<p class="p">After
+            calling the <samp class="codeph apex_code">doPost</samp> method, Salesforce returns a
+            response with data such as the
+            following:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="string">"</span><strong class="ph b"><var class="keyword varname">accountId</var></strong><span class="string">"</span></pre></div>
+<p class="p">The
+                <strong class="ph b"><var class="keyword varname">accountId</var></strong> is the ID of the account you just created with
+            the POST request.</p>
+</li>
+
+        <li class="li">Using a command-line window, execute the following <samp class="codeph nolang">cURL</samp> command to delete an account by specifying the ID: <p class="p"><samp class="codeph nolang">curl —X DELETE —H "Authorization: Bearer
+                  <strong class="ph b"><var class="keyword varname">sessionId</var></strong>"
+                  "https://<strong class="ph b"><var class="keyword varname">instance</var></strong>.salesforce.com/services/apexrest/Account/<strong class="ph b"><var class="keyword varname">accountId</var></strong>"</samp></p>
+</li>
+
+      </ol>
+</div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

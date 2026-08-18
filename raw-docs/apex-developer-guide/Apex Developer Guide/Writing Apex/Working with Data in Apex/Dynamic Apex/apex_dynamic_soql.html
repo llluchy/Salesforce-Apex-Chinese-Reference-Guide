@@ -1,0 +1,157 @@
+<a name="apex_dynamic_soql"><!-- --></a><h1 class="helpHead1">Dynamic SOQL</h1><div class="body">
+<div class="shortdesc">
+<dfn class="term">Dynamic SOQL</dfn> refers to the creation of a SOQL string at run time with Apex code.
+        Dynamic SOQL enables you to create more flexible applications. For example, you can create a
+        search based on input from an end user or update records with varying field
+        names.</div>
+
+        <p class="p">To create a dynamic SOQL query at run time, use the <samp class="codeph apex_code">Database.query</samp> or <samp class="codeph apex_code">Database.queryWithBinds</samp> methods, in one of the following ways.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">Return a single sObject when the query returns a single
+                record:<div class="codeSection apex_code"><pre class="codeblock brush:apex">sObject s = Database.query(<var class="keyword varname">string</var>);
+</pre></div>
+</li>
+
+            <li class="li">Return a list of sObjects when the query returns more than a single
+                record:<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;sObject&gt; sobjList = Database.query(<var class="keyword varname">string</var>);</pre></div>
+</li>
+
+            <li class="li">Return a list of sObjects using a map of bind
+                variables:<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;sObject&gt; sobjList = Database.queryWithBinds(<var class="keyword varname">string</var>, bindVariablesMap, accessLevel);</pre></div>
+</li>
+
+        </ul>
+
+        <p class="p">The <samp class="codeph apex_code">Database.query</samp> and <samp class="codeph apex_code">Database.queryWithBinds</samp> methods can be used
+            wherever an inline SOQL query can be used, such as in regular assignment statements and
+                <samp class="codeph apex_code"><span class="statement">for</span></samp> loops. The results are processed in
+            much the same way as static SOQL queries are processed. </p>
+
+        <p class="p">In API version 55.0 and later, you can use the <var class="keyword varname">accessLevel</var> parameter
+            to run the query operation in user or system mode. The <var class="keyword varname">accessLevel</var>
+            parameter specifies whether the method runs in system mode (<samp class="codeph ">AccessLevel.SYSTEM_MODE</samp>) or user mode (<samp class="codeph ">AccessLevel.USER_MODE</samp>). In system mode, the object and field-level
+            permissions of the current user are ignored, and the record sharing rules are controlled
+            by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">class sharing keywords</a>. In user mode, the
+            object permissions, field-level security, and sharing rules of the current user are
+            enforced. User mode is the default. </p>
+
+        <p class="p">Dynamic SOQL results can be specified as concrete sObjects, such as Account or
+            MyCustomObject__c, or as the generic sObject data type. At run time, the system
+            validates that the type of the query matches the declared type of the variable. If the
+            query doesn’t return the correct sObject type, a run-time error is thrown. Therefore,
+            you don’t have to cast from a generic sObject to a concrete sObject.</p>
+
+        <p class="p">Dynamic SOQL queries have the same governor limits as static queries. For more
+            information on governor limits, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution
+                Governors and Limits</a>.</p>
+
+        <p class="p">For a full description of SOQL query syntax, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm" target="_blank" title="html (New Window)">Salesforce Object Query Language
+                (SOQL)</a> in the <cite class="cite">SOQL and SOSL Reference.</cite></p>
+
+        <div class="section">
+<h2 class="helpHead2">Dynamic SOQL Considerations</h2>
+
+            
+            <div class="p">You can use simple bind variables in dynamic SOQL query strings when using <samp class="codeph apex_code">Database.query</samp>. Bind variables in the query
+                must be within the scope of the database operation. The following is
+                allowed:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> myTestString = <span class="string">'TestName'</span>;
+List&lt;sObject&gt; sobjList = Database.query(<span class="string">'SELECT Id FROM MyCustomObject__c WHERE Name = :myTestString'</span>, AccessLevel.USER_MODE);</pre></div>
+However,
+                unlike inline SOQL, you can’t use bind variable fields in the query string with
+                    <samp class="codeph apex_code">Database.query</samp>. The following example
+                isn’t supported and results in a <samp class="ph systemoutput">Variable does not
+                    exist</samp>
+                error.<div class="codeSection apex_code"><pre class="codeblock brush:apex">MyCustomObject__c myVariable = <span class="keyword">new</span> MyCustomObject__c(field1__c =<span class="string">'TestField'</span>);
+List&lt;sObject&gt; sobjList = Database.query(<span class="string">'SELECT Id FROM MyCustomObject__c WHERE field1__c = :myVariable.field1__c'</span>, AccessLevel.USER_MODE);</pre></div>
+You
+                can instead resolve the variable field into a string and use the string in your
+                dynamic SOQL
+                query:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> resolvedField1 = myVariable.field1__c;
+List&lt;sObject&gt; sobjList = Database.query(<span class="string">'SELECT Id FROM MyCustomObject__c WHERE field1__c =  :resolvedField1'</span>, AccessLevel.USER_MODE);</pre></div>
+</div>
+
+            <p class="p">(API version 57.0 and later) Another option is to use the <samp class="codeph ">Database.queryWithBinds</samp> method. With this method, bind variables in
+                the query are resolved from a Map parameter directly with a key, rather than from
+                Apex code variables. This removes the need for the variables to be in scope when the
+                query is executed. This example shows a SOQL query that uses a bind variable for an
+                Account name; its value is passed in with the <var class="keyword varname">acctBinds</var> Map. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; acctBinds = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;{<span class="string">'acctName'</span> =&gt; <span class="string">'Acme Corporation'</span>};
+
+List&lt;Account&gt; accts = 
+    Database.queryWithBinds(<span class="string">'SELECT Id FROM Account WHERE Name = :acctName'</span>,
+                            acctBinds, 
+                            AccessLevel.USER_MODE);</pre></div>
+
+            <p class="p">These considerations apply when using the Map parameter in the <samp class="codeph ">Database.queryWithBinds</samp> method:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Although map keys of type String are case-sensitive,the <samp class="codeph apex_code">queryWithBinds</samp> method doesn’t support Map
+                    keys that differ only in case. In a <samp class="codeph apex_code">queryWithBinds</samp> method, comparison of Map keys is case-insensitive.
+                    If duplicate Map keys exist, the method throws a runtime <samp class="codeph apex_code">QueryException</samp>. This example throws this
+                    runtime exception: <samp class="ph systemoutput">System.QueryException: The bindMap consists of
+                        duplicate case-insensitive keys: [Acctname, acctName]</samp>.
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; bindVars = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;{<span class="string">'acctName'</span> =&gt; <span class="string">'Acme Corporation'</span>};
+bindVars.put(<span class="string">'Acctname'</span>, <span class="string">'Foo'</span>);
+string query = <span class="string">'SELECT Id FROM Contact WHERE Name LIKE :acctName'</span>;
+ 
+List&lt;Contact&gt; contacts =  Database.queryWithBinds(query, bindVars, AccessLevel.USER_MODE);</pre></div>
+</li>
+
+                <li class="li">Map keys must follow naming standards: they must start with an ASCII letter,
+                    can’t start with a number, must not use <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_reserved_words.htm" title="These words can be used only as keywords.">reserved keywords</a>, and must adhere to <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_variables.htm" title="Local variables are declared with Java-style syntax.">variable naming requirements</a>.</li>
+
+                <li class="li">Although currently supported, Salesforce recommends against using the dot
+                    notation with Map keys.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_soql_injection"><a name="apex_soql_injection"><!-- --></a>SOQL Injection</span></h2>
+<div class="p">
+<p class="p"><dfn class="term">SOQL injection</dfn> is a technique by which a user
+                causes your application to execute database methods you didn’t intend by passing
+                SOQL statements into your code. This can occur in Apex code whenever your
+                application relies on end-user input to construct a dynamic SOQL statement and you
+                don’t handle the input properly.</p>
+<p class="p"> To prevent SOQL injection, use the <samp class="codeph apex_code">escapeSingleQuotes</samp> method. This method adds the
+                escape character (\) to all single quotation marks in a string that is passed in
+                from a user. The method ensures that all single quotation marks are treated as
+                enclosing strings, instead of database commands. </p>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Additional Dynamic SOQL Methods</h2>
+
+            
+            <p class="p">The Dynamic SOQL examples in this topic show how to use the <samp class="codeph ">Database.query</samp> and <samp class="codeph ">Database.queryWithBinds</samp> methods. These methods also use Dynamic
+                SOQL:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<samp class="codeph ">Database.countQuery</samp> and <samp class="codeph ">Database.countQueryWithBinds</samp>: Return the number
+                    of records that a dynamic SOQL query would return when executed.</li>
+
+                <li class="li">
+<samp class="codeph ">Database.getQueryLocator</samp> and <samp class="codeph ">Database.getQueryLocatorWithBinds</samp>: Create a
+                        <samp class="codeph ">QueryLocator</samp> object used in batch Apex or
+                    Visualforce.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_data_categories.htm" title="Accessing All Data Categories Associated with an sObject">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_sosl.htm" title="Dynamic SOSL">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_methods" target="_blank" title="Apex Reference Guide: System.Database Methods - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: System.Database Methods</a></div></li></ul>
+</div>
+</div>

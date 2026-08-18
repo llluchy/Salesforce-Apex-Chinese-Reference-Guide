@@ -1,0 +1,131 @@
+<a name="apex_security_sharing_rules"><!-- --></a><h1 class="helpHead1">Enforce Sharing Rules</h1><div class="body conbody">
+<div class="shortdesc">In Apex, sharing rules are always enforced by default.  Use the with sharing, without
+    sharing, and inherited sharing keywords to control record-level security. If you don't want
+    sharing rules to be enforced, then you must declare a class with the <samp class="codeph apex_code">without sharing</samp> keyword.</div>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="execAnonSecurity"><a name="execAnonSecurity"><!-- --></a>Apex code that is executed with the <samp class="codeph apex_code">executeAnonymous</samp> call and Connect in Apex always execute
+        using the sharing rules of the current user. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_anonymous_block.htm" title="An anonymous block is Apex code that doesn’t get stored in the metadata, but that you can compile and execute.">Anonymous Blocks</a>.</span></p>
+</div>
+</div></div></div></div>
+
+    <p class="p">Sharing rules are distinct from, and can co-exist with object-level and field-level
+      permissions. While <samp class="codeph apex_code">with sharing</samp> is the default sharing
+      mode, Salesforce recommends that you use keyword declarations on all your classes to make your
+      code easier to maintain. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a>.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Using the <samp class="codeph apex_code">with sharing</samp> keyword doesn’t enforce
+      the user’s permissions and field-level security.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">This example has two classes, the first class (<samp class="codeph apex_code">CWith</samp>)
+      enforces sharing rules while the second class (<samp class="codeph apex_code">CWithout</samp>) doesn’t. The <samp class="codeph apex_code">CWithout</samp>
+      class calls a method from the first, which runs with sharing rules enforced. The <samp class="codeph apex_code">CWithout</samp> class contains an inner class, in which code
+      executes under the same sharing context as the caller. It also contains a class that extends
+      it, which inherits its without sharing setting.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CWith {
+  <span class="onelineComment">// All code in this class operates with enforced sharing rules.</span>
+
+  Account a = [SELECT . . . ];
+
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> m() { . . . }
+  
+  <span class="keyword">static</span> {
+    . . .
+  }
+
+  {
+    . . .
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> c() {
+    . . .
+  } 
+}
+
+<span class="keyword">public</span> without sharing <span class="keyword">class</span> CWithout {
+  <span class="onelineComment">// All code in this class ignores sharing rules and operates </span>
+  <span class="onelineComment">// as if the context user has the Modify All Data permission.</span>
+  Account a = [SELECT . . . ];
+  . . .
+
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> m() {  
+     . . . 
+
+    <span class="onelineComment">// This call into CWith operates with enforced sharing rules</span>
+    <span class="onelineComment">// for the context user. When the call finishes, the code execution </span>
+    <span class="onelineComment">// returns to without sharing mode.</span>
+    CWith.m();
+  }
+
+
+  <span class="keyword">public</span> <span class="keyword">class</span> CInner {
+    <span class="onelineComment">// All code in this class executes with the same sharing context</span>
+    <span class="onelineComment">// as the code that calls it. </span>
+    <span class="onelineComment">// Inner classes are separate from outer classes.</span>
+    . . .
+
+    <span class="onelineComment">// Again, this call into CWith operates with enforced sharing rules</span>
+    <span class="onelineComment">// for the context user, regardless of the class that initially called this inner class.</span>
+    <span class="onelineComment">// When the call finishes, the code execution returns to the sharing mode that was used to call this inner class.</span>
+    CWith.m();
+  }
+
+  <span class="keyword">public</span> <span class="keyword">class</span> CInnerWithOut <span class="keyword">extends</span> CWithout {
+    <span class="onelineComment">// All code in this class ignores sharing rules because</span>
+    <span class="onelineComment">// this class extends a parent class that ignores sharing rules.</span>
+  }
+}
+</pre></div>
+
+    <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Because a class declared as <samp class="codeph apex_code">with
+        sharing</samp> can call a class declared as <samp class="codeph apex_code">without
+        sharing</samp>, you may still have to implement class-level security. In addition, all
+      SOQL and SOSL queries that use Pricebook2 ignore the <samp class="codeph apex_code">with
+        sharing</samp> keyword. All price books are returned, regardless of the applied sharing
+      rules.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">Enforcing the current user's sharing rules can impact:</p>
+
+    <ul class="ul bulletList">
+      <li class="li">SOQL and SOSL queries. A query can return fewer rows than it would operating in system
+        context.</li>
+
+      <li class="li">DML operations. An operation can fail because the current user doesn't have the correct
+        permissions. For example, if the user specifies a foreign key value that exists in the
+        organization, but which the current user doesn’t have access to, then the DML operation
+        fails.</li>
+
+    </ul>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In API version 67.0 and later, classes without an explicit sharing declaration are run in
+        the current user context. In API version 66.0 and earlier, for classes without an explicit
+        sharing declaration, the current sharing rule remains in effect.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.security_about_sharing_rules.htm&amp;type=5&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Sharing Rules</a></div></li>
+</ul>
+</div>
+</div>

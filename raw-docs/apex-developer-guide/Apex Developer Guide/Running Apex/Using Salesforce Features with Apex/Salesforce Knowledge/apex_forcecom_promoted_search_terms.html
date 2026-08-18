@@ -1,0 +1,39 @@
+<a name="apex_forcecom_promoted_search_terms"><!-- --></a><h1 class="helpHead1">Promoted Search Terms</h1><div class="body conbody">
+<div class="shortdesc">
+<span class="ph" id="SearchPromotionRule_usage"><a name="SearchPromotionRule_usage"><!-- --></a>Promoted search terms are useful for promoting a
+      Salesforce Knowledge article that you know is commonly used to resolve a support issue when an
+      end user’s search contains certain keywords.</span>
+    <span class="ph" id="SearchPromotionRule_description"><a name="SearchPromotionRule_description"><!-- --></a>Users can promote an article in search results by
+      associating keywords with the article in Apex (by using the SearchPromotionRule sObject) in
+      addition to the Salesforce user interface.</span>
+</div>
+
+    <p class="p">Articles must be in published status (with a <span class="keyword parmname">PublishSatus</span> field value of
+        <span class="keyword parmname">Online</span>) for you to manage their promoted terms.</p>
+
+    <div class="example" id="SearchPromotionRule_Apex_example">
+<a name="SearchPromotionRule_Apex_example"><!-- --></a><h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">This code sample shows how to add a search
+      promotion rule. This sample performs a query to get published articles of type MyArticle__kav.
+      Next, the sample creates a SearchPromotionRule sObject to promote articles that contain the
+      word “Salesforce” and assigns the first returned article to it. Finally, the sample inserts
+      this new
+      sObject.<div class="codeSection nolang"><pre class="codeblock brush:plain" id="SearchPromotionRule_sample"><a name="SearchPromotionRule_sample"><!-- --></a>// Identify the article to promote in search results
+List&lt;MyArticle__kav&gt; articles = [SELECT Id FROM MyArticle__kav WHERE PublishStatus='Online' AND Language='en_US' AND Id='<kbd class="ph userinput">Article Id</kbd>'];
+
+// Define the promotion rule
+SearchPromotionRule s = new SearchPromotionRule(
+    Query='Salesforce',
+    PromotedEntity=articles[0]);
+
+// Save the new rule
+insert s;
+</pre></div>
+
+    </div></div>
+</div>
+
+    <div class="section"><div class="p"><span class="ph" id="SearchPromotionRule_prerequisite"><a name="SearchPromotionRule_prerequisite"><!-- --></a>To perform DML operations on the
+        SearchPromotionRule sObject, you must enable Salesforce Knowledge.</span></div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

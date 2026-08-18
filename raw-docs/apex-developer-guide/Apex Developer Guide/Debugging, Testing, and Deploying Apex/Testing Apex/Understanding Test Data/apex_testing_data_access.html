@@ -1,0 +1,104 @@
+<a name="apex_testing_data_access"><!-- --></a><h1 class="helpHead1">Isolation of Test Data from Organization Data in Unit Tests</h1><div class="body conbody">
+<div class="shortdesc">By default, Apex test methods (API version 24.0 and later) can’t access pre-existing
+    org data such as standard objects, custom objects, and custom settings data. They can only
+    access data that they create. However, objects that are used to manage your organization or
+    metadata objects can still be accessed in your tests. </div>
+
+    <p class="p"><span class="ph" id="TestDataAccessDef"><a name="TestDataAccessDef"><!-- --></a>These are some examples of objects that are used to manage the org
+        or metadata and can still be accesses in tests.</span></p>
+
+    <a name="TestDataAccessDef2"><!-- --></a><ul class="ul bulletList" id="TestDataAccessDef2">
+      <li class="li">User</li>
+
+      <li class="li">Profile</li>
+
+      <li class="li">Organization</li>
+
+      <li class="li">CronTrigger</li>
+
+      <li class="li">RecordType</li>
+
+      <li class="li">ApexClass</li>
+
+      <li class="li">ApexTrigger</li>
+
+      <li class="li">ApexComponent</li>
+
+      <li class="li">ApexPage</li>
+
+    </ul>
+
+    <p class="p">Whenever possible, create test data for each test. You can disable this restriction by
+      annotating your test class or test method with the <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp> annotation.</p>
+
+    <p class="p"><span class="ph" id="TestDataEarlierVersions"><a name="TestDataEarlierVersions"><!-- --></a>Test code saved using Salesforce API version 23.0 or earlier
+        continues to have access to all data in the organization and its data access is
+        unchanged.</span></p>
+
+    <div class="section" id="section_dv1_n2p_pjc">
+<a name="section_dv1_n2p_pjc"><!-- --></a><h2 class="helpHead2">Data Access Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">When working with data silo Apex tests, cross-object field references using the <samp class="codeph apex_code">Owner</samp> relationship aren’t supported. Due to this
+          limitation, <samp class="codeph apex_code">SELECT Owner.IsActive FROM Account</samp>
+          returns null when run within a data silo Apex test.</li>
+
+        <li class="li">If a new test method saved using Salesforce API version 24.0 or later calls a method in
+          another class saved using version 23.0 or earlier, the data access restrictions of the
+          caller are enforced in the called method. The called method can’t access organization data
+          because the caller can’t access it, even though it was saved in an earlier version.</li>
+
+        <li class="li">The <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp> annotation has no
+          effect when added to Apex code saved using Salesforce API version 23.0 and earlier.</li>
+
+        <li class="li">This access restriction to test data applies to all code running in test context.
+            For example, if a test method causes a trigger to execute and the test can’t access
+            organization data, the trigger won’t be able to either.</li>
+
+        <li class="li">If a test makes a Visualforce request, the executing test stays in test context but runs
+          in a different thread. Therefore, test data isolation is no longer enforced. In this case,
+          the test will be able to access all data in the organization after initiating the
+          Visualforce request. However, if the Visualforce request performs a callback, such as a
+          JavaScript remoting call, any data inserted by the callback isn’t visible to the
+          test.</li>
+
+        <li class="li">The VLOOKUP validation rule function, in API version 27.0 and earlier, always looks up
+          org data in addition to test data when fired by a running Apex test. Starting with version
+          28.0, the VLOOKUP validation rule function no longer accesses organization data from a
+          running Apex test. The function looks up only data created by the test, unless the test
+          class or method is annotated with <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp>.</li>
+
+        <li class="li">There can be some cases where you can’t create certain types of data from your test
+          method because of specific limitations. Here are some examples of such limitations.<a name="ul_fv1_n2p_pjc"><!-- --></a><ul class="ul bulletList" id="ul_fv1_n2p_pjc">
+            <li class="li">Some standard objects aren’t creatable. For more information on these objects, see
+              the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/" target="_blank" title="HTML (New Window)">Object Reference for Salesforce</a>.</li>
+
+            <li class="li">For some sObjects that have fields with unique constraints, inserting duplicate
+              sObject records results in an error. For example, inserting CollaborationGroup
+              sObjects with the same names results in an error because CollaborationGroup records
+              must have unique names. This error occurs whether your test is annotated with <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp>, or not.</li>
+
+            <li class="li">Records that are created only after related records are committed to the database,
+              like tracked changes in Chatter. Tracked changes for a record (FeedTrackedChange
+              records) in Chatter feeds aren’t available when test methods modify the associated
+              record. FeedTrackedChange records require the change to the parent record they’re
+              associated with to be committed to the database before they’re created. Since test
+              methods don’t commit data, they don’t result in the creation of FeedTrackedChange
+              records. Similarly, field history tracking records can’t be created in test methods
+              because they require other sObject records to be committed first. For example,
+              AccountHistory records can’t be created in test methods because Account records must
+              be committed first.</li>
+
+          </ul>
+</li>
+
+        <li class="li">When working with data silo Apex tests, Salesforce recommends that you don’t share
+          record IDs between test data and org data, thereby preventing test data from accessing
+          pre-existing org data. </li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

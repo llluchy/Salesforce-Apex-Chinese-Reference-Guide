@@ -1,0 +1,84 @@
+<a name="Territory2"><!-- --></a><h1 class="helpHead1">Territory Management 2.0</h1><div class="body conbody">
+<div class="shortdesc">With trigger support for the Territory2 and UserTerritory2Association standard objects,
+        you can automate actions and processes related to changes in these territory management
+        records. </div>
+
+        <div class="section">
+<h2 class="helpHead2">Sample Trigger for Territory2</h2>
+
+            
+            <p class="p">This example trigger fires after Territory2 records have been created or deleted.
+                This example trigger assumes that an organization has a custom field called
+                    <span class="keyword parmname">TerritoryCount__c</span> defined on the Territory2Model object to
+                track the net number of territories in each territory model. The trigger code
+                increments or decrements the value in the <span class="keyword parmname">TerritoryCount__c</span>
+                field each time a territory is created or deleted.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> maintainTerritoryCount on Territory2 (after <span class="statement">insert</span>, after <span class="statement">delete</span>) {
+    <span class="onelineComment">// Track the effective delta for each model</span>
+    Map&lt;Id, <span class="keyword">Integer</span>&gt; modelMap = <span class="keyword">new</span> Map&lt;Id, <span class="keyword">Integer</span>&gt;();
+    <span class="statement">for</span>(Territory2 terr : (Trigger.isInsert ? Trigger.<span class="keyword">new</span> : Trigger.old)) {
+       <span class="keyword">Integer</span> offset = 0;
+       <span class="statement">if</span>(modelMap.containsKey(terr.territory2ModelId)) {
+           offset = modelMap.get(terr.territory2ModelId);
+       }
+       offset += (Trigger.isInsert ? 1 : -1);
+       modelMap.put(terr.territory2ModelId, offset);
+    }
+    <span class="onelineComment">// We have a custom field on Territory2Model called TerritoryCount__c</span>
+    List&lt;Territory2Model&gt; models = [SELECT Id, TerritoryCount__c FROM 
+                            Territory2Model WHERE Id IN :modelMap.keySet()];
+    <span class="statement">for</span>(Territory2Model tm : models) {
+       <span class="onelineComment">// In case the field is not defined with a default of 0</span>
+       <span class="statement">if</span>(tm.TerritoryCount__c == <span class="keyword">null</span>) {
+           tm.TerritoryCount__c = 0;
+       }
+       tm.TerritoryCount__c += modelMap.get(tm.Id);
+    }
+    <span class="onelineComment">// Bulk update the field on all the impacted models</span>
+    <span class="statement">update</span>(models);
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Sample Trigger for UserTerritory2Association</h2>
+
+            
+            <p class="p">This example trigger fires after UserTerritory2Association records have been created.
+                This example trigger sends an email notification to the Sales Operations group
+                letting them know that users have been added to territories. It identifies the user
+                who added users to territories. Then, it identifies each added user along with which
+                territory the user was added to and which territory model the territory belongs
+                to.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> notifySalesOps on UserTerritory2Association (after <span class="statement">insert</span>) {
+    <span class="onelineComment">// Query the details of the users and territories involved</span>
+    List&lt;UserTerritory2Association&gt; utaList = [SELECT Id, User.FirstName, User.LastName, 
+       Territory2.Name, Territory2.Territory2Model.Name 
+       FROM UserTerritory2Association WHERE Id IN :Trigger.New];
+            
+    <span class="onelineComment">// Email message to send</span>
+    Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+    mail.setToAddresses(<span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">'salesOps@acme.com'</span>}); 
+    mail.setSubject(<span class="string">'Users added to territories notification'</span>);     
+            
+    <span class="onelineComment">// Build the message body   </span>
+    List&lt;<span class="keyword">String</span>&gt; msgBody = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+    <span class="keyword">String</span> addedToTerrStr = <span class="string">'{0}, {1} added to territory {2} in model {3} \n'</span>;    
+    msgBody.add(<span class="string">'The following users were added to territories by '</span> +  
+        UserInfo.getFirstName() + <span class="string">', '</span> + UserInfo.getLastName() + <span class="string">'\n'</span>);
+    <span class="statement">for</span>(UserTerritory2Association uta : utaList) {
+       msgBody.add(<span class="keyword">String</span>.format(addedToTerrStr, 
+           <span class="keyword">new</span> <span class="keyword">String</span>[]{uta.User.FirstName, uta.User.LastName,
+                        uta.Territory2.Name, uta.Territory2.Territory2Model.Name}));    
+    } 
+    
+    <span class="onelineComment">// Set the message body and send the email</span>
+    mail.setPlainTextBody(<span class="keyword">String</span>.join(msgBody,<span class="string">''</span>));
+    Messaging.sendEmail(<span class="keyword">new</span> Messaging.Email[] { mail });
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

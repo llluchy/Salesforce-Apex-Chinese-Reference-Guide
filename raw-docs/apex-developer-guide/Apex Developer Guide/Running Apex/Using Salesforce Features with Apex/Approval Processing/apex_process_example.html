@@ -1,0 +1,66 @@
+<a name="apex_process_example"><!-- --></a><h1 class="helpHead1">Apex Approval Processing Example</h1><div class="body">
+<p class="p">The following sample code initially submits a record for approval, then approves the request.
+            This example assumes that a pre-existing approval process on Account exists and is valid
+            for the Account record created.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> TestApproval {
+    <span class="keyword">void</span> submitAndProcessApprovalRequest() {
+        <span class="onelineComment">// Insert an account</span>
+        Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Test'</span>,annualRevenue=100.0);
+        <span class="statement">insert</span> a;
+           
+        User user1 = [SELECT Id FROM User WHERE Alias=<span class="string">'SomeStandardUser'</span>];
+            
+        <span class="onelineComment">// Create an approval request for the account</span>
+        Approval.ProcessSubmitRequest req1 = 
+            <span class="keyword">new</span> Approval.ProcessSubmitRequest();
+        req1.setComments(<span class="string">'Submitting request for approval.'</span>);
+        req1.setObjectId(a.id);
+        
+        <span class="onelineComment">// Submit on behalf of a specific submitter</span>
+        req1.setSubmitterId(user1.Id); 
+        
+        <span class="onelineComment">// Submit the record to the existing process named PTO_Request_Process</span>
+        req1.setProcessDefinitionNameOrId(<span class="string">'PTO_Request_Process'</span>);
+        
+        <span class="onelineComment">// Skip the criteria evaluation for the specified process</span>
+        req1.setSkipEntryCriteria(<span class="keyword">true</span>);
+        
+        <span class="onelineComment">// Submit the approval request for the account</span>
+        Approval.ProcessResult result = Approval.process(req1);
+        
+        <span class="onelineComment">// Verify the result</span>
+        System.assert(result.isSuccess());
+        
+        System.assertEquals(
+            <span class="string">'Pending'</span>, result.getInstanceStatus(), 
+            <span class="string">'Instance Status'</span>+result.getInstanceStatus());
+        
+        <span class="onelineComment">// Approve the submitted request</span>
+        <span class="onelineComment">// First, get the ID of the newly created item</span>
+        List&lt;Id&gt; newWorkItemIds = result.getNewWorkitemIds();
+        
+        <span class="onelineComment">// Instantiate the new ProcessWorkitemRequest object and populate it</span>
+        Approval.ProcessWorkitemRequest req2 = 
+            <span class="keyword">new</span> Approval.ProcessWorkitemRequest();
+        req2.setComments(<span class="string">'Approving request.'</span>);
+        req2.setAction(<span class="string">'Approve'</span>);
+        req2.setNextApproverIds(<span class="keyword">new</span> Id[] {UserInfo.getUserId()});
+        
+        <span class="onelineComment">// Use the ID from the newly created item to specify the item to be worked</span>
+        req2.setWorkitemId(newWorkItemIds.get(0));
+        
+        <span class="onelineComment">// Submit the request for approval</span>
+        Approval.ProcessResult result2 =  Approval.process(req2);
+        
+        <span class="onelineComment">// Verify the results</span>
+        System.assert(result2.isSuccess(), <span class="string">'Result Status:'</span>+result2.isSuccess());
+        
+        System.assertEquals(
+            <span class="string">'Approved'</span>, result2.getInstanceStatus(), 
+            <span class="string">'Instance Status'</span>+result2.getInstanceStatus());
+    }
+}
+</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

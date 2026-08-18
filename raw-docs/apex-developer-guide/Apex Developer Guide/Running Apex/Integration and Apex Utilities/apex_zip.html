@@ -1,0 +1,31 @@
+<a name="apex_zip"><!-- --></a><h1 class="helpHead1">ZIP Support</h1><div class="body conbody">
+<div class="shortdesc">Take advantage of a native Apex Zip library to create and extract ZIP archive files
+        by using the class methods in the <samp class="codeph ">Compression</samp> namespace. </div>
+
+        <p class="p">You can compress multiple attachments or documents into an Apex blob that contains the
+            ZIP archive. You can also specify the data to be extracted from the zip archive, without
+            uncompressing the entire ZIP archive. To optimize compression, you can specify a
+            compression method and compression level. </p>
+
+        <p class="p">This example code extracts a JSON translation file from a callout response containing a
+            ZIP archive by getting and extracting the specified entry from the ZIP archive. </p>
+
+        <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>HttpRequest request = new HttpRequest();
+request.setEndpoint('callout:My_Named_Credential/translationService');
+request.setMethod('POST');
+// Set request payload to translate...
+
+HttpResponse response = new Http().send(request);
+Blob translationZip = response.getBodyAsBlob();
+
+ZipReader reader = new ZipReader(translationZip);
+ZipEntry frTranslation = reader.getEntry('translations/fr.json');
+Blob frTranslationData = reader.extractEntry(frTranslation);
+</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_namespace_Compression.htm" target="_blank" title="Apex Reference Guide: Compression NameSpace - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Compression NameSpace</a></div></li></ul>
+</div>
+</div>

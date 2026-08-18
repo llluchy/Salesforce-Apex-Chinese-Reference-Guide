@@ -1,0 +1,165 @@
+<a name="apex_class_Auth_JWTUtil"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">JWTUtil Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods for validating a JSON Web Token (JWT) from an external identity provider
+    as part of the OAuth 2.0 token exchange flow.  Use these methods as part of the <samp class="codeph ">validateIncomingToken</samp> method in the <samp class="codeph ">Auth.Oauth2TokenExchangeHandler</samp> class. </div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/token_exchange_handler.htm" target="_blank">Token Exchange Handler Validation and Subject
+          Mapping</a>.</p>
+<p class="p">If the methods in this class fail, Salesforce returns an <samp class="codeph ">Auth.JWTValidationException</samp> exception.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm#apex_Auth_JWTUtil_methods">JWTUtil Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_JWTUtil_methods">
+<a name="apex_Auth_JWTUtil_methods"><!-- --></a><h2 class="helpHead2">JWTUtil Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">JWTUtil</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm#apex_Auth_JWTUtil_parseJWTFromStringWithoutValidation">parseJWTFromStringWithoutValidation(incomingJWT)</a></strong><br>
+Parses a JWT from an encoded string into a header, payload, and signature. Use this     method to decode the JWT without validating it.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm#apex_Auth_JWTUtil_validateJWTWithCert">validateJWTWithCert(incomingJWT, certDeveloperName)</a></strong><br>
+Parses and validates the JWT using a certificate saved in Salesforce. The certificate can     be self-signed or signed by a certificate authority.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm#apex_Auth_JWTUtil_validateJWTWithKey">validateJWTWithKey(incomingJWT, publicKey)</a></strong><br>
+Parses and validates the JWT using a public key from the external identity     provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm#apex_Auth_JWTUtil_validateJWTWithKeysEndpoint">validateJWTWithKeysEndpoint(incomingJWT, keysEndpoint, shouldUseCache)</a></strong><br>
+Parses and validates the JWT using a remote JSON Web Key Set (JWKS) endpoint on your     external identity provider.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTUtil_parseJWTFromStringWithoutValidation">
+<a name="apex_Auth_JWTUtil_parseJWTFromStringWithoutValidation"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">parseJWTFromStringWithoutValidation(incomingJWT)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Parses a JWT from an encoded string into a header, payload, and signature. Use this
+    method to decode the JWT without validating it.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static Auth.JWT parseJWTFromStringWithoutValidation(String incomingJWT)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">incomingJWT</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The JWT from your identity provider.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type:<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWT.htm" target="_blank">Auth.JWT</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTUtil_validateJWTWithCert">
+<a name="apex_Auth_JWTUtil_validateJWTWithCert"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">validateJWTWithCert(incomingJWT,
+    certDeveloperName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Parses and validates the JWT using a certificate saved in Salesforce. The certificate can
+    be self-signed or signed by a certificate authority.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static Auth.JWT validateJWTWithCert(String incomingJWT, String certDeveloperName)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">incomingJWT</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The JWT from your identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">certDeveloperName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A certificate saved in the Certificate and Key Management page in Setup.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWT.htm" target="_blank">Auth.JWT</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTUtil_validateJWTWithKey">
+<a name="apex_Auth_JWTUtil_validateJWTWithKey"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">validateJWTWithKey(incomingJWT, publicKey)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Parses and validates the JWT using a public key from the external identity
+    provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static Auth.JWT validateJWTWithKey(String incomingJWT, String publicKey)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">incomingJWT</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The JWT from your identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">publicKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The public key from your identity provider.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWT.htm" target="_blank">Auth.JWT</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTUtil_validateJWTWithKeysEndpoint">
+<a name="apex_Auth_JWTUtil_validateJWTWithKeysEndpoint"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">validateJWTWithKeysEndpoint(incomingJWT, keysEndpoint, shouldUseCache)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Parses and validates the JWT using a remote JSON Web Key Set (JWKS) endpoint on your
+    external identity provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static Auth.JWT validateJWTWithKeysEndpoint(String incomingJWT, String keysEndpoint, Boolean shouldUseCache)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">incomingJWT</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The JWT from your identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">keysEndpoint</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A URL pointing to a valid JSON Web Key Set (JWKS) endpoint on your identity provider.
+            The JWKS returned by the endpoint must conform to the specification defined in <a class="xref" href="https://datatracker.ietf.org/doc/html/rfc7517" target="_blank" title="HTML (New Window)">RFC 7517: JSON Web Key (JWK)</a>. To test HTTP callouts to the JWKS endpoint, use the <samp class="codeph ">Auth.HttpCalloutMockUtil</samp> class.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">shouldUseCache</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Indicates whether the cache is overwritten with the JWKS after validation. If <samp class="codeph ">false</samp>, the cache is overwritten with the JWKS after each
+            successful JWT validation. If <samp class="codeph ">true</samp>, the JWKS is
+            cached only if there is no existing JWKS in the cache; if there is a cached JWKS, it
+            isn't overwritten.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWT.htm" target="_blank">Auth.JWT</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

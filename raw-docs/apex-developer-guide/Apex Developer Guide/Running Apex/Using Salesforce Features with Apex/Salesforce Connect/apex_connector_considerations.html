@@ -1,0 +1,52 @@
+<a name="apex_connector_considerations"><!-- --></a><h1 class="helpHead1">Considerations for the Apex Connector Framework</h1><div class="body conbody">
+<div class="shortdesc">Understand the limits and considerations for creating Salesforce Connect custom
+        adapters with the Apex Connector Framework.</div>
+
+        <ul class="ul bulletList">
+            <li class="li">
+<span class="ph" id="apex_xds_type_provider_missing"><a name="apex_xds_type_provider_missing"><!-- --></a>If you change and save a <samp class="codeph apex_code">DataSource.Connection</samp> class, resave the
+                    corresponding <samp class="codeph apex_code">DataSource.Provider</samp> class.
+                    Otherwise, when you define the external data source, the custom adapter doesn’t
+                    appear as an option for the <span class="keyword parmname">Type</span> field.</span> Also, the
+                associated external objects’ custom tabs no longer appear in the Salesforce UI.</li>
+
+            <li class="li">DML operations aren’t allowed in the Apex code that comprises the custom
+                adapter.</li>
+
+            <li class="li">Make sure that you understand the limits of the external system’s APIs. For example,
+                some external systems accept only requests for up to 40 rows.</li>
+
+            <li class="li">Apex data type limitations:<ul class="ul bulletList">
+                    <li class="li">Double—The value loses precision beyond 18 significant digits. For
+                        higher precision, use decimals instead of doubles.</li>
+
+                    <li class="li">String—If the length is greater than 255 characters, the string is
+                        mapped to a long text area field in Salesforce.</li>
+
+                </ul>
+</li>
+
+            <li class="li">Custom adapters for Salesforce Connect are subject to the same limitations as any
+                other Apex code. For example:<ul class="ul bulletList">
+                    <li class="li">All Apex governor limits apply.</li>
+
+                    <li class="li">Test methods don’t support web service callouts. Tests that perform web
+                        service callouts fail. For an example that shows how to avoid these failing
+                        tests by returning mock responses, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_example_google_drive.htm" title="This example illustrates how to use callouts and OAuth to connect to an external system, which in this case is the Google Drive™ online storage service. The example also shows how to avoid failing tests from web service callouts by returning mock responses for test methods.">Google Drive™ Custom Adapter for Salesforce
+                            Connect</a>.</li>
+
+                </ul>
+</li>
+
+            <li class="li"><span class="ph" id="apex_adapter_considerations_soql"><a name="apex_adapter_considerations_soql"><!-- --></a>In Apex tests, use dynamic SOQL to query
+                    external objects. Tests that perform static SOQL queries of external objects
+                    fail.</span></li>
+
+        </ul>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm" title="Dynamic SOQL refers to the creation of a SOQL string at run time with Apex code. Dynamic SOQL enables you to create more flexible applications. For example, you can create a search based on input from an end user or update records with varying field names.">Dynamic SOQL</a></div></li></ul>
+</div>
+</div>

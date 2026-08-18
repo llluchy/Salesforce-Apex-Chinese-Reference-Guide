@@ -1,0 +1,84 @@
+<a name="apex_rest_code_sample_restrequest"><!-- --></a><h1 class="helpHead1">Apex REST Code Sample Using RestRequest</h1><div class="body">
+<div class="shortdesc">This sample shows you how to add an attachment to a record by using the RestRequest
+        object.</div>
+
+        <div class="p">For more information about authenticating with <samp class="codeph nolang">cURL</samp>,
+            see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/quickstart.htm" target="_blank" title="HTML (New Window)">Quick Start</a> section of the <cite class="cite">REST
+                API Developer Guide</cite>. In this code, the binary file data is stored in the
+            RestRequest object, and the Apex service class accesses the binary data in the
+            RestRequest object .<ol class="ol enumList">
+                <li class="li">Create an Apex class in your org from Setup by entering <kbd class="ph userinput">Apex
+                        Classes</kbd> in the <span class="keyword parmname">Quick Find</span> box, then
+                    selecting <strong class="ph uicontrol">Apex Classes</strong>. Click <strong class="ph uicontrol">New</strong>
+                    and add the following code to your new
+                    class:<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">@RestResource(urlMapping='/CaseManagement/v1/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> CaseMgmtService
+{
+
+    <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> attachPic(){
+        RestRequest req = RestContext.request;
+        RestResponse res = Restcontext.response;
+        Id caseId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        <span class="keyword">Blob</span> picture = req.requestBody;
+        Attachment a = <span class="keyword">new</span> Attachment (ParentId = caseId,
+                                       Body = picture,
+                                       ContentType = <span class="string">'image/jpg'</span>,
+                                       Name = <span class="string">'VehiclePicture'</span>);
+        <span class="statement">insert</span> a;
+        <span class="statement">return</span> a.Id;
+   }
+}
+</pre></div>
+</li>
+
+                <li class="li">Open a command-line window and execute the following <samp class="codeph nolang">cURL</samp> command to upload the attachment to a case: <div class="p">
+<samp class="codeph nolang">curl -H "Authorization: Bearer
+                                    <strong class="ph b"><var class="keyword varname">sessionId</var></strong>" -H "X-PrettyPrint: 1" -H
+                            "Content-Type: image/jpeg" --data-binary @<strong class="ph b"><var class="keyword varname">file</var></strong>
+                                    "https://<strong class="ph b"><var class="keyword varname">MyDomainName</var></strong>.my.salesforce.com/services/apexrest/CaseManagement/v1/<strong class="ph b"><var class="keyword varname">caseId</var></strong>"</samp><ul class="ul bulletList">
+                            <li class="li">Replace <strong class="ph b"><var class="keyword varname">sessionId</var></strong> with the <samp class="codeph xml"><span class="tag">&lt;sessionId</span>&gt;</samp> element that you noted
+                                in the login response.</li>
+
+                            <li class="li">Replace <strong class="ph b"><var class="keyword varname">MyDomainName</var></strong> with the My Domain
+                                name for your org.</li>
+
+                            <li class="li">Replace <strong class="ph b"><var class="keyword varname">caseId</var></strong> with the ID of the case you
+                                want to add the attachment to.</li>
+
+                            <li class="li">Replace <strong class="ph b"><var class="keyword varname">file</var></strong> with the path and file name
+                                of the file you want to attach.</li>
+
+                        </ul>
+</div>
+<p class="p">Your command should look something like this (with the
+                                <strong class="ph b"><var class="keyword varname">sessionId</var></strong> replaced with your session ID
+                        and <var class="keyword varname">MyDomainName</var> replaced with the My Domain Name for
+                        your
+                        org):</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">curl -H "Authorization: Bearer <strong class="ph b"><var class="keyword varname">sessionId</var></strong>" 
+-H "X-PrettyPrint: 1" -H "Content-Type: image/jpeg" --data-binary @c:\test\vehiclephoto1.jpg 
+"https://<var class="keyword varname">MyDomainName</var>.my.salesforce.com/services/apexrest/CaseManagement/v1/500D0000003aCts"</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph nolang">cURL</samp> examples in this
+                        section don’t use a namespaced Apex class so you won’t see the namespace in
+                        the URL.</p>
+</div>
+</div></div></div></div>
+<p class="p">The Apex class returns a JSON response that contains the
+                        attachment ID such as the
+                    following:</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">"00PD0000001y7BfMAI"</pre></div>
+</li>
+
+                <li class="li">To verify that the attachment and the image were added to the case, navigate to <span class="ph menucascade"><strong class="ph uicontrol">Cases</strong></span> and select the <strong class="ph uicontrol">All Open Cases</strong> view. Click
+                    on the case and then scroll down to the Attachments related list. You should see
+                    the attachment you just created.</li>
+
+            </ol>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

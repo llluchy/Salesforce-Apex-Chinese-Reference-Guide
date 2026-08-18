@@ -1,0 +1,59 @@
+<a name="apex_classes_annotation_deprecated"><!-- --></a><h1 class="helpHead1">Deprecated Annotation</h1><div class="body">
+<p class="p"><span class="ph" id="deprecated_annotation_overview"><a name="deprecated_annotation_overview"><!-- --></a>Use the <samp class="codeph apex_code">Deprecated</samp> annotation to identify methods, classes, exceptions, enums,
+                interfaces, or variables that can no longer be referenced in subsequent releases of
+                the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_dev.htm" title="Salesforce supports the creation and distribution of Apex through different types of packages. Understand the distinctions between package types, and recognize that Apex behavior can vary across them.">managed
+                    package</a> in which they reside. This annotation is useful when you’re
+                refactoring code in managed packages as the requirements evolve. New subscribers
+                can’t see the deprecated elements, while the elements continue to function for
+                existing subscribers and API integrations.</span>
+            
+        </p>
+
+<p class="p">The following code snippet shows a deprecated method. The same
+syntax can be used to deprecate classes, exceptions, enums, interfaces,
+or variables.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">  <span class="keyword">@Deprecated</span>
+  <span class="onelineComment">// This method is deprecated. Use myOptimizedMethod(String a, String b) instead.</span>
+  <span class="keyword">global</span> <span class="keyword">void</span> myMethod(<span class="keyword">String</span> a) {
+   
+}</pre></div>
+
+<p class="p">Note the following rules when deprecating Apex identifiers:</p>
+
+<ul class="ul bulletList">
+<li class="li">Unmanaged packages can’t contain code that uses the <samp class="codeph apex_code">deprecated</samp> keyword.</li>
+
+<li class="li">When an Apex item is deprecated, all <samp class="codeph apex_code"><span class="keyword">global</span></samp> access
+                modifiers that reference the deprecated identifier must also be deprecated. Any
+                global method that uses the deprecated type in its signature, either in an input
+                argument or the method return type, must also be deprecated. <span class="ph" id="deprecated_internal_usage"><a name="deprecated_internal_usage"><!-- --></a>A deprecated item, such as a method or a class,
+                    can still be referenced internally by the package developer.</span>
+</li>
+
+<li class="li">
+<samp class="codeph apex_code">webservice</samp> methods and variables can’t be
+                deprecated.</li>
+
+<li class="li">You can deprecate an <samp class="codeph apex_code"><span class="keyword">enum</span></samp> but you can’t deprecate
+                individual <samp class="codeph apex_code"><span class="keyword">enum</span></samp> values.</li>
+
+<li class="li">You can deprecate an interface but you can’t deprecate individual methods in an interface.</li>
+
+<li class="li">You can deprecate an abstract class but you can’t deprecate individual abstract methods in an
+                abstract class.</li>
+
+<li class="li">You can’t remove the <samp class="codeph apex_code">Deprecated</samp> annotation to
+                undeprecate something in Apex after you’ve released a package version where that
+                item in Apex is deprecated.</li>
+
+</ul>
+
+<p class="p">For more information about package versions, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_dev.htm" title="Salesforce supports the creation and distribution of Apex through different types of packages. Understand the distinctions between package types, and recognize that Apex behavior can vary across them.">Managed Package Types</a>.</p>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm" title="AuraEnabled Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_future.htm" title="Future Annotation">Next →</a></li>
+</ul></div>
+</div>

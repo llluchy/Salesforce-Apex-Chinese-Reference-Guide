@@ -1,0 +1,686 @@
+<a name="apex_ConnectAPI_ActionLinks_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">ActionLinks Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Create, delete, and get information about an action link group definition; get
+    information about an action link group; get action link diagnostic information.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">An action link is a button on a feed element. Clicking an action link can take a user to a Web page, initiate a file download, or invoke an API call to Salesforce or to an external server. An action link includes a URL and an HTTP method, and can include a request body and header information, such as an OAuth token for authentication. Use action links to integrate Salesforce and third-party services into the feed so that users can drive productivity and accelerate innovation.</p>
+
+            <p class="p">There are two views of an action link and an action link group: the definition, and the context user’s view. The definition includes potentially sensitive information, such as authentication information. The context user’s view is filtered by visibility options and the values reflect the state of the context user.
+            </p>
+
+            <p class="p">Action link definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission. Use these methods to operate on action link group definitions (which contain
+                action link definitions).</p>
+
+            <ul class="ul bulletList">
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1" title="Create an action link group definition. To associate an action link group with a feed element, first create an action link group definition. Then post a feed element with an associated actions capability.">createActionLinkGroupDefinition​(communityId, actionLinkGroup)</a></li>
+
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_deleteActionLinkGroupDefinition_1" title="Delete an action link group definition. Deleting an action link group definition removes all references to it from feed elements.">deleteActionLinkGroupDefinition(communityId, actionLinkGroupId)</a></li>
+
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_getActionLinkGroupDefinition_1" title="Get information about an action link group definition.">getActionLinkGroupDefinition(communityId, actionLinkGroupId)</a></li>
+
+            </ul>
+
+            <p class="p">Use these methods to operate on a context user’s view of an action link or an action
+                link group.</p>
+
+            <ul class="ul bulletList">
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_getActionLink_1" title="Get information about an action link, including state for the context user.">getActionLink(communityId, actionLinkId)</a></li>
+
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_getActionLinkGroup_1" title="Get information about an action link group including state for the context user.">getActionLinkGroup(communityId, actionLinkGroupId)</a></li>
+
+                <li class="li"><a class="xref" href="#apex_ConnectAPI_ActionLinks_getActionLinkDiagnosticInfo_1" title="Get diagnostic information returned when an action link executes. Diagnostic information is given only for users who can access the action link.">getActionLinkDiagnosticInfo(communityId, actionLinkId)</a></li>
+
+            </ul>
+
+            <p class="p">For information about how to use action links, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_features_action_links.htm" target="_blank">Working with Action Links</a>.</p>
+
+        </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_methods">
+<a name="apex_ConnectAPI_ActionLinks_methods"><!-- --></a>
+ <h2 class="helpHead2">ActionLinks Methods</h2>
+
+ <div class="shortdesc">These methods are for <samp class="codeph apex_code">ActionLinks</samp>. All methods
+  are static.</div>
+
+ 
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1">createActionLinkGroupDefinition​(communityId, actionLinkGroup)</a></strong><br>
+Create an action link group definition. To associate an action link       group with a feed element, first create an action link group definition. Then post a feed       element with an associated actions capability.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_deleteActionLinkGroupDefinition_1">deleteActionLinkGroupDefinition(communityId, actionLinkGroupId)</a></strong><br>
+Delete an action link group definition. Deleting an action link group       definition removes all references to it from feed elements.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_getActionLink_1">getActionLink(communityId, actionLinkId)</a></strong><br>
+Get information about an action link, including state for the context       user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_getActionLinkDiagnosticInfo_1">getActionLinkDiagnosticInfo(communityId, actionLinkId)</a></strong><br>
+Get diagnostic information returned when an action link executes.       Diagnostic information is given only for users who can access the action     link.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_getActionLinkGroup_1">getActionLinkGroup(communityId, actionLinkGroupId)</a></strong><br>
+Get information about an action link group including state for the       context user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_getActionLinkGroupDefinition_1">getActionLinkGroupDefinition(communityId, actionLinkGroupId)</a></strong><br>
+Get information about an action link group     definition.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1">
+<a name="apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createActionLinkGroupDefinition​(communityId,
+      actionLinkGroup)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Create an action link group definition. To associate an action link
+      group with a feed element, first create an action link group definition. Then post a feed
+      element with an associated actions capability.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ActionLinkGroupDefinition
+          createActionLinkGroupDefinition(<span class="keyword">String</span> communityId,
+          ConnectApi.ActionLinkGroupDefinitionInput actionLinkGroup)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkGroup</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_action_link_group_definition.htm#apex_connectapi_input_action_link_group_definition" title="The definition of an action link group. All action links must belong to a group. Action links in a group are mutually exclusive and share some properties. Define standalone actions in their own action group."><samp class="codeph apex_code">ConnectApi.ActionLinkGroupDefinitionInput</samp></a>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.ActionLinkGroupDefinitionInput</samp>
+            object that defines the action link group.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_action_link_group_definition.htm#apex_connectapi_output_action_link_group_definition" title="The definition of an action link group. Information in the action link group definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link group definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission."><samp class="codeph apex_code">ConnectApi.ActionLinkGroupDefinition</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">An action link is a button on a feed element. Clicking an action link can take a user to a Web page, initiate a file download, or invoke an API call to Salesforce or to an external server. An action link includes a URL and an HTTP method, and can include a request body and header information, such as an OAuth token for authentication. Use action links to integrate Salesforce and third-party services into the feed so that users can drive productivity and accelerate innovation.</p>
+
+      <p class="p">All action links must belong to a group. Action links in a group are mutually exclusive and share some properties. Define standalone actions in their own action group.</p>
+
+      <p class="p">Information in the action link group definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link group definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Invoking <samp class="codeph nolang">ApiAsync</samp> action links from an app requires
+        a call to set the status. However, there isn’t currently a way to set the status of an
+        action link using Apex. To set the status, use Connect REST API. See the Action Link
+        resource in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/" target="_blank" title="HTML (New Window)">Connect REST API
+          Developer Guide</a>for more information.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example for Defining an Action Link and Posting with a Feed Element</h4>
+<div class="p">For
+      more information about this example, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_define_post_action_link.htm" target="_blank">Define an Action Link and Post with a Feed Element</a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="createActionLinkGroupDefinitionEx"><a name="createActionLinkGroupDefinitionEx"><!-- --></a>ConnectApi.ActionLinkGroupDefinitionInput actionLinkGroupDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkGroupDefinitionInput();
+ConnectApi.ActionLinkDefinitionInput actionLinkDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkDefinitionInput();
+ConnectApi.RequestHeaderInput requestHeaderInput1 = <span class="keyword">new</span> ConnectApi.RequestHeaderInput();
+ConnectApi.RequestHeaderInput requestHeaderInput2 = <span class="keyword">new</span> ConnectApi.RequestHeaderInput();
+
+<span class="onelineComment">// Create the action link group definition.</span>
+actionLinkGroupDefinitionInput.actionLinks = New List&lt;ConnectApi.ActionLinkDefinitionInput&gt;();
+actionLinkGroupDefinitionInput.executionsAllowed = ConnectApi.ActionLinkExecutionsAllowed.OncePerUser;
+actionLinkGroupDefinitionInput.category = ConnectApi.PlatformActionGroupCategory.Primary;
+<span class="onelineComment">// </span><strong class="ph b">To Do</strong>: Verify that the date <span class="statement">is</span> <span class="statement">in</span> the future.
+<span class="onelineComment">// Action link groups are removed from feed elements on the expiration date.</span>
+datetime myDate = datetime.newInstance(2016, 3, 1);
+actionLinkGroupDefinitionInput.expirationDate = myDate;
+
+<span class="onelineComment">// Create the action link definition.</span>
+actionLinkDefinitionInput.actionType = ConnectApi.ActionLinkType.Api;
+actionLinkDefinitionInput.actionUrl = <span class="string">'/services/data/v33.0/chatter/feed-elements'</span>;
+actionLinkDefinitionInput.headers = <span class="keyword">new</span> List&lt;ConnectApi.RequestHeaderInput&gt;();
+actionLinkDefinitionInput.labelKey = <span class="string">'Post'</span>;
+actionLinkDefinitionInput.method = ConnectApi.HttpRequestMethod.HttpPost;
+actionLinkDefinitionInput.requestBody = <span class="string">'{\"subjectId\": \"me\",\"feedElementType\": \"FeedItem\",\"body\": {\"messageSegments\": [{\"type\": \"Text\",\"text\": \"This is a test post created via an API action link.\"}]}}'</span>;
+actionLinkDefinitionInput.requiresConfirmation = <span class="keyword">true</span>;
+
+<span class="onelineComment">// </span><strong class="ph b">To Do</strong>: Substitute an OAuth value <span class="statement">for</span> your Salesforce org. 
+requestHeaderInput1.name = <span class="string">'Authorization'</span>;
+requestHeaderInput1.value = <span class="string">'OAuth </span><strong class="ph b">00DD00000007WNP!ARsAQCwoeV0zzAV847FTl4zF.85w.EwsPbUgXR4SAjsp</strong><span class="string">';
+</span>actionLinkDefinitionInput.headers.add(requestHeaderInput1);
+
+requestHeaderInput2.name = <span class="string">'Content-Type'</span>;
+requestHeaderInput2.value = <span class="string">'application/json'</span>;
+actionLinkDefinitionInput.headers.add(requestHeaderInput2);
+
+<span class="onelineComment">// Add the action link definition to the action link group definition.</span>
+actionLinkGroupDefinitionInput.actionLinks.add(actionLinkDefinitionInput);
+
+<span class="onelineComment">// Instantiate the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinition actionLinkGroupDefinition = ConnectApi.ActionLinks.createActionLinkGroupDefinition(Network.getNetworkId(), actionLinkGroupDefinitionInput);
+
+ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+ConnectApi.AssociatedActionsCapabilityInput associatedActionsCapabilityInput = <span class="keyword">new</span> ConnectApi.AssociatedActionsCapabilityInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+<span class="onelineComment">// Set the properties of the feedItemInput object.</span>
+feedItemInput.body = messageBodyInput;
+feedItemInput.capabilities = feedElementCapabilitiesInput;
+feedItemInput.subjectId = <span class="string">'me'</span>;
+
+<span class="onelineComment">// Create the text for the post.</span>
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+textSegmentInput.text = <span class="string">'Click to post a feed item.'</span>;  
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+
+<span class="onelineComment">// The feedElementCapabilitiesInput object holds the capabilities of the feed item.</span>
+<span class="onelineComment">// Define an associated actions capability to hold the action link group.</span>
+<span class="onelineComment">// The action link group ID is returned from the call to create the action link group definition. </span>
+feedElementCapabilitiesInput.associatedActions = associatedActionsCapabilityInput;
+associatedActionsCapabilityInput.actionLinkGroupIds = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+associatedActionsCapabilityInput.actionLinkGroupIds.add(actionLinkGroupDefinition.id);
+
+<span class="onelineComment">// Post the feed item. </span>
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+</div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example for Defining an Action Link in a Template and Posting with a Feed
+        Element</h4>
+<div class="p">For more information about this example, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_define_post_action_link_template.htm" target="_blank">Define an Action Link in a Template and Post with a Feed Element</a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="createActionLinkGroupDefinitionEx2"><a name="createActionLinkGroupDefinitionEx2"><!-- --></a><span class="onelineComment">// Get the action link group template Id.</span>
+ActionLinkGroupTemplate template = [SELECT Id FROM ActionLinkGroupTemplate WHERE DeveloperName=<span class="string">'Doc_Example'</span>];
+
+<span class="onelineComment">// Add binding name-value pairs to a map.</span>
+<span class="onelineComment">// The names are defined in the action link template(s) associated with the action link group template.</span>
+<span class="onelineComment">// Get them from Setup UI or SOQL.</span>
+Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; bindingMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+bindingMap.put(<span class="string">'ApiVersion'</span>, <span class="string">'v33.0'</span>);
+bindingMap.put(<span class="string">'Text'</span>, <span class="string">'This post was created by an API action link.'</span>);
+bindingMap.put(<span class="string">'SubjectId'</span>, <span class="string">'me'</span>);
+
+<span class="onelineComment">// Create ActionLinkTemplateBindingInput objects from the map elements.</span>
+List&lt;ConnectApi.ActionLinkTemplateBindingInput&gt; bindingInputs = <span class="keyword">new</span> List&lt;ConnectApi.ActionLinkTemplateBindingInput&gt;();
+
+<span class="statement">for</span> (<span class="keyword">String</span> key : bindingMap.keySet()) {
+    ConnectApi.ActionLinkTemplateBindingInput bindingInput = <span class="keyword">new</span> ConnectApi.ActionLinkTemplateBindingInput();
+    bindingInput.key = key;
+    bindingInput.value = bindingMap.get(key);
+    bindingInputs.add(bindingInput);
+}
+
+<span class="onelineComment">// Set the template Id and template binding values in the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinitionInput actionLinkGroupDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkGroupDefinitionInput();
+actionLinkGroupDefinitionInput.templateId = template.id;
+actionLinkGroupDefinitionInput.templateBindings = bindingInputs;
+
+<span class="onelineComment">// Instantiate the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinition actionLinkGroupDefinition =
+ ConnectApi.ActionLinks.createActionLinkGroupDefinition(Network.getNetworkId(), actionLinkGroupDefinitionInput);
+
+ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+ConnectApi.AssociatedActionsCapabilityInput associatedActionsCapabilityInput = <span class="keyword">new</span> ConnectApi.AssociatedActionsCapabilityInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+<span class="onelineComment">// Define the FeedItemInput object to pass to postFeedElement</span>
+feedItemInput.body = messageBodyInput;
+feedItemInput.capabilities = feedElementCapabilitiesInput;
+feedItemInput.subjectId = <span class="string">'me'</span>;
+
+<span class="onelineComment">// The MessageBodyInput object holds the text in the post</span>
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+textSegmentInput.text = <span class="string">'Click to post a feed item.'</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+
+<span class="onelineComment">// The FeedElementCapabilitiesInput object holds the capabilities of the feed item.</span>
+<span class="onelineComment">// For this feed item, we define an associated actions capability to hold the action link group.</span>
+<span class="onelineComment">// The action link group ID is returned from the call to create the action link group definition. </span>
+feedElementCapabilitiesInput.associatedActions = associatedActionsCapabilityInput;
+associatedActionsCapabilityInput.actionLinkGroupIds = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+associatedActionsCapabilityInput.actionLinkGroupIds.add(actionLinkGroupDefinition.id);
+
+<span class="onelineComment">// Post the feed item. </span>
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_deleteActionLinkGroupDefinition_1">
+<a name="apex_ConnectAPI_ActionLinks_deleteActionLinkGroupDefinition_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">deleteActionLinkGroupDefinition(communityId,
+      actionLinkGroupId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Delete an action link group definition. Deleting an action link group
+      definition removes all references to it from feed elements.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> deleteActionLinkGroupDefinition(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> actionLinkGroupId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkGroupId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the action link group.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Information in the action link group definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link group definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission.</p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_getActionLink_1">
+<a name="apex_ConnectAPI_ActionLinks_getActionLink_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getActionLink(communityId, actionLinkId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get information about an action link, including state for the context
+      user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.PlatformAction getActionLink(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> actionLinkId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the action link.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_platform_action.htm#apex_connectapi_output_platform_action" title="A platform action instance with state information for the context user."><samp class="codeph apex_code">ConnectApi.PlatformAction</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_getActionLinkDiagnosticInfo_1">
+<a name="apex_ConnectAPI_ActionLinks_getActionLinkDiagnosticInfo_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getActionLinkDiagnosticInfo(communityId,
+      actionLinkId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get diagnostic information returned when an action link executes.
+      Diagnostic information is given only for users who can access the action
+    link.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ActionLinkDiagnosticInfo
+          getActionLinkDiagnosticInfo(<span class="keyword">String</span> communityId, <span class="keyword">String</span> actionLinkId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the action link.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_action_link_diagnostic.htm#apex_connectapi_output_action_link_diagnostic" title="Any diagnostic information that may exist for an executed action link. Diagnostic info is provided only for users who can access the action link."><samp class="codeph apex_code">ConnectApi.ActionLinkDiagnosticInfo</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_getActionLinkGroup_1">
+<a name="apex_ConnectAPI_ActionLinks_getActionLinkGroup_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getActionLinkGroup(communityId,
+    actionLinkGroupId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get information about an action link group including state for the
+      context user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.PlatformActionGroup
+          getActionLinkGroup(<span class="keyword">String</span> communityId, <span class="keyword">String</span> actionLinkGroupId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkGroupId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the action link group.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_platform_action_group.htm#apex_connectapi_output_platform_action_group" title="A platform action group instance with state appropriate for the context user."><samp class="codeph apex_code">ConnectApi.PlatformActionGroup</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">All action links must belong to a group. Action links in a group are mutually exclusive and
+        share some properties. Action link groups are accessible by clients, unlike <a class="xref" href="#apex_ConnectAPI_ActionLinks_getActionLinkGroupDefinition_1" title="Get information about an action link group definition.">action link group definitions</a>.</p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ActionLinks_getActionLinkGroupDefinition_1">
+<a name="apex_ConnectAPI_ActionLinks_getActionLinkGroupDefinition_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getActionLinkGroupDefinition(communityId,
+      actionLinkGroupId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get information about an action link group
+    definition.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ActionLinkGroupDefinition
+          getActionLinkGroupDefinition(<span class="keyword">String</span> communityId, <span class="keyword">String</span> actionLinkGroupId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">actionLinkGroupId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the action link group.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_action_link_group_definition.htm#apex_connectapi_output_action_link_group_definition" title="The definition of an action link group. Information in the action link group definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link group definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission."><samp class="codeph apex_code">ConnectApi.ActionLinkGroupDefinition</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Information in the action link group definition can be sensitive to a third party (for example, OAuth bearer token headers). For this reason, only calls made from the Apex namespace that created the action link group definition can read, modify, or delete the definition. In addition, the user making the call must have created the definition or have View All Data permission.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,1161 @@
+<a name="apex_methods_system_approval"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Approval Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Contains methods for processing approval requests and setting approval-process locks and
+                unlocks on records.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+                        
+                        <p class="p"><span class="ph" id="still_editable_by_some"><a name="still_editable_by_some"><!-- --></a>Salesforce admins can edit locked records. Depending on your
+                                        approval process configuration settings, an assigned
+                                        approver can also edit locked records. Locks and unlocks
+                                        that are set programmatically use the same record
+                                        editability settings as other approval-process locks and
+                                        unlocks.</span></p>
+
+                        <p class="p"><span class="ph" id="treat_as_dml"><a name="treat_as_dml"><!-- --></a>Record locks and unlocks are treated as DML.
+                                        They’re blocked before a callout, they count toward your DML
+                                        limits, and if a failure occurs, they’re rolled back along
+                                        with the rest of your transaction. To change this rollback
+                                        behavior, use an <span class="keyword parmname">allOrNone</span>
+                                        parameter.</span></p>
+
+                        <p class="p">Approval is also used as a namespace for the <samp class="codeph apex_code">ProcessRequest</samp> and <samp class="codeph apex_code">ProcessResult</samp> classes. </p>
+
+                </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=approvals_considerations.htm&amp;language=en_US" target="_blank" title="Approval Process Considerations - HTML (New Window)">Approval Process Considerations</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Approval_methods">
+<a name="apex_System_Approval_methods"><!-- --></a>
+<h2 class="helpHead2">Approval Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Approval</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_approval_isLocked">isLocked(id)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the record       with the ID <span class="keyword parmname">id</span> is locked, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if it’s not.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_approval_isLocked_2">isLocked(ids)</a></strong><br>
+Returns a map of record IDs and their lock statuses. If the record is             locked the status is <samp class="codeph apex_code"><span class="keyword">true</span></samp>. If the record is not             locked the status is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_approval_isLocked_3">isLocked(sobject)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the         <span class="keyword parmname">sobject</span> record is locked, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if it’s not.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_approval_isLocked_4">isLocked(sobjects)</a></strong><br>
+Returns a map of record IDs to lock statuses. If the record is       locked the status is <samp class="codeph apex_code"><span class="keyword">true</span></samp>. If the record is not locked       the status is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock">lock(recordId)</a></strong><br>
+Locks an object, and returns the lock results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_2">lock(recordIds)</a></strong><br>
+Locks a set of objects, and returns the lock results, including       failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_3">lock(recordToLock)</a></strong><br>
+Locks an object, and returns the lock results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_4">lock(recordsToLock)</a></strong><br>
+Locks a set of objects, and returns the lock results, including       failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_5">lock(recordId, allOrNothing)</a></strong><br>
+Locks an object, with the option for partial success, and returns       the lock result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_6">lock(recordIds, allOrNothing)</a></strong><br>
+Locks a set of objects, with the option for partial success. It       returns the lock results, including failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_7">lock(recordToLock, allOrNothing)</a></strong><br>
+Locks an object, with the option for partial success, and returns       the lock result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_lock_8">lock(recordsToLock, allOrNothing)</a></strong><br>
+Locks a set of objects, with the option for partial success. It       returns the lock results, including failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_process">process(approvalRequest)</a></strong><br>
+Submits a new approval request and approves or rejects existing approval requests. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_process_2">process(approvalRequest, allOrNone)</a></strong><br>
+Submits a new approval request and approves or rejects existing approval requests. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_process_3">process(approvalRequests)</a></strong><br>
+Submits a list of new approval requests, and approves or rejects existing approval requests. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_process_4">process(approvalRequests, allOrNone)</a></strong><br>
+Submits a list of new approval requests, and approves or rejects existing approval requests. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock">unlock(recordId)</a></strong><br>
+Unlocks an object, and returns the unlock results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_2">unlock(recordIds)</a></strong><br>
+Unlocks a set of objects, and returns the unlock results, including       failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_3">unlock(recordToUnlock)</a></strong><br>
+Unlocks an object, and returns the unlock results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_4">unlock(recordsToUnlock)</a></strong><br>
+Unlocks a set of objects, and returns the unlock results, including       failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_5">unlock(recordId, allOrNothing)</a></strong><br>
+Unlocks an object, with the option for partial success, and returns       the unlock result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_6">unlock(recordIds, allOrNothing)</a></strong><br>
+Unlocks a set of objects, with the option for partial success. It       returns the unlock results, including failures.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_7">unlock(recordToUnlock, allOrNothing)</a></strong><br>
+Unlocks an object, with the option for partial success, and returns       the unlock result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_System_Approval_unlock_8">unlock(recordsToUnlock, allOrNothing)</a></strong><br>
+Unlocks a set of objects, with the option for partial success. It       returns the unlock results, including failures.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_approval_isLocked">
+<a name="apex_System_approval_isLocked"><!-- --></a><h3 class="helpHead3">isLocked(id)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the record
+      with the ID <span class="keyword parmname">id</span> is locked, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if it’s not.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> isLocked(Id id)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">id</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the record whose lock or unlock status is in question.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_approval_isLocked_2">
+<a name="apex_System_approval_isLocked_2"><!-- --></a><h3 class="helpHead3">isLocked(ids)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a map of record IDs and their lock statuses. If the record is
+            locked the status is <samp class="codeph apex_code"><span class="keyword">true</span></samp>. If the record is not
+            locked the status is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Id,<span class="keyword">Boolean</span>&gt; isLocked(List&lt;Id&gt; ids)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ids</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>&gt; The IDs of the records whose lock or unlock statuses are in question.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_approval_isLocked_3">
+<a name="apex_System_approval_isLocked_3"><!-- --></a>
+  <h3 class="helpHead3">isLocked(sobject)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the
+        <span class="keyword parmname">sobject</span> record is locked, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if it’s not.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> isLocked(SObject sobject)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sobject</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a> The record whose lock or unlock status is in question.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_approval_isLocked_4">
+<a name="apex_System_approval_isLocked_4"><!-- --></a>
+  <h3 class="helpHead3">isLocked(sobjects)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a map of record IDs to lock statuses. If the record is
+      locked the status is <samp class="codeph apex_code"><span class="keyword">true</span></samp>. If the record is not locked
+      the status is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;Id,<span class="keyword">Boolean</span>&gt;
+          isLocked(List&lt;SObject&gt; sobjects)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sobjects</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt; The records whose lock or unlock statuses are in question.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock">
+<a name="apex_System_Approval_lock"><!-- --></a>
+  <h3 class="helpHead3">lock(recordId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks an object, and returns the lock results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.LockResult lock(Id
+        recordId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the object to lock.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_2">
+<a name="apex_System_Approval_lock_2"><!-- --></a>
+  <h3 class="helpHead3">lock(recordIds)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks a set of objects, and returns the lock results, including
+      failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.LockResult&gt;
+          lock(List&lt;Id&gt; ids)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">ids</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>&gt; IDs of the objects to lock.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_3">
+<a name="apex_System_Approval_lock_3"><!-- --></a>
+  <h3 class="helpHead3">lock(recordToLock)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks an object, and returns the lock results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.LockResult lock(SObject
+          recordToLock)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordToLock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_4">
+<a name="apex_System_Approval_lock_4"><!-- --></a>
+  <h3 class="helpHead3">lock(recordsToLock)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks a set of objects, and returns the lock results, including
+      failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.LockResult&gt;
+          lock(List&lt;SObject&gt; recordsToLock)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordsToLock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt;</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_5">
+<a name="apex_System_Approval_lock_5"><!-- --></a>
+  <h3 class="helpHead3">lock(recordId, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks an object, with the option for partial success, and returns
+      the lock result.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.LockResult lock(Id recordId, <span class="keyword">Boolean</span>
+          allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the object to lock.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> <span class="ph" id="allOrNothing_desc"><a name="allOrNothing_desc"><!-- --></a>Specifies whether this operation allows partial success. If
+              you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the
+              remainder of the DML operation can still succeed. This method returns a result object
+              that you can use to verify which records succeeded, which failed, and why.</span>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_6">
+<a name="apex_System_Approval_lock_6"><!-- --></a>
+  <h3 class="helpHead3">lock(recordIds, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks a set of objects, with the option for partial success. It
+      returns the lock results, including failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.LockResult&gt;
+          lock(List&lt;Id&gt; recordIds, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordIds</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>&gt; IDs of the objects to lock.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_7">
+<a name="apex_System_Approval_lock_7"><!-- --></a>
+  <h3 class="helpHead3">lock(recordToLock, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks an object, with the option for partial success, and returns
+      the lock result.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.LockResult lock(SObject recordToLock,
+          <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordToLock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_lock_8">
+<a name="apex_System_Approval_lock_8"><!-- --></a>
+  <h3 class="helpHead3">lock(recordsToLock, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Locks a set of objects, with the option for partial success. It
+      returns the lock results, including failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.LockResult&gt;
+          lock(List&lt;SObject&gt; recordsToLock, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordsToLock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt;</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_class_Approval_LockResult" title="The result of a record lock returned by a System.Approval.lock() method.">Approval.LockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_process">
+<a name="apex_System_Approval_process"><!-- --></a>
+<h3 class="helpHead3">process(approvalRequest)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Submits a new approval request and approves or rejects
+existing approval requests. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.ProcessResult
+                              process(Approval.ProcessRequest approvalRequest)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">approvalRequest</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessRequest.htm#apex_ProcessRequest" title="The ProcessRequest class is the parent class for the ProcessSubmitRequest and ProcessWorkitemRequest classes. Use the ProcessRequest class to write generic Apex that can process objects from either class.">Approval.ProcessRequest</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessResult.htm#apex_ProcessResult" title="After you submit a record for approval, use the ProcessResult class to process the results of an approval process.">Approval.ProcessResult</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Insert an account</span>
+
+Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Test'</span>,
+                     annualRevenue=100.0);
+
+<span class="statement">insert</span> a;
+
+<span class="onelineComment">// Create an approval request for the account</span>
+Approval.ProcessSubmitRequest req1 = 
+      <span class="keyword">new</span> Approval.ProcessSubmitRequest();
+req1.setObjectId(a.id);
+
+<span class="onelineComment">// Submit the approval request for the account</span>
+Approval.ProcessResult result = 
+                   Approval.process(req1);
+</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_process_2">
+<a name="apex_System_Approval_process_2"><!-- --></a>
+<h3 class="helpHead3">process(approvalRequest, allOrNone)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Submits a new approval request and approves or rejects
+existing approval requests. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.ProcessResult
+                              process(Approval.ProcessRequest approvalRequest, <span class="keyword">Boolean</span>
+                              allOrNone)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">approvalRequest</var></strong>: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessRequest.htm#apex_ProcessRequest" title="The ProcessRequest class is the parent class for the ProcessSubmitRequest and ProcessWorkitemRequest classes. Use the ProcessRequest class to write generic Apex that can process objects from either class.">Approval.ProcessRequest</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNone</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> The optional <var class="keyword varname">allOrNone</var> parameter specifies whether the operation allows for
+      partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for this
+      parameter and an approval fails, the remainder of the approval processes can still succeed.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessResult.htm#apex_ProcessResult" title="After you submit a record for approval, use the ProcessResult class to process the results of an approval process.">Approval.ProcessResult</a> </p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_process_3">
+<a name="apex_System_Approval_process_3"><!-- --></a>
+<h3 class="helpHead3">process(approvalRequests)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Submits a list of new approval requests, and approves or
+rejects existing approval requests. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.ProcessResult []
+     process(Approval.ProcessRequest[] approvalRequests)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">approvalRequests</var></strong>: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessRequest.htm#apex_ProcessRequest" title="The ProcessRequest class is the parent class for the ProcessSubmitRequest and ProcessWorkitemRequest classes. Use the ProcessRequest class to write generic Apex that can process objects from either class.">Approval.ProcessRequest</a> []</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessResult.htm#apex_ProcessResult" title="After you submit a record for approval, use the ProcessResult class to process the results of an approval process.">Approval.ProcessResult</a> []</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_process_4">
+<a name="apex_System_Approval_process_4"><!-- --></a>
+<h3 class="helpHead3">process(approvalRequests, allOrNone)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Submits a list of new approval requests, and approves or
+rejects existing approval requests. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.ProcessResult []
+     process(Approval.ProcessRequest[] approvalRequests, <span class="keyword">Boolean</span> allOrNone)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">approvalRequests</var></strong>: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessRequest.htm#apex_ProcessRequest" title="The ProcessRequest class is the parent class for the ProcessSubmitRequest and ProcessWorkitemRequest classes. Use the ProcessRequest class to write generic Apex that can process objects from either class.">Approval.ProcessRequest</a> []</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNone</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> The optional <var class="keyword varname">allOrNone</var> parameter specifies whether the operation allows for
+      partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for this
+      parameter and an approval fails, the remainder of the approval processes can still succeed.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ProcessResult.htm#apex_ProcessResult" title="After you submit a record for approval, use the ProcessResult class to process the results of an approval process.">Approval.ProcessResult</a> []</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock">
+<a name="apex_System_Approval_unlock"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks an object, and returns the unlock results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.UnlockResult unlock(Id
+          recordId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the object to unlock.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_2">
+<a name="apex_System_Approval_unlock_2"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordIds)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks a set of objects, and returns the unlock results, including
+      failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.UnlockResult&gt;
+          unlock(List&lt;Id&gt; recordIds)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordIds</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>&gt; IDs of the objects to unlock.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_3">
+<a name="apex_System_Approval_unlock_3"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordToUnlock)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks an object, and returns the unlock results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.UnlockResult unlock(SObject
+          recordToUnlock)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordToUnlock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_4">
+<a name="apex_System_Approval_unlock_4"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordsToUnlock)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks a set of objects, and returns the unlock results, including
+      failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.UnlockResult&gt;
+          unlock(List&lt;SObject&gt; recordsToUnlock)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordsToUnlock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt;</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_5">
+<a name="apex_System_Approval_unlock_5"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordId, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks an object, with the option for partial success, and returns
+      the unlock result.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.UnlockResult unlock(Id recordId,
+          <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the object to lock.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_6">
+<a name="apex_System_Approval_unlock_6"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordIds, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks a set of objects, with the option for partial success. It
+      returns the unlock results, including failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.UnlockResult&gt;
+          unlock(List&lt;Id&gt; recordIds, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordIds</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a>&gt; IDs of the objects to unlock.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_7">
+<a name="apex_System_Approval_unlock_7"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordToUnlock, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks an object, with the option for partial success, and returns
+      the unlock result.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Approval.UnlockResult unlock(SObject
+          recordToUnlock, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordToUnlock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Approval_unlock_8">
+<a name="apex_System_Approval_unlock_8"><!-- --></a>
+  <h3 class="helpHead3">unlock(recordsToUnlock, allOrNothing)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Unlocks a set of objects, with the option for partial success. It
+      returns the unlock results, including failures.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Approval.UnlockResult&gt;
+          unlock(List&lt;SObject&gt; recordsToUnlock, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">recordsToUnlock</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt;</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> and a record fails, the remainder of the DML
+            operation can still succeed. This method returns a result object that you can use to
+            verify which records succeeded, which failed, and why.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_UnlockResult.htm#apex_class_Approval_UnlockResult" title="The result of a record unlock, returned by a System.Approval.unlock() method.">Approval.UnlockResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

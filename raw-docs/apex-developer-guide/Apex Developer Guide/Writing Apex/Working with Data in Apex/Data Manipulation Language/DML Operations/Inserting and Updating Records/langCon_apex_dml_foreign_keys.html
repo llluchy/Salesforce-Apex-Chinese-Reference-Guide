@@ -1,0 +1,93 @@
+<a name="langCon_apex_dml_foreign_keys"><!-- --></a><h1 class="helpHead1">Creating Parent and Child Records in a Single Statement Using
+            Foreign Keys</h1><div class="body refbody">
+        
+        <div class="section">
+            <div class="p">You can use external ID fields as foreign keys to create parent and child records of
+                different sObject types in a single step instead of creating the parent record
+                first, querying its ID, and then creating the child record. To do this:<ul class="ul bulletList">
+                    <li class="li">Create the child sObject and populate its required fields, and optionally
+                        other fields.</li>
+
+                    <li class="li">Create the parent reference sObject used only for setting the parent foreign
+                        key reference on the child sObject. This sObject has only the external ID
+                        field defined and no other fields set.</li>
+
+                    <li class="li">Set the foreign key field of the child sObject to the parent reference
+                        sObject you just created.</li>
+
+                    <li class="li">Create another parent sObject to be passed to the <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement. This sObject must have
+                        the required fields (and optionally other fields) set in addition to the
+                        external ID field.</li>
+
+                    <li class="li">Call <samp class="codeph apex_code"><span class="statement">insert</span></samp> by passing it an array
+                        of sObjects to create. The parent sObject must precede the child sObject in
+                        the array, that is, the array index of the parent must be lower than the
+                        child’s index.</li>
+
+                </ul>
+</div>
+
+            <p class="p">You can create related records that are up to 10 levels deep. Also, the related
+                records created in a single call must have different sObject types. For more
+                information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_calls_create.htm#MixedSaveSection" target="_blank" title="HTML (New Window)">Creating Records for Different Object
+                    Types</a> in the <cite class="cite">SOAP API Developer Guide</cite>.</p>
+
+            <div class="p">The following example shows how to create an opportunity with a parent account using
+                the same <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement. The example
+                creates an Opportunity sObject and populates some of its fields, then creates two
+                Account objects. The first account is only for the foreign key relationship, and the
+                second is for the account creation and has the account fields set. Both accounts
+                have the external ID field, <samp class="codeph nolang">MyExtID__c</samp>, set.
+                Next, the sample calls <samp class="codeph apex_code">Database.<span class="statement">insert</span></samp> by
+                passing it an array of sObjects. The first element in the array is the parent
+                sObject and the second is the opportunity sObject. The <samp class="codeph apex_code">Database.<span class="statement">insert</span></samp> statement creates the
+                opportunity with its parent account in a single step. Finally, the sample checks the
+                results and writes the IDs of the created records to the debug log, or the first
+                error if record creation fails. This sample requires an external ID text field on
+                Account called
+                MyExtID.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> ParentChildSample {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> InsertParentChild() {
+        <span class="keyword">Date</span> dt = <span class="keyword">Date</span>.today();
+        dt = dt.addDays(7);
+        Opportunity newOpportunity = <span class="keyword">new</span> Opportunity(
+            Name=<span class="string">'OpportunityWithAccountInsert'</span>,
+            StageName=<span class="string">'Prospecting'</span>,
+            CloseDate=dt);
+        
+        <span class="onelineComment">// Create the parent reference.</span>
+        <span class="onelineComment">// Used only for foreign key reference</span>
+        <span class="onelineComment">// and doesn't contain any other fields.</span>
+        Account accountReference = <span class="keyword">new</span> Account(
+            MyExtID__c=<span class="string">'SAP111111'</span>);                
+        newOpportunity.Account = accountReference;
+        
+        <span class="onelineComment">// Create the Account object to insert.</span>
+        <span class="onelineComment">// Same as above but has Name field.</span>
+        <span class="onelineComment">// Used for the insert.</span>
+        Account parentAccount = <span class="keyword">new</span> Account(
+            Name=<span class="string">'Hallie'</span>,
+            MyExtID__c=<span class="string">'SAP111111'</span>);      
+        
+        <span class="onelineComment">// Create the account and the opportunity.</span>
+        Database.SaveResult[] results = Database.<span class="statement">insert</span>(<span class="keyword">new</span> SObject[] {
+            parentAccount, newOpportunity });
+        
+        <span class="onelineComment">// Check results.</span>
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; results.size(); i++) {
+            <span class="statement">if</span> (results[i].isSuccess()) {
+            System.debug(<span class="string">'Successfully created ID: '</span>
+                  + results[i].getId());
+            } <span class="statement">else</span> {
+            System.debug(<span class="string">'Error: could not create sobject '</span>
+                  + <span class="string">'for array element '</span> + i + <span class="string">'.'</span>);
+            System.debug(<span class="string">'   The error reported was: '</span>
+                  + results[i].getErrors()[0].getMessage() + <span class="string">'\n'</span>);
+            }
+        }
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

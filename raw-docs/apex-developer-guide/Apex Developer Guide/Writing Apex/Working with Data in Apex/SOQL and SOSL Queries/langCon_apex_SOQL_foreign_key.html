@@ -1,0 +1,33 @@
+<a name="langCon_apex_SOQL_foreign_key"><!-- --></a><h1 class="helpHead1">Understanding Foreign Key and Parent-Child
+Relationship SOQL Queries</h1><div class="body">
+<p class="p">The <samp class="codeph apex_code">SELECT</samp> statement of
+a SOQL query can be any valid SOQL statement, including foreign key
+and parent-child record joins. If foreign key joins are included,
+the resulting sObjects can be referenced using normal field notation.
+For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.debug([SELECT Account.Name FROM Contact
+              WHERE FirstName = <span class="string">'Caroline'</span>].Account.Name);</pre></div>
+
+<p class="p">Additionally, parent-child relationships in sObjects act as SOQL
+queries as well. For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (Account a : [SELECT Id, Name, (SELECT LastName FROM Contacts)
+                  FROM Account
+                  WHERE Name = <span class="string">'Acme'</span>]) {
+     Contact[] cons = a.Contacts;
+}
+
+<span class="onelineComment">//The following example also works because we limit to only 1 contact</span>
+<span class="statement">for</span> (Account a : [SELECT Id, Name, (SELECT LastName FROM Contacts LIMIT 1)
+                  FROM Account
+                  WHERE Name = <span class="string">'testAgg'</span>]) {
+     Contact c = a.Contacts;
+}</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SObjects_field_relationships.htm" title="Accessing sObject Fields Through Relationships">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm" title="Working with SOQL Aggregate Functions">Next →</a></li>
+</ul></div>
+</div>

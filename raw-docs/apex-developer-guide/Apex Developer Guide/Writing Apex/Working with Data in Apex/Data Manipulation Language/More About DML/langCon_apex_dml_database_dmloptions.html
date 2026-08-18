@@ -1,0 +1,304 @@
+<a name="langCon_apex_dml_database_dmloptions"><!-- --></a><h1 class="helpHead1">Setting DML Options</h1><div class="body conbody">
+<div class="shortdesc">You can specify DML options for insert and update operations by setting the desired
+    options in the <samp class="codeph apex_code">Database.DMLOptions</samp> object. You can set
+      <samp class="codeph apex_code">Database.DMLOptions</samp> for the operation by calling the
+      <samp class="codeph apex_code">setOptions</samp> method on the sObject, or by passing it as
+    a parameter to the <samp class="codeph apex_code">Database.<span class="statement">insert</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">update</span></samp> methods.</div>
+
+    <div class="p">Using DML options, you can specify:<ul class="ul bulletList">
+        <li class="li">The truncation behavior of fields.</li>
+
+        <li class="li">Assignment rule information.</li>
+
+        <li class="li">Duplicate rule information.</li>
+
+        <li class="li">Whether automatic emails are sent.</li>
+
+        <li class="li">The user locale for labels.</li>
+
+        <li class="li">Whether the operation allows for partial success.</li>
+
+      </ul>
+</div>
+
+    <div class="p">The <samp class="codeph apex_code">Database.DMLOptions</samp> class has the following properties:<ul class="ul bulletList">
+        <li class="li"><a class="xref" href="#AllowFieldTruncationProperty-B5376842"><samp class="codeph apex_code">allowFieldTruncation</samp> Property</a></li>
+
+        <li class="li"><a class="xref" href="#AssignmentRuleHeaderProperty-B53772F0"><samp class="codeph apex_code">assignmentRuleHeader</samp> Property</a></li>
+
+        <li class="li"><a class="xref" href="#duplicateRuleHeaderProperty"><samp class="codeph apex_code">duplicateRuleHeader</samp></a></li>
+
+        <li class="li"><a class="xref" href="#EmailHeaderProperty-B5377B04"><samp class="codeph apex_code">emailHeader</samp> Property</a></li>
+
+        <li class="li"><a class="xref" href="#localeOptionsSection"><samp class="codeph apex_code">localeOptions</samp> Property</a></li>
+
+        <li class="li"><a class="xref" href="#OptAllOrNoneProperty-B5378CE5"><samp class="codeph apex_code">optAllOrNone</samp> Property</a></li>
+
+      </ul>
+</div>
+
+    <p class="p">DMLOptions is only available for Apex saved against API versions 15.0 and higher. DMLOptions
+      settings take effect only for record operations performed using Apex DML and not through the
+      Salesforce user interface.</p>
+
+    <div class="section" id="AllowFieldTruncationProperty-B5376842">
+<a name="AllowFieldTruncationProperty-B5376842"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">allowFieldTruncation</span> Property</h2>
+
+      
+      
+      <p class="p">The <samp class="codeph apex_code">allowFieldTruncation</samp> property specifies the
+        truncation behavior of strings. In Apex saved against API versions previous to 15.0, if you
+        specify a value for a string and that value is too large, the value is truncated. For API
+        version 15.0 and later, if a value is specified that is too large, the operation fails and
+        an error message is returned. The <samp class="codeph apex_code">allowFieldTruncation</samp> property allows you to specify that the previous behavior,
+        truncation, be used instead of the new behavior in Apex saved against API versions 15.0 and
+        later. </p>
+
+      <div class="p">The <samp class="codeph apex_code">allowFieldTruncation</samp> property takes a Boolean
+        value. If <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the property truncates String
+        values that are too long, which is the behavior in API versions 14.0 and earlier. For
+        example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions();
+
+dml.allowFieldTruncation = <span class="keyword">true</span>;</pre></div>
+</div>
+
+    </div>
+
+    <div class="section" id="AssignmentRuleHeaderProperty-B53772F0">
+<a name="AssignmentRuleHeaderProperty-B53772F0"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">assignmentRuleHeader</span> Property</h2>
+
+      
+      
+      <p class="p">The <samp class="codeph apex_code">assignmentRuleHeader</samp> property specifies the
+        assignment rule to be used when creating a case or lead.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The Database.DMLOptions object supports assignment rules for cases and leads, but not
+        for accounts.</p>
+</div>
+</div></div></div></div>
+
+      <div class="p">Using the <samp class="codeph apex_code">assignmentRuleHeader</samp> property, you can
+        set these options:<ul class="ul bulletList">
+          <li class="li">
+<samp class="codeph apex_code">assignmentRuleID</samp>: The ID of an assignment
+            rule for the case or lead. The assignment rule can be active or inactive. The ID can be
+            retrieved by querying the AssignmentRule sObject. If specified, do not specify <samp class="codeph apex_code">useDefaultRule</samp>. If the value is not in the correct ID
+            format (15-character or 18-character Salesforce ID), the call fails and an exception is
+            returned.</li>
+
+          <li class="li">
+<samp class="codeph apex_code">useDefaultRule</samp>: Indicates whether the default
+            (active) assignment rule will be used for a case or lead. If specified, do not specify
+            an <samp class="codeph apex_code">assignmentRuleId</samp>.</li>
+
+        </ul>
+</div>
+
+      <div class="p">The following example uses the <samp class="codeph apex_code">useDefaultRule</samp>
+        option:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dmo = <span class="keyword">new</span> Database.DMLOptions();
+dmo.assignmentRuleHeader.useDefaultRule= <span class="keyword">true</span>;
+
+Lead l = <span class="keyword">new</span> Lead(company=<span class="string">'ABC'</span>, lastname=<span class="string">'Smith'</span>);
+l.setOptions(dmo);
+<span class="statement">insert</span> l;
+</pre></div>
+</div>
+
+      <div class="p">The following example uses the <samp class="codeph apex_code">assignmentRuleID</samp>
+          option:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dmo = <span class="keyword">new</span> Database.DMLOptions();
+dmo.assignmentRuleHeader.assignmentRuleId= <span class="string">'01QD0000000EqAn'</span>;
+
+Lead l = <span class="keyword">new</span> Lead(company=<span class="string">'ABC'</span>, lastname=<span class="string">'Smith'</span>);
+l.setOptions(dmo);
+<span class="statement">insert</span> l;</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If there are no assignment rules in the organization, in API
+          version 29.0 and earlier, creating a case or lead with <samp class="codeph apex_code">useDefaultRule</samp> set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> results in
+          the case or lead being assigned to the predefined default owner. In API version 30.0 and
+          later, the case or lead is unassigned and doesn't get assigned to the default
+          owner.</p>
+</div>
+</div></div></div></div>
+</div>
+
+    </div>
+
+    <div class="section" id="duplicateRuleHeaderProperty">
+<a name="duplicateRuleHeaderProperty"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">duplicateRuleHeader</span> Property</h2>
+
+      
+      <p class="p">The <samp class="codeph apex_code">duplicateRuleHeader</samp> property determines whether
+        a record that’s identified as a duplicate can be saved. Duplicate rules are part of the
+        Duplicate Management feature.</p>
+
+      <div class="p">Using the <samp class="codeph apex_code">duplicateRuleHeader</samp> property, you can set
+        these options.<ul class="ul bulletList">
+          <li class="li">
+<samp class="codeph apex_code">allowSave</samp>: Indicates whether a record that’s
+            identified as a duplicate can be saved.</li>
+
+        </ul>
+
+      </div>
+
+      <div class="p">The following example shows how to save an account record that’s been identified as a
+        duplicate. To learn how to iterate through duplicate errors, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Database_DuplicateError.htm" target="_blank">DuplicateError
+        Class</a><div class="codeSection apex_code"><pre class="codeblock brush:apex">
+Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions(); 
+dml.DuplicateRuleHeader.AllowSave = <span class="keyword">true</span>;
+Account duplicateAccount = <span class="keyword">new</span> Account(Name=<span class="string">'dupe'</span>);
+Database.SaveResult sr = Database.<span class="statement">insert</span>(duplicateAccount, dml);
+<span class="statement">if</span> (sr.isSuccess()) {
+	System.debug(<span class="string">'Duplicate account has been inserted in Salesforce!'</span>);
+}</pre></div>
+</div>
+
+    </div>
+
+    <div class="section" id="EmailHeaderProperty-B5377B04">
+<a name="EmailHeaderProperty-B5377B04"><!-- --></a><h2 class="helpHead2">
+<span class="titlecodeph">emailHeader</span> Property</h2>
+
+      
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+        <p class="p">System-generated emails from an unverified email-sending domain aren’t delivered, even if
+          the From email address is verified. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.security_email_verification_requirements.htm&amp;language=en_US&amp;type=5" target="_blank">Requirements to Send Email from Salesforce</a>.</p>
+
+      </p>
+</div>
+</div></div></div></div>
+
+      
+      <div class="p">The Salesforce user interface allows you to specify whether or not to send an email when
+        the following events occur:<ul class="ul bulletList">
+          <li class="li">Creation of a new case or task</li>
+
+          
+          <li class="li">Conversion of a case email to a contact</li>
+
+          <li class="li">New user email notification</li>
+
+          <li class="li">Lead queue email notification</li>
+
+          <li class="li">Password reset</li>
+
+        </ul>
+</div>
+
+      <p class="p">In API version 15.0 and later, the Database.DMLOptions <samp class="codeph apex_code">emailHeader</samp> property enables you to specify additional information regarding the
+        email that gets sent when one of the events occurs because of Apex DML code execution.</p>
+
+      <div class="p">Using the <samp class="codeph apex_code">emailHeader</samp> property, you can set these options.<ul class="ul bulletList">
+          <li class="li">
+<samp class="codeph apex_code">triggerAutoResponseEmail</samp>: Indicates whether
+            to trigger auto-response rules (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not
+              (<samp class="codeph apex_code"><span class="keyword">false</span></samp>), for leads and cases. This email can
+            be automatically triggered by a number of events, for example when creating a case or
+            resetting a user password. If this value is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, when a case is created, if there is an email address for the contact
+            specified in <span class="keyword parmname">ContactID</span>, the email is sent to that address. If not,
+            the email is sent to the address specified in <span class="keyword parmname">SuppliedEmail</span>.</li>
+
+          <li class="li">
+<samp class="codeph apex_code">triggerOtherEmail</samp>: Indicates whether to
+            trigger email outside the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>)
+            or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). This email can be automatically
+            triggered by creating, editing, or deleting a contact for a case.</li>
+
+          <li class="li">
+<samp class="codeph apex_code">triggerUserEmail</samp>: Indicates whether to
+            trigger email that is sent to users in the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). This email
+            can be automatically triggered by a number of events; resetting a password, creating a
+            new user,  or creating or
+            modifying a task.<div class="box message info" id="triggerUserEmail_note">
+<a name="triggerUserEmail_note"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Adding comments to a case in Apex
+              doesn’t trigger email to users in the organization even if <samp class="codeph apex_code">triggerUserEmail</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</p>
+</div>
+</div></div></div>
+</div>
+</li>
+
+        </ul>
+</div>
+
+      <p class="p" id="dmloptions_using_dml"><a name="dmloptions_using_dml"><!-- --></a>Even though auto-sent emails can be triggered by actions in the
+        Salesforce user interface, the DMLOptions settings for <samp class="codeph apex_code">emailHeader</samp> take effect only for DML operations carried out in Apex code.</p>
+
+      <div class="p">In the following example, the <samp class="codeph apex_code">triggerAutoResponseEmail</samp> option is
+        specified:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(name=<span class="string">'Acme Plumbing'</span>);
+
+<span class="statement">insert</span> a;
+
+Contact c = <span class="keyword">new</span> Contact(email=<span class="string">'jplumber@salesforce.com'</span>, firstname=<span class="string">'Joe'</span>,lastname=<span class="string">'Plumber'</span>, accountid=a.id);
+
+<span class="statement">insert</span> c;
+
+Database.DMLOptions dlo = <span class="keyword">new</span> Database.DMLOptions();
+
+dlo.EmailHeader.triggerAutoResponseEmail = <span class="keyword">true</span>;
+
+Case ca = <span class="keyword">new</span> Case(subject=<span class="string">'Plumbing Problems'</span>, contactid=c.id);
+
+database.<span class="statement">insert</span>(ca, dlo);
+</pre></div>
+</div>
+
+      <div class="p">Email sent through Apex because of a group event includes additional behaviors. A
+          <dfn class="term">group event</dfn> is an event for which <span class="keyword parmname">IsGroupEvent</span> is true.
+        The EventAttendee object tracks the users, leads, or contacts that are invited to a group
+        event. Note the following behaviors for group event email sent through Apex:<ul class="ul bulletList">
+          <li class="li">Sending a group event invitation to a user respects the <samp class="codeph apex_code">triggerUserEmail</samp> option</li>
+
+          <li class="li">Sending a group event invitation to a lead or contact respects the <samp class="codeph apex_code">triggerOtherEmail</samp> option</li>
+
+          <li class="li">Email sent when updating or deleting a group event also respects the <samp class="codeph apex_code">triggerUserEmail</samp> and <samp class="codeph apex_code">triggerOtherEmail</samp> options, as appropriate</li>
+
+        </ul>
+</div>
+
+    </div>
+
+    <div class="section" id="localeOptionsSection">
+<a name="localeOptionsSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="localeoptions"><a name="localeoptions"><!-- --></a><span class="titlecodeph">localeOptions</span>
+          Property</span></h2>
+
+      
+      
+      <p class="p">The <samp class="codeph apex_code">localeOptions</samp> property specifies the language
+        of any labels that are returned by Apex. The value must be a valid user locale (language and
+        country), such as de_DE or en_GB. The value is a String, 2-5 characters long. The first two
+        characters are always an ISO language code, for example 'fr' or 'en.' If the value is
+        further qualified by a country, then the string also has an underscore (_) and another ISO
+        country code, for example 'US' or 'UK.' For example, the string for the United States is
+        'en_US', and the string for French Canadian is 'fr_CA'.</p>
+
+    </div>
+
+    <div class="section" id="OptAllOrNoneProperty-B5378CE5">
+<a name="OptAllOrNoneProperty-B5378CE5"><!-- --></a><h2 class="helpHead2"><span class="ph" id="optAllOrNone"><a name="optAllOrNone"><!-- --></a><span class="titlecodeph">optAllOrNone</span>
+          Property</span></h2>
+
+      
+      
+      <p class="p">The <samp class="codeph apex_code">optAllOrNone</samp> property specifies whether the
+        operation allows for partial success. If <samp class="codeph apex_code">optAllOrNone</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, all changes
+        are rolled back if any record causes errors. The default for this property is <samp class="codeph apex_code"><span class="keyword">false</span></samp> and successfully processed records are committed
+        while records with errors aren't. This property is available in Apex saved against
+        Salesforce API version 20.0 and later.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

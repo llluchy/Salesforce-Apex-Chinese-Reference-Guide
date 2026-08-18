@@ -1,0 +1,325 @@
+<a name="apex_class_commercepayments_AuthorizationReversalResponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">AuthorizationReversalResponse Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Response sent by the payment gateway following a payment authorization
+      reversal service.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">
+<p class="p">The constructor of this class takes no arguments. For
+        example:</p>
+<samp class="codeph apex_code">CommercePayments.AuthorizationReversalResponse
+        authRevRes = <span class="keyword">new</span> CommercePayments.AuthorizationResponse();</samp><p class="p">Contains information about the payment gateway’s response following an authorization
+        reversal transaction. The gateway adapter uses the payment gateway’s response to populate
+        the <samp class="codeph apex_code">AuthorizationReversalResponse</samp> fields. The
+        payments platform uses the information from this class to construct the authorization
+        gateway response shown to the user.</p>
+</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This class builds an authorization reversal response that contains the amount of the
+        original reversal request, gateway information, and the Salesforce result code.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> commercepayments.GatewayResponse createAuthReversalResponse(commercepayments.AuthorizationReversalRequest authReversalRequest) {
+        commercepayments.AuthorizationReversalResponse authReversalResponse = <span class="keyword">new</span> commercepayments.AuthorizationReversalResponse();
+        <span class="statement">if</span>(authReversalRequest.amount!=<span class="keyword">null</span> )
+        {
+            authReversalResponse.setAmount(authReversalRequest.amount);
+        }
+        <span class="statement">else</span>
+        {
+             <span class="statement">throw</span> <span class="keyword">new</span> SalesforceValidationException(<span class="string">'Required Field Missing : Amount'</span>);             
+        }
+   
+        system.debug(<span class="string">'Response - success'</span>);
+        authReversalResponse.setGatewayDate(system.now());
+        authReversalResponse.setGatewayResultCode(<span class="string">'00'</span>);
+        authReversalResponse.setGatewayResultCodeDescription(<span class="string">'Transaction Normal'</span>);
+        authReversalResponse.setGatewayReferenceNumber(<span class="string">'SF'</span>+getRandomNumber(6));
+        authReversalResponse.setSalesforceResultCodeInfo(SUCCESS_SALESFORCE_RESULT_CODE_INFO);
+        <span class="statement">return</span> authReversalResponse;
+    }</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_methods">AuthorizationReversalResponse Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_methods">
+<a name="apex_commercepayments_AuthorizationReversalResponse_methods"><!-- --></a><h2 class="helpHead2">AuthorizationReversalResponse Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">AuthorizationReversalResponse</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setAmount">setAmount(amount)</a></strong><br>
+Contains the amount of the authorization reversal. Must be a non-zero       value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayAvsCode">setGatewayAvsCode(gatewayAvsCode)</a></strong><br>
+Sets the AVS (Address Verification System) result code that the       gateway returned. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayDate">setGatewayDate(gatewayDate)</a></strong><br>
+Sets the date that the authorization reversal request occurred in the       payment gateway. Some gateways don't send this value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayMessage">setGatewayMessage(gatewayMessage)</a></strong><br>
+Sets error messages that the gateway returned for the authorization       reversal request. Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceDetails">setGatewayReferenceDetails(gatewayReferenceDetails)</a></strong><br>
+Stores data that you can use for subsequent authorizations. You can       use any data that isn’t normalized in financial entities. This field has a maximum length of       1000 characters and can store data as JSON or XML. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceNumber">setGatewayReferenceNumber(gatewayReferenceNumber)</a></strong><br>
+Sets a unique gateway reference number for the transaction that the       gateway returned. Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCode">setGatewayResultCode(gatewayResultCode)</a></strong><br>
+Sets a gateway-specific result code. The code can be mapped to a       Salesforce-specific result code. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCodeDescription">setGatewayResultCodeDescription(gatewayResultCodeDescription)</a></strong><br>
+Sets a description of the gateway-specific result code that a payment       gateway returned. Maximum length of 1000 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationReversalResponse.htm#apex_commercepayments_AuthorizationReversalResponse_setSalesforceResultCodeInfo">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</a></strong><br>
+Sets the Salesforce-specific result code information. Payment gateways       have many response codes for payment calls. Salesforce uses the result code information to map       payment gateway codes to a predefined set of standard Salesforce result     codes.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setAmount">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setAmount"><!-- --></a><h3 class="helpHead3">setAmount(amount)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains the amount of the authorization reversal. Must be a non-zero
+      value.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAmount(<span class="keyword">Double</span> amount)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">amount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayAvsCode">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayAvsCode"><!-- --></a><h3 class="helpHead3">setGatewayAvsCode(gatewayAvsCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the AVS (Address Verification System) result code that the
+      gateway returned. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayAvsCode(<span class="keyword">String</span> gatewayAvsCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayAvsCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Used to verify</p>
+<p class="p">the address mapped to a payment method when the payments platform
+            requests tokenization from the payment gateway.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayDate">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayDate"><!-- --></a><h3 class="helpHead3">setGatewayDate(gatewayDate)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the date that the authorization reversal request occurred in the
+      payment gateway. Some gateways don't send this value.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayDate(<span class="keyword">Datetime</span> gatewayDate)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayMessage">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayMessage"><!-- --></a><h3 class="helpHead3">setGatewayMessage(gatewayMessage)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets error messages that the gateway returned for the authorization
+      reversal request. Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayMessage(<span class="keyword">String</span> gatewayMessage)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayMessage</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceDetails">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceDetails"><!-- --></a><h3 class="helpHead3">setGatewayReferenceDetails(gatewayReferenceDetails)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores data that you can use for subsequent authorizations. You can
+      use any data that isn’t normalized in financial entities. This field has a maximum length of
+      1000 characters and can store data as JSON or XML. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayReferenceDetails(<span class="keyword">String</span>
+          gatewayReferenceDetails)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceDetails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceNumber">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayReferenceNumber"><!-- --></a><h3 class="helpHead3">setGatewayReferenceNumber(gatewayReferenceNumber)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a unique gateway reference number for the transaction that the
+      gateway returned. Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayReferenceNumber(<span class="keyword">String</span>
+          gatewayReferenceNumber)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceNumber</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Unique reference ID created by the payment gateway.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCode">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCode"><!-- --></a><h3 class="helpHead3">setGatewayResultCode(gatewayResultCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a gateway-specific result code. The code can be mapped to a
+      Salesforce-specific result code. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayResultCode(<span class="keyword">String</span>
+          gatewayResultCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Gateway-specific result code.</p>
+<p class="p">Must be used to map a Salesforce-specific result
+            code.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCodeDescription">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setGatewayResultCodeDescription"><!-- --></a><h3 class="helpHead3">setGatewayResultCodeDescription(gatewayResultCodeDescription)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a description of the gateway-specific result code that a payment
+      gateway returned. Maximum length of 1000 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setGatewayResultCodeDescription(<span class="keyword">String</span>
+          gatewayResultCodeDescription)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCodeDescription</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Description of the gateway’s result code. Use this field to learn more about why the gateway
+            returned a certain result code.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationReversalResponse_setSalesforceResultCodeInfo">
+<a name="apex_commercepayments_AuthorizationReversalResponse_setSalesforceResultCodeInfo"><!-- --></a><h3 class="helpHead3">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Salesforce-specific result code information. Payment gateways
+      have many response codes for payment calls. Salesforce uses the result code information to map
+      payment gateway codes to a predefined set of standard Salesforce result
+    codes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo
+          salesforceResultCodeInfo)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">salesforceResultCodeInfo</var></strong>:<p class="p">Type: SalesforceResultCodeInfo Description of</p>
+<p class="p">the Salesforce result code value.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

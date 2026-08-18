@@ -1,0 +1,76 @@
+<a name="apex_exceptions_canvas"><!-- --></a><h1 class="helpHead1">Canvas Exceptions</h1><div class="body refbody">
+<div class="shortdesc">The <samp class="codeph apex_code">Canvas</samp> namespace contains exception
+        classes.</div>
+
+        <div class="section">
+            <p class="p">All exception classes support built-in methods for returning the error message and
+                exception type. See <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm" title="An exception denotes an error that disrupts the normal flow of code execution. You can use Apex built-in exceptions or create custom exceptions. All exceptions have common methods.">Exception Class and Built-In
+                    Exceptions</a>.</p>
+
+            <p class="p">The <samp class="codeph apex_code">Canvas</samp> namespace contains this
+                exception:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d72202e64">Exception</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d72202e67">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d72202e64" data-title="Exception"><samp class="codeph apex_code">Canvas.CanvasRenderException</samp></td>
+
+                            <td class="entry" headers="d72202e67" data-title="Description">Use this class in your implementation of <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_canvas_CanvasLifecycleHandler_onRender.htm" title="Invoked when a canvas app is rendered. Provides the ability to set and retrieve canvas application and environment context information during the application render phase.">Canvas.CanvasLifecycleHandler.<samp class="codeph apex_code">onRender(renderContext)</samp></a>. To show an error to
+                                the user in your <samp class="codeph apex_code">onRender()</samp>
+                                implementation, throw a <samp class="codeph apex_code">Canvas.CanvasRenderException</samp>, and the canvas framework
+                                will render the error message to the user.  This exception will
+                                be managed only within the <samp class="codeph apex_code">onRender()</samp> method.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="p">The following example implementation of <samp class="codeph apex_code">onRender()</samp> catches a CanvasException that was thrown because a canvas
+                URL was set with a string that exceeded the maximum length. A CanvasRenderException
+                is created and thrown to display the error to the
+                user.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyCanvasListener 
+<span class="keyword">implements</span> Canvas.CanvasLifecycleHandler {
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> onRender(Canvas.RenderContext renderContext) {
+        Canvas.ApplicationContext app = renderContext.getApplicationContext();
+
+        <span class="onelineComment">// Code to generate a URL string that is too long</span>
+
+        <span class="onelineComment">// ...</span>
+
+        <span class="onelineComment">// Try to set the canvas app URL using the invalid URL string</span>
+        <span class="statement">try</span> {
+            app.setCanvasUrlPath(aUrlPathThatIsTooLong);
+        } <span class="statement">catch</span> (CanvasException e) {
+            <span class="onelineComment">// Display error to user by throwing a new CanvasRenderException</span>
+            <span class="statement">throw</span> <span class="keyword">new</span> Canvas.CanvasRenderException(e.getMessage());
+        }
+    }
+}</pre></div>
+See the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/" target="_blank" title="HTML (New Window)">Canvas Developer
+                    Guide</a> for additional examples that use CanvasRenderException.</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

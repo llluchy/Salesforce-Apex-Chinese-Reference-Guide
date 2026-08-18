@@ -1,0 +1,321 @@
+<a name="apex_bulk_sharing_recalc"><!-- --></a><h1 class="helpHead1"><span class="ph" id="apex_sharing_recalc"><a name="apex_sharing_recalc"><!-- --></a>Recalculating Apex Managed Sharing</span></h1><div class="body">
+        <p class="p">Salesforce automatically recalculates sharing for all records on an object when its
+            organization-wide sharing default access level changes. The recalculation adds managed
+            sharing when appropriate. In addition, all types of sharing are removed if the access
+            they grant is considered redundant. For example, manual sharing, which grants Read Only
+            access to a user, is deleted when the object’s sharing model changes from Private
+            to Public Read Only.</p>
+
+        <p class="p">To recalculate Apex managed sharing, you must write an Apex class that implements a
+            Salesforce-provided interface to do the recalculation. You must then associate the class
+            with the custom object, on the custom object's detail page, in the Apex Sharing
+            Recalculation related list. </p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex sharing reasons and Apex managed sharing recalculation are only available for
+            custom objects.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">You can execute this class from the custom object detail page where the Apex sharing
+            reason is specified. An administrator might need to recalculate the Apex managed sharing
+            for an object if a locking issue prevented Apex code from granting access to a user as
+            defined by the application’s logic. You can also use the Database.executeBatch
+            method to programmatically invoke an Apex managed sharing recalculation. </p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Every time a custom object's organization-wide sharing default access level is
+            updated, any Apex recalculation classes defined for associated custom object are also
+            executed. </p>
+</div>
+</div></div></div></div>
+
+        <p class="p">To monitor or stop the execution of the Apex recalculation, from Setup, enter
+                <kbd class="ph userinput">Apex Jobs</kbd> in the <span class="keyword parmname">Quick Find</span> box, then
+            select <strong class="ph uicontrol">Apex Jobs</strong>.</p>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="creating_apex_sharing"><a name="creating_apex_sharing"><!-- --></a>Creating an Apex Class for Recalculating
+                    Sharing</span></h2>
+
+            
+            <p class="p">To recalculate Apex managed sharing, you must write an Apex class to do the
+                recalculation. This class must implement the Salesforce-provided interface <samp class="codeph apex_code">Database.Batchable</samp>. </p>
+
+            <p class="p">The <samp class="codeph apex_code">Database.Batchable</samp> interface is used for
+                all batch Apex processes, including recalculating Apex managed sharing. You can
+                implement this interface more than once in your organization. For more information
+                on the methods that must be implemented, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" title="To use batch Apex, write an Apex class that implements the Salesforce-provided interface Database.Batchable and then invoke the class programmatically. To monitor or stop the execution of the batch Apex job, from Setup, enter Apex Jobs in the Quick Find box and then select Apex Jobs.">Use Batch Apex</a>.</p>
+
+            <p class="p">Before creating an Apex managed sharing recalculation class, also consider the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" title="To use batch Apex, write an Apex class that implements the Salesforce-provided interface Database.Batchable and then invoke the class programmatically. To monitor or stop the execution of the batch Apex job, from Setup, enter Apex Jobs in the Quick Find box and then select Apex Jobs.">best practices</a>.</p>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>The object’s organization-wide default access level must
+                not be set to the most permissive access level. For custom objects, this level is
+                Public Read/Write. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm" title="Sharing enables record-level access control for all custom objects, as well as many standard objects (such as Account, Contact, Opportunity and Case). Administrators first set an object’s organization-wide default sharing access level, and then grant additional access based on record ownership, the role hierarchy, sharing rules, and manual sharing. Developers can then use Apex managed sharing to grant additional access programmatically with Apex.">Understanding Sharing</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_sharing_example"><a name="apex_sharing_example"><!-- --></a>Apex Managed Sharing Recalculation
+                Example</span></h2>
+
+            
+            <p class="p"><span class="ph" id="SharingExampleIntro1"><a name="SharingExampleIntro1"><!-- --></a>For this example, suppose that you are building a
+                    recruiting application and have an object called Job. You want to validate that
+                    the recruiter and hiring manager listed on the job have access to the
+                    record.</span> The following Apex class performs this validation. <span class="ph" id="prereq"><a name="prereq"><!-- --></a>This example requires a custom object called Job, with two lookup fields
+                    associated with User records called Hiring_Manager and Recruiter. Also, the Job
+                    custom object should have two sharing reasons added called Hiring_Manager and
+                    Recruiter.</span> Before you run this sample, replace the email address with a
+                valid email address to which you want to send error notifications and job completion
+                notifications.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> JobSharingRecalc <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt; {
+    
+    <span class="onelineComment">// String to hold email address that emails will be sent to. </span>
+    <span class="onelineComment">// Replace its value with a valid email address.</span>
+    <span class="keyword">static</span> <span class="keyword">String</span> emailAddress = <span class="string">'admin@yourcompany.com'</span>;
+    
+    <span class="onelineComment">// The start method is called at the beginning of a sharing recalculation.</span>
+    <span class="onelineComment">// This method returns a SOQL query locator containing the records </span>
+    <span class="onelineComment">// to be recalculated. </span>
+    <span class="keyword">global</span> Database.QueryLocator start(Database.BatchableContext BC){
+        <span class="statement">return</span> Database.getQueryLocator([SELECT Id, Hiring_Manager__c, Recruiter__c 
+                                         FROM Job__c]);  
+    }
+    
+    <span class="onelineComment">// The executeBatch method is called for each chunk of records returned from start.  </span>
+    <span class="keyword">global</span> <span class="keyword">void</span> execute(Database.BatchableContext BC, List&lt;sObject&gt; scope){
+       <span class="onelineComment">// Create a map for the chunk of records passed into method.</span>
+        Map&lt;<span class="keyword">ID</span>, Job__c&gt; jobMap = <span class="keyword">new</span> Map&lt;<span class="keyword">ID</span>, Job__c&gt;((List&lt;Job__c&gt;)scope);  
+        
+        <span class="onelineComment">// Create a list of Job__Share objects to be inserted.</span>
+        List&lt;Job__Share&gt; newJobShrs = <span class="keyword">new</span> List&lt;Job__Share&gt;();
+               
+        <span class="onelineComment">// Locate all existing sharing records for the Job records in the batch.</span>
+        <span class="onelineComment">// Only records using an Apex sharing reason for this app should be returned. </span>
+        List&lt;Job__Share&gt; oldJobShrs = [SELECT Id FROM Job__Share WHERE ParentId IN 
+             :jobMap.keySet() AND 
+            (RowCause = :Schema.Job__Share.rowCause.Recruiter__c OR
+            RowCause = :Schema.Job__Share.rowCause.Hiring_Manager__c)]; 
+        
+        <span class="onelineComment">// Construct new sharing records for the hiring manager and recruiter </span>
+        <span class="onelineComment">// on each Job record.</span>
+        <span class="statement">for</span>(Job__c job : jobMap.values()){
+            Job__Share jobHMShr = <span class="keyword">new</span> Job__Share();
+            Job__Share jobRecShr = <span class="keyword">new</span> Job__Share();
+            
+            <span class="onelineComment">// Set the ID of user (hiring manager) on the Job record being granted access.</span>
+            jobHMShr.UserOrGroupId = job.Hiring_Manager__c;
+            
+            <span class="onelineComment">// The hiring manager on the job should always have 'Read Only' access.</span>
+            jobHMShr.AccessLevel = <span class="string">'Read'</span>;
+            
+            <span class="onelineComment">// The ID of the record being shared</span>
+            jobHMShr.ParentId = job.Id;
+            
+            <span class="onelineComment">// Set the rowCause to the Apex sharing reason for hiring manager.</span>
+            <span class="onelineComment">// This establishes the sharing record as Apex managed sharing.</span>
+            jobHMShr.RowCause = Schema.Job__Share.RowCause.Hiring_Manager__c;
+            
+            <span class="onelineComment">// Add sharing record to list for insertion.</span>
+            newJobShrs.add(jobHMShr);
+            
+            <span class="onelineComment">// Set the ID of user (recruiter) on the Job record being granted access.</span>
+            jobRecShr.UserOrGroupId = job.Recruiter__c;
+            
+            <span class="onelineComment">// The recruiter on the job should always have 'Read/Write' access.</span>
+            jobRecShr.AccessLevel = <span class="string">'Edit'</span>;
+            
+            <span class="onelineComment">// The ID of the record being shared</span>
+            jobRecShr.ParentId = job.Id;
+            
+            <span class="onelineComment">// Set the rowCause to the Apex sharing reason for recruiter.</span>
+            <span class="onelineComment">// This establishes the sharing record as Apex managed sharing.</span>
+            jobRecShr.RowCause = Schema.Job__Share.RowCause.Recruiter__c;
+            
+         <span class="onelineComment">// Add the sharing record to the list for insertion.            </span>
+            newJobShrs.add(jobRecShr);
+        }
+        
+        <span class="statement">try</span> {
+           <span class="onelineComment">// Delete the existing sharing records.</span>
+           <span class="onelineComment">// This allows new sharing records to be written from scratch.</span>
+            Delete oldJobShrs;
+            
+           <span class="onelineComment">// Insert the new sharing records and capture the save result. </span>
+           <span class="onelineComment">// The false parameter allows for partial processing if multiple records are </span>
+           <span class="onelineComment">// passed into operation. </span>
+           Database.SaveResult[] lsr = Database.<span class="statement">insert</span>(newJobShrs,<span class="keyword">false</span>);
+           
+           <span class="onelineComment">// Process the save results for insert.</span>
+           <span class="statement">for</span>(Database.SaveResult sr : lsr){
+               <span class="statement">if</span>(!sr.isSuccess()){
+                   <span class="onelineComment">// Get the first save result error.</span>
+                   Database.Error err = sr.getErrors()[0];
+                   
+                   <span class="onelineComment">// Check if the error is related to trivial access level.</span>
+                   <span class="onelineComment">// Access levels equal or more permissive than the object's default </span>
+                   <span class="onelineComment">// access level are not allowed. </span>
+                   <span class="onelineComment">// These sharing records are not required and thus an insert exception </span>
+                   <span class="onelineComment">// is acceptable. </span>
+                   <span class="statement">if</span>(!(err.getStatusCode() == StatusCode.FIELD_FILTER_VALIDATION_EXCEPTION  
+                                     &amp;&amp;  err.getMessage().contains(<span class="string">'AccessLevel'</span>))){
+                       <span class="onelineComment">// Error is not related to trivial access level.</span>
+                       <span class="onelineComment">// Send an email to the Apex job's submitter.</span>
+                     Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+                     <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[] {emailAddress}; 
+                     mail.setToAddresses(toAddresses); 
+                     mail.setSubject(<span class="string">'Apex Sharing Recalculation Exception'</span>);
+                     mail.setPlainTextBody(
+                       <span class="string">'The Apex sharing recalculation threw the following exception: '</span> + 
+                             err.getMessage());
+                     Messaging.sendEmail(<span class="keyword">new</span> Messaging.SingleEmailMessage[] { mail });
+                   }
+               }
+           }   
+        } <span class="statement">catch</span>(DmlException e) {
+           <span class="onelineComment">// Send an email to the Apex job's submitter on failure.</span>
+            Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+            <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[] {emailAddress}; 
+            mail.setToAddresses(toAddresses); 
+            mail.setSubject(<span class="string">'Apex Sharing Recalculation Exception'</span>);
+            mail.setPlainTextBody(
+              <span class="string">'The Apex sharing recalculation threw the following exception: '</span> + 
+                        e.getMessage());
+            Messaging.sendEmail(<span class="keyword">new</span> Messaging.SingleEmailMessage[] { mail });
+        }
+    }
+    
+    <span class="onelineComment">// The finish method is called at the end of a sharing recalculation.</span>
+    <span class="keyword">global</span> <span class="keyword">void</span> finish(Database.BatchableContext BC){  
+        <span class="onelineComment">// Send an email to the Apex job's submitter notifying of job completion.</span>
+        Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+        <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[] {emailAddress}; 
+        mail.setToAddresses(toAddresses); 
+        mail.setSubject(<span class="string">'Apex Sharing Recalculation Completed.'</span>);
+        mail.setPlainTextBody
+                      (<span class="string">'The Apex sharing recalculation finished processing'</span>);
+        Messaging.sendEmail(<span class="keyword">new</span> Messaging.SingleEmailMessage[] { mail });
+    }
+    
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="testing_apex_sharing"><a name="testing_apex_sharing"><!-- --></a>Testing Apex Managed Sharing
+                Recalculations</span></h2>
+
+            
+            <p class="p">This example inserts five Job records and invokes the batch job that is implemented
+                in the batch class of the previous example. This example requires a custom object
+                called Job, with two lookup fields associated with User records called
+                Hiring_Manager and Recruiter. Also, the Job custom object should have two sharing
+                reasons added called Hiring_Manager and Recruiter. Before you run this test, set the
+                organization-wide default sharing for Job to Private. Note that since email messages
+                aren’t sent from tests, and because the batch class is invoked by a test
+                method, the email notifications won’t be sent in this case.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> JobSharingTester {
+   
+    <span class="onelineComment">// Test for the JobSharingRecalc class    </span>
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testApexSharing(){
+       <span class="onelineComment">// Instantiate the class implementing the Database.Batchable interface.     </span>
+        JobSharingRecalc recalc = <span class="keyword">new</span> JobSharingRecalc();
+        
+        <span class="onelineComment">// Select users for the test.</span>
+        List&lt;User&gt; users = [SELECT Id FROM User WHERE IsActive = <span class="keyword">true</span> LIMIT 2];
+        <span class="keyword">ID</span> User1Id = users[0].Id;
+        <span class="keyword">ID</span> User2Id = users[1].Id;
+        
+        <span class="onelineComment">// Insert some test job records.                 </span>
+        List&lt;Job__c&gt; testJobs = <span class="keyword">new</span> List&lt;Job__c&gt;();
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i=0;i&lt;5;i++) {
+        Job__c j = <span class="keyword">new</span> Job__c();
+            j.Name = <span class="string">'Test Job '</span> + i;
+            j.Recruiter__c = User1Id;
+            j.Hiring_Manager__c = User2Id;
+            testJobs.add(j);
+        }
+        <span class="statement">insert</span> testJobs;
+        
+        Test.startTest();
+        
+        <span class="onelineComment">// Invoke the Batch class.</span>
+        <span class="keyword">String</span> jobId = Database.executeBatch(recalc);
+        
+        Test.stopTest();
+        
+        <span class="onelineComment">// Get the Apex job and verify there are no errors.</span>
+        AsyncApexJob aaj = [Select JobType, TotalJobItems, JobItemsProcessed, Status, 
+                            CompletedDate, CreatedDate, NumberOfErrors 
+                            from AsyncApexJob where Id = :jobId];
+        System.assertEquals(0, aaj.NumberOfErrors);
+      
+        <span class="onelineComment">// This query returns jobs and related sharing records that were inserted       </span>
+        <span class="onelineComment">// by the batch job's execute method.     </span>
+        List&lt;Job__c&gt; jobs = [SELECT Id, Hiring_Manager__c, Recruiter__c, 
+            (SELECT Id, ParentId, UserOrGroupId, AccessLevel, RowCause FROM Shares 
+            WHERE (RowCause = :Schema.Job__Share.rowCause.Recruiter__c OR 
+            RowCause = :Schema.Job__Share.rowCause.Hiring_Manager__c))
+            FROM Job__c];       
+        
+        <span class="onelineComment">// Validate that Apex managed sharing exists on jobs.     </span>
+        <span class="statement">for</span>(Job__c job : jobs){
+            <span class="onelineComment">// Two Apex managed sharing records should exist for each job</span>
+            <span class="onelineComment">// when using the Private org-wide default. </span>
+            System.assert(job.Shares.size() == 2);
+            
+            <span class="statement">for</span>(Job__Share jobShr : job.Shares){
+               <span class="onelineComment">// Test the sharing record for hiring manager on job.             </span>
+                <span class="statement">if</span>(jobShr.RowCause == Schema.Job__Share.RowCause.Hiring_Manager__c){
+                    System.assertEquals(jobShr.UserOrGroupId,job.Hiring_Manager__c);
+                    System.assertEquals(jobShr.AccessLevel,<span class="string">'Read'</span>);
+                }
+                <span class="onelineComment">// Test the sharing record for recruiter on job.</span>
+                <span class="statement">else</span> <span class="statement">if</span>(jobShr.RowCause == Schema.Job__Share.RowCause.Recruiter__c){
+                    System.assertEquals(jobShr.UserOrGroupId,job.Recruiter__c);
+                    System.assertEquals(jobShr.AccessLevel,<span class="string">'Edit'</span>);
+                }
+            }
+        }
+    }
+}
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="apex_sharing_creating"><a name="apex_sharing_creating"><!-- --></a>Associating an Apex Class Used for
+                    Recalculation</span></h2>
+
+            
+            <p class="p">An Apex class used for recalculation must be associated with a custom object. </p>
+
+            <div class="p">To associate an Apex managed sharing recalculation class with a custom object:<ol class="ol enumList">
+                    <li class="li">From the management settings for the custom object, go to Apex Sharing
+                        Recalculations.</li>
+
+                    <li class="li">Choose the Apex class that recalculates the Apex sharing for this object.
+                        The class you choose must implement the <samp class="codeph apex_code">Database.Batchable</samp> interface. You cannot associate the same
+                        Apex class multiple times with the same custom object.</li>
+
+                    <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+                </ol>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

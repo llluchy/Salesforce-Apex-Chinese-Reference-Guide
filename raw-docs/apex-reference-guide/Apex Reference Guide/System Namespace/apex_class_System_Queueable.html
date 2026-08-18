@@ -1,0 +1,206 @@
+<a name="apex_class_System_Queueable"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Queueable Interface</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Enables the asynchronous execution of Apex jobs that can be
+            monitored.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section" id="queueable_usage">
+<a name="queueable_usage"><!-- --></a><h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">To execute Apex as an asynchronous job, implement the <samp class="codeph apex_code">Queueable</samp> interface and add the processing logic in your
+                implementation of the <samp class="codeph apex_code">execute</samp> method.</p>
+
+            <div class="p" id="ImplementsKeyword">
+<a name="ImplementsKeyword"><!-- --></a>To implement the <samp class="codeph apex_code">Queueable</samp> interface, you must first declare a class with the <samp class="codeph apex_code"><span class="keyword">implements</span></samp> keyword as follows:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyQueueableClass <strong class="ph b">implements Queueable</strong> {</pre></div>
+</div>
+
+            <div class="p" id="CompareToImpl">
+<a name="CompareToImpl"><!-- --></a>Next, your class must provide an implementation for the following
+                method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext context) {
+    <span class="onelineComment">// Your code here</span>
+}</pre></div>
+</div>
+
+            <p class="p">Your class and method implementation must be declared as <samp class="codeph apex_code"><span class="keyword">public</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span></samp>.</p>
+
+            <p class="p">To submit your class for asynchronous execution, call the <samp class="codeph apex_code">System.enqueueJob</samp> by passing it an instance of
+                your class implementation of the <samp class="codeph apex_code">Queueable</samp>
+                interface as follows:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">ID</span> jobID = System.enqueueJob(<span class="keyword">new</span> MyQueueableClass());</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Queueable.htm#apex_System_Queueable_methods">Queueable Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Queueable.htm#apex_Queueable_example">Queueable Example Implementation</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_queueing_jobs.htm" target="_blank" title="Apex Developer Guide: Queueable Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Queueable Apex</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Queueable_methods">
+<a name="apex_System_Queueable_methods"><!-- --></a>
+ <h2 class="helpHead2">Queueable Methods</h2>
+
+ 
+ <div class="body refbody">
+  <div class="section">
+   <p class="p">The following are methods for <samp class="codeph apex_code">Queueable</samp>.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Queueable.htm#apex_System_Queueable_execute">execute(context)</a></strong><br>
+Executes the queueable job.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Queueable_execute">
+<a name="apex_System_Queueable_execute"><!-- --></a>
+ <h3 class="helpHead3">execute(context)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Executes the queueable job.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext context)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_system_queueablecontext.htm#apex_interface_system_queueablecontext" title="Represents the parameter type of the execute() method in a class that implements the Queueable interface and contains the job ID. This interface is implemented internally by Apex.">QueueableContext</a> Contains the job ID.</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Queueable_example">
+<a name="apex_Queueable_example"><!-- --></a>
+    <h2 class="helpHead2">Queueable Example Implementation</h2>
+
+    
+    <div class="body refbody">
+        <div class="section" id="queueable_example">
+<a name="queueable_example"><!-- --></a>
+            <div class="p" id="Example">
+<a name="Example"><!-- --></a>This example is an implementation of the <samp class="codeph apex_code">Queueable</samp> interface. The <samp class="codeph apex_code">execute</samp> method in this example inserts a new
+                account.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> AsyncExecutionExample <span class="keyword">implements</span> Queueable {
+    <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext context) {
+        Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Acme'</span>,Phone=<span class="string">'(415) 555-1212'</span>);
+        <span class="statement">insert</span> a;        
+    }
+}</pre></div>
+</div>
+
+            <div class="p">To add this class as a job on the queue, call this
+                method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">ID</span> jobID = System.enqueueJob(<span class="keyword">new</span> AsyncExecutionExample());</pre></div>
+</div>
+
+            <p class="p">After you submit your queueable class for execution, the job is added to the queue
+                and will be processed when system resources become available. You can monitor the
+                status of your job programmatically by querying AsyncApexJob or through the user
+                interface in Setup by entering <kbd class="ph userinput">Apex Jobs</kbd> in the
+                    <span class="keyword parmname">Quick Find</span> box, then selecting <strong class="ph uicontrol">Apex
+                    Jobs</strong>.</p>
+
+            <p class="p">To query information about your submitted job, perform a SOQL query on AsyncApexJob
+                by filtering on the job ID that the <samp class="codeph apex_code">System.enqueueJob</samp> method returns. This example uses the jobID variable
+                that was obtained in the previous example.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">AsyncApexJob jobInfo = [SELECT Status,NumberOfErrors FROM AsyncApexJob WHERE Id=:jobID];</pre></div>
+
+            <p class="p">Similar to future jobs, queueable jobs don’t process batches, and so the number of
+                processed batches and the number of total batches are always zero.</p>
+
+        </div>
+
+        <div class="section" id="queueable_testing">
+<a name="queueable_testing"><!-- --></a><h3 class="helpHead3">Testing Queueable Jobs</h3>
+
+            
+            <div class="p">This example shows how to test the execution of a queueable job in a test method. A
+                queueable job is an asynchronous process. To ensure that this process runs within
+                the test method, the job is submitted to the queue between the <samp class="codeph apex_code">Test.startTest</samp> and <samp class="codeph apex_code">Test.stopTest</samp> block. The system executes all
+                asynchronous processes started in a test method synchronously after the <samp class="codeph apex_code">Test.stopTest</samp> statement. Next, the test method
+                verifies the results of the queueable job by querying the account that the job
+                    created.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> AsyncExecutionExampleTest {
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test1() {
+        <span class="onelineComment">// startTest/stopTest block to force async processes </span>
+        <span class="onelineComment">//   to run in the test.</span>
+        Test.startTest();        
+        System.enqueueJob(<span class="keyword">new</span> AsyncExecutionExample());
+        Test.stopTest();
+        
+        <span class="onelineComment">// Validate that the job has run</span>
+        <span class="onelineComment">// by verifying that the record was created.</span>
+        <span class="onelineComment">// This query returns only the account created in test context by the </span>
+        <span class="onelineComment">// Queueable class method.</span>
+        Account acct = [SELECT Name,Phone FROM Account WHERE Name=<span class="string">'Acme'</span> LIMIT 1];
+        System.assertNotEquals(<span class="keyword">null</span>, acct);
+        System.assertEquals(<span class="string">'(415) 555-1212'</span>, acct.Phone);
+    }
+}</pre></div>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The ID of a queueable Apex job isn’t returned in test context—<samp class="codeph apex_code">System.enqueueJob</samp> returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> in a running test.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>

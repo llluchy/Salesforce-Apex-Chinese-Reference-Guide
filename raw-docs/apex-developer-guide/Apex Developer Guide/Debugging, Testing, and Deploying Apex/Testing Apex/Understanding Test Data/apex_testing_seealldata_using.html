@@ -1,0 +1,112 @@
+<a name="apex_testing_seealldata_using"><!-- --></a><h1 class="helpHead1">Using the isTest(SeeAllData=True) Annotation</h1><div class="body conbody">
+<div class="shortdesc">Annotate your test class or test method with <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp> to open up data access to records in your organization. The
+    IsTest(SeeAllData=true) annotation applies to data queries but doesn't apply to record creation
+    or changes, including deletions. New and changed records are still rolled back in Apex tests
+    even when using the annotation.</div>
+
+    <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p> By annotating your class with <samp class="codeph apex_code"><span class="keyword">@isTest(SeeAllData=true)</span></samp>, you allow test methods to access all org records. The
+      best practice, however, is to run Apex tests with data silo using <samp class="codeph apex_code"><span class="keyword">@isTest(SeeAllData=false)</span></samp>. For data access considerations
+      in Salesforce API version 23.0 and earlier, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_data_access.htm" title="By default, Apex test methods (API version 24.0 and later) can’t access pre-existing org data such as standard objects, custom objects, and custom settings data. They can only access data that they create. However, objects that are used to manage your organization or metadata objects can still be accessed in your tests.">Isolation of Test Data from Organization Data in Unit Tests</a>.</p>
+</div>
+</div></div></div></div>
+
+    <div class="p">This example shows how to define a test class with the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation. All the
+                test methods in this class have access to all data in the
+                organization.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="d2224e52-d2240e153"><a name="d2224e52-d2240e153"><!-- --></a><span class="onelineComment">// All test methods in this class can access all data.</span>
+<span class="keyword">@IsTest(SeeAllData=true)</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestDataAccessClass {
+
+    <span class="onelineComment">// This test accesses an existing account. </span>
+    <span class="onelineComment">// It also creates and accesses a new test account.</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> myTestMethod1() {
+        <span class="onelineComment">// Query an existing account in the organization. </span>
+        Account a = [SELECT Id, Name FROM Account WHERE Name=<span class="string">'Acme'</span> LIMIT 1];
+        System.assert(a != <span class="keyword">null</span>);
+        
+        <span class="onelineComment">// Create a test account based on the queried account.</span>
+        Account testAccount = a.clone();
+        testAccount.Name = <span class="string">'Acme Test'</span>;
+        <span class="statement">insert</span> testAccount;
+        
+        <span class="onelineComment">// Query the test account that was inserted.</span>
+        Account testAccount2 = [SELECT Id, Name FROM Account 
+                                WHERE Name=<span class="string">'Acme Test'</span> LIMIT 1];
+        System.assert(testAccount2 != <span class="keyword">null</span>);
+    }
+       
+    
+    <span class="onelineComment">// Like the previous method, this test method can also access all data</span>
+    <span class="onelineComment">// because the containing class is annotated with @IsTest(SeeAllData=true).</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> myTestMethod2() {
+        <span class="onelineComment">// Can access all data in the organization.</span>
+   }
+  
+}</pre></div>
+</div>
+
+    <div class="p">This second example shows how to apply the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation on a test
+                method. Because the test method’s class isn’t annotated, you have to annotate the
+                method to enable access to all data for the method. The second test method doesn’t
+                have this annotation, so it can access only the data it creates. In addition, it can
+                access objects that are used to manage your organization, such as
+                users.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="d2224e54-d2240e162"><a name="d2224e54-d2240e162"><!-- --></a><span class="onelineComment">// This class contains test methods with different data access levels.</span>
+<span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> ClassWithDifferentDataAccess {
+
+    <span class="onelineComment">// Test method that has access to all data.</span>
+    <span class="keyword">@IsTest(SeeAllData=true)</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testWithAllDataAccess() {
+        <span class="onelineComment">// Can query all data in the organization.      </span>
+    }
+    
+    <span class="onelineComment">// Test method that has access to only the data it creates</span>
+    <span class="onelineComment">// and organization setup and metadata objects.</span>
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testWithOwnDataAccess() {
+        <span class="onelineComment">// This method can still access the User object.</span>
+        <span class="onelineComment">// This query returns the first user object.</span>
+        User u = [SELECT UserName,Email FROM User LIMIT 1]; 
+        System.debug(<span class="string">'UserName: '</span> + u.UserName);
+        System.debug(<span class="string">'Email: '</span> + u.Email);
+        
+        <span class="onelineComment">// Can access the test account that is created here.</span>
+        Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Test Account'</span>);
+        <span class="statement">insert</span> a;      
+        <span class="onelineComment">// Access the account that was just created.</span>
+        Account insertedAcct = [SELECT Id,Name FROM Account 
+                                WHERE Name=<span class="string">'Test Account'</span>];
+        System.assert(insertedAcct != <span class="keyword">null</span>);
+    }
+}</pre></div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Considerations for the @IsTest(SeeAllData=true) Annotation</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">If a test class is defined with the <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation, the <samp class="codeph apex_code">SeeAllData=<span class="keyword">true</span></samp> applies to all test methods that don’t explicitly set the
+            <samp class="codeph apex_code">SeeAllData</samp> keyword.</li>
+
+        <li class="li">The <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> annotation is used
+          to open up data access when applied at the class or method level. However, if the
+          containing class has been annotated with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp>, annotating a method with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=false)</span></samp> is ignored for that method.
+          In this case, that method still has access to all the data in the organization. Annotating
+          a method with <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> overrides,
+          for that method, an <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=false)</span></samp>
+          annotation on the class.</li>
+
+        <li class="li">
+<samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp> and <samp class="codeph apex_code"><span class="keyword">@IsTest(IsParallel=true)</span></samp> annotations can’t be used
+          together on the same Apex method.</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

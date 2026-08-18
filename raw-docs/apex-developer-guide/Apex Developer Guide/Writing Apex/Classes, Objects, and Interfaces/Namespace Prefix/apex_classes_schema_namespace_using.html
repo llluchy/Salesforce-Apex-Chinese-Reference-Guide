@@ -1,0 +1,56 @@
+<a name="apex_classes_schema_namespace"><!-- --></a><h1 class="helpHead1">Using the Schema Namespace</h1><div class="body conbody">
+<div class="shortdesc">The <samp class="codeph apex_code">Schema</samp> namespace provides classes and
+      methods for working with schema metadata information. We implicitly import <samp class="codeph apex_code">Schema.*</samp>, but you must fully qualify your uses of <samp class="codeph apex_code">Schema</samp> namespace elements when they have naming conflicts
+      with items in your unmanaged code. If your org contains an Apex class that has the same name
+      as an sObject, add the <samp class="codeph apex_code">Schema</samp> namespace prefix to the
+      sObject name in your code.</div>
+
+      <p class="p">You can omit the namespace when creating an instance of a schema class or when calling a
+         schema method. For example, because the <samp class="codeph apex_code">DescribeSObjectResult</samp> and <samp class="codeph apex_code">FieldSet</samp>
+         classes are in the <samp class="codeph apex_code">Schema</samp> namespace, these code
+         segments are equivalent.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult d = Account.sObjectType.getDescribe();
+Map&lt;<span class="keyword">String</span>, Schema.FieldSet&gt; FSMap = d.fieldSets.getMap();
+</pre></div>
+
+      <p class="p">And:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">DescribeSObjectResult d = Account.sObjectType.getDescribe();
+Map&lt;<span class="keyword">String</span>, FieldSet&gt; FSMap = d.fieldSets.getMap();
+</pre></div>
+
+      <div class="section">
+<h2 class="helpHead2">Using the Schema Namespace for Disambiguation</h2>
+
+         
+         <p class="p">Use <samp class="codeph apex_code">Schema.<var class="keyword varname">object_name</var></samp> to
+            refer to an sObject that has the same name as a custom class. This disambiguation
+            instructs the Apex
+            runtime to use the sObject.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> Account {
+   <span class="keyword">public</span> <span class="keyword">Integer</span> myInteger;
+}
+
+<span class="onelineComment">// ...</span>
+
+<span class="onelineComment">// Create a standard Account object myAccountSObject</span>
+Schema.Account myAccountSObject = <span class="keyword">new</span> Schema.Account();
+<span class="onelineComment">// Create accountClassInstance, a custom class in your org</span>
+Account accountClassInstance = <span class="keyword">new</span> Account();
+myAccountSObject.Name = <span class="string">'Snazzy Account'</span>;
+accountClassInstance.myInteger = 1;</pre></div>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespaces_and_invoking_methods.htm" title="Using the System Namespace">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_precedence.htm" title="Namespace, Class, and Variable Name Precedence">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespaces_and_invoking_methods.htm">Using the System Namespace</a></div></li></ul>
+</div>
+</div>

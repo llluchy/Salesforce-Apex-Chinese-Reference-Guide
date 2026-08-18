@@ -1,0 +1,1616 @@
+<a name="apex_class_System_UserManagement"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">UserManagement Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods to manage end users, for example, to register
+            their verification methods, verify their identity, or remove their personal
+            information.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Let users register and deregister identity verification methods. Create custom Login
+                and Verify pages for passwordless login and self-registration. Convert mobile phone
+                numbers to the proper format before registering users. Scramble user data when users
+                request that Salesforce remove their personal information.</p>
+
+            <p class="p">This class is available in API version 43.0 and later.</p>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_methods">UserManagement Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_UserManagement_methods">
+<a name="apex_System_UserManagement_methods"><!-- --></a>
+  <h2 class="helpHead2">UserManagement Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">UserManagement</samp>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_clone">clone()</a></strong><br>
+Makes a duplicate copy of the System.UserManagement     object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_deregisterVerificationMethod">deregisterVerificationMethod(userId, method)</a></strong><br>
+Deregisters an identity verification method. Use this method to let       users delete an existing verification method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_formatPhoneNumber">formatPhoneNumber(countryCode, phoneNumber)</a></strong><br>
+Formats a mobile phone number for a user. Call this method to ensure       that the phone number is formatted properly before updating a user’s mobile phone     number.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_initPasswordlessLogin">initPasswordlessLogin(userId, method)</a></strong><br>
+Invokes a verification challenge for passwordless login when       creating custom (Visualforce) Login and Verify pages for customers and     partners.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_initRegisterVerificationMethod">initRegisterVerificationMethod(method)</a></strong><br>
+Invokes a verification challenge for registering identity       verification methods with a custom (Visualforce) page. Users can register either their email       address or phone number.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_initSelfRegistration">initSelfRegistration(method, user)</a></strong><br>
+Invokes a verification challenge for self-registration when creating       a custom (Visualforce) Verify page for Experience Cloud self-registration.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_initVerificationMethod">initVerificationMethod(method)</a></strong><br>
+Initiates a verification service for email, phone (SMS), and the       Salesforce Authenticator verification methods.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#unique_173547395">initVerificationMethod(method, actionName, extras)</a></strong><br>
+Initiates a verification service for email, phone (SMS), and the       Salesforce Authenticator verification methods.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_obfuscateUser">obfuscateUser(userId, username)</a></strong><br>
+Scrambles users’ data on their request when they no longer want       their personal data recognized in Salesforce. When you invoke the method for the user, the       data becomes anonymous, and you can never recover it. Use this method to set the username to a       specific value after it’s scrambled.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_obfuscateUser_2">obfuscateUser(userId)</a></strong><br>
+Scrambles users’ data on their request when they no longer want       their personal data recognized in Salesforce. When you invoke the method for the user, the       data becomes anonymous, and you can never recover it.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_registerVerificationMethod">registerVerificationMethod(method, startUrl)</a></strong><br>
+Registers an identity verification method. Verification methods             can be a time-based one-time password (TOTP), email or text verification code,             Salesforce Authenticator, or U2F-compatible security key. End users register             verification methods for themselves.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_sendAsyncEmailConfirmation">sendAsyncEmailConfirmation(userId, emailTemplateId, networkId, startUrl)</a></strong><br>
+Send an email message to a user’s email address for verification.       The message contains a verification link (URL) that the user clicks to verify the email       address later on. You can send email verifications in bulk.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifyPasswordlessLogin">verifyPasswordlessLogin(userId, method, identifier, code, startUrl)</a></strong><br>
+Completes a verification challenge during a passwordless login that       uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the       verification code successfully, the user is logged in.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifyRegisterVerificationMethod">verifyRegisterVerificationMethod(code, method)</a></strong><br>
+Completes registering a user’s email address or phone number as a       verification method when customizing the identity verification process.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifySelfRegistration">verifySelfRegistration(method, identifier, code, startUrl)</a></strong><br>
+Completes a verification challenge when creating a custom       (Visualforce) Verify page for Experience Cloud site self-registration. If the person who is       attempting to register enters the verification code successfully, the user is created and       logged in.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifyVerificationMethod">verifyVerificationMethod(identifier, code, method)</a></strong><br>
+Completes the verification service for email, phone (SMS), Salesforce       Authenticator, password, or time-based one-time password (TOTP) verification     methods.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_clone">
+<a name="apex_System_UserManagement_clone"><!-- --></a>
+  <h3 class="helpHead3">clone()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Makes a duplicate copy of the System.UserManagement
+    object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_System_UserManagement" title="Contains methods to manage end users, for example, to register their verification methods, verify their identity, or remove their personal information.">User Management</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_deregisterVerificationMethod">
+<a name="apex_System_UserManagement_deregisterVerificationMethod"><!-- --></a>
+  <h3 class="helpHead3">deregisterVerificationMethod(userId, method)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deregisters an identity verification method. Use this method to let
+      users delete an existing verification method.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> deregisterVerificationMethod(Id userId,
+          Auth.VerificationMethod method)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> User ID of the user deregistering the verification method.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Verification method used to verify the identity of the user.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method to deregister an existing identity verification method. For example, your
+        users can deregister a phone number when their phone number changes. While only end users
+        can register an identity verification method, you and your users can deregister one. Keep
+        this behavior in mind when you implement a custom registration page.</p>
+
+      <p class="p">This method is available in API version 43.0 and later.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This method doesn't support deregistering built-in authenticators.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_formatPhoneNumber">
+<a name="apex_System_UserManagement_formatPhoneNumber"><!-- --></a>
+  <h3 class="helpHead3">formatPhoneNumber(countryCode, phoneNumber)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Formats a mobile phone number for a user. Call this method to ensure
+      that the phone number is formatted properly before updating a user’s mobile phone
+    number.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> formatPhoneNumber(<span class="keyword">String</span> countryCode,
+          <span class="keyword">String</span> phoneNumber)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">countryCode</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> A valid country code.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">phoneNumber</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> A mobile number that contains from 3 through 49 numeric characters, without the
+            country code. For example, (415) 555-1234.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">Returns a user’s mobile phone number in the proper format.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method to ensure a user’s mobile phone number is formatted as required by
+        Salesforce. Then use the method’s return value to update the <samp class="codeph nolang">mobile</samp> field of the user’s record. This mobile number is used for SMS-based
+        device activation. For example, mobile phone numbers are stored along with other identity
+        verification methods in <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> enum.
+        This method is introduced in API version 43.0. It isn't available in earlier versions.</p>
+
+      <p class="p">Here are some acceptable ways that users can enter their mobile number:</p>
+
+      <ul class="ul bulletList">
+        <li class="li"> +1, (415) 555-1234 (with plus signs, parentheses, and dashes)</li>
+
+        <li class="li"> 1, 4155551234 (only numbers, no symbols)</li>
+
+        <li class="li"> 1 , 415-555-1234 (extra spaces)</li>
+
+      </ul>
+
+      <p class="p">Now, consider the following examples.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Correct examples:<ul class="ul bulletList">
+          <li class="li"><samp class="codeph nolang">formatPhoneNumber('1',
+                '4155551234');</samp></li>
+
+          <li class="li"><samp class="codeph nolang">formatPhoneNumber('+1','(415)
+              555-1234');</samp></li>
+
+          <li class="li"><samp class="codeph nolang">formatPhoneNumber('1', '415-555-1234');</samp></li>
+
+          </ul>
+</li>
+
+        <li class="li">Incorrect example, because the country code and mobile number aren’t separated:<ul class="ul bulletList">
+          <li class="li"><samp class="codeph nolang">formatPhoneNumber(null, '+1
+                415-555-1234');</samp></li>
+
+          </ul>
+</li>
+
+        <li class="li">Example that doesn’t generate an error, but likely won’t work as intended:<ul class="ul bulletList">
+          <li class="li"><samp class="codeph nolang">formatPhoneNumber('+1', '+1 (415)
+                555-1234');</samp></li>
+
+          </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Format Phone Number Code Example</h4>
+
+      
+      <p class="p">Here's a code example that uses the <samp class="codeph nolang">formatPhoneNumber</samp>
+        method. It gets the mobile number from the user and converts it to the format required by
+        Salesforce. Then it updates the user’s record with the formatted mobile number.</p>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> PhoneRegistrationController {
+    <span class="onelineComment">//Input variables </span>
+    <span class="keyword">global</span> <span class="keyword">String</span> countryCode {get; set;}
+    <span class="keyword">global</span> <span class="keyword">String</span> phoneNumber {get; set;}
+
+    <span class="keyword">global</span> <span class="keyword">String</span> addPhoneNumber() 
+    {
+        <span class="statement">if</span>(countryCode == <span class="keyword">null</span>) <span class="statement">return</span> <span class="string">'Country code is required'</span>;
+        <span class="statement">if</span>(phoneNumber == <span class="keyword">null</span>) <span class="statement">return</span> <span class="string">'Phone number is required'</span>;
+        
+        <span class="keyword">String</span> userId = UserInfo.getUserId();
+        User u = [SELECT Id FROM User WHERE Id=:userId LIMIT 1];
+        <span class="keyword">String</span> formatNum = System.UserManagement.formatPhoneNumber(countryCode, phoneNumber);        
+        u.MobilePhone = formatNum;        
+        <span class="statement">update</span> u;        
+        <span class="statement">return</span> <span class="keyword">null</span>;        
+    }
+        
+}</pre></div>
+
+      <p class="p">As long as the country code and phone number are separated, <samp class="codeph apex_code">formatPhoneNumber</samp> returns a value in the proper format.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_initPasswordlessLogin">
+<a name="apex_System_UserManagement_initPasswordlessLogin"><!-- --></a>
+  <h3 class="helpHead3">initPasswordlessLogin(userId, method)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invokes a verification challenge for passwordless login when
+      creating custom (Visualforce) Login and Verify pages for customers and
+    partners.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> initPasswordlessLogin(Id userId,
+          Auth.VerificationMethod method)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the user who’s logging in.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the user’s identity, which can be EMAIL or SMS.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">Identifier of the verification attempt.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <div class="p">Use this method along with its paired <a class="xref" href="#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in."><samp class="codeph apex_code">verifyPasswordlessLogin</samp></a>
+        to customize the login experience with your own Visualforce Login and Verify pages. Invoke
+          <samp class="codeph apex_code">initPasswordlessLogin</samp> from the Login page where
+        the user enters an email address or phone number.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>An alternative to using this
+          combination of methods is to use <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_sites.htm#apex_System_Site_passwordlessLogin" title="Logs in a user to a Salesforce Site or Experience Cloud site using an identity verification method, such as email or text, instead of a password. Passwordless login is a convenient, mobile-centric way to welcome users into your site. Let your users log in with something other than their password, like their email address or phone number."><samp class="codeph apex_code">Site.passwordlessLogin</samp></a>. Both approaches let you customize the Login
+          page in Visualforce. With the paired methods, you can create custom Login and Verify
+          pages. With <samp class="codeph apex_code">Site.passwordlessLogin</samp>, Salesforce
+          supplies the Verify page.</p>
+</div>
+</div></div></div></div>
+</div>
+
+      <p class="p">First call the <samp class="codeph apex_code">initPasswordlessLogin</samp> method to
+        initiate an authentication challenge. This method:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Gets the user ID and verification method, such as EMAIL or SMS, from the Login
+          page.</li>
+
+        <li class="li">Looks up the user and checks that the user is unique and active.</li>
+
+        <li class="li">Sends a verification code to the user.</li>
+
+        <li class="li">Adds an entry for the verification attempt to the Identity Verification History log,
+          assigning an identifier to the verification attempt and setting the status to
+            <strong class="ph uicontrol">User challenged, waiting for response</strong>.</li>
+
+        <li class="li">Adds an entry for the Passwordless Login to the Login History log.</li>
+
+        <li class="li">Returns the identifier to <a class="xref" href="#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in."><samp class="codeph apex_code">verifyPasswordlessLogin</samp></a> to link the transactions.</li>
+
+      </ul>
+
+      <p class="p">Then call <a class="xref" href="#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in."><samp class="codeph apex_code">verifyPasswordlessLogin</samp></a>, which, if the user enters the verification code
+        correctly, logs in the user.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Users must verify their identity by email address or phone number before they can log in
+        without a password. You can check whether the user is verified from the user’s detail page
+        in Setup. Or you can check programmatically with 
+				<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_twofactormethodsinfo.htm" target="_blank" title="HTML (New Window)"><samp class="codeph apex_code">TwoFactorMethodsInfo</samp></a>.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_initRegisterVerificationMethod">
+<a name="apex_System_UserManagement_initRegisterVerificationMethod"><!-- --></a>
+  <h3 class="helpHead3">initRegisterVerificationMethod(method)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invokes a verification challenge for registering identity
+      verification methods with a custom (Visualforce) page. Users can register either their email
+      address or phone number.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span>
+          initRegisterVerificationMethod(Auth.VerificationMethod method)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the user’s identity, which can be EMAIL or SMS.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p"> The method returns an error message if the phone number is already registered, the user
+        isn’t a customer or partner, or if the context isn’t an Experience Cloud site.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method along with its paired <a class="xref" href="#apex_System_UserManagement_verifyRegisterVerificationMethod" title="Completes registering a user’s email address or phone number as a verification method when customizing the identity verification process."><samp class="codeph apex_code">verifyRegisterVerificationMethod</samp></a> to
+        customize the process for registering a user’s verification method using a Visualforce
+        Verify page.</p>
+
+      <p class="p">First call the <samp class="codeph apex_code">initRegisterVerificationMethod</samp>
+        method to get the verification code sent to the user as input, and validate it. If the
+        verification code isn’t valid, it returns an error message.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">Here’s a code example that registers a user’s phone number as a verification method. When
+        the user enters a verification code on the Visualforce page, it invokes <samp class="codeph apex_code">registerUser()</samp>. The method calls the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_userinfo.htm" target="_blank">UserInfo</a> class to get the User ID of the user who’s
+        registering the verification method. Using the user ID, it then finds the user’s phone
+        number. It also gets the user’s registration status to check whether the phone number is
+        verified already. If the user is registered with a different phone number, the number is
+        updated.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> registerUser() {
+        <span class="statement">try</span> {
+            exceptionText=<span class="string">''</span>;
+            <span class="keyword">String</span> userId = UserInfo.getUserId();
+            User u = [Select MobilePhone, Id from User Where Id=:userId];
+             currPhone = u.MobilePhone;
+             mobilePhone = getFormattedSms(mobilePhone); 
+           <span class="statement">if</span> (mobilePhone != <span class="keyword">null</span> &amp;&amp; mobilePhone != <span class="string">''</span>) {
+           u.MobilePhone = mobilePhone;
+           <span class="statement">update</span> u;
+            <span class="onelineComment">// We're updating the email and phone number before verifying. Roll back  </span>
+           <span class="onelineComment">//  the change in the verify API if it is unsuccessful.</span>
+            exceptionText = System.
+            UserManagement.initRegisterVerificationMethod(Auth.VerificationMethod.SMS);
+            <span class="statement">if</span>(exceptionText!= <span class="keyword">null</span> &amp;&amp; exceptionText!=<span class="string">''</span>){
+                isInit = <span class="keyword">false</span>;
+                showInitException = <span class="keyword">true</span>;
+            } <span class="statement">else</span> {
+                 isInit = <span class="keyword">false</span>;
+                 isVerify = <span class="keyword">true</span>;
+            }
+            } <span class="statement">else</span> {
+                showInitException = <span class="keyword">true</span>;
+            }
+        } <span class="statement">catch</span> (Exception e) {
+            exceptionText = e.getMessage();
+            isInit = <span class="keyword">false</span>;
+            showInitException = <span class="keyword">true</span>;
+        }
+    }
+
+<span class="keyword">public</span> <span class="keyword">void</span> verifyUser() {
+    <span class="onelineComment">// Take the user’s input for the code sent to their phone number</span>
+    exceptionText = System.UserManagement.         verifyRegisterVerificationMethod(code, Auth.VerificationMethod.SMS);
+    <span class="statement">if</span>(exceptionText != <span class="keyword">null</span> &amp;&amp; exceptionText !=<span class="string">''</span>){
+    showInitException = <span class="keyword">true</span>;
+    } <span class="statement">else</span> {
+            <span class="onelineComment">//Success    </span>
+    }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_initSelfRegistration">
+<a name="apex_System_UserManagement_initSelfRegistration"><!-- --></a>
+  <h3 class="helpHead3">initSelfRegistration(method, user)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invokes a verification challenge for self-registration when creating
+      a custom (Visualforce) Verify page for Experience Cloud self-registration.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span>
+          initSelfRegistration(Auth.VerificationMethod method, User user)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the identity of the user, which can be EMAIL or SMS.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">user</var></strong>: Type: User User object to insert after successful registration. To see which fields are required,
+            see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_user.htm" target="_blank">User</a> in the <cite class="cite">Object Reference for the
+              Salesforce Platform</cite>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">Identifier of the registration attempt.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">By default, when users sign up for your Experience Cloud site with an email address or
+        phone number, Salesforce sends them a verification code. At the same time, it generates a
+        Verify page for users to confirm their identity. You can replace the default Salesforce
+        Verify page with your own Visualforce page and then invoke the verification process.</p>
+
+      <p class="p">Call this method to initiate the authentication challenge, and include a User object to
+        insert if the registration is successful. The method returns the identifier for the
+        self-registration attempt.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If you specify a language in the <span class="keyword parmname">LanguageLocaleKey</span> field on the
+        User object, Salesforce uses this language for verification email and SMS messages.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">Then call <a class="xref" href="#apex_System_UserManagement_verifySelfRegistration" title="Completes a verification challenge when creating a custom (Visualforce) Verify page for Experience Cloud site self-registration. If the person who is attempting to register enters the verification code successfully, the user is created and logged in.">verifySelfRegistration</a>, which,
+        if the user enters the verification code correctly, logs in the user.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">This code contains the result of a verification challenge that registers a new user. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> id = System.UserManagement.initSelfRegistration​
+          (Auth.VerificationMethod.SMS, user);
+        Auth.VerificationResult res = System.UserManagement.verifySelfRegistration​
+          (Auth.VerificationMethod.SMS, id, ‘123456’, <span class="keyword">null</span>);
+        <span class="statement">if</span>(res.success == <span class="keyword">true</span>){
+     <span class="onelineComment">//redirect</span>
+}</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_initVerificationMethod">
+<a name="apex_System_UserManagement_initVerificationMethod"><!-- --></a><h3 class="helpHead3">initVerificationMethod(method)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Initiates a verification service for email, phone (SMS), and the
+      Salesforce Authenticator verification methods.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span>
+          initVerificationMethod(Auth.VerificationMethod method)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to initiate a verification service for <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, or <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification methods.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The returned identifier must be passed into <samp class="codeph apex_code">verifyVerificationMethod</samp>.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method along with its paired <samp class="codeph apex_code">verifyVerificationMethod</samp> to customize a verification service for <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, or
+          <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification methods. The
+        returned identifier from <samp class="codeph apex_code">initVerificationMethod</samp> must
+        be passed into <samp class="codeph apex_code">verifyVerificationMethod</samp>.</p>
+
+      <p class="p">First invoke the <samp class="codeph apex_code">initVerificationMethod</samp> method to
+        send a verification code to the user’s email or phone number, or to send a push notification
+        to the Salesforce Authenticator. The user then enters the code or approves the push
+        notification. If the verification code isn’t valid or the push notification isn’t approved,
+        the service returns an error message.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Email Example</h4>
+
+      
+      <p class="p">This example shows multi-factor authentication using email.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> initVerification() {
+<span class="onelineComment">// user will receive code on their registered verified email </span>
+ identifier = UserManagement.initVerificationMethod(Auth.VerificationMethod.EMAIL);
+}
+
+<span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// requiring identifier from the initVerification</span>
+<span class="onelineComment">// the code will need to be entered in this method</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(identifier, code , Auth.VerificationMethod.EMAIL);
+}</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_173547395">
+<a name="unique_173547395"><!-- --></a><h3 class="helpHead3">initVerificationMethod(method, actionName, extras)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Initiates a verification service for email, phone (SMS), and the
+      Salesforce Authenticator verification methods.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span>
+          initVerificationMethod(Auth.VerificationMethod method, <span class="keyword">String</span> actionName,
+          Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; extras)</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to initiate a verification service for <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, or <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification methods.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">actionName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> For the <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification
+            method only, the name of the action to display on the Salesforce Authenticator, such as
+              <samp class="codeph apex_code">Connect to My Salesforce Org</samp>. The default
+            action name is <samp class="codeph apex_code">Apex-Defined Activity</samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">extras</var></strong>: Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_collections_maps.htm" target="_blank">Map&lt;String,String&gt;</a> For the <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification
+            method only, the following extra settings.<ul class="ul bulletList">
+              <li class="li">
+<samp class="codeph nolang">secure_device_required</samp>–If set to
+                  <samp class="codeph nolang">true</samp>, the user’s device must be secured. For
+                example, the user must enter the device’s passcode to approve the request. Default
+                setting is <samp class="codeph nolang">false</samp>.</li>
+
+              <li class="li">
+<samp class="codeph nolang">challenge_required</samp>–If set to <samp class="codeph nolang">true</samp>, the user must complete a biometric challenge,
+                such as face recognition, on the device to approve the request. Default setting is
+                  <samp class="codeph nolang">false</samp>.</li>
+
+            </ul>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The returned identifier must be passed into <samp class="codeph apex_code">verifyVerificationMethod</samp> method.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method along with its paired <samp class="codeph apex_code">verifyVerificationMethod</samp> to customize a verification service for <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, or
+          <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification methods. The
+        returned identifier from <samp class="codeph apex_code">initVerificationMethod</samp> must
+        be passed into <samp class="codeph apex_code">verifyVerificationMethod</samp> method.</p>
+
+      <p class="p">First invoke the <samp class="codeph apex_code">initVerificationMethod</samp> method to
+        send a verification code to the user’s email or phone number, or to send a push notification
+        to the Salesforce Authenticator. The user then enters the code or approves the push
+        notification. If the verification code isn’t valid or the push notification isn’t approved,
+        the service returns an error message.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Salesforce Authenticator Example</h4>
+
+      
+      <p class="p">This example shows multi-factor authentication (MFA) using the Salesforce Authenticator
+        mobile app. In this example, the <var class="keyword varname">actionName</var> parameter is set to the
+        default setting and the <var class="keyword varname">extra</var> parameter settings are set to <samp class="codeph nolang">false</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> initVerification() {
+<span class="onelineComment">// user will receive push notification on their registered MFA devices</span>
+identifier = UserManagement.initVerificationMethod(Auth.VerificationMethod.SALESFORCE_AUTHENTICATOR);
+}
+
+<span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// requiring identifier from the initVerification</span>
+<span class="onelineComment">// user will need to take the action on their registered MFA devices</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(identifier, <span class="string">''</span> , Auth.VerificationMethod.SALESFORCE_AUTHENTICATOR);
+}</pre></div>
+
+      <p class="p">This example shows multi-factor authentication using Salesforce Authenticator. In this
+        example, the <var class="keyword varname">actionName</var> parameter is set to <samp class="codeph apex_code">Connect to My Salesforce Org</samp> and the <samp class="codeph nolang">challenge_required</samp>
+        <var class="keyword varname">extra</var> parameter is set to <samp class="codeph nolang">true</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> initVerification() {
+Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; extras = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+extras.put(<span class="string">'challenge_required'</span>,<span class="string">'true'</span>);
+<span class="onelineComment">// user will receive push notification in their registered MFA devices</span>
+identifier = UserManagement.initVerificationMethod(Auth.VerificationMethod.SALESFORCE_AUTHENTICATOR, <span class="string">'Connect to My Salesforce Org'</span>, extras);
+}
+
+<span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// requiring identifier from the initVerification</span>
+<span class="onelineComment">// user will need to take the action on their registered MFA devices</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(identifier, <span class="string">''</span> , Auth.VerificationMethod.SALESFORCE_AUTHENTICATOR);
+}</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_obfuscateUser">
+<a name="apex_System_UserManagement_obfuscateUser"><!-- --></a>
+  <h3 class="helpHead3">obfuscateUser(userId, username)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Scrambles users’ data on their request when they no longer want
+      their personal data recognized in Salesforce. When you invoke the method for the user, the
+      data becomes anonymous, and you can never recover it. Use this method to set the username to a
+      specific value after it’s scrambled.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> obfuscateUser(Id userId, <span class="keyword">String</span>
+          username)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the user whose data this method scrambles.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">username</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The username after the user’s data is scrambled. Sets the value of the scrambled
+            username to a specific string.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">This method is introduced in API version 43.0. It isn't available in earlier versions.</p>
+
+      <p class="p">You can use the <samp class="codeph apex_code">obfuscateUser</samp> method to protect the
+        personal information of your org’s users. When invoked, Salesforce permanently scrambles the
+        user’s object data and replaces it with random character strings. The user’s detail page
+        exists, but the fields contain meaningless strings of characters. Salesforce merely
+        obfuscates (scrambles) personal data because you can't delete a user in Salesforce; you can
+        only disable or deactivate a user. In other words, the user record remains in the database
+        and this method performs a soft delete.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Take care when using this method. The users’ data becomes anonymous
+        and can never be recovered.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p"><strong class="ph b">Considerations</strong></p>
+
+      <ul class="ul bulletList">
+        <li class="li">This method requires that the org’s User Management setting, <strong class="ph uicontrol">Scramble
+            Specific Users' Data</strong>, is enabled from Setup.</li>
+
+        <li class="li">This method affects the standard fields of the user object—excluding a few fields
+          such as the user ID, timezone, locale, and profile.</li>
+
+        <li class="li">It is recommended that you note the user's ID and other attributes for post processing,
+          such as the email address, if you want to send the user a confirmation.</li>
+
+        <li class="li">This method changes only the user object. The association between the user and other
+          objects is removed, but no other objects are changed. For example, contact,
+          ThirdPartyAccountLink (TPAL), and user password authentication (UPA) objects remain
+          unchanged.</li>
+
+      </ul>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Assure your admins that invoking this method doesn’t trigger an email change
+        notification.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">This method is part of our effort to protect users’ personal data and privacy. For more
+        information on what you can do to actively protect user data, see Data Protection and
+        Privacy in Salesforce Help.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_obfuscateUser_2">
+<a name="apex_System_UserManagement_obfuscateUser_2"><!-- --></a>
+  <h3 class="helpHead3">obfuscateUser(userId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Scrambles users’ data on their request when they no longer want
+      their personal data recognized in Salesforce. When you invoke the method for the user, the
+      data becomes anonymous, and you can never recover it.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> obfuscateUser(Id userId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the user whose data this method scrambles.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">This method is introduced in API version 43.0. It isn't available in earlier versions.</p>
+
+      <p class="p">You can use the <samp class="codeph apex_code">obfuscateUser</samp> method to protect the
+        personal information of your org’s users. When invoked, Salesforce permanently scrambles the
+        user’s object data and replaces it with random character strings. The user’s detail page
+        exists, but the fields contain meaningless strings of characters. Salesforce merely
+        obfuscates (scrambles) personal data because you can't delete a user in Salesforce; you can
+        only disable or deactivate a user. In other words, the user record remains in the database
+        and this method performs a soft delete.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Take care when using this method. The users’ data becomes anonymous
+        and can never be recovered.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p"><strong class="ph b">Considerations</strong></p>
+
+      <ul class="ul bulletList">
+        <li class="li">This method requires that the org’s User Management setting, <strong class="ph uicontrol">Scramble
+            Specific Users' Data</strong>, is enabled from Setup.</li>
+
+        <li class="li">This method affects the standard fields of the user object—excluding a few fields
+          such as the user ID, timezone, locale, and profile.</li>
+
+        <li class="li">If you want to send the user a confirmation, it’s recommended that you note the user's
+          ID and other attributes for post processing, such as the email address.</li>
+
+        <li class="li">This method changes only the user object. The association between the user and other
+          objects is removed, but no other objects are changed. For example, contact,
+          ThirdPartyAccountLink (TPAL), and user password authentication (UPA) objects remain
+          unchanged.</li>
+
+      </ul>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Assure your admins that invoking this method doesn’t trigger an email change
+        notification.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">This method is part of our effort to protect users’ personal data and privacy. For more
+        information on what you can do to actively protect user data, see Data Protection and
+        Privacy in Salesforce Help.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4"><span class="ph" id="obfuscateUser_code_ex"><a name="obfuscateUser_code_ex"><!-- --></a>ObfuscateUser Code Example</span></h4>
+
+      
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> UserManagementController{
+    <span class="keyword">public</span> List &lt;User&gt; users {get; set;}
+    
+    <span class="keyword">public</span> UserManagementController()
+    {
+        Profile p = [select id from profile where name = <span class="string">'Customer Community User'</span>];
+        
+        users = [select username, id from User where profileId=:p.id AND isactive=<span class="keyword">true</span>];
+    }
+
+    <span class="onelineComment">//Use method with extreme caution. Data can't be recovered.   </span>
+    @InvocableMethod(label=<span class="string">'User Management'</span> description=<span class="string">'Obfuscate User data and more'</span>)
+    <span class="keyword">static</span> <span class="keyword">public</span> <span class="keyword">void</span> obfuscate(List&lt;User&gt; users)
+    {
+        <span class="keyword">String</span> uid = ApexPages.currentPage().getParameters().get(<span class="string">'uid'</span>);
+        
+        <span class="statement">if</span>(uid == <span class="keyword">null</span>)
+            <span class="statement">return</span>;
+        
+        User u = [select contactId from user where id=:uid];
+            
+        System.UserManagement.obfuscateUser(uid);
+    }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_registerVerificationMethod">
+<a name="apex_System_UserManagement_registerVerificationMethod"><!-- --></a>
+    <h3 class="helpHead3">registerVerificationMethod(method, startUrl)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Registers an identity verification method. Verification methods
+            can be a time-based one-time password (TOTP), email or text verification code,
+            Salesforce Authenticator, or U2F-compatible security key. End users register
+            verification methods for themselves.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.PageReference
+                    registerVerificationMethod(Auth.VerificationMethod method, <span class="keyword">String</span>
+                    startUrl)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Verification method used to verify the identity of the user.</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Path to the page that users see after they log in.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type:<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm#apex_system_pagereference" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+            
+            <p class="p">Use this method to enable users to complete identity verification, such as
+                multi-factor authentication (MFA), or to log in to their Experience Cloud site
+                without a password. Users register these methods to verify their identity when
+                logging in. You create a custom registration page when implementing mobile-centric
+                passwordless logins. See <a class="xref" href="#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in.">VerifyPasswordlessLogin</a>. </p>
+
+            <p class="p">The <samp class="codeph apex_code">PageReference</samp> returned by <samp class="codeph apex_code">registerVerificationMethod</samp> redirects the user to
+                the Salesforce Verify page. If the user enters the correct code, the user is
+                redirected to the Experience Cloud site page specified by the start URL. For
+                example:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+PageReference pr = System.UserManagement.registerVerificationMethod(Auth.VerificationMethod.TOTP,startUrl);
+PageReference p =  System.UserManagement.deregisterVerificationMethod(userId,Auth.VerificationMethod.SALESFORCE_AUTHENTICATOR);
+    
+</pre></div>
+
+            <p class="p">This method is available in API version 43.0 and later.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>As a security measure, when users add or update mobile numbers in their  detail
+                page, they must log in again to verify their identity. As a result, unsaved changes
+                in the app are lost. To disable this security measure, contact Salesforce
+                Support.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_sendAsyncEmailConfirmation">
+<a name="apex_System_UserManagement_sendAsyncEmailConfirmation"><!-- --></a>
+  <h3 class="helpHead3">sendAsyncEmailConfirmation(userId, emailTemplateId, networkId, startUrl)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Send an email message to a user’s email address for verification.
+      The message contains a verification link (URL) that the user clicks to verify the email
+      address later on. You can send email verifications in bulk.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> sendAsyncEmailConfirmation(<span class="keyword">String</span>
+          userId, <span class="keyword">String</span> emailTemplateId, <span class="keyword">String</span> networkId, <span class="keyword">String</span> startUrl)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> ID of the user to receive the email confirmation.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">emailTemplateId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> ID of the email template in which the verification link is defined. If <samp class="codeph nolang">null</samp>, Salesforce sends a default email. Here's how the
+            default email looks.<div class="fig fignone">
+              <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fsendasyncemailconfirmationwelcomeemail.png&folder=apexref" width="600" alt="Default verification email when the emailTemplateId parameter is set to null"></span></div>
+            </div>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">networkId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> If verifying email addresses for Experience Cloud site users, the ID of the Experience
+            Cloud site. In addition to external users (such as customers and partners), Experience
+            Cloud site users can include internal users (such as employees) who are members of the
+            site. To verify email addresses for internal users only, set this parameter to <samp class="codeph nolang">null</samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The user is redirected to this page after verification, with a success or error
+            message as the parameter. If null, the user is redirected to the login page.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p">Indicates whether sending the email message succeeded or failed.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Sending an async email message is good practice to ensure that users are registered with a
+        valid email address that they truly own. To determine which users receive an email with the
+        verification link, check whether the User Verified Email field in the User detail page is
+        set to true. You can also get this information from the <samp class="codeph apex_code">TwoFactorMethodsInfo</samp> API.</p>
+
+      <p class="p">Send async email verification to customers and partners to verify their email address.
+        These users must verify their email address before they can log in with email OTP
+        (passwordless login).</p>
+
+      <p class="p">The error code and description are passed as query parameters so that you can process any
+        errors when building a custom landing page.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+System.UserManagement.sendAsyncEmailConfirmation(<span class="string">'005RM000001a0Ox'</span>, 
+<span class="string">'00XRM000000hxnG'</span>,<span class="string">'0DBRM000000015i'</span>, <span class="string">'/s/contactsupport'</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_verifyPasswordlessLogin">
+<a name="apex_System_UserManagement_verifyPasswordlessLogin"><!-- --></a>
+  <h3 class="helpHead3">verifyPasswordlessLogin(userId, method, identifier, code, startUrl)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Completes a verification challenge during a passwordless login that
+      uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the
+      verification code successfully, the user is logged in.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Auth.VerificationResult
+          verifyPasswordlessLogin(Id userId, Auth.VerificationMethod method, <span class="keyword">String</span> identifier,
+          <span class="keyword">String</span> code, <span class="keyword">String</span> startUrl)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> ID of the user who’s logging in.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the identity of the user, which can be either EMAIL or SMS.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">identifier</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> ID of the verification attempt received from the <samp class="codeph apex_code">initPasswordlessLogin</samp> method.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">code</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Code used to verify the identity of the user.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The page where the user is directed after successful login.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_class_Auth_VerificationResult" title="Contains the result of a verification challenge that you invoke when you create your own Verify page. The challenge can be initiated by either the System.UserManagement.verifyPasswordlessLogin or System.UserManagement.verifySelfRegistration method.">Auth.VerificationResult</a></p>
+
+      <p class="p">Result of the verification challenge, which includes the message displayed, and where the
+        user is directed if they enter the verification code correctly.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Call this method to complete the passwordless login authentication process. It validates
+        the verification method and verification code. It also checks that the identifier is the
+        same as the one returned by <a class="xref" href="#apex_System_UserManagement_initPasswordlessLogin" title="Invokes a verification challenge for passwordless login when creating custom (Visualforce) Login and Verify pages for customers and partners."><samp class="codeph apex_code">initPasswordlessLogin</samp></a>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">For an example, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_class_Auth_VerificationResult" title="Contains the result of a verification challenge that you invoke when you create your own Verify page. The challenge can be initiated by either the System.UserManagement.verifyPasswordlessLogin or System.UserManagement.verifySelfRegistration method."><samp class="codeph apex_code">Auth.VerificationResult</samp></a>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_verifyRegisterVerificationMethod">
+<a name="apex_System_UserManagement_verifyRegisterVerificationMethod"><!-- --></a>
+  <h3 class="helpHead3">verifyRegisterVerificationMethod(code, method)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Completes registering a user’s email address or phone number as a
+      verification method when customizing the identity verification process.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> verifyRegisterVerificationMethod(<span class="keyword">String</span>
+          code, Auth.VerificationMethod method)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">code</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Code used to verify the identity of the user.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the identity of the user, which can be either EMAIL or SMS.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">If the user enters an incorrect verification code, the method returns an error message.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Call <samp class="codeph apex_code">verifyRegisterVerificationMethod</samp> to complete
+        the process of registering a user’s verification method. This method checks whether the user
+        entered the correct verification code. If the verification code is correct, the method</p>
+<ul class="ul bulletList">
+          <li class="li">Confirms that the user entered the correct verification code</li>
+
+          <li class="li">From the user’s detail page, updates the user's verification method status (sets the
+            verification bit)</li>
+
+          <li class="li">Sends an email to the user confirming that a verification method has been added to
+            their record</li>
+
+        </ul>
+
+      <p class="p">If the verification code is incorrect, an error message is returned.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If users want to change their email address after registering one, don’t use the <samp class="codeph apex_code">initRegisterVerificationMethod</samp> and <samp class="codeph apex_code">verify RegisterVerificationMethod</samp> methods. To enable
+        automatic identity verification for email address changes, from the Identity Verification
+        Setup page, select the field <strong class="ph uicontrol">Require email confirmations for email address
+          changes (applies to users in Experience Builder sites)</strong>.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section" id="register_verification_method_ex">
+<a name="register_verification_method_ex"><!-- --></a><h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">Here’s a code example that registers a user’s phone number as a verification method. When
+        the user enters a verification code on the Visualforce page, it invokes <samp class="codeph apex_code">registerUser()</samp>. The method gets the User ID of the user
+        who’s registering the verification method and the user’s phone number. It also gets the
+        user’s registration status to check whether the phone number is verified already. If the
+        user is registered with a different phone number, the number is updated.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> registerUser() {
+        <span class="statement">try</span> {
+            exceptionText=<span class="string">''</span>;
+            <span class="keyword">String</span> userId = UserInfo.getUserId();
+            User u = [Select MobilePhone, Id from User Where Id=:userId];
+             currPhone = u.MobilePhone;
+             mobilePhone = getFormattedSms(mobilePhone); 
+           <span class="statement">if</span> (mobilePhone != <span class="keyword">null</span> &amp;&amp; mobilePhone != <span class="string">''</span>) {
+           u.MobilePhone = mobilePhone;
+           <span class="statement">update</span> u;
+            <span class="onelineComment">// We're updating the email and phone number before verifying. Roll back  </span>
+           <span class="onelineComment">//  the change in the verify API if it is unsuccessful.</span>
+            exceptionText = System.
+            UserManagement.initRegisterVerificationMethod(Auth.VerificationMethod.SMS);
+            <span class="statement">if</span>(exceptionText!= <span class="keyword">null</span> &amp;&amp; exceptionText!=<span class="string">''</span>){
+                isInit = <span class="keyword">false</span>;
+                showInitException = <span class="keyword">true</span>;
+            } <span class="statement">else</span> {
+                 isInit = <span class="keyword">false</span>;
+                 isVerify = <span class="keyword">true</span>;
+            }
+            } <span class="statement">else</span> {
+                showInitException = <span class="keyword">true</span>;
+            }
+        } <span class="statement">catch</span> (Exception e) {
+            exceptionText = e.getMessage();
+            isInit = <span class="keyword">false</span>;
+            showInitException = <span class="keyword">true</span>;
+        }
+    }
+
+<span class="keyword">public</span> <span class="keyword">void</span> verifyUser() {
+    <span class="onelineComment">// Take the user’s input for the code sent to their phone number</span>
+    exceptionText = System.UserManagement.         verifyRegisterVerificationMethod(code, Auth.VerificationMethod.SMS);
+    <span class="statement">if</span>(exceptionText != <span class="keyword">null</span> &amp;&amp; exceptionText !=<span class="string">''</span>){
+    showInitException = <span class="keyword">true</span>;
+    } <span class="statement">else</span> {
+            <span class="onelineComment">//Success    </span>
+    }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_verifySelfRegistration">
+<a name="apex_System_UserManagement_verifySelfRegistration"><!-- --></a>
+  <h3 class="helpHead3">verifySelfRegistration(method, identifier, code, startUrl)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Completes a verification challenge when creating a custom
+      (Visualforce) Verify page for Experience Cloud site self-registration. If the person who is
+      attempting to register enters the verification code successfully, the user is created and
+      logged in.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Auth.VerificationResult
+          verifySelfRegistration(Auth.VerificationMethod method, <span class="keyword">String</span> identifier, <span class="keyword">String</span> code,
+          <span class="keyword">String</span> startUrl)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the identity of the user, which can be either EMAIL or SMS.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">identifier</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The unique identifier received from the <samp class="codeph apex_code">initSelfRegistration</samp> method.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">code</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Code used to verify the identity of the user.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The page where the user is directed after successful self-registration. For the <a class="xref" href="https://help.salesforce.com/s/articleView?id=experience.rss_login_self_register.htm&amp;language=en_US" target="_blank">Self-Registration component</a>, set the Start URL
+            in the component properties instead.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_class_Auth_VerificationResult" title="Contains the result of a verification challenge that you invoke when you create your own Verify page. The challenge can be initiated by either the System.UserManagement.verifyPasswordlessLogin or System.UserManagement.verifySelfRegistration method.">Auth.VerificationResult</a></p>
+
+      <p class="p">Result of the verification challenge, which includes the message displayed, and where the
+        user is directed when they enter the verification code correctly.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">By default, when users sign up for your Experience Cloud site with an email address or
+        phone number, Salesforce sends them a verification code and generates a Verify page. This
+        Verify page is where users enter the verification code to confirm their identity. You can
+        replace this Salesforce-generated Verify page with a custom Verify page that you create with
+        Visualforce. Then you invoke the verification process with Apex methods.</p>
+
+      <p class="p">First, call the <a class="xref" href="#apex_System_UserManagement_initSelfRegistration" title="Invokes a verification challenge for self-registration when creating a custom (Visualforce) Verify page for Experience Cloud self-registration."><samp class="codeph apex_code">initSelfRegistration</samp></a> method, which returns the identifier of the user
+        to create. Then call this <samp class="codeph apex_code">verifySelfRegistration</samp>
+        method to complete the verification process. If the user enters the verification code
+        correctly, the user is created and directed to the page specified in the <samp class="codeph apex_code">startURL</samp>.</p>
+
+      <p class="p">This method returns the verification result, which contains the verification status and, if
+        the user is created, the session ID. If the verification method is SMS, the User object must
+        contain a properly formatted mobile number, which is country code, space, and then phone
+        number, for example, +1 1234567890. Use <a class="xref" href="#apex_System_UserManagement_formatPhoneNumber" title="Formats a mobile phone number for a user. Call this method to ensure that the phone number is formatted properly before updating a user’s mobile phone number."><samp class="codeph apex_code">System.UserManagement.formatPhoneNumber</samp></a> to ensure that the phone number
+        is formatted correctly.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">This code contains the result of a verification challenge that registers a new user. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> id = System.UserManagement.initSelfRegistration​
+          (Auth.VerificationMethod.SMS, user);
+        Auth.VerificationResult res = System.UserManagement.verifySelfRegistration​
+          (Auth.VerificationMethod.SMS, id, ‘123456’, <span class="keyword">null</span>);
+        <span class="statement">if</span>(res.success == <span class="keyword">true</span>){
+     <span class="onelineComment">//redirect</span>
+}</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UserManagement_verifyVerificationMethod">
+<a name="apex_System_UserManagement_verifyVerificationMethod"><!-- --></a><h3 class="helpHead3">verifyVerificationMethod(identifier, code, method)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Completes the verification service for email, phone (SMS), Salesforce
+      Authenticator, password, or time-based one-time password (TOTP) verification
+    methods.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> VerificationResult verifyVerificationMethod(<span class="keyword">String</span>
+          identifier, <span class="keyword">String</span> code, Auth.VerificationMethod method)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">identifier</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Identifier returned from <samp class="codeph apex_code">initVerificationMethod</samp> for
+              <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, and <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp>.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">code</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Code used to verify the user’s identity for <samp class="codeph apex_code">EMAIL</samp>,
+              <samp class="codeph apex_code">SMS</samp>, or <samp class="codeph apex_code">PASSWORD</samp>.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationMethod.htm" title="Contains the different ways users can identify themselves when logging in. You can use it to implement mobile-centric passwordless login pages and to self-register (and deregister) verification methods.">Auth.VerificationMethod</a> Method used to verify the user’s identity, which can be <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">PASSWORD</samp>, <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp>, <samp class="codeph apex_code">SMS</samp>, or <samp class="codeph apex_code">TOTP</samp>.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_class_Auth_VerificationResult" title="Contains the result of a verification challenge that you invoke when you create your own Verify page. The challenge can be initiated by either the System.UserManagement.verifyPasswordlessLogin or System.UserManagement.verifySelfRegistration method.">VerificationResult</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method along with its paired <samp class="codeph apex_code">initVerificationMethod</samp> to customize a verification service for <samp class="codeph apex_code">EMAIL</samp>, <samp class="codeph apex_code">SMS</samp>, or
+          <samp class="codeph apex_code">SALESFORCE_AUTHENTICATOR</samp> verification methods. Or
+        use this method alone to provide a complete verification service for <samp class="codeph apex_code">PASSWORD</samp> and <samp class="codeph apex_code">TOTP</samp>
+        verification methods.</p>
+
+      <p class="p">This method checks whether the user entered the correct verification code or password. If
+        the verification code or password is correct, the method verifies the user’s identity.</p>
+
+      <p class="p">If the verification code or password isn’t valid, the service returns an error message.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Examples</h4>
+
+      
+      <p class="p">This example shows multi-factor authentication using email.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> initVerification() {
+<span class="onelineComment">// user will receive code on their registered verified email </span>
+ identifier = UserManagement.initVerificationMethod(Auth.VerificationMethod.EMAIL);
+}
+
+<span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// requiring identifier from the initVerification</span>
+<span class="onelineComment">// the code will need to be entered in this method</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(identifier, code , Auth.VerificationMethod.EMAIL);
+}</pre></div>
+
+      <p class="p">The next two examples show multi-factor authentication using only the <samp class="codeph apex_code">verifyVerificationMethod</samp> for password and TOTP
+        verifications.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// user will enter their password as a param in the verifyVerificationMethod for password verification method</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(<span class="string">''</span>, password , Auth.VerificationMethod.PASSWORD);
+}</pre></div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> Auth.VerificationResult verifyVerification() {
+<span class="onelineComment">// user will enter their registered time-based one-time password (TOTP) code (token)</span>
+<span class="statement">return</span> UserManagement.verifyVerificationMethod(<span class="string">''</span>, code , Auth.VerificationMethod.TOTP);
+}</pre></div>
+
+    </div>
+</div>
+</div>
+</div>
+</div>

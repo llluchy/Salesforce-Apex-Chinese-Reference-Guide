@@ -1,0 +1,542 @@
+<a name="apex_methods_system_restrequest"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">RestRequest Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="RestRequestClassDesc"><a name="RestRequestClassDesc"><!-- --></a>Use the <samp class="codeph apex_code">System.RestRequest</samp> class to access and pass request data in a RESTful Apex
+            method.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">An Apex RESTful Web service method is defined using one of the REST annotations. For
+                more information about Apex RESTful Web service, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_rest.htm" target="_blank">Exposing Apex Classes as REST Web Services</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: An Apex Class with REST Annotated Methods</h2>
+
+            
+            <div class="p">The following example shows you how to implement the Apex REST API in Apex. This
+                class exposes three methods that each handle a different HTTP request: GET, DELETE,
+                and POST. You can call these annotated methods from a client by issuing HTTP
+                requests.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ApexRESTExample"><a name="ApexRESTExample"><!-- --></a><span class="keyword">@RestResource(urlMapping='/Account/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> MyRestResource {
+
+    <span class="keyword">@HttpDelete</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">void</span> doDelete() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        <span class="keyword">String</span> accountId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        Account account = [SELECT Id FROM Account WHERE Id = :accountId WITH USER_MODE];
+        <span class="statement">delete</span> <span class="statement">as</span> user account;
+    }
+  
+    <span class="keyword">@HttpGet</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> Account doGet() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        <span class="keyword">String</span> accountId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        Account result = [SELECT Id, Name, Phone, Website FROM Account WHERE Id = :accountId WITH USER_MODE];
+        <span class="statement">return</span> result;
+    }
+  
+  <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> doPost(<span class="keyword">String</span> name,
+        <span class="keyword">String</span> phone, <span class="keyword">String</span> website) {
+        Account account = <span class="keyword">new</span> Account();
+        account.Name = name;
+        account.phone = phone;
+        account.website = website;
+        <span class="statement">insert</span> <span class="statement">as</span> user account;
+        <span class="statement">return</span> account.Id;
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_constructors">RestRequest Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_Properties">RestRequest Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_methods">RestRequest Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_RestRequest_constructors">
+<a name="apex_System_RestRequest_constructors"><!-- --></a>
+<h2 class="helpHead2">RestRequest Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">RestRequest</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_ctor">RestRequest()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">System.RestRequest</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_ctor">
+<a name="apex_System_RestRequest_ctor"><!-- --></a>
+<h3 class="helpHead3">RestRequest()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">System.RestRequest</samp> class.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> RestRequest()</samp></p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_RestRequest_Properties">
+<a name="apex_System_RestRequest_Properties"><!-- --></a>
+<h2 class="helpHead2">RestRequest Properties</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">RestRequest</samp>.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Although the <samp class="codeph apex_code">RestRequest</samp> Map properties are read-only,
+                their contents are read-write. To modify a <samp class="codeph apex_code">RestRequest</samp> header or parameter, use the associated <samp class="codeph apex_code">addHeader</samp> and <samp class="codeph apex_code">addParameter</samp> methods instead of modifying the Map values
+                directly.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_headers">headers</a></strong><br>
+Returns the headers that are received by the request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_httpMethod">httpMethod</a></strong><br>
+Returns one of the supported HTTP request methods.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_params">params</a></strong><br>
+Returns the parameters that are received by the request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_remoteAddress">remoteAddress</a></strong><br>
+Returns the IP address of the client making the request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_requestBody">requestBody</a></strong><br>
+Returns or sets the body of the request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_requestUri">requestURI</a></strong><br>
+Returns or sets everything after the host in the HTTP request string.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_resourcePath">resourcePath</a></strong><br>
+Returns the REST resource path for the request.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_headers">
+<a name="apex_System_RestRequest_headers"><!-- --></a>
+<h3 class="helpHead3">headers</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the headers that are received by the request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; headers {get;
+set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_httpMethod">
+<a name="apex_System_RestRequest_httpMethod"><!-- --></a>
+<h3 class="helpHead3">httpMethod</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns one of the supported HTTP request methods.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> httpMethod {get; set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Possible values returned:</p>
+<ul class="ul bulletList">
+<li class="li">DELETE</li>
+
+<li class="li">GET</li>
+
+<li class="li">HEAD</li>
+
+<li class="li">PATCH</li>
+
+<li class="li">POST</li>
+
+<li class="li">PUT</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_params">
+<a name="apex_System_RestRequest_params"><!-- --></a>
+<h3 class="helpHead3">params</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the parameters that are received by the request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map &lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; params {get;
+set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_remoteAddress">
+<a name="apex_System_RestRequest_remoteAddress"><!-- --></a>
+<h3 class="helpHead3">remoteAddress</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the IP address of the client making the request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> remoteAddress {get; set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_requestBody">
+<a name="apex_System_RestRequest_requestBody"><!-- --></a>
+ <h3 class="helpHead3">requestBody</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns or sets the body of the request.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Blob</span> requestBody {get; set;}</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If the Apex method has no parameters, then Apex REST copies the HTTP request body into the
+     <samp class="codeph apex_code">RestRequest.requestBody</samp> property. If there are
+    parameters, then Apex REST attempts to deserialize the data into those parameters and the data
+    won't be deserialized into the <samp class="codeph apex_code">RestRequest.requestBody</samp>
+    property.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_requestUri">
+<a name="apex_System_RestRequest_requestUri"><!-- --></a>
+<h3 class="helpHead3">requestURI</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns or sets everything after the host in the HTTP request
+string.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> requestURI {get; set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p"> For example, if the request string is
+     <var class="keyword varname">https://instance.salesforce.com/services/apexrest/Account/</var> then the <samp class="codeph apex_code">requestURI</samp> is <var class="keyword varname">/Account/</var>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_resourcePath">
+<a name="apex_System_RestRequest_resourcePath"><!-- --></a>
+ <h3 class="helpHead3">resourcePath</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the REST resource path for the request.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> resourcePath {get; set;}</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <p class="p">For example, if the Apex REST class defines a <samp class="codeph apex_code">urlMapping</samp> of <span class="ph filepath">/MyResource/*</span>, the <samp class="codeph apex_code">resourcePath</samp> property returns
+    <span class="ph filepath">/services/apexrest/MyResource/*</span>.</p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_RestRequest_methods">
+<a name="apex_System_RestRequest_methods"><!-- --></a>
+ <h2 class="helpHead2">RestRequest Methods</h2>
+
+ 
+ <div class="body refbody">
+  <div class="section">
+   <p class="p">The following are methods for <samp class="codeph apex_code">RestRequest</samp>. All are
+    instance methods.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>At run time, you typically don't add a header or parameter to the <samp class="codeph apex_code">RestRequest</samp> object manually because they are automatically
+    deserialized into the corresponding properties. <span class="ph" id="UnitTestingNotePart"><a name="UnitTestingNotePart"><!-- --></a>The <samp class="codeph apex_code">addHeader</samp> and <samp class="codeph apex_code">addParameter</samp> methods are intended for unit testing, so you can add header or
+     parameter values to the <samp class="codeph apex_code">RestRequest</samp> object without
+     recreating the REST method call. Use these methods instead of calling a Map method
+     directly.</span></p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_addHeader">addHeader(name, value)</a></strong><br>
+Adds a header to the request header map in an Apex test.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_System_RestRequest_addParameter">addParameter(name, value)</a></strong><br>
+Adds a parameter to the request params map in an Apex test.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_addHeader">
+<a name="apex_System_RestRequest_addHeader"><!-- --></a>
+ <h3 class="helpHead3">addHeader(name, value)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Adds a header to the request header map in an Apex test.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addHeader(<span class="keyword">String</span> name, <span class="keyword">String</span> value)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method is intended for unit testing of Apex REST classes. </p>
+
+   <p class="p">The following headers aren't allowed:</p>
+<ul class="ul bulletList">
+     <li class="li">cookie</li>
+
+     <li class="li">set-cookie</li>
+
+     <li class="li">set-cookie2</li>
+
+     <li class="li">content-length</li>
+
+     <li class="li">authorization</li>
+
+    </ul>
+<p class="p">If any of these headers are used, an Apex exception is thrown.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestRequest_addParameter">
+<a name="apex_System_RestRequest_addParameter"><!-- --></a>
+ <h3 class="helpHead3">addParameter(name, value)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Adds a parameter to the request params map in an Apex test.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addParameter(<span class="keyword">String</span> name, <span class="keyword">String</span>
+    value)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method is intended for unit testing of Apex REST classes.</p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+</div>

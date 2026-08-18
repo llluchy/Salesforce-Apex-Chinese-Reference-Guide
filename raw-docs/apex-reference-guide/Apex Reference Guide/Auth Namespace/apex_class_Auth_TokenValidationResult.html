@@ -1,0 +1,409 @@
+<a name="apex_class_Auth_TokenValidationResult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">TokenValidationResult Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods that describe the result of the token validation performed by a token
+        exchange handler using the <samp class="codeph ">validateIncomingToken</samp> method
+        in the <samp class="codeph ">Auth.Oauth2TokenExchangeHandler</samp> class during the
+        OAuth 2.0 token exchange flow.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+            <p class="p">For a full example implementation that  shows how to get information from the <samp class="codeph ">TokenValidationResult</samp> class, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/token_exchange_handler.htm" target="_blank">OAuth 2.0 Token Exchange
+                    Handler Examples</a>.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">Here’s is an example of the <samp class="codeph ">Auth.TokenValidationResult</samp> class.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>global class TokenValidationResult {        
+    global TokenValidationResult(Boolean valid) { this.isValid = valid; }
+    
+    global TokenValidationResult(Boolean isValid, Object data, Auth.UserData userData, 
+        String token, Auth.OAuth2TokenExchangeType tokenType, String customErrorMsg) {
+        
+        this.isValid = isValid;
+        this.data = data;
+        this.userData = userData;
+        this.token = token;
+        this.tokenType = tokenType;
+        this.customErrorMsg = customErrorMsg;
+    
+    }
+    
+    global Boolean isValid;
+    global Object data; 
+    global Auth.UserData userData;
+    global String token;
+    global Auth.OAuth2TokenExchangeType tokenType; //Enum
+    global String customErrorMsg; //Custom error message that’s returned to the client if token validation fails 
+    
+    global Boolean isValid(){
+        return isValid;
+    }
+    global Object getData(){
+        return data;
+    }
+    global Auth.UserData getUserData(){
+        return userData;
+    }
+    global String getToken(){
+        return token;
+    }
+    global OAuth2TokenExchangeType getTokenType(){
+        return tokenType;
+    }
+    global String getCustomErrorMessage(){
+        return customErrorMsg;
+    }
+}</pre></div>
+
+        </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_constructors">TokenValidationResult Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_properties">TokenValidationResult Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_methods">TokenValidationResult Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_constructors">
+<a name="apex_Auth_TokenValidationResult_constructors"><!-- --></a><h2 class="helpHead2">TokenValidationResult Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph ">TokenValidationResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_ctor">TokenValidationResult(isValid, data, userData, token, tokenType, customErrorMsg)</a></strong><br>
+Creates an instance of the <samp class="codeph ">Auth.TokenValidationResult</samp>     class to describe the result of token validation performed during the OAuth 2.0 token exchange     flow.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_ctor_2">TokenValidationResult(valid)</a></strong><br>
+Creates an instance of the <samp class="codeph ">Auth.TokenValidationResult</samp> class to describe a valid token validation result during     the OAuth 2.0 token exchange flow.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_ctor">
+<a name="apex_Auth_TokenValidationResult_ctor"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">TokenValidationResult(isValid, data, userData, token, tokenType, customErrorMsg)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates an instance of the <samp class="codeph ">Auth.TokenValidationResult</samp>
+    class to describe the result of token validation performed during the OAuth 2.0 token exchange
+    flow.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public TokenValidationResult(Boolean isValid, Object data, Auth.UserData userData, String token, Auth.OAuth2TokenExchangeType tokenType, String customErrorMsg)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">isValid</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">If <samp class="codeph ">true</samp>, the token is valid.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>:<p class="p">Type:</p>
+<p class="p">Object Stores</p>
+<p class="p">custom data that isn’t stored in <samp class="codeph ">userData</samp>.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userData</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_UserData.htm" target="_blank">Auth.UserData</a></p>
+<p class="p">Stores information about</p>
+<p class="p">a Salesforce user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">token</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The token from the external identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenType</var></strong>:<p class="p">Type: Auth.<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_OAuth2TokenExchangeType.htm" target="_blank">OAuth2TokenExchangeType</a></p>
+<p class="p">The type of token from the external identity provider.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">customErrorMsg</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A custom error message that’s returned if the token validation fails.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_ctor_2">
+<a name="apex_Auth_TokenValidationResult_ctor_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">TokenValidationResult(valid)</span></h3>
+
+  <div class="body refbody">
+<div class="shortdesc">Creates an instance of the <samp class="codeph ">Auth.TokenValidationResult</samp> class to describe a valid token validation result during
+    the OAuth 2.0 token exchange flow.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public TokenValidationResult(Boolean valid)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">valid</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Indicates a valid token validation result.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_properties">
+<a name="apex_Auth_TokenValidationResult_properties"><!-- --></a><h2 class="helpHead2">TokenValidationResult Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph ">TokenValidationResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_customErrorMsg">customErrorMsg</a></strong><br>
+A custom error message that’s returned if token validation fails.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_data">data</a></strong><br>
+Contains information about the user that isn’t stored in the <samp class="codeph ">Auth.UserData</samp> class, such as information obtained via callouts to the external     identity provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_isValid">isValid</a></strong><br>
+Indicates whether the token is valid or not, based on the custom validation logic in your     token exchange handler.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_token">token</a></strong><br>
+The token from the external identity provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_tokenType">tokenType</a></strong><br>
+The type of token from the external identity provider. It can be an access token, refresh     token, ID token, SAML 2.0 assertion, or a JSON Web Token (JWT).</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_userData">userData</a></strong><br>
+Information about the user that’s obtained from the identity provider’s     token.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_customErrorMsg">
+<a name="apex_Auth_TokenValidationResult_customErrorMsg"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">customErrorMsg</span></h3>
+<div class="body refbody">
+<div class="shortdesc">A custom error message that’s returned if token validation fails.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String customErrorMsg {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_data">
+<a name="apex_Auth_TokenValidationResult_data"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">data</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Contains information about the user that isn’t stored in the <samp class="codeph ">Auth.UserData</samp> class, such as information obtained via callouts to the external
+    identity provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object data {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: Object</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_isValid">
+<a name="apex_Auth_TokenValidationResult_isValid"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">isValid</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the token is valid or not, based on the custom validation logic in your
+    token exchange handler.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean isValid {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_token">
+<a name="apex_Auth_TokenValidationResult_token"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">token</span></h3>
+<div class="body refbody">
+<div class="shortdesc">The token from the external identity provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String token {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_tokenType">
+<a name="apex_Auth_TokenValidationResult_tokenType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">tokenType</span></h3>
+<div class="body refbody">
+<div class="shortdesc">The type of token from the external identity provider. It can be an access token, refresh
+    token, ID token, SAML 2.0 assertion, or a JSON Web Token (JWT).</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.OAuth2TokenExchangeType tokenType {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_OAuth2TokenExchangeType.htm" target="_blank">Auth.OAuth2TokenExchangeType</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_userData">
+<a name="apex_Auth_TokenValidationResult_userData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">userData</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Information about the user that’s obtained from the identity provider’s
+    token.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.UserData userData {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_UserData.htm" target="_blank">Auth.UserData</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_methods">
+<a name="apex_Auth_TokenValidationResult_methods"><!-- --></a><h2 class="helpHead2">TokenValidationResult Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">TokenValidationResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_getCustomErrorMessage">getCustomErrorMessage()</a></strong><br>
+Retrieves the <samp class="codeph ">CustomErrorMsg</samp> that’s returned when     token validation fails.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_getData">getData()</a></strong><br>
+Retrieves data from the identity provider token. This data can include custom data that     isn’t stored in the <samp class="codeph ">userData</samp> property.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_getToken">getToken()</a></strong><br>
+Retrieves the token that was passed from the external identity provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_getTokenType">getTokenType()</a></strong><br>
+Retrieves the type of token that was passed from the external identity     provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#apex_Auth_TokenValidationResult_getUserData">getUserData()</a></strong><br>
+Retrieves information about the user. The user information can be obtained from the     identity provider’s token or from callouts to the identity provider, if applicable.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_TokenValidationResult.htm#unique_1000584633">isValid</a></strong><br>
+Indicates whether the token is valid or not, based on the custom validation logic in your     token exchange handler.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_getCustomErrorMessage">
+<a name="apex_Auth_TokenValidationResult_getCustomErrorMessage"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getCustomErrorMessage()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Retrieves the <samp class="codeph ">CustomErrorMsg</samp> that’s returned when
+    token validation fails.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getCustomErrorMessage()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_getData">
+<a name="apex_Auth_TokenValidationResult_getData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getData()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Retrieves data from the identity provider token. This data can include custom data that
+    isn’t stored in the <samp class="codeph ">userData</samp> property.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object getData()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Object</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_getToken">
+<a name="apex_Auth_TokenValidationResult_getToken"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getToken()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Retrieves the token that was passed from the external identity provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getToken()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_getTokenType">
+<a name="apex_Auth_TokenValidationResult_getTokenType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getTokenType()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Retrieves the type of token that was passed from the external identity
+    provider.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.OAuth2TokenExchangeType getTokenType()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Auth_OAuth2TokenExchangeType.htm" target="_blank">Auth.OAuth2TokenExchangeType</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_TokenValidationResult_getUserData">
+<a name="apex_Auth_TokenValidationResult_getUserData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getUserData()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Retrieves information about the user. The user information can be obtained from the
+    identity provider’s token or from callouts to the identity provider, if applicable.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.UserData getUserData()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_UserData.htm" target="_blank">Auth.UserData</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_1000584633">
+<a name="unique_1000584633"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">isValid</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the token is valid or not, based on the custom validation logic in your
+    token exchange handler.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean isValid {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,61 @@
+<a name="apex_testing_utility_classes"><!-- --></a><h1 class="helpHead1">Common Test Utility Classes for Test Data
+Creation</h1><div class="body conbody">
+<div class="shortdesc">Common test utility classes are public test classes that
+contain reusable code for test data creation.</div>
+
+<p class="p">Public test utility classes are defined with the <samp class="codeph apex_code">IsTest</samp>
+            annotation, and as such, are excluded from the organization code size limit and execute
+            in test context. They can be called by test methods but not by non-test code.</p>
+
+<p class="p">The methods in the public test utility class are defined the same way methods are in non-test
+            classes. They can take parameters and can return a value. The methods must be declared
+            as public or global to be visible to other test classes. These common methods can be
+            called by any test method in your Apex classes to set up test data before running the
+            test. While you can create public methods for test data creation in a regular Apex
+            class, without the <samp class="codeph apex_code">IsTest</samp> annotation, you
+            don’t get the benefit of excluding this code from the organization code size
+            limit.</p>
+
+<p class="p">This is an example of a test utility class. It contains one method, <samp class="codeph apex_code">createTestRecords</samp>, which accepts the
+number of accounts to create and the number of contacts per account.
+The next example shows a test method that calls this method to create
+some data.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestDataFactory {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> createTestRecords(<span class="keyword">Integer</span> numAccts, <span class="keyword">Integer</span> numContactsPerAcct) {
+        List&lt;Account&gt; accts = <span class="keyword">new</span> List&lt;Account&gt;();
+        
+        <span class="statement">for</span>(<span class="keyword">Integer</span> i=0;i&lt;numAccts;i++) {
+            Account a = <span class="keyword">new</span> Account(Name=<span class="string">'TestAccount'</span> + i);
+            accts.add(a);
+        }
+        <span class="statement">insert</span> accts;
+        
+        List&lt;Contact&gt; cons = <span class="keyword">new</span> List&lt;Contact&gt;();
+        <span class="statement">for</span> (<span class="keyword">Integer</span> j=0;j&lt;numAccts;j++) {
+            Account acct = accts[j];            
+            <span class="onelineComment">// For each account just inserted, add contacts</span>
+            <span class="statement">for</span> (<span class="keyword">Integer</span> k=numContactsPerAcct*j;k&lt;numContactsPerAcct*(j+1);k++) {
+                cons.add(<span class="keyword">new</span> Contact(firstname=<span class="string">'Test'</span>+k,
+                                     lastname=<span class="string">'Test'</span>+k,
+                                     AccountId=acct.Id));
+            }
+        }
+        <span class="onelineComment">// Insert all contacts for all accounts</span>
+        <span class="statement">insert</span> cons;
+    }
+}</pre></div>
+
+<p class="p">The test method in this class calls the test utility method, <samp class="codeph apex_code">createTestRecords</samp>, to create five
+test accounts with three contacts each.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> MyTestClass {
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test1() {
+        TestDataFactory.createTestRecords(5,3);
+        <span class="onelineComment">// Run some tests</span>
+    }
+}</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

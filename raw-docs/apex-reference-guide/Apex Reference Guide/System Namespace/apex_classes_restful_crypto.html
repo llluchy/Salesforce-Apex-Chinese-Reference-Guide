@@ -1,0 +1,2336 @@
+<a name="apex_classes_restful_crypto"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">Crypto Class </h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Provides methods for creating digests, message authentication codes, and signatures, as
+  well as encrypting and decrypting information.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p">
+    <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a>
+   </p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <p class="p">The methods in the <samp class="codeph apex_code">Crypto</samp> class can be used for
+    securing content in Lightning Platform, or for integrating with external services such as Google
+    or Amazon WebServices (AWS).</p>
+
+   <p class="p">Each method in this class supports a unique set of AES encryption algorithms, depending on its
+    purpose. To confirm which algorithms are available for the action that you want to do, check
+    each method.</p>
+
+  </div>
+
+  <div class="section" id="section_xjh_lzk_y2c">
+<a name="section_xjh_lzk_y2c"><!-- --></a><h2 class="helpHead2">Using Encryption Algorithms</h2>
+
+   
+   <p class="p">The Crypto class supports Galois Counter Mode (GCM) and Cipher Block Chaining mode (CBC). The
+    GCM AES256-GCM algorithm is valid in all encrypt and decrypt variants Currently, only the
+    256-bit size is supported for GCM. CBC algorithms in 128-bit, 192-bit, and 256-bit sizes are
+    valid in all variants except those that expect additional authentication data (an
+     <var class="keyword varname">aaD</var> parameter).</p>
+
+   <a name="ul_rll_b1l_y2c"><!-- --></a><ul class="ul bulletList" id="ul_rll_b1l_y2c">
+    <li class="li">When you use CBC with encrypt and decrypt, you provide a 16-bit initialization vector (IV). </li>
+
+    <li class="li">When you use GCM with encrypt and decrypt, you provide no initialization vector (IV). </li>
+
+    <li class="li">When you use CBC with encryptWithManagedIV and decryptWithManagedIV, Salesforce provides the
+     IV. You provide no additional authentication data (aaData). You can only use CBC with
+     encryptWithManagedIV and decryptWithManagedIV if you use the version which does not expect
+     aaData.</li>
+
+    <li class="li">When you use GCM with encryptWithManagedIV and decryptWithManagedIV, Salesforce provides an
+     IV. and you can optionally provide the aaData</li>
+
+   </ul>
+
+   <p class="p">When use the Crypto class to encrypt using GCM, the final encrypted content includes the
+    length of the IV (always 12), the Salesforce-generated 12-byte IV, and the cipher text.</p>
+
+  </div>
+
+  <div class="section" id="section_idr_w1d_y2c">
+<a name="section_idr_w1d_y2c"><!-- --></a><h2 class="helpHead2">Encryption Algorithms</h2>
+
+   
+   <p class="p">The Crypto class supports these encryption algorithms.</p>
+
+   
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader  " id="d390056e131">MODE</th>
+
+       <th class="featureTableHeader  " id="d390056e134">VARIANT</th>
+
+       <th class="featureTableHeader  " id="d390056e137">DESCRIPTION</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d390056e131" data-title="MODE">CBC (Cipher Block Chaining)</td>
+
+       <td class="entry" headers="d390056e134" data-title="VARIANT">
+<samp class="codeph apex_code">AES128</samp>, <samp class="codeph apex_code">AES128-CBC</samp>
+</td>
+
+       <td class="entry" headers="d390056e137" data-title="DESCRIPTION">AES 128-bit with CBC mode with PKCS7 padding. Use either of these two values.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e131" data-title="MODE"></td>
+
+       <td class="entry" headers="d390056e134" data-title="VARIANT">
+<samp class="codeph apex_code">AES192</samp>,<samp class="codeph apex_code">
+         AES192-CBC</samp>
+</td>
+
+       <td class="entry" headers="d390056e137" data-title="DESCRIPTION">AES 192-bit with CBC mode with PKCS7 padding. Use either of these two values.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e131" data-title="MODE"></td>
+
+       <td class="entry" headers="d390056e134" data-title="VARIANT">
+<samp class="codeph apex_code">AES256</samp>,<samp class="codeph apex_code">
+         AES256-CBC</samp>
+</td>
+
+       <td class="entry" headers="d390056e137" data-title="DESCRIPTION">AES 256-bit with CBC mode with PKCS7 padding. Use either of these two values.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e131" data-title="MODE">GCM (Galois Counter Mode)</td>
+
+       <td class="entry" headers="d390056e134" data-title="VARIANT"><samp class="codeph apex_code">AES256-GCM</samp></td>
+
+       <td class="entry" headers="d390056e137" data-title="DESCRIPTION">AES 256-bit with GCM mode with no padding. Currently, only the 256-bit size is
+        supported for GCM.</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+
+  </div>
+
+  <div class="section" id="section_nwx_lxc_y2c">
+<a name="section_nwx_lxc_y2c"><!-- --></a><h2 class="helpHead2">Signing Algorithms</h2>
+
+   
+   <p class="p">The Crypto class supports these signing algorithms.</p>
+
+   
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader  " id="d390056e223">TYPE</th>
+
+       <th class="featureTableHeader  " id="d390056e226">VARIANT</th>
+
+       <th class="featureTableHeader  " id="d390056e229">DESCRIPTION</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE">RSA</td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT">
+<samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>
+</td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">An RSA signature (with an asymmetric key pair) of an SHA1 hash. Use either of these
+        two values.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">RSA-SHA256</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">RSA signature of an SHA256 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">RSA-SHA384</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">RSA signature of an SHA384 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">RSA-SHA512</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">RSA signature of an SHA512 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE">ECDSA (DER)</td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA256</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA256 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA384</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA384 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA512</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA512 hash</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE">ECDSA (P1363)</td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA256-P1363</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA256 hash (P1363 format)</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA256 hash (P1363 format). Use if the JWT returns
+        invalid_client. See Other Errors on this page.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT"><samp class="codeph apex_code">ECDSA-SHA384-P1363</samp></td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION">ECDSA signature of an SHA256 hash (P1363 format)</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e223" data-title="TYPE"></td>
+
+       <td class="entry" headers="d390056e226" data-title="VARIANT">ECDSA-SHA512-P1363</td>
+
+       <td class="entry" headers="d390056e229" data-title="DESCRIPTION"></td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+
+  </div>
+
+  <div class="section" id="encrypt_decrypt_exceptions">
+<a name="encrypt_decrypt_exceptions"><!-- --></a><h2 class="helpHead2">Encrypt and Decrypt Exceptions</h2>
+<div class="p">These
+   exceptions can be thrown for these methods.<ul class="ul bulletList">
+    <li class="li"><samp class="codeph apex_code">decrypt</samp></li>
+
+    <li class="li"><samp class="codeph apex_code">encrypt</samp></li>
+
+    <li class="li"><samp class="codeph apex_code">decryptWithManagedIV</samp></li>
+
+    <li class="li"><samp class="codeph apex_code">encryptWithManagedIV</samp></li>
+
+   </ul>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader vertical-align-top " id="d390056e414">Exception</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d390056e417">Message</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d390056e420">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"><samp class="codeph apex_code">InvalidParameterValue</samp></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Unable to parse the initialization vector from encrypted data.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if you’re using managed initialization vectors, and the cipher text is less
+        than 16 bytes.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Invalid algorithm <var class="keyword varname">algoName</var>. Must be one of the suported AES
+        algorithms listed on this page.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if the algorithm name isn’t one of the valid values. </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Invalid private key. Must be <var class="keyword varname">size</var> bytes.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if the size of the private key doesn’t match the specified algorithm.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Invalid initialization vector. For CBC, this must be 16 bytes. For GCM, the IV is 12
+        bytes.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if the initialization vector provided for a CBC encryption isn’t 16 bytes.
+       </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">AAD can only be used with AESGCM algorithms.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if a value is supplied for <var class="keyword varname">aaData</var>, but the encryption
+        algorithm isn’t a GCM type. </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Invalid data. Input data is <var class="keyword varname">size</var> bytes, which exceeds the limit of
+        1,048,576 bytes.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if the data is greater than 1 MB. For decryption, 1,048,608 bytes are allowed
+        for the initialization vector header, plus any additional padding the encryption added to
+        align to block size.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"><samp class="codeph apex_code">NullPointerException</samp></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">
+<var class="keyword varname">Argument</var> can’t be null.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if one of the required method arguments is null.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"><samp class="codeph apex_code">SecurityException</samp></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message">Given final block isn’t properly padded.</td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if the data isn’t properly block-aligned or similar issues occur during
+        encryption or decryption. </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d390056e414" data-title="Exception"><samp class="codeph apex_code">SecurityException</samp></td>
+
+       <td class="entry" headers="d390056e417" data-title="Message"><var class="keyword varname">Message Varies</var></td>
+
+       <td class="entry" headers="d390056e420" data-title="Description">Thrown if something goes wrong during either encryption or decryption. </td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+<p class="p">These exceptions are a subset of the exceptions that can be thrown from the System
+    namespace. Refer to <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm" title="An exception denotes an error that disrupts the normal flow of code execution. You can use Apex built-in exceptions or create custom exceptions. All exceptions have common methods.">Exception Class and Built-In Exceptions</a></p>
+<p class="p">For CBC, the <samp class="codeph apex_code">Crypto</samp> class uses AES / CBC / PKCS7 padding, which is
+    vulnerable to a <a class="xref" href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/02-Testing_for_Padding_Oracle" target="_blank">Padding Oracle</a> attack. You can protect against a Padding
+    Oracle attack by using the Encrypt-then-MAC method. In this method, you encrypt the cipher text
+    and MAC separately.</p>
+<ul class="ul bulletList">
+    <li class="li">For encryption, first encrypt the data with AES by using one encryption key. Then, with a
+     different encryption key, use the <a class="xref" href="#apex_System_Crypto_generateMac" title="Computes a message authentication code (MAC) for the input blob value using the private key and the specified algorithm.">generateMac(algorithmName, input, privateKey)</a> method to generate a message
+     authentication code (MAC) for the cipher text. Append the MAC to the cipher text before sending
+     it to its recipient.</li>
+
+    <li class="li">For decryption, start by checking the authenticity and integrity of the cipher text by using
+     the <a class="xref" href="#apex_System_Crypto_verifyHMac" title="Verifies the HMAC signature for the data blob using the specified algorithm, input data, private key, and the mac. Use this method to verify a blob signed by a digital signature created using a third-party application or the sign method.">verifyHMac(algorithmName, data, privateKey, macToVerify)</a> method. If either the authenticity or integrity check fails,
+     throw an exception and don’t decrypt the cipher text. The decryption of the cipher text must
+     only happen in a second step, after the message authenticity and integrity has been
+     verified.</li>
+
+   </ul>
+<p class="p">You can also protect against a Padding Oracle attack by using a GCM encryption
+    algorithm.</p>
+
+  </div>
+</div>
+
+  <div class="section" id="other_encryption_errors">
+<a name="other_encryption_errors"><!-- --></a><h2 class="helpHead2">Other Errors</h2>
+
+   
+   <p class="p">Under rare conditions you may encounter the <samp class="codeph apex_code">invalid_client</samp> error from the JSON Web Tokens (JWT) service.</p>
+
+   
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader vertical-align-top " id="d390056e626">Error</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d390056e629">Message</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d390056e632">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d390056e626" data-title="Error"><samp class="codeph apex_code">invalid_client</samp></td>
+
+       <td class="entry" headers="d390056e629" data-title="Message">The actual text varies, but describes the inability to validate the client
+        credentials.</td>
+
+       <td class="entry" headers="d390056e632" data-title="Description">The JWT public certificate in the Salesforce Connected Application doesn’t appear to
+        match the known private key.</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+
+   <p class="p">For Shield Platform Encryption, this error can happen when you use a custom JWT implementation
+    that uses the P11363 format, and you also want to use the <samp class="codeph apex_code">ECDSA-SHA256</samp> algorithm. The solution is to specify the <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp> algorithm instead. The <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp> is available to the several <samp class="codeph apex_code">sign()</samp> and <samp class="codeph apex_code">verify()</samp> methods.</p>
+
+   <p class="p">For example, in order to comply with your program requirements, you sign your token using the
+    Elliptic Curve Digital Signature Algorithm (ECDSA) with the P-256 curve. This algorithm is in
+    the P1363 format, so when you try to use <samp class="codeph apex_code">Crypto.verify()</samp>
+    using the <samp class="codeph apex_code">ECDSA SHA256</samp>, you receive a response
+    containing <samp class="codeph apex_code">invalid_client</samp>. You change
+     <samp class="codeph apex_code">ECDSA-SHA256</samp> to <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp> and the error is resolved.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Running the Crypto Class Samples</h2>
+
+   
+   <p class="p">Each of the methods in this section contains a code sample to demonstrate the method's use.
+    The samples use curl to make calls into your Salesforce org. Use your preferred developer
+    environment to run the samples. Use the Salesforce developer <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/intro_rest.htm" target="_blank">Introduction to REST API</a> for basic information on making
+    REST calls into Salesforce. Also, <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_encryption_rest_api_guide.meta/platform_encryption_rest_api_guide/api_rest_encryption.htm" target="_blank">Introducing the Salesforce Shield Platform Encryption REST API</a> gives you starter information on using
+    REST to work with Shield Platform Encryption. </p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://en.wikipedia.org/wiki/Authenticated_encryption#Encrypt-then-MAC_(EtM)" target="_blank">Encrypt-then-MAC (EtM)</a></div></li>
+<li><div><a class="link" href="https://www.iso.org/standard/81550.html" target="_blank">ISO/IEC 19772:2020 - Information Security Authenticated Encryption</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm" title="An exception denotes an error that disrupts the normal flow of code execution. You can use Apex built-in exceptions or create custom exceptions. All exceptions have common methods.">Exception Class and Built-In Exceptions</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Crypto_methods">
+<a name="apex_System_Crypto_methods"><!-- --></a>
+<h2 class="helpHead2">Crypto Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Crypto</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_decrypt">decrypt(algorithmName, secretKey, initializationVector, cipherText)</a></strong><br>
+Decrypts the <var class="keyword varname">cipherText</var> blob by using the specified algorithm,     private key, and initialization vector. Use this method to decrypt blobs encrypted by using a     third-party application or the <samp class="codeph apex_code">encrypt</samp>     method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_decryptWithManagedIV">decryptWithManagedIV(algorithmName, secretKey, IVAndCipherText)</a></strong><br>
+Decrypts the <var class="keyword varname">IVAndCipherText</var> blob by using the specified algorithm     and private key. Use this method to decrypt blobs encrypted by using a third-party application     or the <samp class="codeph apex_code">encryptWithManagedIV</samp> method. This version of       <span class="keyword apiname">decryptWithManagedIV</span> doesn’t use additional authentication     data.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_decryptWithManagedIV_2">decryptWithManagedIV(algorithmName, secretKey, IVAndCipherText, aaData)</a></strong><br>
+Decrypts the <var class="keyword varname">IVAndCipherText</var> blob by using the specified algorithm     and private key. Use this method to decrypt blobs encrypted by using a third-party application     or the <samp class="codeph apex_code">encryptWithManagedIV</samp> method. This version of       <span class="keyword apiname">decryptWithManagedIV</span> uses additional authentication data. CBC isn’t     supported for this method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_encrypt">encrypt(algorithmName, secretKey, initializationVector, clearText)</a></strong><br>
+Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm,     private key, and initialization vector. Use this method when you want to specify your own     initialization vector.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_encryptWithManagedIV">encryptWithManagedIV(algorithmName, secretKey, clearText)</a></strong><br>
+Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm and     private key. Use this method when you want Salesforce to generate the initialization vector.     This version of <span class="keyword apiname">encryptWithManagedIV</span> doesn’t use additional authentication     data.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_encryptWithManagedIV_2">encryptWithManagedIV(algorithmName, secretKey, clearText, aaData)</a></strong><br>
+Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm and     private key. Use this method when you want Salesforce to generate the initialization vector.     This version of <span class="keyword apiname">encryptWithManagedIV</span> uses additional authentication data. CBC     isn’t supported for this method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_generateAesKey">generateAesKey(size)</a></strong><br>
+Generates an Advanced Encryption Standard (AES) key.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_generateDigest">generateDigest(algorithmName, input)</a></strong><br>
+Computes a secure, one-way hash digest using the specified algorithm on the supplied                 <var class="keyword varname">input</var> blob.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_generateMac">generateMac(algorithmName, input, privateKey)</a></strong><br>
+Computes a message authentication code (MAC) for the <var class="keyword varname">input</var> blob value using the private         key and the specified algorithm.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_getRandomInteger">getRandomInteger()</a></strong><br>
+Returns a random integer value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_getRandomLong">getRandomLong()</a></strong><br>
+Returns a random long value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_sign">sign(algorithmName, input, privateKey)</a></strong><br>
+Computes a unique digital signature for the <var class="keyword varname">input</var> blob value, using the specified         algorithm and the supplied private key.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_signWithCertificate">signWithCertificate(algorithmName, input, certDevName)</a></strong><br>
+Computes a unique digital signature for the input blob value, using       the specified algorithm and the supplied certificate and key pair.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_signXML">signXML(algorithmName, node, idAttributeName, certDevName)</a></strong><br>
+Envelops the signature into an XML document.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_signXML_2">signXML(algorithmName, node, idAttributeName, certDevName, refChild)</a></strong><br>
+Inserts the signature envelope before the specified child     node.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_verify">verify(algorithmName, data, signature, publicKey)</a></strong><br>
+Verifies the digital signature for the <var class="keyword varname">data</var> blob using the specified     algorithm and the supplied public key. Use this method to verify a blob signed by a digital     signature created using a third-party application or the sign method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_verify_2">verify(algorithmName, data, signature, certDevName)</a></strong><br>
+Verifies the digital signature for the <var class="keyword varname">data</var> blob using the specified     algorithm and the public key associated with <var class="keyword varname">certDevName</var>. Use this method to     verify a blob signed by a digital signature created using a third-party application or the       <samp class="codeph ">signWithCertificate</samp> method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_System_Crypto_verifyHMac">verifyHMac(algorithmName, data, privateKey, macToVerify)</a></strong><br>
+Verifies the HMAC signature for the <var class="keyword varname">data</var> blob using the specified     algorithm, input data, private key, and the mac. Use this method to verify a blob signed by a     digital signature created using a third-party application or the sign method.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_decrypt">
+<a name="apex_System_Crypto_decrypt"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">decrypt(algorithmName, secretKey, initializationVector,
+      cipherText)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Decrypts the <var class="keyword varname">cipherText</var> blob by using the specified algorithm,
+    private key, and initialization vector. Use this method to decrypt blobs encrypted by using a
+    third-party application or the <samp class="codeph apex_code">encrypt</samp>
+    method.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> decrypt(<span class="keyword">String</span> algorithmName, <span class="keyword">Blob</span>
+          secretKey, <span class="keyword">Blob</span> initializationVector, <span class="keyword">Blob</span> cipherText)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">decrypt supports all these values for <var class="keyword varname">algorithmName</var>. See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto
+              Class</a> for details on each algorithm.</p>
+<a name="ul_jws_2xk_y2c"><!-- --></a><ul class="ul bulletList" id="ul_jws_2xk_y2c">
+              <li class="li">
+<samp class="codeph apex_code">AES128</samp>, <samp class="codeph apex_code">AES128-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES192</samp>, <samp class="codeph apex_code">AES192-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES256</samp>, <samp class="codeph apex_code">AES256-CBC</samp>
+</li>
+
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this
+            key.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">initializationVector</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<a name="ul_szc_5xd_1fc"><!-- --></a><ul class="ul bulletList" id="ul_szc_5xd_1fc">
+              <li class="li">For CBC, the 128 bit (16 byte) IV. The IV must be 128 bits (16 bytes.)</li>
+
+              <li class="li">For GCM, don’t provide an IV. Any non-null IV will result in an error.</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">cipherText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The content to decrypt.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the decrypted contents of <var class="keyword varname">cipherText</var>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+    <span class="keyword">public</span> <span class="keyword">class</span> TestDecrypt {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testDecrypt(){
+            <span class="onelineComment">// 16-byte string</span>
+            <span class="keyword">Blob</span> exampleIv = <span class="keyword">Blob</span>.valueOf(<span class="string">'Example of IV123'</span>);
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Data to be encrypted'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encrypt(<span class="string">'AES128'</span>, key, exampleIv, data);
+            
+            <span class="keyword">Blob</span> decrypted = Crypto.decrypt(<span class="string">'AES128'</span>, key, exampleIv, encrypted);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            System.debug(<span class="string">'Decrypted Value: '</span> + decryptedString);
+            Assert.areEqual(<span class="string">'Data to be encrypted'</span>, decryptedString, <span class="string">'Error: not equal!'</span>);
+            <span class="statement">return</span>;
+        } 
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestDecrypt td = <span class="keyword">new</span> TestDecrypt();
+td.testDecrypt();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_decryptWithManagedIV">
+<a name="apex_System_Crypto_decryptWithManagedIV"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">decryptWithManagedIV(algorithmName, secretKey,
+      IVAndCipherText)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Decrypts the <var class="keyword varname">IVAndCipherText</var> blob by using the specified algorithm
+    and private key. Use this method to decrypt blobs encrypted by using a third-party application
+    or the <samp class="codeph apex_code">encryptWithManagedIV</samp> method. This version of
+      <span class="keyword apiname">decryptWithManagedIV</span> doesn’t use additional authentication
+    data.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> decryptWithManagedIV(<span class="keyword">String</span>
+          algorithmName, <span class="keyword">Blob</span> secretKey, <span class="keyword">Blob</span> IVAndCipherText)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">decryptWithManagedIV supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.</p>
+<ul class="ul bulletList">
+              <li class="li">
+<samp class="codeph apex_code">AES128</samp>, <samp class="codeph apex_code">AES128-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES192</samp>, <samp class="codeph apex_code">AES192-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES256</samp>, <samp class="codeph apex_code">AES256-CBC</samp>
+</li>
+
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this key
+            for you.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">IVAndCipherText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">A concatenation of the initialization vector and the encrypted text that you want to
+            decrypt.</p>
+<a name="ul_wv2_c5d_1fc"><!-- --></a><ul class="ul bulletList" id="ul_wv2_c5d_1fc">
+              <li class="li">For CBC, <var class="keyword varname">IVAndCipherText</var> must contain IV + ciphertext, where
+                the IV must be the first 128 bits (16 bytes) with the ciphertext following.</li>
+
+              <li class="li">FOR GCM, <var class="keyword varname">IVAndCipherText</var> must contain the length of the IV
+                (always 12) followed by a 96 bit (12 byte) IV, with the ciphertext following.</li>
+
+            </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the decrypted contents of <var class="keyword varname">IVAndCipherText</var>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestDecryptWithManagedIV {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testDecryptWithManagedIV(){
+            <span class="keyword">String</span> algorithmName = <span class="string">'AES128'</span>;
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Data to be encrypted'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encryptWithManagedIV(algorithmName, key, data);
+            <span class="keyword">Blob</span> decrypted = Crypto.decryptWithManagedIV(algorithmName, key, encrypted);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            Assert.areEqual(<span class="string">'Data to be encrypted'</span>, decryptedString, <span class="string">'Error: the strings are not equal!'</span>); 
+        
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestDecryptWithManagedIV tdiv = <span class="keyword">new</span> TestDecryptWithManagedIV();
+tdiv.testDecryptWithManagedIV();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_decryptWithManagedIV_2">
+<a name="apex_System_Crypto_decryptWithManagedIV_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">decryptWithManagedIV(algorithmName, secretKey,
+      IVAndCipherText, aaData)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Decrypts the <var class="keyword varname">IVAndCipherText</var> blob by using the specified algorithm
+    and private key. Use this method to decrypt blobs encrypted by using a third-party application
+    or the <samp class="codeph apex_code">encryptWithManagedIV</samp> method. This version of
+      <span class="keyword apiname">decryptWithManagedIV</span> uses additional authentication data. CBC isn’t
+    supported for this method.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> decryptWithManagedIV(<span class="keyword">String</span>
+          algorithmName, <span class="keyword">Blob</span> secretKey, <span class="keyword">Blob</span> IVAndCipherText, <span class="keyword">Blob</span> aaData)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">decryptWithManagedIV supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.</p>
+<ul class="ul bulletList">
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this key
+            for you.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">IVAndCipherText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p"><var class="keyword varname">IVAndCipherText</var> must contain the length of the IV (always 12)
+            followed by a 96 bit (12 byte) IV, with the ciphertext following.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">aaData</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Additional authentication data. This value is required.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the decrypted contents of <var class="keyword varname">IVAndCipherText</var>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_d5l_m3c_v2c"><a name="codeblock_d5l_m3c_v2c"><!-- --></a>    <span class="keyword">public</span> <span class="keyword">class</span> TestDecryptWithManagedIV {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testDecryptWithManagedIV(){
+            <span class="keyword">String</span> algorithmName = <span class="string">'AES256-GCM'</span>;
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(256);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Data to be encrypted'</span>);
+            <span class="keyword">Blob</span> aad = <span class="keyword">Blob</span>.valueOf(<span class="string">'Additional tag'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encryptWithManagedIV(algorithmName, key, data, aad);
+            <span class="keyword">Blob</span> decrypted = Crypto.decryptWithManagedIV(algorithmName, key, encrypted, aad);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            Assert.areEqual(<span class="string">'Data to be encrypted'</span>, decryptedString, <span class="string">'Error: the strings are not equal!'</span>); 
+        
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestDecryptWithManagedIV tdiv = <span class="keyword">new</span> TestDecryptWithManagedIV();
+tdiv.testDecryptWithManagedIV();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_encrypt">
+<a name="apex_System_Crypto_encrypt"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">encrypt(algorithmName, secretKey, initializationVector,
+      clearText)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm,
+    private key, and initialization vector. Use this method when you want to specify your own
+    initialization vector.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> encrypt(<span class="keyword">String</span> algorithmName, <span class="keyword">Blob</span>
+          secretKey, <span class="keyword">Blob</span> initializationVector, <span class="keyword">Blob</span> clearText)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Algorithm for encrypting <var class="keyword varname">clearText</var>. encrypt supports all these values for <var class="keyword varname">algorithmName</var>. See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto
+              Class</a> for details on each algorithm.</p>
+<a name="ul_zv4_hxk_y2c"><!-- --></a><ul class="ul bulletList" id="ul_zv4_hxk_y2c">
+              <li class="li">
+<samp class="codeph apex_code">AES128</samp>, <samp class="codeph apex_code">AES128-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES192</samp>, <samp class="codeph apex_code">AES192-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES256</samp>, <samp class="codeph apex_code">AES256-CBC</samp>
+</li>
+
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this key
+            for you.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">initializationVector</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<a name="ul_kvy_zxd_1fc"><!-- --></a><ul class="ul bulletList" id="ul_kvy_zxd_1fc">
+              <li class="li">For CBC, any 128 bit (16 byte) string to provide the initial state to this method.
+                The initialization vector must be 128 bits (16 bytes.)</li>
+
+              <li class="li">For GCM, don’t provide an IV. Any non-null IV results in an error.</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">clearText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The content that you want to encrypt.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the encrypted contents of <var class="keyword varname">clearText</var>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+    <span class="keyword">public</span> <span class="keyword">class</span> TestEncrypt {
+        
+        <span class="keyword">public</span> <span class="keyword">void</span> testEncrypt(){
+            <span class="keyword">Blob</span> exampleIv = <span class="keyword">Blob</span>.valueOf(<span class="string">'Example of IV123'</span>);
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Encryption Example Text.'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encrypt(<span class="string">'AES128'</span>, key, exampleIv, data);
+            
+            <span class="keyword">Blob</span> decrypted = Crypto.decrypt(<span class="string">'AES128'</span>, key, exampleIv, encrypted);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            Assert.areEqual(<span class="string">'Encryption Example Text.'</span>, decryptedString, <span class="string">'Error: the values are not equal!'</span>);
+            <span class="statement">return</span>;
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestEncrypt te = <span class="keyword">new</span> TestEncrypt();
+te.testEncrypt();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_encryptWithManagedIV">
+<a name="apex_System_Crypto_encryptWithManagedIV"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">encryptWithManagedIV(algorithmName, secretKey,
+      clearText)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm and
+    private key. Use this method when you want Salesforce to generate the initialization vector.
+    This version of <span class="keyword apiname">encryptWithManagedIV</span> doesn’t use additional authentication
+    data.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> encryptWithManagedIV(<span class="keyword">String</span>
+          algorithmName, <span class="keyword">Blob</span> secretKey, <span class="keyword">Blob</span> clearText)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">encryptWithManagedIV supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.</p>
+<ul class="ul bulletList">
+              <li class="li">
+<samp class="codeph apex_code">AES128</samp>, <samp class="codeph apex_code">AES128-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES192</samp>, <samp class="codeph apex_code">AES192-CBC</samp>
+</li>
+
+              <li class="li">
+<samp class="codeph apex_code">AES256</samp>, <samp class="codeph apex_code">AES256-CBC</samp>
+</li>
+
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this key
+            for you.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">clearText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The content you want to encrypt.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the encrypted contents of <var class="keyword varname">clearText</var>.</p>
+
+      <a name="ul_kwm_vwd_1fc"><!-- --></a><ul class="ul bulletList" id="ul_kwm_vwd_1fc">
+        <li class="li">For CBC, the initialization vector is stored as the first 128 bits (16 bytes) of the
+          encrypted blob. </li>
+
+        <li class="li">For GCM, the return value contains the length of the IV (always 12) followed by a 96 bit
+          (12 byte) Salesforce generated IV, with the ciphertext following.</li>
+
+      </ul>
+
+      <p class="p">Use either third-party applications or the <samp class="codeph apex_code">decryptWithManagedIV</samp> method to decrypt blobs encrypted with this method. Use the
+          <samp class="codeph apex_code">encrypt</samp> method if you want to generate your own
+        initialization vector. </p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestEncryptWithManagedIV {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testEncryptWithManagedIV(){
+            <span class="keyword">String</span> algorithmName = <span class="string">'AES128'</span>;
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Data to be encrypted'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encryptWithManagedIV(algorithmName, key, data);
+            <span class="keyword">Blob</span> decrypted = Crypto.decryptWithManagedIV(algorithmName, key, encrypted);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            Assert.areEqual(<span class="string">'Data to be encrypted'</span>, decryptedString, <span class="string">'Error: the strings are not equal!'</span>); 
+        
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestEncryptWithManagedIV teiv = <span class="keyword">new</span> TestEncryptWithManagedIV();
+teiv.testEncryptWithManagedIV();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_encryptWithManagedIV_2">
+<a name="apex_System_Crypto_encryptWithManagedIV_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">encryptWithManagedIV(algorithmName, secretKey, clearText,
+      aaData)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Encrypts the <var class="keyword varname">clearText</var> blob by using the specified algorithm and
+    private key. Use this method when you want Salesforce to generate the initialization vector.
+    This version of <span class="keyword apiname">encryptWithManagedIV</span> uses additional authentication data. CBC
+    isn’t supported for this method.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> encryptWithManagedIV(<span class="keyword">String</span>
+          algorithmName, <span class="keyword">Blob</span> secretKey, <span class="keyword">Blob</span> clearText, <span class="keyword">Blob</span> aaData)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">encryptWithManagedIV supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.</p>
+<ul class="ul bulletList">
+              <li class="li"><samp class="codeph apex_code">AES256-GCM</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">secretKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Private key text. The length of <var class="keyword varname">secretKey</var> must match the size
+            required by <var class="keyword varname">algorithmName</var>: 128 bits, 192 bits, or 256 bits, which is
+            16 bytes, 24 bytes, or 32 bytes, respectively. You can use a third-party application or
+            the <samp class="codeph apex_code">generateAesKey</samp> method to generate this key
+            for you.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">clearText</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The content you want to encrypt.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">aaData</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">Additional authentication data. This is required .</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the encrypted contents of <var class="keyword varname">clearText</var>. For GCM, the return value
+        contains the length of the IV (always 12) followed by a 96 bit (12 byte) Salesforce
+        generated IV, with the ciphertext following.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create this Apex class.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_wsx_23c_v2c"><a name="codeblock_wsx_23c_v2c"><!-- --></a>    <span class="keyword">public</span> <span class="keyword">class</span> TestEncryptWithManagedIV {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testEncryptWithManagedIV(){
+            <span class="keyword">String</span> algorithmName = <span class="string">'AES256-GCM'</span>;
+            <span class="multilineComment">/* 
+               No IV if you specify AES256-GCM
+            */</span>           
+            <span class="keyword">Blob</span> key = Crypto.generateAesKey(256);
+            <span class="keyword">Blob</span> data = <span class="keyword">Blob</span>.valueOf(<span class="string">'Data to be encrypted'</span>);
+            <span class="keyword">Blob</span> aad = <span class="keyword">Blob</span>.valueOf(<span class="string">'Additional tag'</span>);
+            <span class="keyword">Blob</span> encrypted = Crypto.encryptWithManagedIV(algorithmName, key, data, aad);
+            <span class="keyword">Blob</span> decrypted = Crypto.decryptWithManagedIV(algorithmName, key, encrypted, aad);
+            <span class="keyword">String</span> decryptedString = decrypted.toString();
+            Assert.areEqual(<span class="string">'Data to be encrypted'</span>, decryptedString, <span class="string">'Error: the strings are not equal!'</span>); 
+        
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestEncryptWithManagedIV teiv = <span class="keyword">new</span> TestEncryptWithManagedIV();
+teiv.testEncryptWithManagedIV();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_generateAesKey">
+<a name="apex_System_Crypto_generateAesKey"><!-- --></a>
+  <h3 class="helpHead3">
+    <span class="titlecodeph">generateAesKey(size)</span>
+  </h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Generates an Advanced Encryption Standard (AES) key.</div>
+
+    <div class="section">
+<h4 class="helpHead4">
+        Signature
+      </h4>
+
+      
+      <p class="p">
+        <samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> generateAesKey(<span class="keyword">Integer</span> size)</samp>
+      </p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">
+        Parameters
+      </h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">size</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The key's size in bits. Valid values are:<ul class="ul bulletList">
+              <li class="li">128</li>
+
+              <li class="li">192</li>
+
+              <li class="li">256</li>
+
+            </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">
+        Return Value
+      </h4>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+      <p class="p">Contains the generated AES key.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+    <span class="keyword">public</span> <span class="keyword">class</span> TestGenerateAESKey {
+    
+        <span class="keyword">public</span> <span class="keyword">void</span> testGenerateAESKey() {
+          <span class="keyword">Blob</span> key = Crypto.generateAesKey(128);
+          System.debug(<span class="string">'Generated AES Key: '</span>);
+          <span class="keyword">String</span> strKey = EncodingUtil.base64Encode(key);
+          System.debug(strKey);
+          
+        }
+    }
+</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestGenerateAESKey tgaes = <span class="keyword">new</span> TestGenerateAESKey();
+tgaes.testGenerateAESKey();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_generateDigest">
+<a name="apex_System_Crypto_generateDigest"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">generateDigest(algorithmName, input)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Computes a secure, one-way hash digest using the specified algorithm on the supplied
+                <var class="keyword varname">input</var> blob.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> generateDigest(<span class="keyword">String</span> algorithmName,
+<span class="keyword">Blob</span> input)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The algorithm you want to use to generate the digest. Valid values for
+                                                  <var class="keyword varname">algorithmName</var> are: <ul class="ul bulletList">
+                                                  <li class="li"><samp class="codeph apex_code">MD5</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA1</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA3-256</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA3-384</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA3-512</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA-256</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">SHA-512</samp></li>
+
+                                                </ul>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">input</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The content for which you want to generate the
+                                                digest.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+                        <p class="p">Contains the generated digest.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestGenerateDigest {
+
+        <span class="keyword">public</span> <span class="keyword">void</span> testGenerateDigest(){
+            <span class="keyword">Blob</span> targetBlob = <span class="keyword">Blob</span>.valueOf(<span class="string">'ExampleMD5String'</span>);
+            <span class="keyword">Blob</span> hash = Crypto.generateDigest(<span class="string">'MD5'</span>, targetBlob);
+            <span class="keyword">String</span> result = EncodingUtil.base64Encode(hash);
+            System.debug(<span class="string">'Value: '</span> + result);
+        }
+    }
+</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestGenerateDigest tgd = <span class="keyword">new</span> TestGenerateDigest();
+tgd.testGenerateDigest();</pre></div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_generateMac">
+<a name="apex_System_Crypto_generateMac"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">generateMac(algorithmName, input, privateKey)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Computes a message authentication code (MAC) for the <var class="keyword varname">input</var> blob value using the private
+        key and the specified algorithm.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> generateMac(<span class="keyword">String</span> algorithmName,
+<span class="keyword">Blob</span> input, <span class="keyword">Blob</span> privateKey)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">These
+                        are valid values for <var class="keyword varname">algorithmName</var>.</p>
+<ul class="ul bulletList">
+                        <li class="li"><samp class="codeph apex_code">hmacMD5</samp></li>
+
+                        <li class="li"><samp class="codeph apex_code">hmacSHA1</samp></li>
+
+                        <li class="li"><samp class="codeph apex_code">hmacSHA256</samp></li>
+
+                        <li class="li"><samp class="codeph apex_code">hmacSHA512</samp></li>
+
+                    </ul>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">input</var></strong>: <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The
+                        content for which you want to generate the MAC.</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">privateKey</var></strong>: <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a>
+                    </p>
+<p class="p">The key to use to generate the MAC. You may supply a private key that has
+                        been encoded using Base64 encoding. However if you do, then you must also
+                        supply the Base64-encoded private key when verifying the MAC using the
+                            <samp class="codeph nolang">verifyHMac</samp> method. The value of
+                                <var class="keyword varname">privateKey</var> can’t exceed 4 KB.</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The message authentication
+                code.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestGenerateMAC {
+
+        <span class="keyword">public</span> <span class="keyword">void</span> testGenerateMAC() {
+            <span class="keyword">String</span> salt = <span class="keyword">String</span>.valueOf(Crypto.getRandomInteger());
+            <span class="keyword">String</span> key = <span class="string">'key'</span>;
+            <span class="keyword">Blob</span> data = crypto.generateMac(<span class="string">'HmacSHA256'</span>, 
+                                            <span class="keyword">Blob</span>.valueOf(salt), 
+                                            <span class="keyword">Blob</span>.valueOf(key));
+            System.debug(<span class="string">'Generated MAC: '</span>);        
+            System.debug(EncodingUtil.base64Encode(data));
+        }
+    }</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestGenerateMAC tgm = <span class="keyword">new</span> TestGenerateMAC();
+tgm.testGenerateMAC();</pre></div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_getRandomInteger">
+<a name="apex_System_Crypto_getRandomInteger"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getRandomInteger()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a random integer value.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Integer</span> getRandomInteger()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">Returns a random 4-byte integer. Salesforce invokes the <samp class="codeph ">java.security.SecureRandom</samp> api to generate this number. For
+                information on how the number is generated, see <a class="xref" href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/security/SecureRandom.html" target="_blank">java.security.SecureRandom</a>.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce development environment</a> to exercise this function. Create the
+                following Apex class:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestGetRandomInteger {
+
+        <span class="keyword">public</span> <span class="keyword">void</span> testGetRandomInteger() {
+            <span class="keyword">Integer</span> i1 = Crypto.getRandomInteger();
+            <span class="keyword">Integer</span> i2 = Crypto.getRandomInteger();
+            System.debug(<span class="string">'Integer 1: '</span> + i1);
+            System.debug(<span class="string">'Integer 2: '</span> + i2);
+            Assert.areNotEqual(i1, i2, <span class="string">'Sorry, those aren’t random!'</span>);
+            <span class="onelineComment">//This is just an example. This is not a true test of randomness</span>
+        }
+    }</pre></div>
+
+            <p class="p">To invoke this method, run the following:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestGetRandomInteger tri = <span class="keyword">new</span> TestGetRandomInteger();
+tri.testGetRandomInteger();</pre></div>
+
+        </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://docs.oracle.com/javase%2F9%2Fdocs%2Fapi%2F%2F/java/security/SecureRandom.html" target="_blank">java.security.SecureRandom</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_getRandomLong">
+<a name="apex_System_Crypto_getRandomLong"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getRandomLong()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a random long value.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getRandomLong()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+<p class="p">Returns a random 8-byte long. Salesforce invokes the <samp class="codeph ">java.security.SecureRandom</samp> api to generate this number. For
+                information on how the number is generated, see
+                    <a class="xref" href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/security/SecureRandom.html" target="_blank">java.security.SecureRandom</a>.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce development environment</a> to exercise this function. Create the
+                following Apex class:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestGetRandomLong {
+
+        <span class="keyword">public</span> <span class="keyword">void</span> testGetRandomLong() {
+            <span class="keyword">Long</span> L1 = Crypto.getRandomLong();
+            <span class="keyword">Long</span> L2 = Crypto.getRandomLong();
+            System.debug(<span class="string">'Long 1: '</span> + L1);
+            System.debug(<span class="string">'Long 2: '</span> + L2);
+            Assert.areNotEqual(L1, L2, <span class="string">'Sorry, not random!'</span>);
+            <span class="onelineComment">//This is just an example. This is not a true test of randomness</span>
+        }
+    }</pre></div>
+
+            <p class="p">To invoke this method, run the following:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestGetRandomLong trl = <span class="keyword">new</span> TestGetRandomLong();
+trl.testGetRandomLong();</pre></div>
+
+        </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://docs.oracle.com/javase%2F9%2Fdocs%2Fapi%2F%2F/java/security/SecureRandom.html" target="_blank">java.security.SecureRandom</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_sign">
+<a name="apex_System_Crypto_sign"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">sign(algorithmName, input,
+    privateKey)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Computes a unique digital signature for the <var class="keyword varname">input</var> blob value, using the specified
+        algorithm and the supplied private key.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> sign(<span class="keyword">String</span> algorithmName,
+<span class="keyword">Blob</span> input, <span class="keyword">Blob</span> privateKey)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">input</var></strong>: signWithCertificate supports all these values for
+                            <var class="keyword varname">algorithmName</var>. See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto
+                            Class</a> for details on each algorithm. <p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>, and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+ Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The data to sign.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">privateKey</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The key to use for signing. The value of <var class="keyword varname">privateKey</var> must be decoded using the
+                            <samp class="codeph apex_code">EncodingUtil</samp><samp class="codeph apex_code">base64Decode</samp> method, and should be in
+                        RSA's <a class="xref" href="https://datatracker.ietf.org/doc/html/rfc5958" target="_blank" title="HTML (New Window)">PKCS #8 (1.2) Private-Key Information Syntax
+                            Standard</a> form. The value can’t exceed 4 KB.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+            <p class="p">The new digital signature.</p>
+
+        </div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce development environment</a> to test this function.  To run it
+                correctly, you need a PKCS8 private key. At your terminal, use <samp class="codeph nolang">openssl</samp> to create one. First, create the key. Then
+                convert it to PKCS8:</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>$ openssl genrsa -out myprivatekey.pem 1024
+$ openssl pkey -in myprivatekey.pem -out myprivatekey.pkcs8.pem</pre></div>
+
+            <p class="p">After you create the PKCS8 compatible key, you decode just the key portion of the
+                text (without the BEGIN PRIVATE KEY or END PRIVATE KEY lines) for the
+                    <var class="keyword varname">privateKey</var> parameter.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestSign {
+	
+        <span class="keyword">public</span> <span class="keyword">void</span> testSign() {
+                <span class="keyword">Blob</span> input = <span class="keyword">Blob</span>.valueOf(<span class="string">'Some text.'</span>);
+                <span class="keyword">String</span> algorithmName = <span class="string">'RSA'</span>;
+                <span class="keyword">String</span> rawKey = <span class="string">'&lt;text value of your pkcs8 private key&gt;'</span>; 
+
+                <span class="onelineComment">//no BEGIN PRIVATE KEY or END PRIVATE KEY header/footer !</span>
+                <span class="keyword">Blob</span> privateKey = EncodingUtil.base64Decode(rawKey);
+                System.debug(privateKey);
+                <span class="keyword">Blob</span> signedKey = Crypto.sign(algorithmName, input, privateKey);
+                
+        }
+    }</pre></div>
+
+            <p class="p">To invoke this method, run the following:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestSign ts = <span class="keyword">new</span> TestSign();
+ts.testSign();</pre></div>
+
+        </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_signWithCertificate">
+<a name="apex_System_Crypto_signWithCertificate"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">signWithCertificate(algorithmName, input, certDevName)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Computes a unique digital signature for the input blob value, using
+      the specified algorithm and the supplied certificate and key pair.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Blob</span> signWithCertificate(<span class="keyword">String</span>
+algorithmName, <span class="keyword">Blob</span> input, <span class="keyword">String</span> certDevName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> signWithCertificate supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm. <p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>,
+              and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">input</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The data to sign.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">certDevName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The value listed in the <samp class="codeph ">Unique Name</samp> field for a certificate
+            stored in the Salesforce org’s Certificate and Key Management page to use for
+              signing.<p class="p">To access the Certificate and Key Management page from Setup, enter
+                <kbd class="ph userinput">Certificate and Key Management</kbd> in the <strong class="ph uicontrol">Quick
+                Find</strong> box, then select <strong class="ph uicontrol">Certificate and Key
+                Management</strong>.</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The signed content.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class. For
+        the <var class="keyword varname">TestCertName</var> variable, use the unique name value for a self-signed or
+        CA certificate that you have created in the org in which you run this test.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestSignWithCert {
+  
+        <span class="keyword">public</span> <span class="keyword">void</span> testSignWithCert() {
+        
+            <span class="keyword">String</span> algorithmName = <span class="string">'RSA'</span>;
+            <span class="keyword">Blob</span> input = <span class="keyword">Blob</span>.valueOf(<span class="string">'Test Sign With Certificate.'</span>);
+            <span class="keyword">String</span> TestCertName = <span class="string">'</span><var class="keyword varname">your-cert-unique-name</var><span class="string">';
+</span>            <span class="keyword">Blob</span> signedKey = Crypto.signWithCertificate(algorithmName, input, TestCertName);
+        }
+    }</pre></div>
+
+      <p class="p">To invoke the method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestSignWithCert tswc = <span class="keyword">new</span> TestSignWithCert();
+tswc.testSignWithCert();</pre></div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_signXML">
+<a name="apex_System_Crypto_signXML"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">signXML(algorithmName, node, idAttributeName, certDevName)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Envelops the signature into an XML document.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void signXML(<span class="keyword">String</span> algorithmName, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> node, <span class="keyword">String</span> idAttributeName, <span class="keyword">String</span> certDevName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> signWithCertificate supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.<p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>,
+              and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">node</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> The XML node to sign and insert the signature into.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">idAttributeName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The full name (including the namespace) of the attribute on the node (XmlNode) to use as the
+            reference ID. If <samp class="codeph apex_code"><span class="keyword">null</span></samp>, this method uses the
+              <samp class="codeph nolang">ID</samp> attribute on the node. If there’s no <samp class="codeph nolang">ID</samp> attribute, Salesforce generates a new ID and adds it
+            to the node.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">certDevName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The unique name for a certificate stored in the Salesforce org’s Certificate and Key Management
+            page to use for signing.<p class="p">To access the Certificate and Key Management page from Setup,
+              enter <kbd class="ph userinput">Certificate and Key Management</kbd> in the <strong class="ph uicontrol">Quick
+                Find</strong> box, then select <strong class="ph uicontrol">Certificate and Key
+                Management</strong>.</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+      <p class="p">This method doesn’t return a value. The signature envelope is inserted within
+          <var class="keyword varname">node</var>.</p>
+
+    </div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class. For
+        the <var class="keyword varname">testCertName</var> variable, use the unique name value for a self-signed or
+        CA certificate that you have created in the org in which you run this test.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>  public class TestSignXML {
+    public void testSignXML() {
+      String algorithmName = 'RSA';
+      String testCertName = '<var class="keyword varname">your-cert-unique-name</var>';
+      Dom.Document doc = new Dom.Document();
+      String docToLoad = '&lt;?xml version=\"1.0\"?&gt;\n' + 
+      '&lt;customers&gt;\n' + 
+      '  &lt;customer id="2"&gt;\n' +
+      '    &lt;name&gt;Company One&lt;/name&gt;\n' + 
+      '  &lt;/customer&gt;\n' +
+      '&lt;/customers&gt;';
+      doc.load(docToLoad);
+      
+      System.Crypto.signXML(algorithmName, doc.getRootElement(), null, testCertName);
+      
+      //dump the content of the signed XML document to the debug log
+      System.Debug(doc.toXmlString());
+    }
+  }</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestSignXML tswxml = <span class="keyword">new</span> TestSignXML();
+tswxml.testSignXML();</pre></div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_signXML_2">
+<a name="apex_System_Crypto_signXML_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">signXML(algorithmName, node, idAttributeName, certDevName,
+      refChild)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Inserts the signature envelope before the specified child
+    node.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> signXml(<span class="keyword">String</span> algorithmName, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> node, <span class="keyword">String</span>
+          idAttributeName, <span class="keyword">String</span> certDevName, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> refChild)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> signWithCertificate supports all these values for <var class="keyword varname">algorithmName</var>.
+            See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a> for details on each algorithm.<p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>,
+              and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">node</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> The XML node to sign and insert the signature into.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">idAttributeName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The full name (including the namespace) of the attribute on the node (XmlNode) to use
+            as the reference ID. If <samp class="codeph apex_code"><span class="keyword">null</span></samp>, this method uses
+            the <samp class="codeph nolang">ID</samp> attribute on the node. If there’s no <samp class="codeph nolang">ID</samp> attribute, Salesforce generates a new ID and adds it
+            to the node.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">certDevName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The unique name for a certificate stored in the Salesforce org’s Certificate
+            and Key Management page to use for signing.<p class="p">To access the Certificate and Key
+              Management page from Setup, enter <kbd class="ph userinput">Certificate and Key
+                Management</kbd> in the <strong class="ph uicontrol">Quick Find</strong> box, then select
+                <strong class="ph uicontrol">Certificate and Key Management</strong>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">refChild</var></strong>: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a> The XML node before which to insert the signature. If <var class="keyword varname">refChild</var> is
+              <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the signature is added at the end.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+      <p class="p">This method doesn’t return a value. The signature envelope is inserted within
+          <var class="keyword varname">node</var>.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class. For
+        the <var class="keyword varname">testCertName</var> variable, use the unique name value for a self-signed or
+        CA certificate that you have created in the org in which you run this test.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestSignXML_2 {
+        <span class="keyword">public</span> <span class="keyword">void</span> testSignXML_2() {
+            <span class="keyword">String</span> algorithmName = <span class="string">'RSA'</span>;
+            <span class="keyword">String</span> testCertName = <span class="string">'</span><var class="keyword varname">your-cert-unique-name</var><span class="string">';
+</span>            Dom.Document doc = <span class="keyword">new</span> Dom.Document();
+            <span class="keyword">String</span> docToLoad = <span class="string">'&lt;?xml version="1.0"?&gt;\n'</span> + 
+            <span class="string">'&lt;customers&gt;\n'</span> + 
+            <span class="string">'  &lt;customer id="2"&gt;\n'</span> +
+            <span class="string">'    &lt;name&gt;Company One&lt;/name&gt;\n'</span> + 
+            <span class="string">'  &lt;/customer&gt;\n'</span> +
+            <span class="string">'&lt;/customers&gt;'</span>;
+            doc.load(docToLoad);
+            Dom.XmlNode rootNode = doc.getRootElement();
+            Dom.XmlNode commentNode = rootNode.addCommentNode(<span class="string">'SomeComment'</span>);
+            
+            System.Crypto.signXML(algorithmName, doc.getRootElement(), <span class="keyword">null</span>, testCertName, commentNode);
+            
+            <span class="onelineComment">//send the content of the signed XML document to the debug log</span>
+            System.Debug(doc.toXmlString());
+        }
+    
+    }</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestSignXML_2 tswxml2 = <span class="keyword">new</span> TestSignXML_2();
+tswxml2.testSignXML_2();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_verify">
+<a name="apex_System_Crypto_verify"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">verify(algorithmName, data, signature, publicKey)</span></h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Verifies the digital signature for the <var class="keyword varname">data</var> blob using the specified
+    algorithm and the supplied public key. Use this method to verify a blob signed by a digital
+    signature created using a third-party application or the sign method.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> verify(<span class="keyword">String</span> algorithmName, <span class="keyword">Blob</span> data,
+          <span class="keyword">Blob</span> signature, <span class="keyword">Blob</span> publicKey)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> verify supports all these values for <var class="keyword varname">algorithmName</var>. See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto
+              Class</a> for details on each algorithm. <p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>,
+              and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The data to sign.</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">signature</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The RSA or EDSA-compliant signature.</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">publicKey</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The value of <var class="keyword varname">publicKey</var> must be decoded using the <samp class="codeph apex_code">EncodingUtilbase64Decode</samp> method, and be in X.509
+            standard format.</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">true</span></samp> if and only if the signature is successfully verified.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. To run it correctly, you must:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">generate an X.509 private key and public certificate</li>
+
+        <li class="li">convert the private key to PKCS8</li>
+
+        <li class="li">extract the public key from the public certificate</li>
+
+      </ul>
+
+      <p class="p">You provide the private PKCS8 key to the <samp class="codeph ">sign</samp> method,
+        and the extracted public key to the <samp class="codeph ">verify</samp> method (along
+        with the signature you generate with <samp class="codeph ">sign</samp>.</p>
+
+      <p class="p">At your terminal, use <samp class="codeph nolang">openssl</samp> to create the X.509 key
+        pair:</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>$ openssl req -x509 -newkey rsa:2048 -keyout myPriv509.key -out myPub509.cert -days 365
+</pre></div>
+
+      <p class="p">Convert the private key to PKCS8:</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">openssl pkey -in myPriv509.key -out myPriv509pkcs8.pem</pre></div>
+
+      <p class="p">Extract the public key from <samp class="codeph ">myPub509.cert</samp>:</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">openssl x509 -in myPub509.cert -inform pem -pubkey -out myPub509.pem</pre></div>
+
+      <p class="p">After you create the <samp class="codeph ">myPub509.pem</samp> key, you decode just
+        the key portions of the text (without the BEGIN PRIVATE KEY or END PRIVATE KEY lines) for
+        both the <var class="keyword varname">privateKey</var> and <var class="keyword varname">publicKey</var> parameters.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestVerify {
+        <span class="keyword">public</span> <span class="keyword">void</span> testVerify() {
+  
+            <span class="keyword">String</span> algorithmName = <span class="string">'RSA'</span>;
+            <span class="keyword">Blob</span> input = <span class="keyword">Blob</span>.valueOf(<span class="string">'Here is some text.'</span>);
+            
+            <span class="onelineComment">//contents of myPriv509pkcs8.pem</span>
+            <span class="keyword">String</span> myPriv509pkcs8 = <span class="string">'</span><var class="keyword varname">contents of myPriv509pkcs8.pem</var><span class="string">';
+</span>            
+            <span class="keyword">Blob</span> privateKey = EncodingUtil.base64Decode(myPriv509pkcs8);
+            
+            <span class="keyword">Blob</span> signature = Crypto.sign(algorithmName, input, privateKey);
+            
+            <span class="onelineComment">//contents of myPub509.pem</span>
+            <span class="keyword">String</span> publicKeyTxt64 = <span class="string">'</span><var class="keyword varname">contents of myPub509.pem</var><span class="string">';
+</span>            
+            <span class="keyword">Blob</span> publicKey = EncodingUtil.base64Decode(publicKeyTxt64);
+            
+            <span class="keyword">Boolean</span> verified = <span class="keyword">false</span>;
+            verified = Crypto.verify(algorithmName, input, signature, publicKey);
+        
+            Assert.areEqual(<span class="keyword">true</span>, verified);
+          
+      }
+  }
+</pre></div>
+
+      <p class="p">To invoke, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestVerify tv = <span class="keyword">new</span> TestVerify();
+tv.testVerify();</pre></div>
+
+    </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://www.itu.int/rec/T-REC-X.509" target="_blank">X.509 Standard</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_verify_2">
+<a name="apex_System_Crypto_verify_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">verify(algorithmName, data, signature, certDevName)</span></h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Verifies the digital signature for the <var class="keyword varname">data</var> blob using the specified
+    algorithm and the public key associated with <var class="keyword varname">certDevName</var>. Use this method to
+    verify a blob signed by a digital signature created using a third-party application or the
+      <samp class="codeph ">signWithCertificate</samp> method.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> verify(<span class="keyword">String</span> algorithmName, <span class="keyword">Blob</span> data,
+          <span class="keyword">Blob</span> signature, <span class="keyword">String</span> certDevName)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> verify supports all these values for <var class="keyword varname">algorithmName</var>. See <a class="xref" href="#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto
+              Class</a> for details on each algorithm. <p class="p"><samp class="codeph apex_code">RSA</samp>, <samp class="codeph apex_code">RSA-SHA1</samp>, <samp class="codeph apex_code">RSA-SHA256</samp>, <samp class="codeph apex_code">RSA-SHA384</samp>, <samp class="codeph apex_code">RSA-SHA512</samp>, <samp class="codeph apex_code">ECDSA-SHA256</samp>, <samp class="codeph apex_code">ECDSA-SHA256-PLAIN</samp>, <samp class="codeph apex_code">ECDSA-SHA384</samp>,
+              and <samp class="codeph apex_code">ECDSA-SHA512</samp></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The data to sign.</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">signature</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The RSA or ECDSA signature.</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">certDevName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The value listed in the <samp class="codeph ">Unique Name</samp> field for a
+            certificate stored in the Salesforce organization’s Certificate and Key
+            Management page to use for signing.<p class="p">To access the Certificate and Key Management page
+              from Setup, enter <kbd class="ph userinput">Certificate and Key Management</kbd> in the
+                <strong class="ph uicontrol">Quick Find</strong> box, then select <strong class="ph uicontrol">Certificate and Key
+                Management</strong>.</p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the signature is successfully
+        verified.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class. For
+        the <var class="keyword varname">TestCertName</var> variable, use the unique name value for a self-signed or
+        CA certificate that you have created in the org in which you run this test.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestVerify_2 {
+       <span class="keyword">public</span> <span class="keyword">void</span> testVerify_2() {
+       
+           <span class="keyword">String</span> algorithmName = <span class="string">'RSA'</span>;
+           <span class="keyword">Blob</span> input = <span class="keyword">Blob</span>.valueOf(<span class="string">'Test Sign With Certificate.'</span>);
+           <span class="keyword">String</span> TestCertName = <span class="string">'</span><var class="keyword varname">your-cert-unique-name</var><span class="string">';
+</span>           <span class="keyword">Blob</span> signedKey = Crypto.signWithCertificate(algorithmName, input, TestCertName);  
+           
+           <span class="keyword">Boolean</span> verified = <span class="keyword">false</span>;
+           verified = Crypto.verify(algorithmName, input, signedKey, TestCertName);
+           Assert.areEqual(<span class="keyword">true</span>, verified);
+       }
+  }
+</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestVerify_2 tv_2 = <span class="keyword">new</span> TestVerify_2();
+tv_2.testVerify_2();</pre></div>
+
+    </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Crypto_verifyHMac">
+<a name="apex_System_Crypto_verifyHMac"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">verifyHMac(algorithmName,  data,  privateKey,  macToVerify)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Verifies the HMAC signature for the <var class="keyword varname">data</var> blob using the specified
+    algorithm, input data, private key, and the mac. Use this method to verify a blob signed by a
+    digital signature created using a third-party application or the sign method.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> verifyHMac(<span class="keyword">String</span> algorithmName, <span class="keyword">Blob</span>
+          data, <span class="keyword">Blob</span> privateKey, <span class="keyword">Blob</span> macToVerify)</samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">algorithmName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">These are valid values for <var class="keyword varname">algorithmName</var>.</p>
+<ul class="ul bulletList">
+              <li class="li"><samp class="codeph apex_code">hmacMD5</samp></li>
+
+              <li class="li"><samp class="codeph apex_code">hmacSHA1</samp></li>
+
+              <li class="li"><samp class="codeph apex_code">hmacSHA256</samp></li>
+
+              <li class="li"><samp class="codeph apex_code">hmacSHA512</samp></li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The data to sign.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">privateKey</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">If the private key used to generate the MAC was Base64 encoded, then the value of
+              <var class="keyword varname">privateKey</var> must also be Base64 encoded.  <span class="ph" id="blob_limit"><a name="blob_limit"><!-- --></a>The
+              value cannot exceed 4 KB.</span></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">hmacToVerify</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+<p class="p">The value of the mac must be verified against the provided
+              <var class="keyword varname">privateKey</var>, <var class="keyword varname">data</var>, and
+              <var class="keyword varname">algorithmName</var>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p">The verification status of the data to verify.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">You can use your preferred <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_intro_writing_apex.htm" target="_blank" title="HTML (New Window)">Salesforce
+          development environment</a> to test this function. Create the following Apex class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">    <span class="keyword">public</span> <span class="keyword">class</span> TestVerifyMAC {
+
+        <span class="keyword">public</span> <span class="keyword">void</span> testVerifyMAC() {
+            <span class="keyword">String</span> salt = <span class="keyword">String</span>.valueOf(Crypto.getRandomInteger());
+            <span class="keyword">String</span> key = <span class="string">'key'</span>;
+            <span class="keyword">Blob</span> data = crypto.generateMac(<span class="string">'HmacSHA256'</span>, 
+                <span class="keyword">Blob</span>.valueOf(salt), 
+                <span class="keyword">Blob</span>.valueOf(key));
+            System.debug(<span class="string">'Generated MAC: '</span>);        
+            System.debug(EncodingUtil.base64Encode(data));
+            
+            <span class="keyword">Boolean</span> verified = <span class="keyword">false</span>;
+            
+            verified = Crypto.verifyHMac(<span class="string">'HmacSHA256'</span>, <span class="keyword">Blob</span>.valueOf(salt), <span class="keyword">Blob</span>.valueOf(key), data);
+            Assert.areEqual(<span class="keyword">true</span>, verified);
+        }
+    } 
+</pre></div>
+
+      <p class="p">To invoke this method, run the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TestVerifyMAC tvm = <span class="keyword">new</span> TestVerifyMAC();
+tvm.testVerifyMAC();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

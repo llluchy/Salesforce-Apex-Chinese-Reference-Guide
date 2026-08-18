@@ -1,0 +1,157 @@
+<a name="apex_methods_system_database_deleteresult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">DeleteResult Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Represents the result of a delete DML
+operation returned by the <samp class="codeph apex_code">Database.<span class="statement">delete</span></samp> method.</span></div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">An array of <samp class="codeph apex_code">Database.DeleteResult</samp> objects is returned
+with the <samp class="codeph apex_code"><span class="statement">delete</span></samp> database
+method. Each element in the DeleteResult array corresponds to the
+sObject array passed as the <var class="keyword varname">sObject[]</var> parameter
+in the <samp class="codeph apex_code"><span class="statement">delete</span></samp> Database method;
+that is, the first element in the DeleteResult array matches the first
+element passed in the sObject array, the second element corresponds
+with the second element, and so on. If only one sObject is passed
+in, the DeleteResult array contains a single element. </p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">The following example shows how
+to obtain and iterate through the returned <samp class="codeph apex_code">Database.DeleteResult</samp> objects. It
+deletes some queried accounts using <samp class="codeph apex_code">Database.<span class="statement">delete</span></samp> with a false second parameter to allow partial
+processing of records on failure. Next, it iterates through the results
+to determine whether the operation was successful or not for each
+record. It writes the ID of every record that was processed successfully
+to the debug log, or error messages and fields of the failed records.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Query the accounts to delete</span>
+Account[] accts = [SELECT Id from Account WHERE Name LIKE <span class="string">'Acme%'</span>];
+<span class="onelineComment">// Delete the accounts</span>
+Database.DeleteResult[] drList = Database.<span class="statement">delete</span>(accts, <span class="keyword">false</span>);
+
+<span class="onelineComment">// Iterate through each returned result</span>
+<span class="statement">for</span>(Database.DeleteResult dr : drList) {
+    <span class="statement">if</span> (dr.isSuccess()) {
+        <span class="onelineComment">// Operation was successful, so get the ID of the record that was processed</span>
+        System.debug(<span class="string">'Successfully deleted account with ID: '</span> + dr.getId());
+    }
+    <span class="statement">else</span> {
+        <span class="onelineComment">// Operation failed, so get all errors                </span>
+        <span class="statement">for</span>(Database.Error err : dr.getErrors()) {
+            System.debug(<span class="string">'The following error has occurred.'</span>);                    
+            System.debug(err.getStatusCode() + <span class="string">': '</span> + err.getMessage());
+            System.debug(<span class="string">'Account fields that affected this error: '</span> + err.getFields());
+        }
+    }
+}</pre></div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_DeleteResult_methods">
+<a name="apex_Database_DeleteResult_methods"><!-- --></a>
+<h2 class="helpHead2">DeleteResult Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DeleteResult</samp>. All are instance methods.</p>
+ </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_deleteresult.htm#apex_Database_DeleteResult_getErrors">getErrors()</a></strong><br>
+If an error occurred, returns an array of one or more database error objects providing   the error code and description. If no error occurred, returns an empty set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_deleteresult.htm#apex_Database_DeleteResult_getId">getId()</a></strong><br>
+Returns the ID of the sObject you were trying to delete.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_deleteresult.htm#apex_Database_DeleteResult_isSuccess">isSuccess()</a></strong><br>
+A Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the DML operation was successful for this object, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DeleteResult_getErrors">
+<a name="apex_Database_DeleteResult_getErrors"><!-- --></a>
+<h3 class="helpHead3">getErrors()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">If an error occurred, returns an array of one or more database error objects providing
+  the error code and description. If no error occurred, returns an empty set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Database.Error[] getErrors()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_error.htm#apex_methods_system_database_error" title="Represents information about an error that occurred during a DML operation when using a Database method.">Database.Error</a>[]</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DeleteResult_getId">
+<a name="apex_Database_DeleteResult_getId"><!-- --></a>
+<h3 class="helpHead3">getId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID of the sObject you were trying to delete.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DeleteResult_isSuccess">
+<a name="apex_Database_DeleteResult_isSuccess"><!-- --></a>
+<h3 class="helpHead3">isSuccess()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">A Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the DML operation was successful for this object, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isSuccess()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

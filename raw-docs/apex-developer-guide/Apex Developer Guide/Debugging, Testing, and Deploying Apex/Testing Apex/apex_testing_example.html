@@ -1,0 +1,305 @@
+<a name="apex_testing_example"><!-- --></a><h1 class="helpHead1">Testing Example</h1><div class="body">
+<p class="p">The following example includes cases for the following types of tests:</p>
+
+        <ul class="ul bulletList">
+            <li class="li"><a class="xref" href="#positive_test_case">Positive case with single and multiple records</a></li>
+
+            <li class="li"><a class="xref" href="#negative_test_case">Negative case with single and multiple records</a></li>
+
+            <li class="li"><a class="xref" href="#second_user">Testing with other users</a></li>
+
+        </ul>
+
+<p class="p">The test is used with a simple mileage tracking application. The existing code for the
+            application verifies that not more than 500 miles are entered in a single day. The
+            primary object is a custom object named Mileage__c. The test creates one record with 300
+            miles and verifies there are only 300 miles recorded. Then a loop creates 200 records
+            with one mile each. Finally, it verifies there are 500 miles recorded in total (the
+            original 300 plus the new ones). Here’s the entire test class. The following sections
+            step through specific portions of the code.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> MileageTrackerTestSuite {
+
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> runPositiveTestCases() {
+        
+        <span class="keyword">Double</span> totalMiles = 0;
+        <span class="keyword">final</span> <span class="keyword">Double</span> maxtotalMiles = 500;
+        <span class="keyword">final</span> <span class="keyword">Double</span> singletotalMiles = 300;
+        <span class="keyword">final</span> <span class="keyword">Double</span> u2Miles = 100;
+  
+        
+        <span class="onelineComment">//Set up user</span>
+        User u1 = [SELECT Id FROM User WHERE Alias=<span class="string">'auser'</span>];
+        
+        <span class="onelineComment">//Run As U1</span>
+        System.RunAs(u1){
+
+            
+        System.debug(<span class="string">'Inserting 300  miles... (single record validation)'</span>);
+        
+        Mileage__c testMiles1 = <span class="keyword">new</span> Mileage__c(Miles__c = 300, Date__c = System.today());
+        <span class="statement">insert</span> testMiles1;
+        
+        <span class="onelineComment">//Validate single insert</span>
+        <span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c 
+            WHERE CreatedDate = TODAY
+            and CreatedById = :u1.id
+            and miles__c != <span class="keyword">null</span>]) {
+                totalMiles += m.miles__c;
+            }
+        
+        Assert.areEqual(singletotalMiles, totalMiles);
+    
+    
+        <span class="onelineComment">//Bulk validation   </span>
+        totalMiles = 0; 
+        System.debug(<span class="string">'Inserting 200 mileage records... (bulk validation)'</span>);
+        
+        List&lt;Mileage__c&gt; testMiles2 = <span class="keyword">new</span> List&lt;Mileage__c&gt;();
+        <span class="statement">for</span>(integer i=0; i&lt;200; i++) {
+            testMiles2.add( <span class="keyword">new</span> Mileage__c(Miles__c = 1, Date__c = System.today()) );
+        }
+        <span class="statement">insert</span> testMiles2;
+       
+        <span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c
+            WHERE CreatedDate = TODAY
+            and CreatedById = :u1.Id
+            and miles__c != <span class="keyword">null</span>]) {
+                totalMiles += m.miles__c;
+            }
+        
+        Assert.areEqual(maxtotalMiles, totalMiles);
+
+        }<span class="onelineComment">//end RunAs(u1)</span>
+
+
+       <span class="onelineComment">//Validate additional user:</span>
+       totalMiles = 0;
+       <span class="onelineComment">//Setup RunAs</span>
+       User u2 = [SELECT Id FROM User WHERE Alias=<span class="string">'tuser'</span>];
+       System.RunAs(u2){
+        
+        Mileage__c testMiles3 = <span class="keyword">new</span> Mileage__c(Miles__c = 100, Date__c = System.today());
+        <span class="statement">insert</span> testMiles3;
+        
+                <span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c
+            WHERE CreatedDate = TODAY
+            and CreatedById = :u2.Id
+            and miles__c != <span class="keyword">null</span>]) {
+                totalMiles += m.miles__c;
+            }
+        <span class="onelineComment">//Validate </span>
+        Assert.areEqual(u2Miles, totalMiles);
+        
+       } <span class="onelineComment">//System.RunAs(u2)</span>
+
+      
+    } <span class="onelineComment">// runPositiveTestCases()</span>
+   
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> runNegativeTestCases() {
+
+        User u3 = [SELECT Id FROM User WHERE Alias=<span class="string">'tuser'</span>];
+        System.RunAs(u3) {
+
+           System.debug(<span class="string">'Inserting a record with 501 miles... (negative test case)'</span>); 
+
+           Mileage__c testMiles3 = <span class="keyword">new</span> Mileage__c( Miles__c = 501, Date__c = System.today() );
+
+           <span class="statement">try</span> {
+               <span class="statement">insert</span> testMiles3;
+               Assert.fail(<span class="string">'DmlException expected'</span>);
+           } <span class="statement">catch</span> (DmlException e) {
+               <span class="onelineComment">//Assert Status Code</span>
+               Assert.areEqual(<span class="string">'FIELD_CUSTOM_VALIDATION_EXCEPTION'</span>, e.getDmlStatusCode(0));
+            
+               <span class="onelineComment">//Assert field</span>
+               Assert.areEqual(Mileage__c.Miles__c, e.getDmlFields(0)[0]);
+                        
+               <span class="onelineComment">//Assert Error Message</span>
+               Assert.isTrue(e.getMessage().contains(
+                <span class="string">'Mileage request exceeds daily limit(500): [Miles__c]'</span>),
+                <span class="string">'DMLException did not contain expected validation message:'</span> + e.getMessage() );
+            
+             } <span class="onelineComment">//catch</span>
+           } <span class="onelineComment">//RunAs(u3) </span>
+    } <span class="onelineComment">// runNegativeTestCases() </span>
+  
+    
+} <span class="onelineComment">// class MileageTrackerTestSuite</span></pre></div>
+
+<div class="section" id="positive_test_case">
+<a name="positive_test_case"><!-- --></a><h2 class="helpHead2">Positive Test Case</h2>
+
+            
+            <p class="p">The following steps through the above code, in particular, the positive test case for
+                single and multiple records. </p>
+
+            <ol class="ol enumList">
+                <li class="li">Add text to the debug log, indicating the next step of the
+                    code:<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.debug(<span class="string">'Inserting 300 more miles...single record validation'</span>);
+</pre></div>
+</li>
+
+                <li class="li">Create a Mileage__c object and insert it into the
+                    database.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Mileage__c testMiles1 = <span class="keyword">new</span> Mileage__c(Miles__c = 300, Date__c = System.today() );
+<span class="statement">insert</span> testMiles1;
+</pre></div>
+</li>
+
+                <li class="li">Validate the code by returning the inserted
+                    records:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c 
+   WHERE CreatedDate = TODAY 
+   and CreatedById = :createdbyId 
+   and miles__c != <span class="keyword">null</span>]) {
+       totalMiles += m.miles__c;
+    }
+</pre></div>
+</li>
+
+                <li class="li">Use the <samp class="codeph apex_code">Assert.areEqual</samp> method to
+                    verify that the expected result is
+                    returned:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Assert.areEqual(singletotalMiles, totalMiles);
+</pre></div>
+</li>
+
+                <li class="li">Before moving to the next test, set the number of total miles back to
+                    0:<div class="codeSection apex_code"><pre class="codeblock brush:apex">totalMiles = 0;
+</pre></div>
+</li>
+
+                <li class="li">Validate the code by creating a bulk insert of 200 records.<div class="p">First, add text to
+                        the debug log, indicating the next step of the
+                        code:<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.debug(<span class="string">'Inserting 200 Mileage records...bulk validation'</span>);</pre></div>
+</div>
+</li>
+
+                <li class="li">Then insert 200 Mileage__c
+                    records:<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Mileage__c&gt; testMiles2 = <span class="keyword">new</span> List&lt;Mileage__c&gt;();
+<span class="statement">for</span>(<span class="keyword">Integer</span> i=0; i&lt;200; i++){
+testMiles2.add( <span class="keyword">new</span> Mileage__c(Miles__c = 1, Date__c = System.today()) );
+   }
+<span class="statement">insert</span> testMiles2; 
+</pre></div>
+</li>
+
+                <li class="li">Use <samp class="codeph apex_code">Assert.areEqual</samp> to verify that the
+                    expected result is
+                    returned:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c 
+   WHERE CreatedDate = TODAY 
+   and CreatedById = :CreatedbyId 
+   and miles__c != <span class="keyword">null</span>]) {
+       totalMiles += m.miles__c;
+    }
+       Assert.areEqual(maxtotalMiles, totalMiles);
+</pre></div>
+</li>
+
+            </ol>
+
+        </div>
+
+<div class="section" id="negative_test_case">
+<a name="negative_test_case"><!-- --></a><h2 class="helpHead2">Negative Test Case</h2>
+
+            
+            <p class="p">The following steps through the above code, in particular, the negative test
+                case.</p>
+
+            <ol class="ol enumList">
+                <li class="li">Create a static test method called <samp class="codeph apex_code">runNegativeTestCases</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">static</span> testMethod <span class="keyword">void</span> runNegativeTestCases(){
+</pre></div>
+</li>
+
+                <li class="li">Add text to the debug log, indicating the next step of the
+                    code:<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.debug(<span class="string">'Inserting 501 miles... negative test case'</span>);
+</pre></div>
+</li>
+
+                <li class="li">Create a Mileage__c record with 501 miles.
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Mileage__c testMiles3 = <span class="keyword">new</span> Mileage__c(Miles__c = 501, Date__c = System.today());</pre></div>
+</li>
+
+                <li class="li">Place the <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement within a
+                        <samp class="codeph apex_code"><span class="statement">try</span></samp>/<samp class="codeph apex_code"><span class="statement">catch</span></samp> block. This allows you to catch the validation exception and
+                    assert the generated error message. Use the <samp class="codeph ">Assert.fail</samp> method to clearly assert that you expect the
+                    validation exception.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+     <span class="statement">insert</span> testMiles3;
+     Assert.fail(<span class="string">'DmlException expected'</span>);
+     } <span class="statement">catch</span> (DmlException e) { 
+
+</pre></div>
+</li>
+
+                <li class="li">Now use the <samp class="codeph apex_code">Assert.areEqual</samp> and <samp class="codeph apex_code">Assert.isTrue</samp> methods to do the testing.
+                    Add the following code to the <samp class="codeph apex_code"><span class="statement">catch</span></samp>
+                    block you previously
+                    created:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Assert Status Code</span>
+Assert.areEqual(<span class="string">'FIELD_CUSTOM_VALIDATION_EXCEPTION'</span>, e.getDmlStatusCode(0));
+            
+<span class="onelineComment">//Assert field</span>
+Assert.areEqual(Mileage__c.Miles__c, e.getDmlFields(0)[0]);
+                        
+<span class="onelineComment">//Assert Error Message</span>
+Assert.isTrue(e.getMessage().contains(
+  <span class="string">'Mileage request exceeds daily limit(500): [Miles__c]'</span>),
+  <span class="string">'DMLException did not contain expected validation message:'</span> + e.getMessage() );</pre></div>
+</li>
+
+            </ol>
+
+        </div>
+
+<div class="section" id="second_user">
+<a name="second_user"><!-- --></a><h2 class="helpHead2">Testing as a Second User</h2>
+
+            
+            <p class="p">The following steps through the above code, in particular, running as a second
+                user.</p>
+
+            <ol class="ol enumList">
+                <li class="li">Before moving to the next test, set the number of total miles back to
+                    0:<div class="codeSection apex_code"><pre class="codeblock brush:apex">totalMiles = 0;
+</pre></div>
+</li>
+
+                <li class="li">Set up the next
+                    user.<div class="codeSection apex_code"><pre class="codeblock brush:apex">       User u2 = [SELECT Id FROM User WHERE Alias=<span class="string">'tuser'</span>];
+       System.RunAs(u2){
+</pre></div>
+</li>
+
+                <li class="li">Add text to the debug log, indicating the next step of the
+                    code:<div class="codeSection apex_code"><pre class="codeblock brush:apex">        System.debug(<span class="string">'Setting up testing - deleting any mileage records for '</span> +
+            UserInfo.getUserName() +
+            <span class="string">' from today'</span>);
+</pre></div>
+</li>
+
+                <li class="li">Then insert one Mileage__c
+                    record:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Mileage__c testMiles3 = <span class="keyword">new</span> Mileage__c(Miles__c = 100, Date__c = System.today());
+<span class="statement">insert</span> testMiles3;
+</pre></div>
+</li>
+
+                <li class="li">Validate the code by returning the inserted
+                    records:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span>(Mileage__c m:[SELECT miles__c FROM Mileage__c 
+   WHERE CreatedDate = TODAY 
+   and CreatedById = :u2.Id 
+   and miles__c != <span class="keyword">null</span>]) {
+       totalMiles += m.miles__c;
+    }
+</pre></div>
+</li>
+
+                <li class="li">Use the <samp class="codeph apex_code">Assert.areEqual</samp> method to
+                    verify that the expected result is
+                    returned:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Assert.areEqual(u2Miles, totalMiles);
+</pre></div>
+</li>
+
+            </ol>
+
+        </div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

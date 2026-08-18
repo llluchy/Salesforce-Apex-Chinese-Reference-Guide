@@ -1,0 +1,142 @@
+<a name="MockSOQLTestsForDMOs"><!-- --></a><h1 class="helpHead1">Mock SOQL Tests for Data 360 Data Model Objects</h1><div class="body conbody">
+<div class="shortdesc">You can mock SOQL query responses for Data 360 data model objects (DMOs) in Apex
+        testing by using the new SOQL stub methods and a new test class. Use static or dynamic SOQL
+        queries against DMOs and return mock records in a testing context.</div>
+
+        <p class="p">Create mock test classes by extending the new <samp class="codeph ">System.SoqlStubProvider</samp> class and overriding the <samp class="codeph ">handleSoqlQuery()</samp> class method. Create DMO instances using either <samp class="codeph ">Test.createStubQueryRow()</samp> or <samp class="codeph ">Test.createStubQueryRows()</samp>. Register the mock provider in the test using
+                <samp class="codeph ">Test.createSoqlStub()</samp> and execute the test
+            code.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex governor limits apply to the stubbed records.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">The SOQL query must be against a DMO or an external object, either directly with a FROM
+            clause or via a subquery. If you query against a stubbed object type that doesn’t
+            include a DMO or an external object, the error <samp class="ph systemoutput">Stubbed query invocations
+                can't be used without a participating query stub set.</samp> is thrown.</p>
+
+        <p class="p">These features are not allowed within a stub implementation:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">SOQL</li>
+
+            <li class="li">SOSL</li>
+
+            <li class="li">Callouts</li>
+
+            <li class="li">Future methods</li>
+
+            <li class="li">Queueable Jobs</li>
+
+            <li class="li">Batch Jobs</li>
+
+            <li class="li">DML</li>
+
+            <li class="li">Platform Events</li>
+
+        </ul>
+
+        <p class="p">This example shows a mock test class for the
+                <var class="keyword varname">SkyMilesForBusinessOptInController</var> class.</p>
+
+        <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@IsTest
+public class SkyMilesForBusinessOptInController_Test {
+
+    @IsTest
+    public static void mockSoql() {
+    
+        SoqlStubProvider stub = new UnifiedIndividualSoqlStub();
+        Test.createSoqlStub(UnifiedIndividual__dlm.sObjectType, stub);
+
+        Assert.isTrue(Test.isSoqlStubDefined(UnifiedIndividual__dlm.sObjectType));
+        
+        Test.startTest();
+        string companyId = 'SampleCompanyId';
+        // Performs SOQL query against Data Model Object
+        List&lt;SkyMilesMember&gt; members = SkyMilesForBusinessOptInController.getSkyMilesProfilesFromDataCloud(companyId);
+        
+        Test.stopTest();
+        
+        Assert.areEqual(1, members.size());
+        
+        SkyMilesMember member = members[0];
+        
+        Assert.areEqual(companyId, member.CompanyId);
+        Assert.areEqual(5000, member.SkyMilesBalance);
+    }
+    
+    class UnifiedIndividualSoqlStub extends SoqlStubProvider {
+        public override List&lt;sObject&gt; handleSoqlQuery(sObjectType sot, string stubbedQuery, Map&lt;string, object&gt; bindVars) {
+        
+            Assert.areEqual(UnifiedIndividual__dlm.sObjectType, sot);
+            
+            // Stub assumes that the SOQL query is searching for a single record by company id
+
+            string companyId = 'Default';
+            if(bindVars.containsKey('tmpVar1')) {
+                companyId = (string)bindVars.get('tmpVar1');
+            }
+                     
+            UnifiedIndividual__dlm dmo = (UnifiedIndividual__dlm)Test.createStubQueryRow(
+                sot, 
+                new Map&lt;string, object&gt; {
+                    'ssot__FirstName__c' =&gt; 'Codey',
+                    'ssot__LastName__c' =&gt; 'Bear',
+                    'ssot__Email__c' =&gt; 'developer@salesforce.com',
+                    'ssot__SkyMilesBalance__c' =&gt; 5000,
+                    'ssot__MedallionStatus__c' =&gt; 'Gold',
+                    'ssot__CompanyId__c' =&gt; companyId
+                  } 
+            );           
+            return new List&lt;sObject&gt; { dmo };
+
+        }
+    }
+}</pre></div>
+
+        <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public with sharing class SkyMilesForBusinessOptInController {
+    public static List&lt;SkyMilesMember&gt; getSkyMilesProfilesFromDataCloud(String companyId) {
+        List&lt;UnifiedIndividual__dlm&gt; unifiedIndividuals = [
+          SELECT
+            Id,
+            ssot__FirstName__c,
+            ssot__LastName__c,
+            ssot__Email__c,
+            ssot__SkyMilesBalance__c,
+            ssot__MedallionStatus__c,
+            ssot__CompanyId__c
+          FROM UnifiedIndividual__dlm
+          WHERE ssot__CompanyId__c = :companyId
+        ];
+        List&lt;SkyMilesMember&gt; skyMilesMembers = new List&lt;SkyMilesMember&gt;();
+        for (UnifiedIndividual__dlm individual : unifiedIndividuals) {
+          skyMilesMembers.add(
+            new SkyMilesMember(
+              individual.Id,
+              individual.ssot__FirstName__c,
+              individual.ssot__LastName__c,
+              individual.ssot__Email__c,
+              individual.ssot__SkyMilesBalance__c,
+              individual.ssot__MedallionStatus__c,
+              individual.ssot__CompanyId__c
+            )
+          );
+        }
+        return skyMilesMembers;
+    }
+}
+
+
+
+</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_SoqlStubProvider.htm" target="_blank" title="Apex Reference Guide: SoqlStubProvider Class - HTML (New Window)"><em class="ph i">Apex Reference Guide:</em> SoqlStubProvider Class</a></div></li></ul>
+</div>
+</div>

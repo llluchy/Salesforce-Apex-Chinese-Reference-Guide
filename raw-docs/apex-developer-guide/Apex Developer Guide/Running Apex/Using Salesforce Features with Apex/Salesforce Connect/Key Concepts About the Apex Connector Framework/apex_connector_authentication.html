@@ -1,0 +1,40 @@
+<a name="apex_connector_authentication"><!-- --></a><h1 class="helpHead1">Authentication for Salesforce Connect Custom Adapters</h1><div class="body conbody">
+<div class="shortdesc">Your <samp class="codeph apex_code">DataSource.Provider</samp> class declares what
+        types of credentials can be used to authenticate to the external system.</div>
+
+        <p class="p">If your extension of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Provider.htm" target="_blank"><samp class="codeph apex_code">DataSource.Provider</samp></a> class returns <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_DataSource_AuthenticationCapability.htm" target="_blank"><samp class="codeph apex_code">DataSource.AuthenticationCapability</samp></a> values that indicate
+            support for authentication, the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Connection.htm" target="_blank"><samp class="codeph apex_code">DataSource.Connection</samp></a> class is instantiated with a <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_ConnectionParams.htm" target="_blank"><samp class="codeph apex_code">DataSource.ConnectionParams</samp></a> instance in the constructor.</p>
+
+        <div class="p">The authentication credentials in the <samp class="codeph apex_code">DataSource.ConnectionParams</samp> instance depend on the <span class="keyword parmname">Identity
+                Type</span> field of the external data source definition in Salesforce.<ul class="ul bulletList">
+                <li class="li">If <span class="keyword parmname">Identity Type</span> is set to <samp class="codeph nolang">Named Principal</samp>, the credentials come from the external data
+                    source definition.</li>
+
+                <li class="li">If <span class="keyword parmname">Identity Type</span> is set to <samp class="codeph nolang">Per
+                        User</samp>:<ul class="ul bulletList">
+                        <li class="li"><span class="ph" id="identity_type_per_user_data"><a name="identity_type_per_user_data"><!-- --></a>For queries and searches, the
+                                credentials are specific to the current user who invokes the query
+                                or search. The credentials come from the user’s authentication
+                                settings for the external system.</span></li>
+
+                        <li class="li"><span class="ph" id="identity_type_per_user_metadata"><a name="identity_type_per_user_metadata"><!-- --></a>For administrative connections,
+                                such as syncing the external system’s schema, the credentials come
+                                from the external data source definition.</span></li>
+
+                    </ul>
+</li>
+
+            </ul>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_connector_oauth.htm">OAuth for Salesforce Connect Custom Adapters</a></strong><br>
+If you use OAuth 2.0 to access external data, learn how to avoid access interruptions         caused by expired access tokens.</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_oauth.htm" title="If you use OAuth 2.0 to access external data, learn how to avoid access interruptions caused by expired access tokens.">OAuth for Salesforce Connect Custom Adapters</a></div></li></ul>
+</div>
+</div>

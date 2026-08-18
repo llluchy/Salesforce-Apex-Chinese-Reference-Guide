@@ -1,0 +1,89 @@
+<a name="pages_security_tips_soql_injection"><!-- --></a><h1 class="helpHead1">SOQL Injection</h1><div class="body">
+  <div class="section">
+   <p class="p">In other programming languages, the previous flaw is known as SQL injection. Apex doesn’t use
+    SQL, but uses its own database query language, SOQL. SOQL is simpler and more limited in
+    functionality than SQL. The risks are lower for SOQL injection than for SQL injection, but the
+    attacks are nearly identical to traditional SQL injection. SQL/SOQL injection takes
+    user-supplied input and uses those values in a dynamic SOQL query. If the input isn’t validated,
+    it can include SOQL commands that effectively modify the SOQL statement and trick the
+    application into performing unintended commands.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">SOQL Injection Vulnerability in Apex</h2>
+
+   
+   <div class="p">Here’s a simple example of Apex and Visualforce code vulnerable to SOQL
+    injection.<div class="codeSection apex_mixed"><pre class="codeblock brush:apex"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"SOQLController"</span> &gt;
+    <span class="tag">&lt;apex:form</span>&gt;
+        <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"Enter Name"</span> /&gt;
+        <span class="tag">&lt;apex:inputText</span><span class="attribute"> value=</span><span class="string">"{!name}"</span> /&gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> value=</span><span class="string">"Query"</span><span class="attribute"> action=</span><span class="string">"{!query}“ /&gt;
+</span>    <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+<span class="keyword">public</span> <span class="keyword">class</span> SOQLController {
+    <span class="keyword">public</span> <span class="keyword">String</span> name {
+        get { <span class="statement">return</span> name;}
+        set { name = value;}
+    } 
+    <span class="keyword">public</span> PageReference query() {
+        <span class="keyword">String</span> qryString = <span class="string">'SELECT Id FROM Contact WHERE '</span> +
+            <span class="string">'(IsDeleted = false and Name like \'%'</span> + name + <span class="string">'%\')'</span>;
+        List<span class="tag">&lt;Contact</span>&gt; queryResult = Database.query(qryString);
+        System.debug(<span class="string">'query result is '</span> + queryResult);
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}
+</pre></div>
+</div>
+
+   <div class="p">This simple example illustrates the logic. The code is intended to search for contacts that
+    weren’t deleted. The user provides one input value called <samp class="codeph nolang">name</samp>. The value can be anything provided by the user, and it’s never validated. The
+    SOQL query is built dynamically and then executed with the <samp class="codeph nolang">Database.query</samp> method. If the user provides a legitimate value, the statement
+    executes as expected.<div class="codeSection nolang"><pre class="codeblock brush:plain">// User supplied value: name = Bob 
+// Query string
+SELECT Id FROM Contact WHERE (IsDeleted = false and Name like '%Bob%')</pre></div>
+</div>
+
+   <div class="p">But what if the user provides unexpected input, such
+    as:<div class="codeSection nolang"><pre class="codeblock brush:plain">// User supplied value for name: test%') OR (Name LIKE '</pre></div>
+In
+    that case, the query string
+    becomes:<div class="codeSection nolang"><pre class="codeblock brush:plain">SELECT Id FROM Contact WHERE (IsDeleted = false AND Name LIKE '%test%') OR (Name LIKE '%')</pre></div>
+</div>
+
+   <p class="p">Now the results show all contacts, not just the non-deleted ones. A SOQL Injection flaw can be
+    used to modify the intended logic of any vulnerable query.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">SOQL Injection Defenses</h2>
+
+   
+   <div class="p">To prevent a SOQL injection attack, avoid using dynamic SOQL queries. Instead, use static
+    queries and binding variables. The preceding vulnerable example can be rewritten using static
+    SOQL.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> SOQLController { 
+    <span class="keyword">public</span> <span class="keyword">String</span> name { 
+        get { <span class="statement">return</span> name;} 
+        set { name = value;} 
+    } 
+    <span class="keyword">public</span> PageReference query() { 
+        <span class="keyword">String</span> queryName = <span class="string">'%'</span> + name + <span class="string">'%'</span>;
+        List&lt;Contact&gt; queryResult = [SELECT Id FROM Contact WHERE 
+           (IsDeleted = <span class="keyword">false</span> and Name like :queryName)];
+        System.debug(<span class="string">'query result is '</span> + queryResult);
+        <span class="statement">return</span> <span class="keyword">null</span>; 
+    } 
+}</pre></div>
+</div>
+
+   <p class="p">If you must use dynamic SOQL, use the <samp class="codeph nolang">escapeSingleQuotes</samp>
+    method to sanitize user-supplied input. This method adds the escape character (\) to all single
+    quotation marks in a string that is passed in from a user. The method ensures that all single
+    quotation marks are treated as enclosing strings, instead of database commands.</p>
+
+  </div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

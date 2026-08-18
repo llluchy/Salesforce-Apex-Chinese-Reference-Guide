@@ -1,0 +1,351 @@
+<a name="apex_class_system_quickaction"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">QuickAction Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="QuickActionDescription"><a name="QuickActionDescription"><!-- --></a>Use Apex to request and process actions on objects
+            that allow custom fields, on objects that appear in a Chatter feed, or on objects that
+            are available globally.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="p">In this sample, the trigger determines if the new contacts to be inserted are created
+                by a quick action. If so, it sets the <samp class="codeph apex_code">WhereFrom__c</samp> custom field to a value that depends on whether the quick
+                action is global or local to the contact. Otherwise, if the inserted contacts
+                don’t originate from a quick action, the <samp class="codeph apex_code">WhereFrom__c</samp> field is set to <samp class="codeph apex_code"><span class="string">'NoAction'</span></samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> accTrig2 on Contact (before <span class="statement">insert</span>) {
+    <span class="statement">for</span> (Contact c : Trigger.<span class="keyword">new</span>) {
+        <span class="statement">if</span> (c.getQuickActionName() == QuickAction.CreateContact) {
+            c.WhereFrom__c = <span class="string">'GlobaActionl'</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (c.getQuickActionName() == Schema.Account.QuickAction.CreateContact) {
+            c.WhereFrom__c = <span class="string">'AccountAction'</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (c.getQuickActionName() == <span class="keyword">null</span>) {
+            c.WhereFrom__c = <span class="string">'NoAction'</span>;
+        } <span class="statement">else</span> {
+            System.assert(<span class="keyword">false</span>);
+        }
+    }
+}</pre></div>
+</div>
+
+            <div class="p">This sample performs a global action—<samp class="codeph apex_code">QuickAction.CreateContact</samp>–on the passed-in contact
+                object.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> Id globalCreate(Contact c) { 
+    QuickAction.QuickActionRequest req = <span class="keyword">new</span> QuickAction.QuickActionRequest();
+    req.quickActionName = QuickAction.CreateContact;
+    req.record = c;
+    QuickAction.QuickActionResult res = QuickAction.performQuickAction(req);
+    <span class="statement">return</span> c.id;
+}</pre></div>
+</div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionrequest.htm#apex_class_quickaction_quickactionrequest" title="Use the QuickAction.QuickActionRequest class for providing action information for quick actions to be performed by QuickAction class methods. Action information includes the action name, context record ID, and record.">QuickActionRequest Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionresult.htm#apex_class_quickaction_quickactionresult" title="After you initiate a quick action with the QuickAction class, use the QuickActionResult class for processing action results.">QuickActionResult Class</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_methods">
+<a name="apex_QuickAction_QuickAction_methods"><!-- --></a>
+<h2 class="helpHead2">QuickAction Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">QuickAction</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_describeAvailableQuickActions">describeAvailableQuickActions(parentType)</a></strong><br>
+Returns metadata information for the available quick actions of the provided parent object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_describeQuickActions">describeQuickActions(sObjectNames)</a></strong><br>
+Returns the metadata information for the provided quick actions.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_performQuickAction">performQuickAction(quickActionRequest)</a></strong><br>
+Performs the quick action specified in the quick action request and returns the action result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_performQuickAction_2">performQuickAction(quickActionRequest, allOrNothing)</a></strong><br>
+Performs the quick action specified in the quick action request with the option for partial success, and returns the result.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_performQuickActions">performQuickActions(quickActionRequests)</a></strong><br>
+Performs the quick actions specified in the quick action request list and returns action results.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_quickaction.htm#apex_QuickAction_QuickAction_performQuickActions_2">performQuickActions(quickActionRequests, allOrNothing)</a></strong><br>
+Performs the quick actions specified in the quick action request list with the option for partial success, and returns action results.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_describeAvailableQuickActions">
+<a name="apex_QuickAction_QuickAction_describeAvailableQuickActions"><!-- --></a>
+<h3 class="helpHead3">describeAvailableQuickActions(parentType)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns metadata information for the available quick actions
+of the provided parent object.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;QuickAction.DescribeAvailableQuickActionResult&gt;
+describeAvailableQuickActions(<span class="keyword">String</span> parentType)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">parentType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The parent object type. This can be an object type name ('Account')
+or 'Global' (meaning that this method is called at a global level
+and not an entity level).</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_describeavailablequickactionresult.htm#apex_class_quickaction_describeavailablequickactionresult" title="Contains describe metadata information for a quick action that is available for a specified parent.">QuickAction.DescribeAvailableQuickActionResult</a>&gt;</p>
+<p class="p">The metadata information for the available quick actions
+of the parent object.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Called for Account entity.</span>
+List&lt;QuickAction.DescribeAvailableQuickActionResult&gt; result1 = 
+    QuickAction.DescribeAvailableQuickActions(<span class="string">'Account'</span>);  
+
+<span class="onelineComment">// Called at global level, not entity level.</span>
+List&lt;QuickAction.DescribeAvailableQuickActionResult&gt; result2 = 
+    QuickAction.DescribeAvailableQuickActions(<span class="string">'Global'</span>);  </pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_describeQuickActions">
+<a name="apex_QuickAction_QuickAction_describeQuickActions"><!-- --></a>
+<h3 class="helpHead3">describeQuickActions(sObjectNames)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the metadata information for the provided quick
+actions.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+                    List&lt;QuickAction.DescribeQuickActionResult&gt;
+                    describeQuickActions(List&lt;<span class="keyword">String</span>&gt; sObjectNames)</samp></p>
+
+            
+        </div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sObjectNames</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; The names of the quick actions. The quick action name can contain
+the entity name if it is at the entity level ('Account.QuickCreateContact'),
+or 'Global' if used for the action at the global level ('Global.CreateNewContact').</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_describequickactionresult.htm#apex_class_quickaction_describequickactionresult" title="Contains describe metadata information for a quick action.">QuickAction.DescribeQuickActionResult</a>&gt;</p>
+<p class="p">The metadata information for the provided quick actions.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// First 3 parameter values are for actions at the entity level. </span>
+<span class="onelineComment">// Last parameter is for an action at the global level.</span>
+List&lt;QuickAction.DescribeQuickActionResult&gt; result = 
+    QuickAction.DescribeQuickActions(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt; {
+        <span class="string">'Account.QuickCreateContact'</span>, <span class="string">'Opportunity.Update1'</span>, 
+        <span class="string">'Contact.Create1'</span>, <span class="string">'Global.CreateNewContact'</span> });</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_performQuickAction">
+<a name="apex_QuickAction_QuickAction_performQuickAction"><!-- --></a>
+<h3 class="helpHead3">performQuickAction(quickActionRequest)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Performs the quick action specified in the quick action
+request and returns the action result.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> QuickAction.QuickActionResult
+     performQuickAction(QuickAction.QuickActionRequest quickActionRequest)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">quickActionRequest</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionrequest.htm#apex_class_quickaction_quickactionrequest" title="Use the QuickAction.QuickActionRequest class for providing action information for quick actions to be performed by QuickAction class methods. Action information includes the action name, context record ID, and record.">QuickAction.QuickActionRequest</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionresult.htm#apex_class_quickaction_quickactionresult" title="After you initiate a quick action with the QuickAction class, use the QuickActionResult class for processing action results.">QuickAction.QuickActionResult</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_performQuickAction_2">
+<a name="apex_QuickAction_QuickAction_performQuickAction_2"><!-- --></a>
+<h3 class="helpHead3">performQuickAction(quickActionRequest, allOrNothing)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Performs the quick action specified in the quick action
+request with the option for partial success, and returns the result.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> QuickAction.QuickActionResult
+     performQuickAction(QuickAction.QuickActionRequest quickActionRequest, <span class="keyword">Boolean</span>
+     allOrNothing)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">quickActionRequest</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionrequest.htm#apex_class_quickaction_quickactionrequest" title="Use the QuickAction.QuickActionRequest class for providing action information for quick actions to be performed by QuickAction class methods. Action information includes the action name, context record ID, and record.">QuickAction.QuickActionRequest</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you
+specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for this argument
+and a record fails, the remainder of the DML operation can still succeed.
+This method returns a result object that can be used to verify which
+records succeeded, which failed, and why.</li>
+
+
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionresult.htm#apex_class_quickaction_quickactionresult" title="After you initiate a quick action with the QuickAction class, use the QuickActionResult class for processing action results.">QuickAction.QuickActionResult</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_performQuickActions">
+<a name="apex_QuickAction_QuickAction_performQuickActions"><!-- --></a>
+<h3 class="helpHead3">performQuickActions(quickActionRequests)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Performs the quick actions specified in the quick action
+request list and returns action results.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;QuickAction.QuickActionResult&gt;
+     performQuickActions(List&lt;QuickAction.QuickActionRequest&gt; quickActionRequests)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">quickActionRequests</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionrequest.htm#apex_class_quickaction_quickactionrequest" title="Use the QuickAction.QuickActionRequest class for providing action information for quick actions to be performed by QuickAction class methods. Action information includes the action name, context record ID, and record.">QuickAction.QuickActionRequest</a>&gt;</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionresult.htm#apex_class_quickaction_quickactionresult" title="After you initiate a quick action with the QuickAction class, use the QuickActionResult class for processing action results.">QuickAction.QuickActionResult</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickAction_performQuickActions_2">
+<a name="apex_QuickAction_QuickAction_performQuickActions_2"><!-- --></a>
+<h3 class="helpHead3">performQuickActions(quickActionRequests, allOrNothing)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Performs the quick actions specified in the quick action
+request list with the option for partial success, and returns action
+results.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;QuickAction.QuickActionResult&gt;
+     performQuickActions(List&lt;QuickAction.QuickActionRequest&gt; quickActionRequests, <span class="keyword">Boolean</span>
+     allOrNothing)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">quickActionRequests</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionrequest.htm#apex_class_quickaction_quickactionrequest" title="Use the QuickAction.QuickActionRequest class for providing action information for quick actions to be performed by QuickAction class methods. Action information includes the action name, context record ID, and record.">QuickAction.QuickActionRequest</a>&gt;</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Specifies whether this operation allows partial success. If you
+specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for this argument
+and a record fails, the remainder of the DML operation can still succeed.
+This method returns a result object that can be used to verify which
+records succeeded, which failed, and why.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_quickaction_quickactionresult.htm#apex_class_quickaction_quickactionresult" title="After you initiate a quick action with the QuickAction class, use the QuickActionResult class for processing action results.">QuickAction.QuickActionResult</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

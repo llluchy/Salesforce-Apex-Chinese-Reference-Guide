@@ -1,0 +1,457 @@
+<a name="apex_pages_standardcontroller"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">StandardController Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Use a StandardController when defining an extension for
+a standard controller.</div>
+
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_ApexPages.htm" title="The ApexPages namespace provides classes used in Visualforce controllers.">ApexPages</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">StandardController objects reference the pre-built Visualforce controllers provided by
+Salesforce. The only time it is necessary to refer to a StandardController object is when defining
+an extension for a standard controller. StandardController is the data type of the single argument
+in the extension class constructor.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+<div class="p">
+<div class="p">You can instantiate
+a StandardController in the following way:<div class="codeSection apex_code"><pre class="codeblock brush:apex">ApexPages.StandardController sc = <span class="keyword">new</span> ApexPages.StandardController(sObject);</pre></div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">
+<p class="p">The following example shows how
+a StandardController object can be used in the constructor for a standard
+controller extension:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> myControllerExtension {
+
+    <span class="keyword">private</span> <span class="keyword">final</span> Account acct;
+    
+    <span class="onelineComment">// The extension constructor initializes the private member</span>
+    <span class="onelineComment">// variable acct by using the getRecord method from the standard</span>
+    <span class="onelineComment">// controller.</span>
+    <span class="keyword">public</span> myControllerExtension(ApexPages.StandardController stdController) {
+        <span class="statement">this</span>.acct = (Account)stdController.getRecord();
+    }
+
+    <span class="keyword">public</span> <span class="keyword">String</span> getGreeting() {
+        <span class="statement">return</span> <span class="string">'Hello '</span> + acct.name + <span class="string">' ('</span> + acct.id + <span class="string">')'</span>;
+    }
+}</pre></div>
+<p class="p">The following Visualforce markup shows how the controller extension from above can be
+                 used in a page: </p>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Account"</span><span class="attribute"> extensions=</span><span class="string">"myControllerExtension"</span>&gt;
+    <span class="formula">{!greeting}</span> <span class="tag">&lt;p/</span>&gt;
+    <span class="tag">&lt;apex:form</span>&gt;
+        <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!account.name}"</span>/&gt; <span class="tag">&lt;p/</span>&gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> value=</span><span class="string">"Save"</span><span class="attribute"> action=</span><span class="string">"{!save}"</span>/&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_constructors">StandardController Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_methods">StandardController Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_constructors">
+<a name="apex_ApexPages_StandardController_constructors"><!-- --></a>
+<h2 class="helpHead2">StandardController Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">StandardController</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_ctor">StandardController(controllerSObject)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">ApexPages.StandardController</samp> class for the specified standard or custom object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_ctor">
+<a name="apex_ApexPages_StandardController_ctor"><!-- --></a>
+<h3 class="helpHead3">StandardController(controllerSObject)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">ApexPages.StandardController</samp> class for the specified standard
+or custom object.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> StandardController(SObject controllerSObject)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">controllerSObject</var></strong>: Type: SObject A standard or custom object.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_methods">
+<a name="apex_ApexPages_StandardController_methods"><!-- --></a>
+<h2 class="helpHead2">StandardController Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">StandardController</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_addFields">addFields(fieldNames)</a></strong><br>
+When a Visualforce page is   loaded, the fields accessible to the page are based on the fields referenced in the Visualforce markup. This method adds a   reference to each field specified in <samp class="codeph apex_code">fieldNames</samp> so that   the controller can explicitly access those fields as well.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_cancel">cancel()</a></strong><br>
+Returns the PageReference of the cancel page.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_delete">delete()</a></strong><br>
+Deletes record and returns the PageReference of the delete page.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_edit">edit()</a></strong><br>
+Returns the PageReference of the standard edit page.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_getId">getId()</a></strong><br>
+Returns the ID of the record that is currently in context, based on the value of the <samp class="codeph apex_code">id</samp> query string parameter in the Visualforce page URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_getRecord">getRecord()</a></strong><br>
+Returns the record that is currently in context, based on the value of the <samp class="codeph apex_code">id</samp> query string parameter in the Visualforce page URL. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_reset">reset()</a></strong><br>
+Forces the controller to reacquire access to newly referenced fields. Any changes made to the record prior to this method call are discarded. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_save">save()</a></strong><br>
+Saves changes and returns the updated PageReference.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_ApexPages_StandardController_view">view()</a></strong><br>
+Returns the PageReference object of the standard detail page.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_addFields">
+<a name="apex_ApexPages_StandardController_addFields"><!-- --></a>
+ <h3 class="helpHead3">addFields(fieldNames)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">When a Visualforce page is
+  loaded, the fields accessible to the page are based on the fields referenced in the Visualforce markup. This method adds a
+  reference to each field specified in <samp class="codeph apex_code">fieldNames</samp> so that
+  the controller can explicitly access those fields as well.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addFields(List&lt;<span class="keyword">String</span>&gt; fieldNames)</samp></p>
+
+   
+   
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">fieldNames</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method should be called before a record has been loaded—typically, it's called by
+    the controller's constructor. If this method is called outside of the constructor, you must use
+    the <samp class="codeph apex_code">reset()</samp> method before calling <samp class="codeph apex_code">addFields()</samp>.</p>
+
+   <p class="p">The strings in <samp class="codeph apex_code">fieldNames</samp> can either be the API name
+    of a field, such as AccountId, or they can be explicit relationships to fields, such as
+     <samp class="codeph apex_code">something__r.myField__c</samp>.</p>
+
+   <p class="p">This method is only for controllers used by dynamicVisualforce bindings.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_cancel">
+<a name="apex_ApexPages_StandardController_cancel"><!-- --></a>
+<h3 class="helpHead3">cancel()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the PageReference of the cancel page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference cancel()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_delete">
+<a name="apex_ApexPages_StandardController_delete"><!-- --></a>
+<h3 class="helpHead3">delete()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Deletes record and returns the PageReference of the delete
+page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference <span class="statement">delete</span>()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_edit">
+<a name="apex_ApexPages_StandardController_edit"><!-- --></a>
+<h3 class="helpHead3">edit()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the PageReference of the standard edit page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference edit()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_getId">
+<a name="apex_ApexPages_StandardController_getId"><!-- --></a>
+<h3 class="helpHead3">getId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID of the record that is currently in context,
+based on the value of the <samp class="codeph apex_code">id</samp> query string parameter in the Visualforce page URL.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_getRecord">
+<a name="apex_ApexPages_StandardController_getRecord"><!-- --></a>
+<h3 class="helpHead3">getRecord()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the record that is currently in context, based
+on the value of the <samp class="codeph apex_code">id</samp> query
+string parameter in the Visualforce page URL. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> SObject getRecord()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Note that only the fields
+that are referenced in the associated Visualforce markup are available for querying on this SObject. All other
+fields, including fields from any related objects, must be queried
+using a SOQL expression.</p>
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexref" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>You can work around this
+restriction by including a hidden component that references any additional
+fields that you want to query. Hide the component from display by
+setting the component's <samp class="codeph apex_code">rendered</samp> attribute to <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+</div>
+</div></div></div></div>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span> <span class="attribute">
+value=</span><span class="string">"{!account.billingcity} 
+</span><span class="formula">{!account.contacts}</span><span class="string">"
+</span>rendered=<span class="string">"false"</span>/&gt;</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_reset">
+<a name="apex_ApexPages_StandardController_reset"><!-- --></a>
+<h3 class="helpHead3">reset()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Forces the controller to reacquire access to newly referenced
+fields. Any changes made to the record prior to this method call are
+discarded. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void reset()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This method is only used
+if <samp class="codeph apex_code">addFields</samp> is called outside
+the constructor, and it must be called directly before <samp class="codeph apex_code">addFields</samp>.</p>
+<p class="p">This method is only
+for controllers used by dynamicVisualforce bindings.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_save">
+<a name="apex_ApexPages_StandardController_save"><!-- --></a>
+<h3 class="helpHead3">save()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Saves changes and returns the updated PageReference.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference save()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardController_view">
+<a name="apex_ApexPages_StandardController_view"><!-- --></a>
+<h3 class="helpHead3">view()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the PageReference object of the standard detail
+page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference view()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

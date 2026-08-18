@@ -1,0 +1,134 @@
+<a name="apex_salesforce_files_customize_downloads_examples"><!-- --></a><h1 class="helpHead1">Custom File Download Examples</h1><div class="body conbody">
+<div class="shortdesc">You can use Apex to customize the behavior of files upon attempted download. These
+        examples assume that only one file is being downloaded. File download customization is
+        available in API version 39.0 and later.</div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">This example demonstrates a system that requires downloads to go through IRM
+            control for some users. For a Modify All Data (MAD) user who’s allowed to download
+            files, and whose user ID is <samp class="codeph nolang">005xx</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Allow customization of the content Download experience</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ContentDownloadHandlerFactoryImpl <span class="keyword">implements</span> Sfc.ContentDownloadHandlerFactory {
+
+<span class="keyword">public</span> Sfc.ContentDownloadHandler getContentDownloadHandler(List&lt;<span class="keyword">ID</span>&gt; ids, Sfc.ContentDownloadContext context) {
+    Sfc.ContentDownloadHandler contentDownloadHandler = <span class="keyword">new</span> Sfc.ContentDownloadHandler();
+
+    <span class="statement">if</span>(UserInfo.getUserId() == <span class="string">'005xx'</span>) {
+        contentDownloadHandler.isDownloadAllowed = <span class="keyword">true</span>;
+        <span class="statement">return</span> contentDownloadHandler;
+    }
+    
+    contentDownloadHandler.isDownloadAllowed = <span class="keyword">false</span>;
+    contentDownloadHandler.downloadErrorMessage = <span class="string">'This file needs to be IRM controlled. You'</span>re not allowed to download it<span class="string">';
+</span>    contentDownloadHandler.redirectUrl =<span class="string">'/apex/IRMControl?Id='</span>+ids.get(0);
+    <span class="statement">return</span> contentDownloadHandler;
+}
+}</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To
+                refer to a MAD user profile, you can use <samp class="codeph apex_code">UserInfo.getProfileId()</samp> instead of <samp class="codeph apex_code">UserInfo.getUserId()</samp>.</p>
+</div>
+</div></div></div></div>
+<p class="p">In this example, <samp class="codeph apex_code">IRMControl</samp> is a Visualforce page created for
+                displaying a link to download a file from the IRM system. You need a controller for
+                this page that calls your IRM system. As it’s processing the file, it gives an
+                endpoint to download the file when it’s controlled. Your IRM system uses the sObject
+                API to get the <samp class="codeph apex_code">VersionData</samp> of this <samp class="codeph apex_code">ContentVersion</samp>. Therefore, the IRM system needs
+                the VersionID and must retrieve the VersionData using the MAD user.</p>
+<p class="p">Your IRM
+                system is at <span class="ph filepath">http://irmsystem</span> and is expecting the VersionID as
+                a query parameter. The IRM system returns a JSON response with the download endpoint
+                in a <samp class="codeph nolang">downloadEndpoint</samp>
+            value.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> IRMController {
+    
+<span class="keyword">private</span> <span class="keyword">String</span> downloadEndpoint;
+    
+<span class="keyword">public</span> IRMController() {
+    downloadEndpoint = <span class="string">''</span>;
+}
+    
+<span class="keyword">public</span> <span class="keyword">void</span> applyIrmControl() {
+    <span class="keyword">String</span> versionId = ApexPages.currentPage().getParameters().get(<span class="string">'id'</span>);
+    Http h = <span class="keyword">new</span> Http();
+
+    <span class="onelineComment">//Instantiate a new HTTP request, specify the method (GET) as well as the endpoint</span>
+    HttpRequest req = <span class="keyword">new</span> HttpRequest();
+    req.setEndpoint(<span class="string">'http://irmsystem?versionId='</span> + versionId);
+    req.setMethod(<span class="string">'GET'</span>);
+
+    <span class="onelineComment">// Send the request, and retrieve a response</span>
+    HttpResponse r = h.send(req);
+    JSONParser parser = JSON.createParser(r.getBody());
+      <span class="statement">while</span> (parser.nextToken() != <span class="keyword">null</span>) {
+        <span class="statement">if</span> ((parser.getCurrentToken() == JSONToken.FIELD_NAME) &amp;&amp;
+            (parser.getText() == <span class="string">'downloadEndpoint'</span>)) {
+                parser.nextToken();
+                downloadEndpoint = parser.getText();
+                <span class="statement">break</span>;
+        }
+    }
+}
+    
+<span class="keyword">public</span> <span class="keyword">String</span> getDownloadEndpoint() {
+    <span class="statement">return</span> downloadEndpoint;
+}
+    
+}
+</pre></div>
+</div></div>
+</div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">The following example creates a class that implements the <samp class="codeph apex_code">ContentDownloadHandlerFactory</samp> interface and returns
+            a download handler that prevents downloading a file to a mobile
+            device.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Allow customization of the content Download experience</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ContentDownloadHandlerFactoryImpl <span class="keyword">implements</span> Sfc.ContentDownloadHandlerFactory {
+
+<span class="keyword">public</span> Sfc.ContentDownloadHandler getContentDownloadHandler(List&lt;<span class="keyword">ID</span>&gt; ids, Sfc.ContentDownloadContext context) {
+    Sfc.ContentDownloadHandler contentDownloadHandler = <span class="keyword">new</span> Sfc.ContentDownloadHandler();
+    
+    <span class="statement">if</span>(context == Sfc.ContentDownloadContext.MOBILE) {
+        contentDownloadHandler.isDownloadAllowed = <span class="keyword">false</span>;
+        contentDownloadHandler.downloadErrorMessage = <span class="string">'Downloading a file from a mobile device isn'</span>t allowed.<span class="string">';
+</span>        <span class="statement">return</span> contentDownloadHandler;
+    }
+    contentDownloadHandler.isDownloadAllowed = <span class="keyword">true</span>;
+    <span class="statement">return</span> contentDownloadHandler;
+}</pre></div>
+</div></div>
+</div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">You can also prevent downloading a file from a mobile device and require that a
+            file must go through IRM
+            control.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Allow customization of the content Download experience</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ContentDownloadHandlerFactoryImpl <span class="keyword">implements</span> Sfc.ContentDownloadHandlerFactory {
+
+<span class="keyword">public</span> Sfc.ContentDownloadHandler getContentDownloadHandler(List&lt;<span class="keyword">ID</span>&gt; ids, Sfc.ContentDownloadContext context) {
+    Sfc.ContentDownloadHandler contentDownloadHandler = <span class="keyword">new</span> Sfc.ContentDownloadHandler();
+
+    <span class="statement">if</span>(UserInfo.getUserId() == <span class="string">'005xx000001SvogAAC'</span>) {
+        contentDownloadHandler.isDownloadAllowed = <span class="keyword">true</span>;
+        <span class="statement">return</span> contentDownloadHandler;
+    }
+    <span class="statement">if</span>(context == Sfc.ContentDownloadContext.MOBILE) {
+        contentDownloadHandler.isDownloadAllowed = <span class="keyword">false</span>;
+        contentDownloadHandler.downloadErrorMessage = <span class="string">'Downloading a file from a mobile device isn'</span>t allowed.<span class="string">';
+</span>        <span class="statement">return</span> contentDownloadHandler;
+    }
+    
+    contentDownloadHandler.isDownloadAllowed = <span class="keyword">false</span>;
+    contentDownloadHandler.downloadErrorMessage = <span class="string">'This file needs to be IRM controlled. You'</span>re not allowed to download it<span class="string">';
+</span>    contentDownloadHandler.redirectUrl =<span class="string">'/apex/IRMControl?Id='</span>+id.get(0);
+    <span class="statement">return</span> contentDownloadHandler;
+}
+}</pre></div>
+</div></div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

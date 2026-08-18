@@ -1,0 +1,207 @@
+<a name="langCon_apex_SOQL_VLSQ"><!-- --></a><h1 class="helpHead1">Working with Very Large SOQL Queries</h1><div class="body conbody">
+<div class="shortdesc">Your SOQL query sometimes returns so many sObjects that the limit on heap size is exceeded and an error occurs. To resolve, use a SOQL query for loop instead, since it can process multiple batches of records by using internal calls to query and queryMore. </div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Where possible, we changed noninclusive terms to align with our
+            company value of Equality. We maintained certain terms to avoid any effect on customer
+            implementations.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">For example, if the results are too large, this syntax causes a runtime exception:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accts = [SELECT Id FROM Account];
+</pre></div>
+
+        <p class="p">Instead, use a SOQL query <samp class="codeph apex_code"><span class="statement">for</span></samp> loop as in one of
+            the following examples:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Use this format if you are not executing DML statements </span>
+<span class="onelineComment">// within the for loop</span>
+<span class="statement">for</span> (Account a : [SELECT Id, Name FROM Account 
+                  WHERE Name LIKE <span class="string">'Acme%'</span>]) {
+    <span class="onelineComment">// Your code without DML statements here</span>
+}
+
+<span class="onelineComment">// Use this format for efficiency if you are executing DML statements </span>
+<span class="onelineComment">// within the for loop</span>
+<span class="statement">for</span> (List&lt;Account&gt; accts : [SELECT Id, Name FROM Account
+                            WHERE Name LIKE <span class="string">'Acme%'</span>]) {
+    <span class="statement">for</span> (Account a : accts) {
+    <span class="onelineComment">// Your code here</span>
+    }
+    <span class="statement">update</span> accts;
+}</pre></div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> Using the SOQL query within the <samp class="codeph apex_code"><span class="statement">for</span></samp> loop
+            reduces the possibility of reaching the limit on heap size. However, this approach can
+            result in more CPU cycles being used with increased DML calls. For more information, see
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_loops_for_SOQL.htm#soql_for_loop_desc" target="_blank">SOQL For Loops Versus Standard SOQL Queries</a>. </p>
+</div>
+</div></div></div></div>
+
+        <p class="p">The following example demonstrates a SOQL query <samp class="codeph apex_code"><span class="statement">for</span></samp> loop that’s used to mass update records. Suppose that you want to
+            change the last name of a contact in records for contacts whose first and last names
+            match specified criteria:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> massUpdate() {
+    <span class="statement">for</span> (List&lt;Contact&gt; contacts:
+      [SELECT FirstName, LastName FROM Contact]) {
+        <span class="statement">for</span>(Contact c : contacts) {
+            <span class="statement">if</span> (c.FirstName == <span class="string">'Barbara'</span> &amp;&amp;
+              c.LastName == <span class="string">'Gordon'</span>) {
+                c.LastName = <span class="string">'Wayne'</span>;
+            }
+        }
+        <span class="statement">update</span> contacts;
+    }
+}</pre></div>
+
+        <p class="p">Instead of using a SOQL query in a <samp class="codeph soql">for</samp> loop, the
+            preferred method of mass updating records is to use <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch.htm">batch Apex</a>, which minimizes the risk of hitting governor limits.</p>
+
+        <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_loops_for_SOQL.htm" title="SOQL for loops iterate over all of the sObject records returned by a SOQL query.">SOQL For Loops</a>.</p>
+
+        <div class="section" id="EffSOQLSection">
+<a name="EffSOQLSection"><!-- --></a><h2 class="helpHead2">More Efficient SOQL Queries</h2>
+
+            
+            <p class="p">For best performance, SOQL queries must be selective, particularly for queries inside
+                triggers. </p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Selective SOQL Query Criteria</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">A query is selective when one of the query filters is on an indexed
+                    field and the query filter reduces the resulting number of rows
+                    below a system-defined threshold. The performance of the SOQL query
+                    improves when two or more filters used in the WHERE clause meet the
+                    mentioned conditions.</li>
+
+                <li class="li">As a best practice, a query is considered selective when a query
+                    filter on an indexed field matches less than 10% of the total
+                    rows.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Custom Index Considerations for Selective SOQL Queries</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">The following fields are indexed by default.<ul class="ul bulletList">
+                        <li class="li">Primary keys (Id, Name, and OwnerId fields)</li>
+
+                        <li class="li">Foreign keys (lookup or master-detail relationship
+                            fields)</li>
+
+                        <li class="li">Audit dates (CreatedDate and SystemModstamp fields)</li>
+
+                        <li class="li">RecordType fields (indexed for all standard objects that
+                            feature them)</li>
+
+                        <li class="li">Custom fields that are marked as External ID or Unique</li>
+
+                    </ul>
+</li>
+
+                <li class="li">Fields not indexed by default are automatically indexed when the
+                    Salesforce optimizer recognizes that an index can improve
+                    performance for frequently run queries. </li>
+
+                <li class="li">Salesforce Support can add custom indexes on request for
+                    customers.</li>
+
+                <li class="li">A custom index can’t be created on these types of fields:
+                    multi-select picklists, currency fields in a multicurrency
+                    organization, long text fields, some formula fields, and binary
+                    fields (fields of type blob, file, or encrypted text.) New data
+                    types, typically complex ones, are periodically added to Salesforce,
+                    and fields of these types don’t always allow custom indexing.</li>
+
+                <li class="li">You can’t create custom indexes on formula fields that include
+                    invocations of the <samp class="codeph nolang">TEXT</samp>
+                    function on picklist fields.</li>
+
+                <li class="li">Typically, a custom index isn’t used in these cases.<ul class="ul bulletList">
+                        <li class="li">The queried values exceed the system-defined threshold.</li>
+
+                        <li class="li">The filter operator is a negative operator such as <samp class="codeph nolang">NOT EQUAL TO</samp> (or <samp class="codeph nolang">!=</samp>), <samp class="codeph nolang">NOT CONTAINS</samp>, and <samp class="codeph nolang">NOT STARTS WITH</samp>.</li>
+
+                        <li class="li">The <samp class="codeph nolang">CONTAINS</samp> operator
+                            is used in the filter, and the number of rows to be scanned
+                            exceeds 333,333. The <samp class="codeph nolang">CONTAINS</samp> operator requires a full scan of the
+                            index. This threshold is subject to change.</li>
+
+                        <li class="li">You’re comparing with an empty value (<samp class="codeph nolang">Name != ‘’</samp>).</li>
+
+                    </ul>
+<p class="p">However, there are other complex scenarios in which custom
+                        indexes can’t be used. Contact your Salesforce representative if
+                        your scenario isn’t covered by these cases or if you need
+                        further assistance with non-selective queries.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Examples of Selective SOQL Queries</h2>
+
+            
+            <p class="p">To better understand whether a query on a large object is selective or not,
+                let’s analyze some queries. For these queries, assume that there are more
+                than 1 million records for the Account sObject. These records include
+                soft-deleted records, that is, deleted records that are still in the Recycle
+                Bin.</p>
+
+            <div class="p">Query 1:
+                <div class="codeSection nolang"><pre class="codeblock brush:plain">SELECT Id FROM Account WHERE Id IN (&lt;list of account IDs&gt;)</pre></div>
+</div>
+
+            <p class="p">The <samp class="codeph nolang">WHERE</samp> clause is on an indexed
+                field (Id). If <samp class="codeph nolang">SELECT COUNT() FROM Account
+                WHERE Id IN (&lt;list of account IDs&gt;)</samp> returns fewer
+                records than the selectivity threshold, the index on <samp class="codeph nolang">Id</samp> is used. This index is typically
+                used when the list of IDs contains only a few records. </p>
+
+            <div class="p">Query 2:
+                <div class="codeSection nolang"><pre class="codeblock brush:plain">SELECT Id FROM Account WHERE Name != ‘’</pre></div>
+</div>
+
+            <p class="p">Since Account is a large object even though Name is indexed (primary key),
+                this filter returns most of the records, making the query
+                non-selective.</p>
+
+            <div class="p">Query 3:
+                <div class="codeSection nolang"><pre class="codeblock brush:plain">SELECT Id FROM Account WHERE Name != ‘’ AND CustomField__c = ‘ValueA’</pre></div>
+</div>
+
+            <p class="p">Here we have to see if any filter, when considered individually, is
+                selective. As we saw in the previous example, the first filter isn’t
+                selective. So let’s focus on the second one. If the count of records
+                returned by <samp class="codeph nolang">SELECT COUNT() FROM Account
+                WHERE CustomField__c = ‘ValueA’</samp> is lower than the
+                selectivity threshold, and CustomField__c is indexed, the query is
+                selective.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm" title="Working with SOQL Aggregate Functions">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_single_row.htm" title="Using SOQL Queries That Return One Record">Next →</a></li>
+</ul></div>
+</div>

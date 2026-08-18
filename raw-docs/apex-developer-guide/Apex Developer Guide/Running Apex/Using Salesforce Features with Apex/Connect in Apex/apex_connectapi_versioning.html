@@ -1,0 +1,57 @@
+<a name="apex_connectapi_versioning"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">ConnectApi</span> Versioning and Equality
+        Checking</h1><div class="body conbody">
+<div class="shortdesc">Versioning in <samp class="codeph apex_code">ConnectApi</samp> classes follows
+        specific rules that are different than the rules for other Apex classes.</div>
+
+        <p class="p">Versioning for <samp class="codeph apex_code">ConnectApi</samp> classes follows these
+            rules.</p>
+
+        <a name="versioning"><!-- --></a><ul class="ul bulletList" id="versioning">
+            <li class="li">A <samp class="codeph apex_code">ConnectApi</samp> method call executes in the
+                context of the version of the class that contains the method call. The use of
+                version is analogous to the <samp class="codeph nolang">/v<var class="keyword varname">XX</var>.<var class="keyword varname">X</var></samp> section of a Connect
+                REST API URL.</li>
+
+            <li class="li">Each <samp class="codeph apex_code">ConnectApi</samp> output object exposes a
+                    <samp class="codeph apex_code">getBuildVersion</samp> method. This method
+                returns the version under which the method that created the output object was
+                invoked.</li>
+
+            <li class="li">When interacting with input objects, Apex can access only properties supported by
+                the version of the enclosing Apex class.</li>
+
+            <li class="li">Input objects passed to a <samp class="codeph apex_code">ConnectApi</samp> method
+                may contain only non-null properties that are supported by the version of the Apex
+                class executing the method. If the input object contains version-inappropriate
+                properties, an exception is thrown.</li>
+
+            <li class="li">The output of the <samp class="codeph apex_code">toString</samp> method only
+                returns properties that are supported in the version of the code interacting with
+                the object. For output objects, the returned properties must also be supported in
+                the build version.</li>
+
+            <li class="li">Apex REST, <samp class="codeph apex_code">JSON.serialize</samp>, and <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> serialization include only
+                version-appropriate properties.</li>
+
+            <li class="li">Apex REST, <samp class="codeph apex_code">JSON.deserialize</samp>, and <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> deserialization reject properties
+                that are version-inappropriate.</li>
+
+            <li class="li">Enums are not versioned. Enum values are returned in all API versions. Clients
+                should handle values they don't understand gracefully.</li>
+
+        </ul>
+
+        <p class="p">Equality checking for <samp class="codeph apex_code">ConnectApi</samp> classes follows
+            these rules.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">Input objects—properties are compared.</li>
+
+            <li class="li">Output objects—properties and build versions are compared. For example, if
+                two objects have the same properties with the same values but have different build
+                versions, the objects are not equal. To get the build version, call <samp class="codeph apex_code">getBuildVersion</samp>.</li>
+
+        </ul>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

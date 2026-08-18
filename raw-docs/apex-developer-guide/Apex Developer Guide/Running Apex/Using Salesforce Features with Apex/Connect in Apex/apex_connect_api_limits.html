@@ -1,0 +1,18 @@
+<a name="apex_connect_api_limits"><!-- --></a><h1 class="helpHead1">Understanding Limits for <span class="titlecodeph">ConnectApi</span>
+        Classes</h1><div class="body conbody">
+<div class="shortdesc">Limits for methods in the <samp class="codeph apex_code">ConnectApi</samp>
+        namespace are different than the limits for other Apex classes.</div>
+
+        <p class="p">For classes in the <samp class="codeph apex_code">ConnectApi</samp> namespace, every write operation costs one DML statement
+              against the Apex governor limit. <samp class="codeph apex_code">ConnectApi</samp>
+              method calls are also subject to rate limits. Most <samp class="codeph apex_code">ConnectApi</samp> method calls count toward the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm" target="_blank">Salesforce Platform total API request
+                allocations</a>, which are per org and span a 24-hour period. Only <samp class="codeph apex_code">ConnectApi</samp> method calls that require Chatter are
+              subject to a per user, per namespace, per hour rate limit. The documentation for every
+                <samp class="codeph apex_code">ConnectApi</samp> method indicates whether Chatter
+              is required. When you exceed the rate limit, a <samp class="codeph apex_code">ConnectApi.RateLimitException</samp> is thrown. Your Apex code must catch and
+              handle this exception.</p>
+
+        <p class="p">When testing code, a call to the Apex <samp class="codeph apex_code">Test.startTest</samp> method starts a new rate limit count. A call to the <samp class="codeph apex_code">Test.stopTest</samp> method sets your rate limit count to
+            the value it was before you called <samp class="codeph apex_code">Test.startTest</samp>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

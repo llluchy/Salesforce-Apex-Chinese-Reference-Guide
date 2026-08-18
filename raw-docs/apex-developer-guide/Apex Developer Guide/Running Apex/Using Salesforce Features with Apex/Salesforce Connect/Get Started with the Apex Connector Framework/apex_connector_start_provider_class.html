@@ -1,0 +1,94 @@
+<a name="apex_connector_start_provider_class"><!-- --></a><h1 class="helpHead1">Create a Sample  DataSource.Provider Class</h1><div class="body conbody">
+<div class="shortdesc">Now you need a class that extends and overrides a few methods in <samp class="codeph apex_code">DataSource.Provider</samp>.</div>
+
+        <p class="p">Your <samp class="codeph apex_code">DataSource.Provider</samp> class informs Salesforce
+            of the authentication and functional capabilities that are supported by or required to
+            connect to the external system.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> SampleDataSourceProvider <span class="keyword">extends</span> DataSource.Provider {</pre></div>
+
+        <p class="p">If the external system requires authentication, Salesforce can provide the authentication
+            credentials from the external data source definition or users’ personal settings. This
+            example specifies that the external system doesn’t require authentication, but also
+            supports OAuth authentication. To do so, it returns <samp class="codeph apex_code">AuthenticationCapability.ANONYMOUS</samp> and <samp class="codeph apex_code">AuthenticationCapability.OAUTH</samp> in the list of authentication
+            capabilities.</p>
+
+        <p class="p">The <samp class="codeph apex_code">getAuthenticationCapabilities</samp> method should
+            always return the same list of authentication types regardless of user, org, or
+            context.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.AuthenticationCapability&gt;
+        getAuthenticationCapabilities() {
+        <span class="onelineComment">// Best Practice: Always return a static list of authentication types</span>
+        <span class="onelineComment">// Don't query the database, make callouts, or use dynamic logic</span>
+        List&lt;DataSource.AuthenticationCapability&gt; capabilities =
+            <span class="keyword">new</span> List&lt;DataSource.AuthenticationCapability&gt;();
+        capabilities.add(DataSource.AuthenticationCapability.ANONYMOUS);
+        capabilities.add(DataSource.AuthenticationCapability.OAUTH);
+        <span class="statement">return</span> capabilities;
+    }</pre></div>
+
+        <p class="p">This example also specifies that the external system allows SOQL queries, SOSL queries,
+            Salesforce searches, upserting data, and deleting data.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">To allow SOQL, the example declares the <samp class="codeph apex_code">DataSource.Capability.ROW_QUERY</samp> capability.</li>
+
+            <li class="li">To allow SOSL and Salesforce searches, the example declares the <samp class="codeph apex_code">DataSource.Capability.SEARCH</samp> capability.</li>
+
+            <li class="li">To allow upserting external data, the example declares the <samp class="codeph apex_code">DataSource.Capability.ROW_CREATE</samp> and <samp class="codeph apex_code">DataSource.Capability.ROW_UPDATE</samp>
+                capabilities.</li>
+
+            <li class="li">To allow deleting external data, the example declares the <samp class="codeph apex_code">DataSource.Capability.ROW_DELETE</samp>
+                capability.</li>
+
+        </ul>
+
+        <p class="p">The <samp class="codeph apex_code">getCapabilities</samp> method should always return
+            the same list of capabilities regardless of configuration or data.The returned
+            capabilities should never change based on runtime conditions, user context, dynamic
+            queries, or any other conditions.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.Capability&gt; getCapabilities() {
+        <span class="onelineComment">// Best Practice: Return a static list of functional capabilities</span>
+        <span class="onelineComment">// Don't query the database, make callouts, or use dynamic logic</span>
+        List&lt;DataSource.Capability&gt; capabilities = <span class="keyword">new</span>
+        List&lt;DataSource.Capability&gt;();
+        capabilities.add(DataSource.Capability.ROW_QUERY);
+        capabilities.add(DataSource.Capability.SEARCH);
+        capabilities.add(DataSource.Capability.ROW_CREATE);
+        capabilities.add(DataSource.Capability.ROW_UPDATE);
+        capabilities.add(DataSource.Capability.ROW_DELETE);
+        <span class="statement">return</span> capabilities;
+    }</pre></div>
+
+        <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>When you call the <samp class="codeph apex_code">getAuthenticationCapabilities</samp> or <samp class="codeph apex_code">getCapabilities</samp> methods, be sure the returned list always contains the
+            same values. Never use a SOQL query, callout, or any conditional logic that changes the
+            returned values based on runtime conditions. Returning varying lists of authentication
+            capabilities or capabilities for an external system can lead to errors that are
+            difficult to troubleshoot.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">Lastly, the example identifies the <samp class="codeph apex_code">SampleDataSourceConnection</samp> class that obtains the external system’s schema
+            and handles the queries and searches of the external data.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">override</span> DataSource.Connection getConnection(
+        DataSource.ConnectionParams connectionParams) {
+        <span class="statement">return</span> <span class="keyword">new</span> SampleDataSourceConnection(connectionParams);
+    }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_start_connection_class.htm" title="Create a Sample DataSource.Connection Class">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_start_setup.htm" title="Set Up Salesforce Connect to Use Your Custom Adapter">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Provider.htm" target="_blank" title="Apex Reference Guide: Provider Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Provider Class</a></div></li></ul>
+</div>
+</div>

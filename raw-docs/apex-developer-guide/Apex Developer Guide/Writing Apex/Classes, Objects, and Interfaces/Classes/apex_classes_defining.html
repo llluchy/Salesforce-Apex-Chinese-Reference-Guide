@@ -1,0 +1,139 @@
+<a name="apex_classes_defining"><!-- --></a><h1 class="helpHead1">Apex Class Definition</h1><div class="body">
+<div class="p">In Apex, you can define top-level classes (also called outer classes) as well as inner classes,
+            that is, a class defined within another class. You can only have inner classes one level
+            deep. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> myOuterClass {
+    <span class="onelineComment">// Additional myOuterClass code here</span>
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> myInnerClass {
+        <span class="onelineComment">// myInnerClass code here</span>
+    }
+}</pre></div>
+</div>
+
+<div class="p">To define a class, specify the following:<ol class="ol enumList">
+<li class="li">Access modifiers:<ul class="ul bulletList">
+<li class="li">You must use one of the access modifiers (such as <samp class="codeph apex_code"><span class="keyword">public</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span></samp>) in the declaration of a top-level
+class. </li>
+
+<li class="li">You don’t have to use an access modifier in the declaration of an inner class. </li>
+
+</ul>
+</li>
+
+<li class="li">Optional definition modifiers (such as <samp class="codeph apex_code"><span class="keyword">virtual</span></samp>, <samp class="codeph apex_code"><span class="keyword">abstract</span></samp>, and so on)</li>
+
+<li class="li">Required: The keyword <samp class="codeph apex_code"><span class="keyword">class</span></samp> followed by the name of the class</li>
+
+<li class="li">Optional extensions or implementations or both</li>
+
+</ol>
+</div>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Avoid using standard object names for class names. Doing so
+causes unexpected results. For a list of standard objects, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/" target="_blank" title="HTML (New Window)">Object Reference for Salesforce</a>.</p>
+</div>
+</div></div></div></div>
+
+<p class="p">Use the following syntax for defining classes:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">private</span> | <span class="keyword">public</span> | <span class="keyword">global</span> 
+[<span class="keyword">virtual</span> | <span class="keyword">abstract</span> | <span class="keyword">protected</span> | with sharing | without sharing | with inherited sharing] 
+<span class="keyword">class</span><var class="keyword varname"> ClassName</var> [<span class="keyword">implements</span><var class="keyword varname"> InterfaceNameList</var>] [<span class="keyword">extends</span><var class="keyword varname"> ClassName</var>] 
+{ 
+<span class="onelineComment">// The body of the class</span>
+}</pre></div>
+
+<div class="p">
+<ul class="ul bulletList">
+<li class="li">The <samp class="codeph apex_code"><span class="keyword">private</span></samp> access modifier declares that this class is
+                    only known locally, that is, only by this section of code. This is the default
+                    access for inner classes—that is, if you don't specify an access modifier
+                    for an inner class, it’s considered <samp class="codeph apex_code"><span class="keyword">private</span></samp>. This keyword can only be used with inner classes (or with
+                    top-level test classes marked with the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation). </li>
+
+<li class="li">The <samp class="codeph apex_code"><span class="keyword">public</span></samp> access modifier
+declares that this class is visible in your application or namespace.</li>
+
+<li class="li">The <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier declares that this class is
+                    known by all Apex code everywhere. <span class="ph" id="global_outer_classes"><a name="global_outer_classes"><!-- --></a>All classes
+                        containing methods defined with the <samp class="codeph apex_code">webservice</samp> keyword must be declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. If a method or inner class is
+                        declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>, the outer,
+                        top-level class must also be defined as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. </span>
+</li>
+
+<li class="li">The <samp class="codeph apex_code">with sharing</samp> and <samp class="codeph apex_code">without sharing</samp> keywords specify the sharing mode for this class. For more information,
+see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a>.</li>
+
+<li class="li">The <samp class="codeph apex_code"><span class="keyword">virtual</span></samp> definition modifier declares that this
+                    class allows extension and overrides. You can’t override a method with the
+                        <samp class="codeph apex_code"><span class="keyword">override</span></samp> keyword unless the class
+                    has been defined as <samp class="codeph apex_code"><span class="keyword">virtual</span></samp>.</li>
+
+<li class="li">The <samp class="codeph apex_code"><span class="keyword">abstract</span></samp> definition
+modifier declares that this class contains abstract methods, that
+is, methods that only have their signature declared and no body defined. </li>
+
+</ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><ul class="ul bulletList">
+<li class="li">You can’t add an abstract method to a global class after the class has been uploaded in a
+                        Managed - Released package version. </li>
+
+<li class="li">If the class in the Managed - Released  package is virtual, the method that you can add to it
+must also be virtual and must have an implementation.</li>
+
+<li class="li">You can’t override a public or protected virtual method of a global class of an installed
+                        managed package.</li>
+
+</ul>
+<p class="p">For more information about managed packages, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_dev.htm" title="Salesforce supports the creation and distribution of Apex through different types of packages. Understand the distinctions between package types, and recognize that Apex behavior can vary across them.">Managed Package Types</a>.</p>
+</p>
+</div>
+</div></div></div></div>
+</div>
+
+<p class="p">A class can implement multiple interfaces, but only extend one existing class. This restriction
+            means that Apex doesn’t support multiple inheritance. The interface names in the list
+            are separated by commas. For more information about interfaces, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_interfaces.htm" title="An interface is like a class in which none of the methods have been implemented—the method signatures are there, but the body of each method is empty. To use an interface, another class must implement it by providing a body for all of the methods contained in the interface.">Interfaces</a>.</p>
+
+<p class="p">For more information about method and variable access modifiers, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm">Access Modifiers</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 65.0 and later, an abstract or override method requires a <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, or <samp class="codeph apex_code"><span class="keyword">global</span></samp> access
+                modifier. If one of these access modifiers isn’t explicitly included in the method
+                declaration, then method access defaults to <samp class="codeph apex_code"><span class="keyword">private</span></samp>. Private access is invalid for these method types because the
+                implementing class can’t access the abstract method. Therefore, if you attempt to
+                declare an abstract or override method without an allowed access modifier, you get
+                the compilation error <samp class="codeph apex_code">Abstract methods require at
+                    least one of the following: <span class="keyword">global</span>, <span class="keyword">public</span>, <span class="keyword">protected</span></samp>.</p>
+
+            <p class="p">In API version 61.0 and later, private methods are no longer overridden by an
+                instance method with the same signature in a subclass. This change is versioned, so
+                to prevent the override, update your abstract or virtual classes that contain
+                private methods to API version 61.0 or later. In API version 60.0 and earlier, if a
+                subclass declares an instance method with the same signature as a private method in
+                one of its superclasses, the subclass method overrides the private method.</p>
+
+        </div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_declaring_variables.htm" title="Class Variables">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_conventions.htm" title="Apex and Visualforce documentation uses these typographical conventions.">Documentation Typographical Conventions</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/articleView?id=code_manage_packages.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Manage Apex Classes - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Manage Apex Classes</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/articleView?id=code_system_log.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Developer Console Functionality - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Developer Console Functionality</a></div></li>
+</ul>
+</div>
+</div>

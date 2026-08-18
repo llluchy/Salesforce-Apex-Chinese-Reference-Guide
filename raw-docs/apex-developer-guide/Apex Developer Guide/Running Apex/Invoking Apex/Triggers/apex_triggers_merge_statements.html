@@ -1,0 +1,47 @@
+<a name="apex_triggers_merge_statements"><!-- --></a><h1 class="helpHead1">Triggers and Merge Statements</h1><div class="body">
+<p class="p">Merge events do not fire their own trigger events. Instead, they
+fire delete and update events as follows:</p>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b">Deletion of losing records</strong>: A single merge operation fires a single delete event for all records
+that are deleted in the merge. To determine which records were deleted
+as a result of a merge operation use the <samp class="codeph apex_code">MasterRecordId</samp> field in <samp class="codeph apex_code">Trigger.old</samp>. When a record is deleted after losing a merge
+operation, its <samp class="codeph apex_code">MasterRecordId</samp> field is set to the ID of the winning record. The <samp class="codeph apex_code">MasterRecordId</samp> field is only set
+in <samp class="codeph apex_code">after <span class="statement">delete</span></samp> trigger events.
+If your application requires special handling for deleted records
+that occur as a result of a merge, you need to use the <samp class="codeph apex_code">after <span class="statement">delete</span></samp> trigger event.</li>
+
+<li class="li">
+<strong class="ph b">Update of the winning record</strong>: A single merge operation fires a single update event for the winning
+record only. Any child records that are reparented as a result of
+the merge operation do not fire triggers.</li>
+
+</ul>
+
+<p class="p">For example, if two contacts are merged, only the delete and update
+contact triggers fire. No triggers for records related to the contacts,
+such as accounts or opportunities, fire.</p>
+
+<div class="p">The following is the order of events when a merge occurs:<ol class="ol enumList">
+<li class="li">The <samp class="codeph apex_code">before <span class="statement">delete</span></samp> trigger
+fires.</li>
+
+<li class="li">The system deletes the necessary records due to the merge, assigns
+new parent records to the child records, and sets the <samp class="codeph apex_code">MasterRecordId</samp> field on the deleted
+records. </li>
+
+<li class="li">The <samp class="codeph apex_code">after <span class="statement">delete</span></samp> trigger
+fires.</li>
+
+<li class="li">The system does the specific updates required for the master record.
+Normal update triggers apply.</li>
+
+</ol>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_defining.htm" title="Defining Triggers">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_recovered_records.htm" title="Triggers and Recovered Records">Next →</a></li>
+</ul></div>
+</div>

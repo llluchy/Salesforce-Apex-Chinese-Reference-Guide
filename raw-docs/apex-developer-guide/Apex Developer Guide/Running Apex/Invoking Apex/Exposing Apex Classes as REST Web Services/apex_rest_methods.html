@@ -1,0 +1,499 @@
+<a name="apex_rest_methods"><!-- --></a><h1 class="helpHead1">Apex REST Methods</h1><div class="body">
+        <p class="p"><span class="ph" id="json_xml_format"><a name="json_xml_format"><!-- --></a>Apex REST supports two formats for representations of resources:
+                JSON and XML. JSON representations are passed by default in the body of a request or
+                response, and the format is indicated by the <samp class="codeph nolang">Content-Type</samp> property in the HTTP header.</span> You can retrieve the
+            body as a Blob from the HttpRequest object if there are no parameters to the Apex
+            method. If parameters are defined in the Apex method, an attempt is made to deserialize
+            the request body into those parameters. If the Apex method has a non-void return type,
+            the resource representation is serialized into the response body.</p>
+
+        <p class="p">These return and parameter types are allowed:</p>
+
+        <a name="rest_param_types"><!-- --></a><ul class="ul bulletList" id="rest_param_types">
+            <li class="li" id="ApexRESTValidTypesApexPrimitives">
+<a name="ApexRESTValidTypesApexPrimitives"><!-- --></a>Apex primitives (excluding sObject and
+                Blob).</li>
+
+            <li class="li" id="ApexRESTValidTypesSObjects">
+<a name="ApexRESTValidTypesSObjects"><!-- --></a>sObjects</li>
+
+            <li class="li" id="ApexRESTValidTypesLists">
+<a name="ApexRESTValidTypesLists"><!-- --></a>Lists or maps of Apex primitives or sObjects (only maps
+                with String keys are supported). </li>
+
+            <li class="li">
+<a class="xref" href="#ApexRESTUserDefinedTypes">User-defined types</a> that contain member variables of the types listed
+                above.</li>
+
+        </ul>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex REST doesn’t support XML serialization and deserialization of Connect in Apex
+            objects. Apex REST does support JSON serialization and deserialization of Connect in
+            Apex objects. Also, some collection types, such as maps and lists, aren’t supported with
+            XML. See <a class="xref" href="#RequestDataConsiderations">Request and Response Data Considerations</a>
+            for details.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">Methods annotated with <samp class="codeph nolang">@HttpGet</samp> or <samp class="codeph nolang">@HttpDelete</samp> must have no parameters. This is because
+            GET and DELETE requests have no request body, so there's nothing to deserialize. </p>
+
+        <p class="p">The @ReadOnly annotation  supports the Apex REST annotations for all the HTTP requests:
+                <samp class="codeph apex_code"><span class="keyword">@HttpDelete</span></samp>, <samp class="codeph apex_code"><span class="keyword">@HttpGet</span></samp>, <samp class="codeph apex_code"><span class="keyword">@HttpPatch</span></samp>, <samp class="codeph apex_code"><span class="keyword">@HttpPost</span></samp>, and <samp class="codeph apex_code"><span class="keyword">@HttpPut</span></samp>.</p>
+
+        <p class="p">A single Apex class annotated with <samp class="codeph nolang">@RestResource</samp>
+            can't have multiple methods annotated with the same HTTP request method. For example,
+            the same class can't have two methods annotated with <samp class="codeph nolang">@HttpGet</samp>.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex REST currently doesn't support requests of Content-Type <samp class="codeph nolang">multipart/form-data</samp>.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Apex REST Method Considerations</h2>
+
+            
+            <p class="p">Here are a few points to consider when you define Apex REST methods.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<samp class="codeph apex_code">RestRequest</samp> and <samp class="codeph apex_code">RestResponse</samp> objects are available by
+                    default in your Apex methods through the static <samp class="codeph apex_code">RestContext</samp> object. This example shows how to access these objects
+                    through <samp class="codeph apex_code">RestContext</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex">RestRequest req = RestContext.request;
+RestResponse res = RestContext.response;
+</pre></div>
+</li>
+
+                <li class="li">If the Apex method has no parameters, Apex REST copies the HTTP request body
+                    into the <samp class="codeph apex_code">RestRequest.requestBody</samp>
+                    property. If the method has parameters, then Apex REST attempts to deserialize
+                    the data into those parameters and the data won't be deserialized into the
+                        <samp class="codeph apex_code">RestRequest.requestBody</samp>
+                    property.</li>
+
+                <li class="li">Apex REST uses similar serialization logic for the response. An Apex method with
+                    a non-void return type has the return value serialized into <samp class="codeph apex_code">RestResponse.responseBody</samp>. If the return
+                    type includes fields with null values, those fields aren’t serialized into the
+                    response body.</li>
+
+                <li class="li">
+<span class="ph" id="rest_uri_namespace"><a name="rest_uri_namespace"><!-- --></a>Apex REST methods can be used in managed and
+                        unmanaged packages. When calling Apex REST methods that are contained in a
+                        managed package, you must include the managed package namespace in the REST
+                        call URL. For example, if the class is contained in a managed package
+                        namespace called <samp class="codeph nolang">packageNamespace</samp> and
+                        the Apex REST methods use a URL mapping of <span class="ph filepath">/MyMethod/*</span>,
+                        the URL used via REST to call these methods would be of the form
+                                <span class="ph filepath">https://<var class="keyword varname">instance</var>.salesforce.com/services/apexrest/packageNamespace/MyMethod/</span>.</span>
+                    For more information about managed packages, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_dev.htm" title="Salesforce supports the creation and distribution of Apex through different types of packages. Understand the distinctions between package types, and recognize that Apex behavior can vary across them.">What is a
+                        Package?</a>.</li>
+
+                <li class="li">If a login call is made from the API for a user with an expired or temporary
+                    password, subsequent API calls to custom Apex REST Web service methods aren't
+                    supported and result in the MUTUAL_AUTHENTICATION_FAILED error. Reset the user's
+                    password and make a call with an unexpired password to be able to call Apex
+                    Web service methods.</li>
+
+                <li class="li">If the heap limit is exceeded in the process of serialization, an <samp class="codeph nolang">HTTP 200</samp> code is returned and the error <samp class="codeph nolang">{"status":"some error occurred"}</samp> is appended to
+                    the partial JSON response. Returning a collection of sObjects from a REST method
+                    involves buffering the JSON serialized form of each sObject. Heap and CPU limits
+                    may not be encountered until after the HTTP response header and initial data has
+                    started streaming back to the client. To gain control of the statusCode and the
+                        <samp class="codeph ">responseBody</samp>, use a <samp class="codeph ">RestResponse</samp> instead of directly returning
+                    sObjects.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section" id="ApexRESTUserDefinedTypes">
+<a name="ApexRESTUserDefinedTypes"><!-- --></a><h2 class="helpHead2">User-Defined Types</h2>
+
+            
+            <p class="p">You can use user-defined types for parameters in your Apex REST methods. Apex REST
+                deserializes request data into <samp class="codeph nolang">public</samp>, <samp class="codeph nolang">private</samp>, or <samp class="codeph nolang">global</samp> class member variables of the user-defined type, unless the
+                variable is declared as <samp class="codeph nolang">static</samp> or <samp class="codeph nolang">transient</samp>. For example, an Apex REST method that
+                contains a user-defined type parameter might look like the following:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RestResource(urlMapping='/user_defined_type_example/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> MyOwnTypeRestResource {
+
+    <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> MyUserDefinedClass echoMyType(MyUserDefinedClass ic) {
+        <span class="statement">return</span> ic;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">class</span> MyUserDefinedClass {
+
+        <span class="keyword">global</span> <span class="keyword">String</span> string1;
+        <span class="keyword">global</span> <span class="keyword">String</span> string2 { get; set; }
+        <span class="keyword">private</span> <span class="keyword">String</span> privateString;
+        <span class="keyword">global</span> transient <span class="keyword">String</span> transientString;
+
+    }
+    
+}</pre></div>
+
+            <p class="p">Valid JSON and XML request data for this method would look like:</p>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">{
+    "ic" : {
+                "string1" : "value for string1",
+                "string2" : "value for string2",
+                "privateString" : "value for privateString"
+            }
+}</pre></div>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">&lt;request&gt;
+    &lt;ic&gt;
+        &lt;string1&gt;value for string1&lt;/string1&gt;
+        &lt;string2&gt;value for string2&lt;/string2&gt;
+        &lt;privateString&gt;value for privateString&lt;/privateString&gt;
+    &lt;/ic&gt;
+&lt;/request&gt;</pre></div>
+
+            <p class="p">The <samp class="codeph nolang">public</samp>, <samp class="codeph nolang">private</samp>, or <samp class="codeph nolang">global</samp> class member
+                variables must be types allowed by Apex REST:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Apex primitives (excluding sObject and Blob).</li>
+
+                <li class="li">sObjects</li>
+
+                <li class="li">Lists or maps of Apex primitives or sObjects (only maps with String keys are
+                    supported). </li>
+
+            </ul>
+
+            <div class="p">When creating user-defined types used as Apex REST method parameters, avoid
+                introducing any class member variable definitions that result in cycles (definitions
+                that depend on each other) at run time in your user-defined types. Here's a simple
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RestResource(urlMapping='/CycleExample/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> ApexRESTCycleExample {
+ 
+    <span class="keyword">@HttpGet</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> MyUserDef1 doCycleTest() {
+        MyUserDef1 def1 = <span class="keyword">new</span> MyUserDef1();
+        MyUserDef2 def2 = <span class="keyword">new</span> MyUserDef2();
+        def1.userDef2 = def2;
+        def2.userDef1 = def1;
+        <span class="statement">return</span> def1;
+    }
+ 
+    <span class="keyword">global</span> <span class="keyword">class</span> MyUserDef1 {
+        MyUserDef2 userDef2;
+    }    
+ 
+    <span class="keyword">global</span> <span class="keyword">class</span> MyUserDef2 {
+        MyUserDef1 userDef1;
+    }
+    
+}
+</pre></div>
+The code in the previous example compiles, but at run time when a
+                request is made, Apex REST detects a cycle between instances of <samp class="codeph nolang">def1</samp> and <samp class="codeph nolang">def2</samp>,
+                and generates an HTTP 400 status code error response.</div>
+
+        </div>
+
+        <div class="section" id="RequestDataConsiderations">
+<a name="RequestDataConsiderations"><!-- --></a><h2 class="helpHead2">Request and Response Data Considerations</h2>
+
+            
+            <p class="p">Some additional things to keep in mind for the request data for your Apex REST
+                methods:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<span class="ph" id="rest_param_info"><a name="rest_param_info"><!-- --></a>The names of the Apex parameters matter, although the
+                        order doesn’t.</span> For example, valid requests in both XML and JSON
+                    look like the following: <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@HttpPost</span>
+<span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">void</span> myPostMethod(<span class="keyword">String</span> s1, <span class="keyword">Integer</span> i1, <span class="keyword">Boolean</span> b1, <span class="keyword">String</span> s2)</pre></div>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">{
+  "s1" : "my first string",
+  "i1" : 123,
+  "s2" : "my second string",
+  "b1" : false
+}</pre></div>
+<div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;request</span>&gt;
+  <span class="tag">&lt;s1</span>&gt;my first string<span class="tag">&lt;/s1</span>&gt;
+  <span class="tag">&lt;i1</span>&gt;123<span class="tag">&lt;/i1</span>&gt;
+  <span class="tag">&lt;s2</span>&gt;my second string<span class="tag">&lt;/s2</span>&gt;
+  <span class="tag">&lt;b1</span>&gt;false<span class="tag">&lt;/b1</span>&gt;
+<span class="tag">&lt;/request</span>&gt;</pre></div>
+
+                </li>
+
+                <li class="li">The URL patterns <var class="keyword varname">URLpattern</var> and
+                    <var class="keyword varname">URLpattern</var>/* match the same URL. If one class has a
+                        <span class="keyword parmname">urlMapping</span> of <var class="keyword varname">URLpattern</var> and another
+                    class has a <span class="keyword parmname">urlMapping</span> of <var class="keyword varname">URLpattern</var>/*,
+                    a REST request for this URL pattern resolves to the class that was saved first. </li>
+
+                <li class="li">Some parameter and return types can't be used with XML as the Content-Type for
+                    the request or as the accepted format for the response, and hence, methods with
+                    these parameter or return types can't be used with XML. Lists, maps, or
+                    collections of collections, for example, <samp class="codeph apex_code">List&lt;List&lt;<span class="keyword">String</span>&gt;&gt;</samp> aren't supported. However, you can use
+                    these types with JSON. If the parameter list includes a type that's invalid for
+                    XML and XML is sent, an HTTP 415 status code is returned. If the return type is
+                    a type that's invalid for XML and XML is the requested response format, an HTTP
+                    406 status code is returned.</li>
+
+                <li class="li">For request data in either JSON or XML, valid values for Boolean parameters are:
+                        <samp class="codeph nolang">true</samp>, <samp class="codeph nolang">false</samp> (both are treated as case-insensitive), <samp class="codeph nolang">1</samp> and <samp class="codeph nolang">0</samp>
+                    (the numeric values, not strings of “1” or “0”). Any
+                    other values for Boolean parameters result in an error.</li>
+
+                <li class="li">If the JSON or XML request data contains multiple parameters of the same name,
+                    this results in an HTTP 400 status code error response. For example, if your
+                    method specifies an input parameter named <samp class="codeph nolang">x</samp>, the following JSON request data results in an
+                    error:<div class="codeSection nolang"><pre class="codeblock brush:plain">{
+    "x" : "value1",
+    "x" : "value2"
+}</pre></div>
+Similarly, for user-defined types, if the request data includes
+                    data for the same user-defined type member variable multiple times, this results
+                    in an error. For example, given this Apex REST method and user-defined
+                    type:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RestResource(urlMapping='/DuplicateParamsExample/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> ApexRESTDuplicateParamsExample {
+ 
+    <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> MyUserDef1 doDuplicateParamsTest(MyUserDef1 def) {
+        <span class="statement">return</span> def;
+    }
+ 
+    <span class="keyword">global</span> <span class="keyword">class</span> MyUserDef1 {
+        <span class="keyword">Integer</span> i;
+    }    
+    
+}
+</pre></div>
+The following JSON request data also results in an
+                    error:<div class="codeSection nolang"><pre class="codeblock brush:plain">{
+    "def" : {
+              "i" : 1,
+              "i" : 2
+            }
+}</pre></div>
+</li>
+
+                <li class="li">If you must specify a null value for one of your parameters in your request
+                    data, you can either omit the parameter entirely or specify a null value. In
+                    JSON, you can specify <samp class="codeph nolang">null</samp> as the value. In
+                    XML, you must use the <samp class="codeph nolang">http://www.w3.org/2001/XMLSchema-instance</samp> namespace with a nil
+                    value.</li>
+
+                <li class="li">For XML request data, you must specify an XML namespace that references any Apex
+                    namespace your method uses. So, for example, if you define an Apex REST method
+                    such
+                    as:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RestResource(urlMapping='/namespaceExample/*')</span>
+<span class="keyword">global</span> <span class="keyword">class</span> MyNamespaceTest {
+    <span class="keyword">@HttpPost</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> MyUDT echoTest(MyUDT def, <span class="keyword">String</span> extraString) {
+        <span class="statement">return</span> def;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">class</span> MyUDT {
+        <span class="keyword">Integer</span> count;
+    }
+}</pre></div>
+You can use the following XML request
+                    data:<div class="codeSection nolang"><pre class="codeblock brush:plain">&lt;request&gt;
+  &lt;def xmlns:MyUDT="http://soap.sforce.com/schemas/class/MyNamespaceTest"&gt;
+    &lt;MyUDT:count&gt;23&lt;/MyUDT:count&gt;
+  &lt;/def&gt;
+  &lt;extraString&gt;test&lt;/extraString&gt;
+&lt;/request&gt;</pre></div>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Response Status Codes</h2>
+
+            
+            <p class="p">The status code of a response is set automatically. This table lists some HTTP status
+                codes and what they mean in the context of the HTTP request method. For the full
+                list of response status codes, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_restresponse.htm#apex_System_RestResponse_statusCode" target="_blank"><samp class="codeph apex_code">statusCode</samp></a>.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d179340e393">Request Method</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d179340e396">Response Status Code</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d179340e399">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">GET</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">200</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The request was successful.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">PATCH</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">200</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The request was successful and the return type is
+                                non-void.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">PATCH</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">204</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The request was successful and the return type is void.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">400</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">An unhandled user exception occurred.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">403</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">You don't have access to the specified Apex class.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">404</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The URL is unmapped in an existing <samp class="codeph apex_code"><span class="keyword">@RestResource</span></samp> annotation.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">404</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The URL extension is unsupported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">404</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The Apex class with the specified namespace couldn't be
+                                found.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">405</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The request method doesn't have a corresponding Apex
+                                method.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">406</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The Content-Type property in the header was set to a value other
+                                than JSON or XML.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">406</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The header specified in the HTTP request isn’t supported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">406</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The XML return type specified for format is unsupported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">415</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The XML parameter type is unsupported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">415</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">The Content-Header Type specified in the HTTP request header is
+                                unsupported.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d179340e393" data-title="Request Method">DELETE, GET, PATCH, POST, PUT</td>
+
+                            <td class="entry" headers="d179340e396" data-title="Response Status Code">500</td>
+
+                            <td class="entry" headers="d179340e399" data-title="Description">An unhandled Apex exception occurred.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_methods_system_json_overview.htm" title="JavaScript Object Notation (JSON) support in Apex enables the serialization of Apex objects into JSON format and the deserialization of serialized JSON content.">JSON Support</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_xml_support.htm" title="Apex provides utility classes that enable the creation and parsing of XML content using streams and the DOM.">XML Support</a></div></li>
+</ul>
+</div>
+</div>

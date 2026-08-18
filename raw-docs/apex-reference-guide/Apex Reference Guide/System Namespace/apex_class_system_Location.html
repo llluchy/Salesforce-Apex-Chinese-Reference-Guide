@@ -1,0 +1,277 @@
+<a name="apex_class_system_Location"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Location Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods for accessing the component fields of geolocation
+      compound fields.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">system</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Each of these methods is also equivalent to a read-only property. For each getter method
+        you can access the property using dot notation. For example, <samp class="codeph apex_code">myLocation.getLatitude()</samp> is equivalent to <samp class="codeph apex_code">myLocation.latitude</samp>.</p>
+
+      <p class="p">You can’t use dot notation to access compound fields’ subfields directly on the parent
+        field. Instead, assign the parent field to a variable of type <samp class="codeph apex_code">Location</samp>, and then access its components.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+Location loc = myAccount.MyLocation__c;
+<span class="keyword">Double</span> lat = loc.latitude;</pre></div>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>“Location” in Salesforce can also refer to the Location standard
+        object. When referencing the Location object in your Apex code, always use <samp class="codeph apex_code">Schema.Location</samp> instead of <samp class="codeph apex_code">Location</samp> to prevent confusion with the standard Location compound field. If
+        referencing both the location object and the Location field in the same snippet, you can
+        differentiate between the two by using <samp class="codeph apex_code">System.Location</samp> for the field and <samp class="codeph apex_code">Schema.Location</samp> for the object. </p>
+</div>
+</div></div></div></div>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Select and access the Location field. MyLocation__c is the name of a geolocation field on Account.</span>
+Account[] records = [SELECT id, MyLocation__c FROM Account WITH USER_MODE LIMIT 10];
+<span class="statement">for</span>(Account acct : records) {
+   Location loc = acct.MyLocation__c;
+   <span class="keyword">Double</span> lat = loc.latitude;
+   <span class="keyword">Double</span> lon = loc.longitude;
+}
+
+<span class="onelineComment">// Instantiate new Location objects and compute the distance between them in different ways.</span>
+Location loc1 = Location.newInstance(28.635308,77.22496);
+Location loc2 = Location.newInstance(37.7749295,-122.4194155);
+<span class="keyword">Double</span> dist = Location.getDistance(loc1, loc2, <span class="string">'mi'</span>);
+<span class="keyword">Double</span> dist2 = loc1.getDistance(loc2, <span class="string">'mi'</span>);</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_methods">Location Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_system_Location_methods">
+<a name="apex_system_Location_methods"><!-- --></a>
+  <h2 class="helpHead2">Location Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">Location</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_getDistance">getDistance(toLocation, unit)</a></strong><br>
+Calculates the distance between this location and the specified       location, using an approximation of the haversine formula and the specified     unit.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_getDistance_2">getDistance(firstLocation, secondLocation, unit)</a></strong><br>
+Calculates the distance between the two specified locations, using             an approximation of the haversine formula and the specified unit.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_getLatitude">getLatitude()</a></strong><br>
+Returns the latitude field of this location.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_getLongitude">getLongitude()</a></strong><br>
+Returns the longitude field of this location.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_system_Location_newInstance">newInstance(latitude, longitude)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">Location</samp> class, with the specified latitude and longitude.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Location_getDistance">
+<a name="apex_system_Location_getDistance"><!-- --></a>
+  <h3 class="helpHead3">getDistance(toLocation, unit)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Calculates the distance between this location and the specified
+      location, using an approximation of the haversine formula and the specified
+    unit.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getDistance(Location toLocation, <span class="keyword">String</span>
+          unit)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">toLocation</var></strong>:<p class="p">Type: <a class="xref" href="#apex_class_system_Location" title="Contains methods for accessing the component fields of geolocation compound fields.">Location</a></p>
+<p class="p">The <samp class="codeph apex_code">Location</samp> to which you want to calculate
+            the distance from the current <samp class="codeph apex_code">Location</samp>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">unit</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The distance unit you want to use: <samp class="codeph nolang">mi</samp> or <samp class="codeph nolang">km</samp>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Location_getDistance_2">
+<a name="apex_system_Location_getDistance_2"><!-- --></a>
+    <h3 class="helpHead3">getDistance(firstLocation, secondLocation, unit)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Calculates the distance between the two specified locations, using
+            an approximation of the haversine formula and the specified unit.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Double</span> getDistance(Location
+                    firstLocation, Location secondLocation, <span class="keyword">String</span> unit)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">firstLocation</var></strong>:<p class="p">Type: <a class="xref" href="#apex_class_system_Location" title="Contains methods for accessing the component fields of geolocation compound fields.">Location</a></p>
+<p class="p">The first of two locations used to calculate distance.</p>
+</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">secondLocation</var></strong>:<p class="p">Type: <a class="xref" href="#apex_class_system_Location" title="Contains methods for accessing the component fields of geolocation compound fields.">Location</a></p>
+<p class="p">The second of two locations used to calculate distance.</p>
+</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">unit</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The distance unit you want to use: <samp class="codeph nolang">mi</samp>
+                        or <samp class="codeph nolang">km</samp>.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Location_getLatitude">
+<a name="apex_system_Location_getLatitude"><!-- --></a><h3 class="helpHead3">getLatitude()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the latitude field of this location.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getLatitude()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Location_getLongitude">
+<a name="apex_system_Location_getLongitude"><!-- --></a><h3 class="helpHead3">getLongitude()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the longitude field of this location.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getLongitude()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Location_newInstance">
+<a name="apex_system_Location_newInstance"><!-- --></a>
+  <h3 class="helpHead3">newInstance(latitude, longitude)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an instance of the <samp class="codeph apex_code">Location</samp> class, with the specified latitude and longitude.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Location newInstance(<span class="keyword">Decimal</span> latitude, <span class="keyword">Decimal</span>
+          longitude)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">latitude</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">longitude</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_system_Location" title="Contains methods for accessing the component fields of geolocation compound fields.">Location</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

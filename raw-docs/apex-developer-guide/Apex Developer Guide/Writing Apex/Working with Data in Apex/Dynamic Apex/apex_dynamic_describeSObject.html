@@ -1,0 +1,45 @@
+<a name="apex_dynamic_describeSObject"><!-- --></a><h1 class="helpHead1">Describing sObjects Using Schema Method</h1><div class="body conbody">
+<p class="p">As an alternative to using tokens, you can describe sObjects by
+calling the <samp class="codeph apex_code">describeSObjects</samp> Schema method and passing one or more sObject type names for the
+sObjects you want to describe.</p>
+
+<p class="p">This example gets describe metadata information for two sObject
+types—The Account standard object and the Merchandise__c custom
+object. After obtaining the describe result for each sObject, this
+example writes the returned information to the debug output, such
+as the sObject label, number of fields, whether it is a custom object
+or not, and the number of child relationships.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// sObject types to describe</span>
+<span class="keyword">String</span>[] types = <span class="keyword">new</span> <span class="keyword">String</span>[]{<span class="string">'Account'</span>,<span class="string">'Merchandise__c'</span>};
+
+<span class="onelineComment">// Make the describe call</span>
+Schema.DescribeSobjectResult[] results = Schema.describeSObjects(types);
+
+System.debug(<span class="string">'Got describe information for '</span> + results.size() + <span class="string">' sObjects.'</span>);
+
+<span class="onelineComment">// For each returned result, get some info</span>
+<span class="statement">for</span>(Schema.DescribeSobjectResult res : results) {
+    System.debug(<span class="string">'sObject Label: '</span> + res.getLabel());
+    System.debug(<span class="string">'Number of fields: '</span> + res.fields.getMap().size());
+    System.debug(res.isCustom() ? <span class="string">'This is a custom object.'</span> : <span class="string">'This is a standard object.'</span>);
+    <span class="onelineComment">// Get child relationships</span>
+    Schema.ChildRelationship[] rels = res.getChildRelationships();
+    <span class="statement">if</span> (rels.size() &gt; 0) {
+        System.debug(res.getName() + <span class="string">' has '</span> + rels.size() + <span class="string">' child relationships.'</span>);
+    }
+}</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_permissions.htm" title="Understanding Describe Information Permissions">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_describeTabs.htm" title="Describing Tabs Using Schema Methods">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fields() - HTML (New Window)">DescribeSObjectResult.fields()</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fieldsets() - HTML (New Window)">DescribeSObjectResult.fieldsets()</a></div></li>
+</ul>
+</div>
+</div>

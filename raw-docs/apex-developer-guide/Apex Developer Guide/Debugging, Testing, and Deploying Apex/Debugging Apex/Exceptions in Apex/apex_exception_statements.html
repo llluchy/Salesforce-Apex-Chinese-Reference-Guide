@@ -1,0 +1,132 @@
+<a name="langCon_apex_exception_statements"><!-- --></a><h1 class="helpHead1">Exception Statements</h1><div class="body">
+<p class="p"><span class="ph" id="ExceptionsIntro"><a name="ExceptionsIntro"><!-- --></a>Apex uses <dfn class="term">exceptions</dfn> to note errors and other events that
+                disrupt the normal flow of code execution. <samp class="codeph apex_code"><span class="statement">throw</span></samp> statements can be used to generate exceptions, while <samp class="codeph apex_code"><span class="statement">try</span></samp>, <samp class="codeph apex_code"><span class="statement">catch</span></samp>, and <samp class="codeph apex_code"><span class="statement">finally</span></samp> can be
+                used to gracefully recover from an exception.</span></p>
+
+<div class="section">
+<h2 class="helpHead2">Throw Statements</h2>
+<div class="p">
+<div class="p">A <samp class="codeph apex_code"><span class="statement">throw</span></samp> statement allows you to signal
+that an error has occurred. To throw an exception, use the <samp class="codeph apex_code"><span class="statement">throw</span></samp> statement and provide it with
+an exception object to provide information about the specific error.
+For example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">throw</span><var class="keyword varname"> exceptionObject</var>;</pre></div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Try-Catch-Finally
+                    Statements</h2>
+<div class="p">
+<div class="p">The <samp class="codeph apex_code"><span class="statement">try</span></samp>, <samp class="codeph apex_code"><span class="statement">catch</span></samp>, and <samp class="codeph apex_code"><span class="statement">finally</span></samp> statements can be used to gracefully recover from a thrown exception:<ul class="ul bulletList">
+                    <li class="li">The <samp class="codeph apex_code"><span class="statement">try</span></samp> statement identifies a
+                        block of code in which an exception can occur.</li>
+
+                    <li class="li">The <samp class="codeph apex_code"><span class="statement">catch</span></samp> statement identifies a
+                        block of code that can handle a particular type of exception. A single
+                            <samp class="codeph apex_code"><span class="statement">try</span></samp> statement can have zero or
+                        more associated <samp class="codeph apex_code"><span class="statement">catch</span></samp> statements.
+                        Each <samp class="codeph apex_code"><span class="statement">catch</span></samp> statement must have a
+                        unique exception type. Also, once a particular exception type is caught in
+                        one <samp class="codeph apex_code"><span class="statement">catch</span></samp> block, the remaining
+                            <samp class="codeph apex_code"><span class="statement">catch</span></samp> blocks, if any,
+                        aren’t executed.</li>
+
+                    <li class="li">The <samp class="codeph apex_code"><span class="statement">finally</span></samp> statement identifies a
+                        block of code that is guaranteed to execute and allows you to clean up your
+                        code. A single <samp class="codeph apex_code"><span class="statement">try</span></samp> statement can
+                        have up to one associated <samp class="codeph apex_code"><span class="statement">finally</span></samp>
+                        statement. Code in the <samp class="codeph apex_code"><span class="statement">finally</span></samp> block
+                        always executes regardless of whether an exception was thrown or the type of
+                        exception that was thrown. Because the <samp class="codeph apex_code"><span class="statement">finally</span></samp> block always executes, use it for cleanup code, such
+                        as for freeing up resources.</li>
+
+                </ul>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Syntax</h2>
+<p class="p">The syntax of the <samp class="codeph apex_code"><span class="statement">try</span></samp>, <samp class="codeph apex_code"><span class="statement">catch</span></samp>, and <samp class="codeph apex_code"><span class="statement">finally</span></samp> statements
+                is as follows.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+  <span class="onelineComment">// Try block</span>
+ <var class="keyword varname">code_block</var>
+} <span class="statement">catch</span> (<var class="keyword varname">exceptionType variableName</var>) {
+  <span class="onelineComment">// Initial catch block.</span>
+  <span class="onelineComment">// At least the catch block or the finally block must be present. </span>
+ <var class="keyword varname">code_block</var>
+} <span class="statement">catch</span> (Exception e) {
+  <span class="onelineComment">// Optional additional catch statement for other exception types.</span>
+  <span class="onelineComment">// Note that the general exception type, 'Exception',</span>
+  <span class="onelineComment">// must be the last catch block when it is used.</span>
+ <var class="keyword varname">code_block</var>
+} <span class="statement">finally</span> {
+  <span class="onelineComment">// Finally block.</span>
+  <span class="onelineComment">// At least the catch block or the finally block must be present.</span>
+ <var class="keyword varname">code_block</var>
+}</pre></div>
+
+            <p class="p">At least a <samp class="codeph apex_code"><span class="statement">catch</span></samp> block or a <samp class="codeph apex_code"><span class="statement">finally</span></samp> block must be present with a <samp class="codeph apex_code"><span class="statement">try</span></samp> block. The following is the syntax of a
+                try-catch block.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+ <var class="keyword varname">code_block</var>
+} <span class="statement">catch</span> (<var class="keyword varname">exceptionType variableName</var>) {
+ <var class="keyword varname">code_block</var>
+}
+<span class="onelineComment">// Optional additional catch blocks</span>
+</pre></div>
+
+            <p class="p">The following is the syntax of a try-finally block.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+ <var class="keyword varname">code_block</var>
+} <span class="statement">finally</span> {
+ <var class="keyword varname">code_block</var>
+}</pre></div>
+<div class="p">This is a skeletal example of a try-catch-finally
+block.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    <span class="onelineComment">// Perform some operation that </span>
+    <span class="onelineComment">//   might cause an exception.</span>
+} <span class="statement">catch</span>(Exception e) {
+    <span class="onelineComment">// Generic exception handling code here.</span>
+} <span class="statement">finally</span> {
+    <span class="onelineComment">// Perform some clean up.</span>
+}</pre></div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Exceptions that Can’t be Caught</h2>
+<p class="p">Some special types of built-in exceptions can’t be caught. Those exceptions are associated with
+                critical situations in the Lightning Platform. These situations require the abortion
+                of code execution and don’t allow for execution to resume through exception
+                handling. One such exception is the limit exception (<samp class="codeph apex_code">System.LimitException</samp>) that the runtime throws if a governor limit
+                such as heap size or CPU time has been exceeded, when the maximum number of SOQL
+                queries issued has been exceeded, an attempt is made to retrieve more than the
+                maximum number of records, and so on. Other examples are exceptions thrown when
+                assertion statements fail (through <samp class="codeph nolang">System.assert</samp> methods) or license exceptions.</p>
+<p class="p">When exceptions are uncatchable, <samp class="codeph apex_code"><span class="statement">catch</span></samp> blocks, as well as
+                    <samp class="codeph apex_code"><span class="statement">finally</span></samp> blocks if any, aren’t
+                executed.</p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <div class="p">In API version 41.0 and later, unreachable statements in your code will cause
+                compilation errors.  For example, the following code block generates a compile time
+                error in API version 41.0 and later. The third statement can never be reached
+                because the previous statement throws an unconditional
+                exception.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Boolean</span> x = <span class="keyword">true</span>; 
+<span class="statement">throw</span> <span class="keyword">new</span> NullPointerException();
+x = <span class="keyword">false</span>;</pre></div>
+</div>
+
+        </div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

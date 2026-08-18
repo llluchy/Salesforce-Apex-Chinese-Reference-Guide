@@ -1,0 +1,356 @@
+<a name="apex_class_commercepayments_AuthorizationRequest"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">AuthorizationRequest Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sends information about an authorization request to a gateway adapter
+            during a service call. This class extends the <samp class="codeph nolang">BaseRequest</samp> class and inherits all its methods. </span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">This class contains information about a transaction
+            authorization request. The gateway adapter reads fields from this class while
+            constructing an authorization JSON request to send to the payment gateway. An object of
+            this class is available by calling <samp class="codeph apex_code">getPaymentRequest()</samp> in the <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayContext.htm#apex_class_commerce_payments_PaymentGatewayContext" title="Wraps the information related to a payment request.">PaymentGatewayContext Class</a></samp>.</div>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">Creating a <samp class="codeph apex_code">buildAuthRequest</samp> class to store
+                information about the authorization request.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">private</span> <span class="keyword">String</span> buildAuthRequest(commercepayments.AuthorizationRequest authRequest) {
+        <span class="onelineComment">// Multiply amount by 100.0 to convert to cents</span>
+        <span class="keyword">String</span> requestBody = createRequestBody(<span class="keyword">String</span>.ValueOf((authRequest.amount*100.0).intValue()), authRequest);
+        <span class="statement">return</span> requestBody;
+
+        <span class="keyword">private</span> <span class="keyword">String</span> createRequestBody(<span class="keyword">String</span> amount, commercepayments.AuthorizationRequest authRequest) {
+        JSONGenerator jsonGeneratorInstance = JSON.createGenerator(<span class="keyword">true</span>);
+        <span class="keyword">String</span> currencyIso = authRequest.currencyIsoCode;
+        commercepayments.AuthApiPaymentMethodRequest paymentMethod = authRequest.paymentMethod;
+        commercepayments.GatewayErrorResponse error;
+        <span class="onelineComment">// Write data to the JSON string.</span>
+        jsonGeneratorInstance.writeStartObject();
+        jsonGeneratorInstance.writeStringField(<span class="string">'merchantAccount'</span>, <span class="string">'{!$Credential.Username}'</span>);
+        jsonGeneratorInstance.writeStringField(<span class="string">'reference'</span>, authRequest.comments == <span class="keyword">null</span> ? <span class="string">'randomstring'</span> : authRequest.comments);
+
+        <span class="statement">if</span>(currencyIso == <span class="keyword">null</span>) {
+            currencyIso = UserInfo.getDefaultCurrency();
+        }
+
+        jsonGeneratorInstance.writeFieldName(<span class="string">'amount'</span>);
+        jsonGeneratorInstance.writeStartObject();
+        jsonGeneratorInstance.writeStringField(<span class="string">'value'</span>, amount);
+        jsonGeneratorInstance.writeStringField(<span class="string">'currency'</span>, currencyIso);
+        jsonGeneratorInstance.writeEndObject();
+
+        commercepayments.CardPaymentMethodRequest cardPaymentMethod;
+        <span class="statement">if</span>(paymentMethod != <span class="keyword">null</span>) {
+            cardPaymentMethod = paymentMethod.cardPaymentMethod;
+            <span class="statement">if</span> (cardPaymentMethod != <span class="keyword">null</span>) {
+                <span class="statement">if</span> (cardPaymentMethod.CardCategory != <span class="keyword">null</span>) {
+                    <span class="statement">if</span> (commercepayments.CardCategory.CreditCard == cardPaymentMethod.CardCategory) {
+                        jsonGeneratorInstance.writeFieldName(<span class="string">'card'</span>);
+                        jsonGeneratorInstance.writeStartObject();
+                        <span class="statement">if</span> (cardPaymentMethod.cvv != <span class="keyword">null</span>)
+                            jsonGeneratorInstance.writeStringField(<span class="string">'cvc'</span>, <span class="keyword">String</span>.ValueOf(cardPaymentMethod.cvv));
+                        <span class="statement">if</span> (cardPaymentMethod.cardholdername != <span class="keyword">null</span>)
+                            jsonGeneratorInstance.writeStringField(<span class="string">'holderName'</span>, cardPaymentMethod.cardholdername);
+                        <span class="statement">if</span> (cardPaymentMethod.cardnumber != <span class="keyword">null</span>)
+                            jsonGeneratorInstance.writeStringField(<span class="string">'number'</span>, cardPaymentMethod.cardnumber);
+                        <span class="statement">if</span> (cardPaymentMethod.expiryMonth != <span class="keyword">null</span> &amp;&amp; cardPaymentMethod.expiryYear != <span class="keyword">null</span> ) {
+                            <span class="keyword">String</span> expMonth = ((<span class="keyword">String</span>.ValueOf(cardPaymentMethod.expiryMonth)).length() == 1 ? <span class="string">'0'</span> : <span class="string">''</span>) + <span class="keyword">String</span>.ValueOf(cardPaymentMethod.expiryMonth);
+                            jsonGeneratorInstance.writeStringField(<span class="string">'expiryMonth'</span>, expMonth);
+                            jsonGeneratorInstance.writeStringField(<span class="string">'expiryYear'</span>, <span class="keyword">String</span>.ValueOf(cardPaymentMethod.expiryYear));
+                        }
+                        jsonGeneratorInstance.writeEndObject();
+                    } <span class="statement">else</span> {
+                    <span class="onelineComment">//Support for other card type</span>
+                    }
+                } <span class="statement">else</span> {
+                    <span class="statement">throw</span> <span class="keyword">new</span> SampleValidationException(<span class="string">'Required Field Missing : CardCategory'</span>);
+                }
+            } <span class="statement">else</span> {
+                <span class="statement">throw</span> <span class="keyword">new</span> SampleValidationException(<span class="string">'Required Field Missing : CardPaymentMethod'</span>);
+            }
+        } <span class="statement">else</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> SampleValidationException(<span class="string">'Required Field Missing : PaymentMethod'</span>);
+        }
+        jsonGeneratorInstance.writeEndObject();
+        <span class="statement">return</span> jsonGeneratorInstance.getAsString();
+    }</pre></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_constructors">AuthorizationRequest Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_properties">AuthorizationRequest Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_methods">AuthorizationRequest Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_constructors">
+<a name="apex_commercepayments_AuthorizationRequest_constructors"><!-- --></a><h2 class="helpHead2">AuthorizationRequest Constructors</h2>
+<div class="body refbody">
+<div class="section">
+      <p class="p">The following are constructors for <samp class="codeph apex_code">AuthorizationRequest</samp>.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_ctor">AuthorizationRequest(amount)</a></strong><br>
+Constructor for building the amount in an authorization request. This       constructor is intended for test usage and throws an exception if used outside of the Apex       test context.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_ctor">
+<a name="apex_commercepayments_AuthorizationRequest_ctor"><!-- --></a><h3 class="helpHead3">AuthorizationRequest(amount)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Constructor for building the amount in an authorization request. This
+      constructor is intended for test usage and throws an exception if used outside of the Apex
+      test context.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> AuthorizationRequest(<span class="keyword">Double</span> amount)</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">amount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">The amount of the authorization.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_properties">
+<a name="apex_commercepayments_AuthorizationRequest_properties"><!-- --></a><h2 class="helpHead2">AuthorizationRequest Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">AuthorizationRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_accountId">accountId</a></strong><br>
+The customer account       where       the authorization is performed.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_amount">amount</a></strong><br>
+The total amount of the authorization. Can be positive or       negative.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_comments">comments</a></strong><br>
+Comments about the authorization. Users can enter comments to provide       additional information.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_currencyIsoCode">currencyIsoCode</a></strong><br>
+The       ISO       currency code for the authorization request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_paymentMethod">paymentMethod</a></strong><br>
+The payment method used to process the authorization in the       authorization request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_paymentMethodData">paymentMethodData</a></strong><br>
+Payment method data used in the authorize payment request. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_accountId">
+<a name="apex_commercepayments_AuthorizationRequest_accountId"><!-- --></a><h3 class="helpHead3">accountId</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The customer account
+      where
+      the authorization is performed.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> accountId {get; set;}</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_amount">
+<a name="apex_commercepayments_AuthorizationRequest_amount"><!-- --></a><h3 class="helpHead3">amount</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The total amount of the authorization. Can be positive or
+      negative.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Double</span> amount {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_comments">
+<a name="apex_commercepayments_AuthorizationRequest_comments"><!-- --></a><h3 class="helpHead3">comments</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Comments about the authorization. Users can enter comments to provide
+      additional information.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> comments {get; set;}</samp></p>
+
+      
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_currencyIsoCode">
+<a name="apex_commercepayments_AuthorizationRequest_currencyIsoCode"><!-- --></a><h3 class="helpHead3">currencyIsoCode</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The
+      ISO
+      currency code for the authorization request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> currencyIsoCode {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_paymentMethod">
+<a name="apex_commercepayments_AuthorizationRequest_paymentMethod"><!-- --></a><h3 class="helpHead3">paymentMethod</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The payment method used to process the authorization in the
+      authorization request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> AuthApiPaymentMethodRequest paymentMethod {get;
+          set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthApiPaymentMethodRequest.htm#apex_class_commercepayments_AuthApiPaymentMethodRequest" title="Sends information about a payment method to a gateway adapter during an authorization service call.">AuthApiPaymentMethodRequest</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_paymentMethodData">
+<a name="apex_commercepayments_AuthorizationRequest_paymentMethodData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">paymentMethodData</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Payment method data used in the authorize payment request. </div>
+
+    <div class="section">
+      <p class="p">This field is populated when <samp class="codeph apex_code">AuthorizationInput</samp>
+        specifies a saved payment method. Accessible using <samp class="codeph apex_code">paymentMethodData</samp> on <samp class="codeph apex_code">AuthorizationRequest</samp>. The map contains these fields from <samp class="codeph apex_code">SavedPaymentMethod</samp>: <samp class="codeph apex_code">GatewayToken</samp>, <samp class="codeph apex_code">Type</samp>, <samp class="codeph apex_code">GatewayReference</samp>, and <samp class="codeph apex_code">StandardEntryCode</samp> for direct gateway interaction without querying the database.
+        This field is supported only for saved payment methods of type card.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Map&lt;String,String&gt; paymentMethodData {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: Map&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_methods">
+<a name="apex_commercepayments_AuthorizationRequest_methods"><!-- --></a><h2 class="helpHead2">AuthorizationRequest Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">AuthorizationRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_equals">equals(obj)</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">AuthorizationRequest</samp> by determining the equality of external       objects in a list. This method is dynamic and based on the equals method in     Java.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_hashCode">hashCode()</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">AuthorizationRequest</samp> by determining the uniqueness of the       external object in a list.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AuthorizationRequest.htm#apex_commercepayments_AuthorizationRequest_toString">toString()</a></strong><br>
+Converts a date to a string.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_equals">
+<a name="apex_commercepayments_AuthorizationRequest_equals"><!-- --></a><h3 class="helpHead3">equals(obj)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">AuthorizationRequest</samp> by determining the equality of external
+      objects in a list. This method is dynamic and based on the equals method in
+    Java.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Boolean</span> equals(<span class="keyword">Object</span> obj)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">obj</var></strong>:<p class="p">Type: </p>
+<p class="p">Object External object whose key is to be validated.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_hashCode">
+<a name="apex_commercepayments_AuthorizationRequest_hashCode"><!-- --></a><h3 class="helpHead3">hashCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">AuthorizationRequest</samp> by determining the uniqueness of the
+      external object in a list.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Integer</span> hashCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_AuthorizationRequest_toString">
+<a name="apex_commercepayments_AuthorizationRequest_toString"><!-- --></a><h3 class="helpHead3">toString()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Converts a date to a string.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

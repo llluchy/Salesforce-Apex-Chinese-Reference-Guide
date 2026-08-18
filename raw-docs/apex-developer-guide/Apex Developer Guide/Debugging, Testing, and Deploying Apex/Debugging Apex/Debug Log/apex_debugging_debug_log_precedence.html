@@ -1,0 +1,62 @@
+<a name="apex_debugging_debug_log_precedence"><!-- --></a><h1 class="helpHead1">Debug Log Order of Precedence</h1><div class="body conbody">
+<div class="shortdesc">Which events are logged depends on various factors. These factors include your trace
+  flags, the default logging levels, your API header, user-based system log enablement, and the log
+  levels set by your entry points.</div>
+
+  <p class="p">The order of precedence for debug log levels is:</p>
+<ol class="ol enumList">
+    <li class="li">Trace flags override all other logging logic. The Developer Console sets a trace flag when
+     it loads, and that trace flag remains in effect until it expires. You can set trace flags in
+     the Developer Console or in Setup or by using the <samp class="codeph nolang">TraceFlag</samp> and <samp class="codeph nolang">DebugLevel</samp> Tooling API objects.
+       <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="class_trigger_trace_flags"><a name="class_trigger_trace_flags"><!-- --></a>Setting class and trigger trace flags doesn’t cause
+       logs to be generated or saved. Class and trigger trace flags override other logging levels,
+       including logging levels set by user trace flags, but they don’t cause logging to occur. If
+       logging is enabled when classes or triggers execute, logs are generated at the time of
+       execution.</span></p>
+</div>
+</div></div></div></div>
+</li>
+
+    <li class="li">If you don’t have active trace flags, synchronous and asynchronous Apex tests execute with
+     the default logging levels. Default logging levels are:<a name="default_log_levels"><!-- --></a><ul class="ul bulletList" id="default_log_levels">
+      <li class="li">
+<strong class="ph b">DB</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">APEX_CODE</strong>: DEBUG</li>
+
+      <li class="li">
+<strong class="ph b">APEX_PROFILING</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">WORKFLOW</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">VALIDATION</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">CALLOUT</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">VISUALFORCE</strong>: INFO</li>
+
+      <li class="li">
+<strong class="ph b">SYSTEM</strong>: DEBUG</li>
+
+     </ul>
+</li>
+
+    <li class="li">If no relevant trace flags are active, and no tests are running, your API header sets your
+     logging levels. API requests that are sent without debugging headers generate transient
+     logs—logs that aren’t saved—unless another logging rule is in effect.</li>
+
+    <li class="li">If your entry point sets a log level, that log level is used. For example, Visualforce
+     requests can include a debugging parameter that sets log levels.</li>
+
+   </ol>
+<p class="p">If none of these cases apply, logs aren’t generated or persisted.</p>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

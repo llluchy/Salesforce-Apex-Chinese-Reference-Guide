@@ -1,0 +1,465 @@
+<a name="apex_class_DataSource_Connection"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Connection Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Extend this class to enable your Salesforce org to sync the
+            external system’s schema and to handle queries, searches, and write operations (upsert
+            and delete) of the external data. This class extends the <samp class="codeph apex_code">DataSourceUtil</samp> class and inherits its methods.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_DataSource.htm" title="The DataSource namespace provides the classes for the Apex Connector Framework. Use the Apex Connector Framework to develop a custom adapter for Salesforce Connect. Then connect your Salesforce organization to any data anywhere via the Salesforce Connect custom adapter.">DataSource</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Your <samp class="codeph apex_code">DataSource.Connection</samp> and <samp class="codeph apex_code">DataSource.Provider</samp> classes compose a custom
+                adapter for Salesforce Connect.</p>
+
+            <p class="p">Changing the <samp class="codeph apex_code">sync</samp> method on the <samp class="codeph apex_code">DataSource.Connection</samp> class doesn’t
+                automatically resync any external objects.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> SampleDataSourceConnection <span class="keyword">extends</span> DataSource.Connection {
+    <span class="keyword">global</span> SampleDataSourceConnection(DataSource.ConnectionParams connectionParams) {
+    }
+    
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables = <span class="keyword">new</span> List&lt;DataSource.Table&gt;();        
+        List&lt;DataSource.Column&gt; columns;
+        columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+        columns.add(DataSource.Column.text(<span class="string">'Name'</span>, 255));
+        columns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>, 255));
+        columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        tables.add(DataSource.Table.get(<span class="string">'Sample'</span>, <span class="string">'Title'</span>, columns));
+        <span class="statement">return</span> tables;
+    }
+    
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(DataSource.QueryContext c) {
+        <span class="statement">return</span> DataSource.TableResult.get(c, DataSource.QueryUtils.process(c, getRows()));
+    }
+    
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.TableResult&gt; search(DataSource.SearchContext c) {        
+        List&lt;DataSource.TableResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.TableResult&gt;();
+        <span class="statement">for</span> (DataSource.TableSelection tableSelection : c.tableSelections) {
+            results.add(DataSource.TableResult.get(tableSelection, getRows()));
+        }
+        <span class="statement">return</span> results;
+    }
+
+    <span class="onelineComment">// Helper method to get record values from the external system for the Sample table.</span>
+    <span class="keyword">private</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; getRows () {
+        <span class="onelineComment">// Get row field values for the Sample table from the external system via a callout.</span>
+        HttpResponse response = makeGetCallout();
+        <span class="onelineComment">// Parse the JSON response and populate the rows.</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; m = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)JSON.deserializeUntyped(
+                response.getBody());
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; error = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)m.get(<span class="string">'error'</span>);
+        <span class="statement">if</span> (error != <span class="keyword">null</span>) {
+            throwException(string.valueOf(error.get(<span class="string">'message'</span>)));
+        }
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+        List&lt;<span class="keyword">Object</span>&gt; jsonRows = (List&lt;<span class="keyword">Object</span>&gt;)m.get(<span class="string">'value'</span>);
+        <span class="statement">if</span> (jsonRows == <span class="keyword">null</span>) {
+            rows.add(foundRow(m));
+        } <span class="statement">else</span> {
+            <span class="statement">for</span> (<span class="keyword">Object</span> jsonRow : jsonRows) {
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row = (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;)jsonRow;
+                rows.add(foundRow(row));
+            }
+        }
+        <span class="statement">return</span> rows;
+    }
+    
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.UpsertResult&gt; upsertRows(DataSource.UpsertContext
+            context) {
+       <span class="statement">if</span> (context.tableSelected == <span class="string">'Sample'</span>) {
+           List&lt;DataSource.UpsertResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.UpsertResult&gt;();
+           List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows = context.rows;
+           
+           <span class="statement">for</span> (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; row : rows){
+              <span class="onelineComment">// Make a callout to insert or update records in the external system.</span>
+              HttpResponse response;
+              <span class="onelineComment">// Determine whether to insert or update a record.</span>
+              <span class="statement">if</span> (row.get(<span class="string">'ExternalId'</span>) == <span class="keyword">null</span>){
+                 <span class="onelineComment">// Send a POST HTTP request to insert new external record.</span>
+                 <span class="onelineComment">// Make an Apex callout and get HttpResponse.</span>
+                 response = makePostCallout(
+                     <span class="string">'{"name":"'</span> + row.get(<span class="string">'Name'</span>) + <span class="string">'","ExternalId":"'</span> + 
+                     row.get(<span class="string">'ExternalId'</span>) + <span class="string">'"'</span>);
+              }
+              <span class="statement">else</span> {
+                 <span class="onelineComment">// Send a PUT HTTP request to update an existing external record.</span>
+                 <span class="onelineComment">// Make an Apex callout and get HttpResponse.</span>
+                 response = makePutCallout(
+                     <span class="string">'{"name":"'</span> + row.get(<span class="string">'Name'</span>) + <span class="string">'","ExternalId":"'</span> + 
+                     row.get(<span class="string">'ExternalId'</span>) + <span class="string">'"'</span>,
+                     <span class="keyword">String</span>.valueOf(row.get(<span class="string">'ExternalId'</span>)));
+              }
+         
+              <span class="onelineComment">// Check the returned response.</span>
+              <span class="onelineComment">// First, deserialize it.</span>
+              Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; m = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)JSON.deserializeUntyped(
+                      response.getBody());
+              <span class="statement">if</span> (response.getStatusCode() == 200){
+                  results.add(DataSource.UpsertResult.success(
+                          <span class="keyword">String</span>.valueOf(m.get(<span class="string">'id'</span>))));
+              } 
+              <span class="statement">else</span> {
+                 results.add(DataSource.UpsertResult.failure(
+                                 <span class="keyword">String</span>.valueOf(m.get(<span class="string">'id'</span>)), 
+                     <span class="string">'The callout resulted in an error: '</span> + 
+                     response.getStatusCode()));
+              }
+           } 
+           <span class="statement">return</span> results;
+       } 
+       <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+         
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.DeleteResult&gt; deleteRows(DataSource.DeleteContext 
+            context) {
+       <span class="statement">if</span> (context.tableSelected == <span class="string">'Sample'</span>){
+           List&lt;DataSource.DeleteResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.DeleteResult&gt;();
+           <span class="statement">for</span> (<span class="keyword">String</span> externalId : context.externalIds){
+              HttpResponse response = makeDeleteCallout(externalId);
+              <span class="statement">if</span> (response.getStatusCode() == 200){
+                 results.add(DataSource.DeleteResult.success(externalId));
+              } 
+              <span class="statement">else</span> {
+                 results.add(DataSource.DeleteResult.failure(externalId, 
+                             <span class="string">'Callout delete error:'</span> 
+                             + response.getBody()));
+              }
+           }
+           <span class="statement">return</span> results;
+       }
+       <span class="statement">return</span> <span class="keyword">null</span>;
+     }
+     
+    <span class="onelineComment">// Helper methods</span>
+        
+    <span class="onelineComment">// Make a GET callout</span>
+     <span class="keyword">private</span> <span class="keyword">static</span> HttpResponse makeGetCallout() {
+         HttpResponse response;
+         <span class="onelineComment">// Make callout</span>
+         <span class="onelineComment">// ...</span>
+         <span class="statement">return</span> response;
+     }
+     
+     <span class="onelineComment">// Populate a row based on values from the external system.</span>
+     <span class="keyword">private</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; foundRow(Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; foundRow) {
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+        row.put(<span class="string">'ExternalId'</span>, string.valueOf(foundRow.get(<span class="string">'Id'</span>)));
+        row.put(<span class="string">'DisplayUrl'</span>, string.valueOf(foundRow.get(<span class="string">'DisplayUrl'</span>)));
+        row.put(<span class="string">'Name'</span>, string.valueOf(foundRow.get(<span class="string">'Name'</span>)));        
+        <span class="statement">return</span> row;
+    }
+
+     <span class="onelineComment">// Make a POST callout</span>
+     <span class="keyword">private</span> <span class="keyword">static</span> HttpResponse makePostCallout(<span class="keyword">String</span> jsonBody) {
+         HttpResponse response;
+         <span class="onelineComment">// Make callout</span>
+         <span class="onelineComment">// ...</span>
+         <span class="statement">return</span> response;
+     }
+     
+     <span class="onelineComment">// Make a PUT callout</span>
+     <span class="keyword">private</span> <span class="keyword">static</span> HttpResponse makePutCallout(<span class="keyword">String</span> jsonBody, <span class="keyword">String</span> externalID) {
+         HttpResponse response;
+         <span class="onelineComment">// Make callout</span>
+         <span class="onelineComment">// ...</span>
+         <span class="statement">return</span> response;
+     }
+     
+     <span class="onelineComment">// Make a DELETE callout</span>
+     <span class="keyword">private</span> <span class="keyword">static</span> HttpResponse makeDeleteCallout(<span class="keyword">String</span> externalID) {
+         HttpResponse response;
+         <span class="onelineComment">// Make callout</span>
+         <span class="onelineComment">// ...</span>
+         <span class="statement">return</span> response;
+     }
+}
+</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_methods">Connection Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_DataSource_Connection_methods">
+<a name="apex_DataSource_Connection_methods"><!-- --></a><h2 class="helpHead2">Connection Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Connection</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_deleteRows">deleteRows(deleteContext)</a></strong><br>
+Invoked when external object records are deleted via the Salesforce                         user interface, APIs, or Apex.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_query">query(queryContext)</a></strong><br>
+Invoked by a SOQL query of an external object. A SOQL query is       generated and executed when a user visits an external object’s list view or record detail page       in Salesforce. Returns the results of the query.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_search">search(searchContext)</a></strong><br>
+Invoked by a SOSL query of an external object or when a user       performs a Salesforce global search that also searches external objects. Returns the results       of the query.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_sync">sync()</a></strong><br>
+Invoked when an administrator clicks <strong class="ph uicontrol">Validate and         Sync</strong> on the external data source detail page. Returns a list of tables that       describe the external system’s schema.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Connection.htm#apex_DataSource_Connection_upsertRows">upsertRows(upsertContext)</a></strong><br>
+Invoked when external object records are created or updated via             the Salesforce user             interface, APIs, or Apex.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_DataSource_Connection_deleteRows">
+<a name="apex_DataSource_Connection_deleteRows"><!-- --></a>
+        <h3 class="helpHead3">deleteRows(deleteContext)</h3>
+
+        
+        
+        <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invoked when external object records are deleted via the Salesforce
+                        user interface, APIs, or Apex.</span></div>
+
+                <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+                        
+                        <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;DataSource.DeleteResult&gt;
+                                        deleteRows(DataSource.DeleteContext
+                                deleteContext)</samp></p>
+
+                        
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+                        
+                        <ul class="ul bulletList">
+                                <li class="li">
+<strong class="ph b"><var class="keyword varname">deleteContext</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_DeleteContext.htm#apex_class_DataSource_DeleteContext" title="An instance of DeleteContext is passed to the deleteRows() method on your Database.Connection class. The class provides context information about the delete request to the implementor of deleteRows().">DataSource.DeleteContext</a></p>
+<p class="p">Contains context information about the delete
+                                                request.</p>
+</li>
+
+                        </ul>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+                        
+                        <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_DeleteResult.htm#apex_class_DataSource_DeleteResult" title="Represents the result of a delete operation on an sObject record. The result is returned by the DataSource.deleteRows method of the DataSource.Connection class.">DataSource.DeleteResult</a>&gt;</p>
+
+                        <p class="p">The results of the delete operation.</p>
+
+                </div>
+
+        </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_DataSource_Connection_query">
+<a name="apex_DataSource_Connection_query"><!-- --></a>
+  <h3 class="helpHead3">query(queryContext)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invoked by a SOQL query of an external object. A SOQL query is
+      generated and executed when a user visits an external object’s list view or record detail page
+      in Salesforce. Returns the results of the query.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> DataSource.TableResult query(DataSource.QueryContext
+          queryContext)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">queryContext</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_QueryContext.htm#apex_class_DataSource_QueryContext" title="An instance of QueryContext is provided to the query method on your DataSource.Connection class. The instance corresponds to a SOQL request.">DataSource.QueryContext</a></p>
+<p class="p">Represents</p>
+<p class="p">the query to run against a data table.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_TableResult.htm#apex_class_DataSource_TableResult" title="Contains the results of a search or query.">DataSource.TableResult</a></p>
+
+      
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_DataSource_Connection_search">
+<a name="apex_DataSource_Connection_search"><!-- --></a>
+  <h3 class="helpHead3">search(searchContext)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invoked by a SOSL query of an external object or when a user
+      performs a Salesforce global search that also searches external objects. Returns the results
+      of the query.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;DataSource.TableResult&gt;
+          search(DataSource.SearchContext searchContext)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">searchContext</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_SearchContext.htm#apex_class_DataSource_SearchContext" title="An instance of SearchContext is provided to the search method on your DataSource.Connection class. The instance corresponds to a search or SOSL request.">DataSource.SearchContext</a></p>
+<p class="p">Represents</p>
+<p class="p">the query to run against an external data table.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_TableResult.htm#apex_class_DataSource_TableResult" title="Contains the results of a search or query.">DataSource.TableResult</a>&gt;</p>
+
+      
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_DataSource_Connection_sync">
+<a name="apex_DataSource_Connection_sync"><!-- --></a>
+  <h3 class="helpHead3">sync()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invoked when an administrator clicks <strong class="ph uicontrol">Validate and
+        Sync</strong> on the external data source detail page. Returns a list of tables that
+      describe the external system’s schema.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;DataSource.Table&gt; sync()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_Table.htm#apex_class_DataSource_Table" title="Describes a table on an external system that the Salesforce Connect custom adapter connects to. This class extends the DataSourceUtil class and inherits its methods.">DataSource.Table</a>&gt;</p>
+
+      <p class="p">Each returned table can be used to create an external object in Salesforce. On the Validate
+        External Data Source page, the administrator views the list of returned tables and selects
+        which tables to sync. When the administrator clicks <strong class="ph uicontrol">Sync</strong>, an external
+        object is created for each selected table. Each column within the selected tables also
+        becomes a field in the external object.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_DataSource_Connection_upsertRows">
+<a name="apex_DataSource_Connection_upsertRows"><!-- --></a>
+    <h3 class="helpHead3">upsertRows(upsertContext)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invoked when external object records are created or updated via
+            the Salesforce user
+            interface, APIs, or Apex.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;DataSource.UpsertResult&gt;
+                    upsertRows(DataSource.UpsertContext upsertContext)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">upsertContext</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_UpsertContext.htm#apex_class_DataSource_UpsertContext" title="An instance of UpsertContext is passed to the upsertRows() method on your Datasource.Connection class. This class provides context information about the upsert request to the implementor of upsertRows().">DataSource.UpsertContext</a></p>
+<p class="p">Contains context information about the upsert request.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_DataSource_UpsertResult.htm#apex_class_DataSource_UpsertResult" title="Represents the result of an upsert operation on an external object record. The result is returned by the upsertRows method of the DataSource.Connection class.">DataSource.UpsertResult</a>&gt;</p>
+
+            <p class="p">The results of the upsert operation.</p>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</div>

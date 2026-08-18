@@ -1,0 +1,35 @@
+<a name="apex_testing_data"><!-- --></a><h1 class="helpHead1">Understanding Test Data</h1><div class="body conbody">
+<div class="shortdesc">Apex test data is transient and isn’t committed to the database.</div>
+
+  <p class="p">This means that after a test method finishes execution, the data inserted by the test
+   doesn’t persist in the database. As a result, there is no need to delete any test data at
+   the conclusion of a test. Likewise, all the changes to existing records, such as updates or
+   deletions, don’t persist. This transient behavior of test data makes the management of
+   data easier as you don’t have to perform any test data cleanup. At the same time, if your
+   tests access organization data, this prevents accidental deletions or modifications to existing
+   records.</p>
+
+  <p class="p">By default, existing organization data isn’t visible to test methods, with the exception
+   of certain setup objects. You should create test data for your test methods whenever possible.
+   However, test code saved against Salesforce API version 23.0 or earlier has access to all data in the organization. Data visibility for
+   tests is covered in more detail in the next section.</p>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_data_access.htm">Isolation of Test Data from Organization Data in Unit Tests</a></strong><br>
+By default, Apex test methods (API version 24.0 and later) can’t access pre-existing     org data such as standard objects, custom objects, and custom settings data. They can only     access data that they create. However, objects that are used to manage your organization or     metadata objects can still be accessed in your tests. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_seealldata_using.htm">Using the isTest(SeeAllData=True) Annotation</a></strong><br>
+Annotate your test class or test method with <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp> to open up data access to records in your organization. The     IsTest(SeeAllData=true) annotation applies to data queries but doesn't apply to record creation     or changes, including deletions. New and changed records are still rolled back in Apex tests     even when using the annotation.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_load_data.htm">Loading Test Data</a></strong><br>
+Using the <samp class="codeph apex_code">Test.loadData</samp> method, you can populate data in your test methods without having to write many lines of code.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_utility_classes.htm">Common Test Utility Classes for Test Data Creation</a></strong><br>
+Common test utility classes are public test classes that contain reusable code for test data creation.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_testsetup_using.htm">Using Test Setup Methods</a></strong><br>
+Use test setup methods (methods that are annotated with <samp class="codeph apex_code">@testSetup</samp>) to create test records once and then             access them in every test method in the test class. Test setup methods can be             time-saving when you need to create reference or prerequisite data for all test methods,             or a common set of records that all test methods operate on.</li>
+</ul>
+</div>

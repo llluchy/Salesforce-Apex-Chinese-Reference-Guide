@@ -1,0 +1,110 @@
+<a name="apex_commercepayments_sync_adapter_concept"><!-- --></a><h1 class="helpHead1">Building a Synchronous Gateway Adapter</h1><div class="body conbody">
+<div class="shortdesc">In synchronous payment configurations, the Salesforce payment platform sends
+        transaction information to the gateway, and then waits for a gateway response that contains
+        the final transaction status. Salesforce creates a transaction only if the transaction is
+        successful in the gateway.</div>
+
+        <p class="p">A synchronous gateway adapter implements the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_commercepayments_PaymentGatewayAdapter.htm#apex_interface_commerce_payments_PaymentGatewayAdapter" target="_blank"><samp class="codeph apex_code">PaymentGatewayAdapter
+                    Interface</samp></a>. In this topic, we examine a sample synchronous
+            adapter by looking at <samp class="codeph apex_code">PaymentGatewayAdapter</samp>, and
+            then the <samp class="codeph nolang">processRequest</samp> method, which drives most
+            of the communication between the payment platform and the payment gateway.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Payment gateway adapters can’t make future calls, external callouts using <samp class="codeph apex_code">System.Http</samp>, asynchronous calls, queueable calls, or
+            execute DMLs using SOQL.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">PaymentGatewayAdapter</h2>
+<div class="p">All synchronous gateways must implement the
+                <samp class="codeph apex_code">PaymentGatewayAdapter</samp> interface. All
+            PaymentGatewayAdapters are required to implement the <samp class="codeph apex_code">processRequest</samp>
+            method.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> SampleAdapter <span class="keyword">implements</span> commercepayments.PaymentGatewayAdapter {
+    <span class="keyword">global</span> SampleAdapter() {}
+    
+    <span class="keyword">global</span> commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+    }
+}</pre></div>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Processing an Initial Payment Request</h2>
+<div class="p">
+<p class="p">When the payments platform
+                receives a payments API request, it passes the request to your gateway adapter for
+                further evaluation. The adapter begins the request evaluation process by calling the
+                    <samp class="codeph nolang">processRequest</samp> method, which represents the
+                first step in a synchronous payment flow. We can break the <samp class="codeph nolang">processRequest</samp> implementation into three parts.
+                </p>
+<p class="p">First, it builds a payment request object that the gateway can
+                understand.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+<span class="statement">if</span> (requestType == commercepayments.RequestType.Capture) {
+   req.setEndpoint(<span class="string">'/pal/servlet/Payment/v52/capture'</span>);
+    body = buildCaptureRequest((commercepayments.CaptureRequest)gatewayContext.getPaymentRequest());
+} <span class="statement">else</span> <span class="statement">if</span> (requestType == commercepayments.RequestType.ReferencedRefund) {
+    req.setEndpoint(<span class="string">'/pal/servlet/Payment/v52/refund'</span>);
+    body = buildRefundRequest((commercepayments.ReferencedRefundRequest)gatewayContext.getPaymentRequest());
+}</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>We don't recommend encoding the request body, which contains the
+                merge fields, including the card number and CVV. This can cause the request to fail
+                to read the encoded request body and to fail to replace the merge field
+                values.</p>
+</div>
+</div></div></div></div>
+<p class="p">Then, the adapter sends the request to the payment
+            gateway.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">req.setBody(body);
+req.setMethod(<span class="string">'POST'</span>);
+commercepayments.PaymentsHttp http = <span class="keyword">new</span> commercepayments.PaymentsHttp();
+HttpResponse res = <span class="keyword">null</span>;
+<span class="statement">try</span> {
+    res = http.send(req);
+} <span class="statement">catch</span>(CalloutException ce) {
+    commercepayments.GatewayErrorResponse error = <span class="keyword">new</span> commercepayments.GatewayErrorResponse(<span class="string">'500'</span>, ce.getMessage());
+    <span class="statement">return</span> error;
+}</pre></div>
+Finally, the adapter creates a response object to store data from the
+            gateway’s response. The type of response object varies based on whether you originally
+            made a payment capture request or a refund
+            request.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> ( requestType == commercepayments.RequestType.Capture) {
+   <span class="onelineComment">// Refer to the end of this doc for sample createCaptureResponse implementation</span>
+    response =  createCaptureResponse(res);
+} <span class="statement">else</span> <span class="statement">if</span> ( requestType == commercepayments.RequestType.ReferencedRefund) {
+    response =  createRefundResponse(res);
+}
+<span class="statement">return</span> response;</pre></div>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Custom Data</h2>
+
+            
+            <p class="p">To transfer additional, custom data from the frontend to your payment gateway
+                adapter, use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_commerce_webstore_checkouts_payments.htm" target="_blank">Checkout Payments Connect API</a>. Sending
+                custom data to the adapter supports use cases like implementing conditional logic
+                based on specific data or mapping asynchronous webhook events to a cart by passing
+                an identifier.</p>
+
+            <p class="p">To send custom data to your payment gateway adapter, use the <samp class="codeph nolang">paymentsData</samp> parameter in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_commerce_webstore_checkouts_payments.htm" target="_blank">Checkout Payments Connect API</a> input
+                payload. This parameter is a serialized map of type <samp class="codeph nolang">&lt;String, String&gt;</samp> that supports up to four key-value pairs. Each key
+                and each value can contain up to 255 characters. <samp class="codeph nolang">paymentsData</samp> is only applicable to Auth and PostAuth payment requests.
+                Simple purchase orders don’t support <samp class="codeph nolang">paymentsData</samp>.</p>
+
+            <p class="p">Similarly, the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_payment_post_auth.htm" target="_blank">Post Authorization</a> input payload has an
+                    <samp class="codeph nolang">additionalData</samp> property, which is also a
+                map of type<samp class="codeph nolang">&lt;String, String&gt;</samp>. The <samp class="codeph nolang">paymentsData</samp> property is accepted for Auth and
+                PostAuth requests and is transferred to the Payment APIs through the <samp class="codeph nolang">additionalData</samp> property.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

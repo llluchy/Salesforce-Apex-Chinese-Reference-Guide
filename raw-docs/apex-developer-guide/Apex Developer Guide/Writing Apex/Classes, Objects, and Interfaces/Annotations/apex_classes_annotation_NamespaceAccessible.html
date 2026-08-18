@@ -1,0 +1,131 @@
+<a name="apex_classes_annotation_NamespaceAccessible"><!-- --></a><h1 class="helpHead1">NamespaceAccessible Annotation</h1><div class="body">
+    <p class="p">The <samp class="codeph apex_code">@NamespaceAccessible</samp> makes public Apex in a
+            package available to other packages that use the same namespace. Without this
+            annotation, Apex classes, methods, interfaces, properties, and abstract classes defined
+            in a 2GP package aren’t accessible to the other packages with which they share a
+            namespace. Apex that is declared global is always available across all namespaces, and
+            needs no annotation.</p>
+
+    <p class="p">For more information on 2GP managed packages, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp.htm" target="_blank" title="HTML (New Window)"> Second-Generation Managed
+        Packages</a> in <cite class="cite">Salesforce DX Developer Guide</cite>.</p>
+
+    <div class="section" id="considerations_namespaceAccessible_p">
+<a name="considerations_namespaceAccessible_p"><!-- --></a>
+      <p class="p">Considerations for Apex Accessibility Across
+                Packages</p>
+
+      <div class="p">
+                <ul class="ul bulletList">
+                    <li class="li">You can’t use the <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation for an <samp class="codeph apex_code">@AuraEnabled</samp> Apex method or an <samp class="codeph nolang">@InvocableMethod</samp> Apex method.</li>
+
+                    <li class="li">You can add or remove the <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation at any time, even on managed
+                        and released Apex code. Make sure that you don’t have dependent packages
+                        relying on the functionality of the annotation before adding or removing
+                        it.</li>
+
+                    <li class="li">When adding or removing <samp class="codeph apex_code">@NamespaceAccessible</samp> Apex from a package, consider the impact
+                        to customers with installed versions of other packages that reference this
+                        package’s annotation. Before pushing a package upgrade, ensure that no
+                        customer is running a package version that would fail to fully compile when
+                        the upgrade is pushed.</li>
+
+                    <li class="li">If a public interface is declared as <samp class="codeph apex_code">@NamespaceAccessible</samp>, then all interface members inherit the
+                        annotation. Individual interface members can’t be annotated with <samp class="codeph apex_code">@NamespaceAccessible</samp>.</li>
+
+                    <li class="li">If a public or protected variable or method is declared as <samp class="codeph apex_code">@NamespaceAccessible</samp>, its defining class
+                        must be either global or public with the <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation.</li>
+
+                    <li class="li">If a public or protected inner class is declared as <samp class="codeph apex_code">@NamespaceAccessible</samp>, its enclosing
+                        class must be either global or public with the <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation.</li>
+
+                </ul>
+
+            </div>
+
+      <div class="p">This example shows an Apex class marked with the
+                    <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation. The
+                class is accessible to other packages within the same namespace. The first
+                constructor is also visible within the namespace, but the second constructor isn’t.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// A namespace-visible Apex class</span>
+@NamespaceAccessible
+<span class="keyword">public</span> <span class="keyword">class</span> MyClass {
+    <span class="keyword">private</span> <span class="keyword">Boolean</span> bypassFLS;
+
+    <span class="onelineComment">// A namespace-visible constructor that only allows secure use</span>
+    @NamespaceAccessible
+    <span class="keyword">public</span> MyClass() {
+        bypassFLS = <span class="keyword">false</span>;
+    }
+
+    <span class="onelineComment">// A package private constructor that allows use in trusted contexts,</span>
+    <span class="onelineComment">// but only internal to the package</span>
+    <span class="keyword">public</span> MyClass (<span class="keyword">Boolean</span> bypassFLS) {
+        <span class="statement">this</span>.bypassFLS = bypassFLS;
+    }
+    @NamespaceAccessible
+    <span class="keyword">protected</span> <span class="keyword">Boolean</span> getBypassFLS() {
+       <span class="statement">return</span> bypassFLS;
+    }
+}</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In API version 47.0 and later, <samp class="codeph apex_code">@NamespaceAccessible</samp>
+        isn’t allowed on an entity marked with <samp class="codeph apex_code">@AuraEnabled</samp>.
+        Therefore, an Aura or Lightning web component installed from a package can’t call an Apex
+        method from another package, even if both packages are in the same namespace. However, an
+          <samp class="codeph apex_code">@AuraEnabled</samp> public method from one package can
+        call a <samp class="codeph apex_code">@NamespaceAccessible</samp> public method from
+        another package in the same namespace.</p>
+
+      <p class="p">Therefore, this behavior isn’t allowed.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// In Package1 in the Acme namespace</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> MyController {
+    <span class="onelineComment">// Stacking these annotations isn't allowed</span>
+    @AuraEnabled
+    @NamespaceAccessible
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> myMethod( ){
+        <span class="onelineComment">// ...</span>
+    }
+}</pre></div>
+
+      <p class="p">But this behavior is allowed.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// In Package1 in the Acme namespace</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> Service {
+    @NamespaceAccessible
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> doSomething() {
+        <span class="onelineComment">// ...</span>
+    }
+}
+
+<span class="onelineComment">// In Package2 in the Acme namespace</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> MyController {
+    <span class="onelineComment">// Can call the @NamespaceAccessible method</span>
+    @AuraEnabled
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> myMethod( ){
+        Service.doSomething();
+    }
+}</pre></div>
+
+      <p class="p">In API version 50.0 and later, scope and accessibility rules are enforced on Apex
+        variables, methods, inner classes, and interfaces that are annotated with <samp class="codeph apex_code">@NamespaceAccessible</samp>. For accessibility considerations,
+        see <a class="xref" href="#considerations_namespaceAccessible_p">Considerations for Apex
+          Acessibility Across Packages</a>. For more information on namespace-based visibility,
+        see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_namespace_visibility.htm" target="_blank" title="HTML (New Window)">Namespace-Based Visibility for Apex
+          Classes in Second-Generation Packages</a>.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_JsonAccess.htm" title="JsonAccess Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_ReadOnly.htm" title="ReadOnly Annotation">Next →</a></li>
+</ul></div>
+</div>

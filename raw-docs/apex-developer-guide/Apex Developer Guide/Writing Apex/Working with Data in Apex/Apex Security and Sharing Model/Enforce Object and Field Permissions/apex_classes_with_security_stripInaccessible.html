@@ -1,0 +1,216 @@
+<a name="apex_classes_with_security_stripInaccessible"><!-- --></a><h1 class="helpHead1">Enforce Security with the stripInaccessible Method</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">stripInaccessible</samp> method to enforce
+    field-level and object-level data protection by stripping fields and relationship fields from
+    query and subquery results that the user can’t access. The method can also be used to remove
+    inaccessible sObject fields before DML operations to avoid exceptions and to sanitize sObjects
+    that have been deserialized from an untrusted source.</div>
+
+    <p class="p">The <samp class="codeph ">Security.stripInaccessible()</samp> method takes a permission
+      set ID as a parameter and enforces field-level and object-level access as per the specified
+      permission set, in addition to the running user’s permissions.</p>
+
+    <p class="p">The method allows graceful degradation of the application by omitting fields, rather than
+      failing outright, and is similar to the behavior with views, reports, and layouts. Developers
+      can enforce security at the level of business processes, and not merely at the object, field,
+      or row level. This approach allows coverage of a large number of platform features that pass
+      records into Apex from potentially untrusted sources such as Apex REST, Lightning clients, and
+      so on. </p>
+
+    <div class="box message info" id="note_gwf_s1s_q3c">
+<a name="note_gwf_s1s_q3c"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The ID field is never stripped by the <samp class="codeph apex_code">stripInaccessible</samp> method to avoid issues when performing DML on the result.</p>
+</div>
+</div></div></div>
+</div>
+
+    <div class="section" id="section_kvq_hcs_q3c">
+<a name="section_kvq_hcs_q3c"><!-- --></a><h2 class="helpHead2">Implementation Details</h2>
+
+      
+      <p class="p">The field-level and object-level data protection is accessed through the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Security.htm" target="_blank">Security</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm" target="_blank">SObjectAccessDecision</a> classes. The access check is
+        based on the field-level permission of the current user in the context of the specified
+        operation—create, read, update, or upsert. The <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Security.htm" target="_blank">Security.stripInaccessible()</a> method checks the
+        source records for fields that don’t meet the field-level security check for the current
+        user. The method also checks the source records for lookup or master-detail relationship
+        fields to which the current user doesn’t have access. The method creates a return list of
+        sObjects that is identical to the source records, except that the fields that are
+        inaccessible to the current user are removed. The sObjects returned by the <samp class="codeph apex_code">getRecords</samp> method contain records in the same order as the
+        sObjects in the <samp class="codeph apex_code">sourceRecords</samp> parameter of the
+          <samp class="codeph apex_code">stripInaccessible</samp> method. </p>
+
+    </div>
+
+    <div class="section" id="section_htb_jbs_q3c">
+<a name="section_htb_jbs_q3c"><!-- --></a><h2 class="helpHead2">Considerations</h2>
+
+      
+      <a name="ul_itb_jbs_q3c"><!-- --></a><ul class="ul bulletList" id="ul_itb_jbs_q3c">
+        <li class="li">Use this feature for graceful degradation on errors by omitting fields, rather than
+          failing outright.</li>
+
+        <li class="li">The <samp class="codeph apex_code">stripInaccessible</samp> method doesn’t support
+          AggregateResult SObject. If the source records are of AggregateResult SObject type, an
+          exception is thrown.</li>
+
+        <li class="li">To enforce object and field permissions on the User object and hide a user’s personal
+          information from other users in orgs with Experience Cloud sites, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm" target="_blank">Enforcing Object and Field Permissions</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_u3w_gbs_q3c">
+<a name="section_u3w_gbs_q3c"><!-- --></a><h2 class="helpHead2">Examples</h2>
+
+      
+      <p class="p">These examples show several applications of the <samp class="codeph apex_code">stripInaccessible</samp> method.</p>
+
+      <div class="p">This example code removes inaccessible fields from the query result. A display table for
+        campaign data must always show the <samp class="codeph apex_code">BudgetedCost</samp>. The
+          <samp class="codeph apex_code">ActualCost</samp> must be shown only to users who have
+        permission to read that field.
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_v3w_gbs_q3c"><a name="codeblock_v3w_gbs_q3c"><!-- --></a>SObjectAccessDecision securityDecision = 
+         Security.stripInaccessible(AccessType.READABLE,
+                 [SELECT Name, BudgetedCost, ActualCost FROM Campaign]                 );
+
+    <span class="onelineComment">// Construct the output table</span>
+    <span class="statement">if</span> (securityDecision.getRemovedFields().get(<span class="string">'Campaign'</span>).contains(<span class="string">'ActualCost'</span>)) {
+        <span class="statement">for</span> (Campaign c : securityDecision.getRecords()) {
+        <span class="onelineComment">//System.debug Output: Name, BudgetedCost</span>
+        }
+    } <span class="statement">else</span> {
+        <span class="statement">for</span> (Campaign c : securityDecision.getRecords()) {
+        <span class="onelineComment">//System.debug Output: Name, BudgetedCost, ActualCost</span>
+        }
+}
+</pre></div>
+</div>
+
+      <div class="p">This example code removes inaccessible fields from the subquery result. The user doesn’t
+        have permission to read the <samp class="codeph apex_code">Phone</samp> field of a
+        Contacts
+        object.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_w3w_gbs_q3c"><a name="codeblock_w3w_gbs_q3c"><!-- --></a>List&lt;Account&gt; accountsWithContacts =
+	[SELECT Id, Name, Phone,
+	    (SELECT Id, LastName, Phone FROM Account.Contacts)
+	FROM Account];
+  
+   <span class="onelineComment">// Strip fields that are not readable</span>
+   SObjectAccessDecision decision = Security.stripInaccessible(
+	                                   AccessType.READABLE,
+	                                   accountsWithContacts);
+ 
+<span class="onelineComment">// Print stripped records</span>
+   <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; accountsWithContacts.size(); i++) 
+  {
+      System.debug(<span class="string">'Insecure record access: '</span>+accountsWithContacts[i]);
+      System.debug(<span class="string">'Secure record access: '</span>+decision.getRecords()[i]);
+   }
+ 
+<span class="onelineComment">// Print modified indexes</span>
+   System.debug(<span class="string">'Records modified by stripInaccessible: '</span>+decision.getModifiedIndexes());
+ 
+<span class="onelineComment">// Print removed fields</span>
+   System.debug(<span class="string">'Fields removed by stripInaccessible: '</span>+decision.getRemovedFields());
+</pre></div>
+</div>
+
+      <div class="p">This example code removes inaccessible fields from sObjects before DML operations. The user
+        who doesn’t have permission to create Rating for an Account can still create an Account. The
+        method ensures that no Rating is set and doesn’t throw an exception.
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_x3w_gbs_q3c"><a name="codeblock_x3w_gbs_q3c"><!-- --></a>List&lt;Account&gt; newAccounts = <span class="keyword">new</span> List&lt;Account&gt;();
+Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Acme Corporation'</span>);
+Account b = <span class="keyword">new</span> Account(Name=<span class="string">'Blaze Comics'</span>, Rating=’Warm’);
+newAccounts.add(a);
+newAccounts.add(b);
+
+SObjectAccessDecision securityDecision = Security.stripInaccessible(
+                                         AccessType.CREATABLE, newAccounts);
+
+<span class="onelineComment">// No exceptions are thrown and no rating is set</span>
+<span class="statement">insert</span> securityDecision.getRecords();
+
+System.debug(securityDecision.getRemovedFields().get(<span class="string">'Account'</span>)); <span class="onelineComment">// Prints "Rating"</span>
+System.debug(securityDecision.getModifiedIndexes()); <span class="onelineComment">// Prints "1"</span>
+</pre></div>
+</div>
+
+      <div class="p">This example code sanitizes sObjects that have been deserialized from an untrusted source.
+        The user doesn’t have permission to update the <samp class="codeph apex_code">AnnualRevenue</samp> of an
+        Account.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_y3w_gbs_q3c"><a name="codeblock_y3w_gbs_q3c"><!-- --></a><span class="keyword">String</span> jsonInput =
+<span class="string">'['</span> +
+<span class="string">'{'</span> +
+<span class="string">'"Name": "InGen",'</span> +
+<span class="string">'"AnnualRevenue": "100"'</span> +
+<span class="string">'},'</span> +
+<span class="string">'{'</span> +
+<span class="string">'"Name": "Octan"'</span> +
+<span class="string">'}'</span> +
+<span class="string">']'</span>;
+
+List&lt;Account&gt; accounts = (List&lt;Account&gt;)JSON.deserializeStrict(jsonInput, List&lt;Account&gt;.<span class="keyword">class</span>);
+SObjectAccessDecision securityDecision = Security.stripInaccessible(
+                                         AccessType.UPDATABLE, accounts);
+
+<span class="onelineComment">// Secure update</span>
+<span class="statement">update</span> securityDecision.getRecords(); <span class="onelineComment">// Doesn’t update AnnualRevenue field</span>
+System.debug(<span class="keyword">String</span>.join(securityDecision.getRemovedFields().get(<span class="string">'Account'</span>), <span class="string">', '</span>)); <span class="onelineComment">// Prints "AnnualRevenue"</span>
+System.debug(<span class="keyword">String</span>.join(securityDecision.getModifiedIndexes(), <span class="string">', '</span>)); <span class="onelineComment">// Prints "0”</span>
+</pre></div>
+</div>
+
+      <div class="p">This example code removes inaccessible relationship fields from the query result. The user
+        doesn’t have permission to insert the <samp class="codeph apex_code">Account__c</samp>
+        field, which is a lookup from MyCustomObject__c to
+        Account.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_z3w_gbs_q3c"><a name="codeblock_z3w_gbs_q3c"><!-- --></a><span class="onelineComment">// Account__c is a lookup from MyCustomObject__c to Account</span>
+<span class="keyword">@IsTest</span>
+   <span class="keyword">public</span> <span class="keyword">class</span> TestCustomObjectLookupStripped {
+      <span class="keyword">@IsTest</span> <span class="keyword">static</span> <span class="keyword">void</span> caseCustomObjectStripped() {
+         Account a = <span class="keyword">new</span> Account(Name=<span class="string">'foo'</span>);
+         <span class="statement">insert</span> a;
+         List&lt;MyCustomObject__c&gt; records = <span class="keyword">new</span> List&lt;MyCustomObject__c&gt;{
+            <span class="keyword">new</span> MyCustomObject__c(Name=<span class="string">'Custom0'</span>, Account__c=a.id)
+         };
+         <span class="statement">insert</span> records;
+         records = [SELECT Id, Account__c FROM MyCustomObject__c];
+         SObjectAccessDecision securityDecision = Security.stripInaccessible
+                                                  (AccessType.READABLE, records);
+         
+         <span class="onelineComment">// Verify stripped records</span>
+         System.assertEquals(1, securityDecision.getRecords().size());
+         <span class="statement">for</span> (SObject strippedRecord : securityDecision.getRecords()) {
+             System.debug(<span class="string">'Id should be set as Id fields are ignored: '</span> + 
+                           strippedRecord.isSet(<span class="string">'Id'</span>)); <span class="onelineComment">// prints true</span>
+             System.debug(<span class="string">'Lookup field FLS is not READABLE to running user, 
+</span>                           should not be set: <span class="string">' +
+</span>                           strippedRecord.isSet(<span class="string">'Account__c'</span>)); <span class="onelineComment">// prints false</span>
+         }
+      }
+   }</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In API version 67.0 and later, Apex runs in user context by default, meaning that the
+        current user’s permissions and field-level security (FLS) are enforced during code
+        execution. In API version 66.0 and earlier, system mode is the default.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_System_AccessType.htm" target="_blank" title="Apex Reference Guide: AccessType Enum - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: AccessType Enum</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Security.htm" target="_blank" title="Apex Reference Guide: Security Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Security Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm" target="_blank" title="Apex Reference Guide: SObjectAccessDecision
+                            Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: SObjectAccessDecision
+                            Class</a></div></li>
+</ul>
+</div>
+</div>

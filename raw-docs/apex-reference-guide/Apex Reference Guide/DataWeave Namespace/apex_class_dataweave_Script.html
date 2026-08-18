@@ -1,0 +1,198 @@
+<a name="apex_class_dataweave_Script"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Script Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains the <span class="keyword parmname">createScript()</span> method to load DataWeave scripts and the
+            <span class="keyword parmname">execute()</span> method to obtain script output in a
+            <span class="keyword parmname">DataWeave.Result</span> object.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_dataweave.htm" title="The DataWeave namespace provides classes and methods to support the invocation of DataWeave scripts from Apex.">DataWeave</a></p>
+
+        </div>
+
+        <div class="section">
+            <p class="p">This example runs a DataWeave script from Apex and retrieves the resulting script
+                output. First deploy the script to the org as <samp class="codeph ">ContactsToJson.dwl</samp>.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>%dw 2.0
+input records application/java
+output application/json
+---
+{
+  users: records map(record) -&gt; {
+    firstName: record.FirstName,
+    lastName: record.LastName
+  }
+</pre></div>
+
+            <p class="p">Then, execute the script from Apex.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>List&lt;Contact&gt; data = [SELECT FirstName, LastName FROM Contact WHERE LastName LIMIT 5];
+Map&lt;String, Object&gt; args = new Map&lt;String, Object&gt;{ 'records' =&gt; data };
+DataWeave.Script script = DataWeave.Script.createScript('ContactsToJson');
+
+DataWeave.Result result = script.execute(args);
+string jsonOutput = result.getValueAsString();</pre></div>
+
+        </div>
+
+    </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Script.htm#apex_dataweave_Script_methods">Script Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_dataweave_Script_methods">
+<a name="apex_dataweave_Script_methods"><!-- --></a><h2 class="helpHead2">Script Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Script</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Script.htm#apex_dataweave_Script_createScript">createScript(scriptName)</a></strong><br>
+Loads a DataWeave 2.0 script from the <span class="keyword parmname">.dwl</span> metadata file that is         deployed in an org. The script can then be run using the <span class="keyword parmname">Script.execute</span>         method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Script.htm#apex_dataweave_Script_createScript_2">createScript(namespace, scriptName)</a></strong><br>
+Loads a DataWeave 2.0 script from a specified namespace. The script can then be run     using the <span class="keyword parmname">Script.execute</span> method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Script.htm#apex_dataweave_Script_execute">execute(parameters)</a></strong><br>
+Executes the DataWeave script that is loaded using the             <span class="keyword parmname">createScript()</span> method and returns the script output.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Script.htm#apex_dataweave_Script_toString">toString()</a></strong><br>
+Returns the name of the script.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_dataweave_Script_createScript">
+<a name="apex_dataweave_Script_createScript"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createScript(scriptName)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Loads a DataWeave 2.0 script from the <span class="keyword parmname">.dwl</span> metadata file that is
+        deployed in an org. The script can then be run using the <span class="keyword parmname">Script.execute</span>
+        method.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+                        
+                        <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> createScript(<span class="keyword">String</span>
+                                        scriptName)</samp></p>
+
+                        
+                </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scriptName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The name of the deployed metadata <samp class="codeph apex_code">.dwl</samp>
+                        script (not including the file extension).</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_dataweave_Script" title="Contains the createScript() method to load DataWeave scripts and the execute() method to obtain script output in a DataWeave.Result object.">DataWeave.Script</a></p>
+<p class="p">DataWeave script that is used as a parameter in the <samp class="codeph ">Script.execute()</samp> method.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_dataweave_Script_createScript_2">
+<a name="apex_dataweave_Script_createScript_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createScript(namespace, scriptName)</span></h3>
+
+  <div class="body refbody">
+<div class="shortdesc">Loads a DataWeave 2.0 script from a specified namespace. The script can then be run
+    using the <span class="keyword parmname">Script.execute</span> method.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public static dataweave.Script createScript(String namespace,
+          String scriptName)</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">namespace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The namespace name for the deployed script. If the namespace name is null, the caller namespace
+            is used. If the namespace name is empty, the org namespace is used.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scriptName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The name of the deployed metadata <samp class="codeph apex_code">.dwl</samp> script
+            (not including the file extension).</p>
+</li>
+</ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_dataweave_Script" title="Contains the createScript() method to load DataWeave scripts and the execute() method to obtain script output in a DataWeave.Result object.">DataWeave.Script</a></p>
+
+      <p class="p">DataWeave script that is used as a parameter in the <samp class="codeph ">Script.execute()</samp> method.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_dataweave_Script_execute">
+<a name="apex_dataweave_Script_execute"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">execute(parameters)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Executes the DataWeave script that is loaded using the
+            <span class="keyword parmname">createScript()</span> method and returns the script output.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> execute(Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;
+                    parameters)</samp></p>
+
+            
+        </div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">parameters</var></strong>:<p class="p">Type: Map&lt;String,Object&gt; Input to the DataWeave script. The keys correspond to the input directive names defined in the
+                        DataWeave header. See <a class="xref" href="https://docs.mulesoft.com/dataweave/1.2/dataweave-language-introduction#input-directive" target="_blank">Input Directive</a>
+                        and <a class="xref" href="https://docs.mulesoft.com/dataweave/1.2/dataweave-language-introduction#dataweave-header" target="_blank">DataWeave
+                            Header</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_dataweave_Result.htm#apex_class_dataweave_Result" title="Contains methods to retrieve data that was transformed using Script class methods.">DataWeave.Result</a></p>
+<p class="p">The <samp class="codeph ">DataWeave.Result</samp> object contains the script output.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_dataweave_Script_toString">
+<a name="apex_dataweave_Script_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the name of the script.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+
+      
+    </div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

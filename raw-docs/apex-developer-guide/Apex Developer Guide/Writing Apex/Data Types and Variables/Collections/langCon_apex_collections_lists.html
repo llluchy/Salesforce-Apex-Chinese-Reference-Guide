@@ -1,0 +1,143 @@
+<a name="langCon_apex_collections_lists"><!-- --></a><h1 class="helpHead1">Lists</h1><div class="body conbody">
+<div class="shortdesc">A list is an ordered collection of elements that are distinguished by their indices.
+        List elements can be of any data type—primitive types, collections, sObjects,
+        user-defined types, and built-in Apex types. </div>
+
+        <p class="p">This table is a visual representation of a list of Strings:</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                
+                
+                
+                
+                <thead class="thead sorted" align="left">
+                    <tr>
+                        <th class="featureTableHeader vertical-align-top " id="d146173e69">Index 0</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d146173e72">Index 1</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d146173e75">Index 2</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d146173e78">Index 3</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d146173e81">Index 4</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d146173e85">Index 5</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry" headers="d146173e69" data-title="Index 0">'Red'</td>
+
+                        <td class="entry" headers="d146173e72" data-title="Index 1">'Orange'</td>
+
+                        <td class="entry" headers="d146173e75" data-title="Index 2">'Yellow'</td>
+
+                        <td class="entry" headers="d146173e78" data-title="Index 3">'Green'</td>
+
+                        <td class="entry" headers="d146173e81" data-title="Index 4">'Blue'</td>
+
+                        <td class="entry" headers="d146173e85" data-title="Index 5">'Purple'</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">The index position of the first element in a list is always 0.</p>
+
+        <p class="p">Lists can contain any collection and can be nested within one another and become
+            multidimensional. For example, you can have a list of lists of sets of Integers. A list
+            can contain up to seven levels of nested collections inside it, that is, up to eight
+            levels overall.</p>
+
+        <p class="p">To declare a list, use the <samp class="codeph apex_code">List</samp> keyword followed
+            by the primitive data, sObject, nested list, map, or set type within &lt;&gt; characters.
+            For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create an empty list of String</span>
+List&lt;<span class="keyword">String</span>&gt; my_list = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+<span class="onelineComment">// Create a nested list</span>
+List&lt;List&lt;Set&lt;<span class="keyword">Integer</span>&gt;&gt;&gt; my_list_2 = <span class="keyword">new</span> List&lt;List&lt;Set&lt;<span class="keyword">Integer</span>&gt;&gt;&gt;();
+</pre></div>
+
+        <p class="p">To access elements in a list, use the <samp class="codeph apex_code">List</samp>
+            methods provided by Apex. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">Integer</span>&gt; myList = <span class="keyword">new</span> List&lt;<span class="keyword">Integer</span>&gt;(); <span class="onelineComment">// Define a new list</span>
+myList.add(47);                    <span class="onelineComment">// Adds a second element of value 47 to the end </span>
+                                       <span class="onelineComment">// of the list</span>
+<span class="keyword">Integer</span> i = myList.get(0);                   <span class="onelineComment">// Retrieves the element at index 0</span>
+myList.set(0, 1);                           <span class="onelineComment">// Adds the integer 1 to the list at index 0</span>
+myList.clear();                    <span class="onelineComment">// Removes all elements from the list</span>
+</pre></div>
+
+        <p class="p">For more information, including a complete list of all supported methods, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_list.htm" target="_blank">List Class</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Using Array Notation for One-Dimensional
+                Lists</h2>
+<div class="p">
+<p class="p">When using one-dimensional lists of primitives or objects, you can
+                also use more traditional array notation to declare and reference list elements. For
+                example, you can declare a one-dimensional list of primitives or objects by
+                following the data type name with the []
+                characters:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span>[] colors = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+</pre></div>
+<p class="p">These two statements are equivalent to the previous:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">String</span>&gt; colors = <span class="keyword">new</span> <span class="keyword">String</span>[1];
+</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span>[] colors = <span class="keyword">new</span> <span class="keyword">String</span>[1];
+</pre></div>
+<p class="p">To
+                reference an element of a one-dimensional list, you can also follow the name of the
+                list with the element's index position in square brackets. For
+                example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">colors[0] = <span class="string">'Green'</span>;</pre></div>
+<p class="p">Even
+                though the size of the previous <samp class="codeph apex_code"><span class="keyword">String</span></samp> array
+                is defined as one element (the number between the brackets in <samp class="codeph apex_code"><span class="keyword">new</span> <span class="keyword">String</span>[1]</samp>), lists are elastic and can grow
+                as needed provided that you use the <samp class="codeph apex_code">List</samp>
+                <samp class="codeph apex_code">add</samp> method to add new elements. For example,
+                you can add two or more elements to the <samp class="codeph apex_code">colors</samp> list. But if you’re using square brackets to add an
+                element to a list, the list behaves like an array and isn’t elastic, that is,
+                you won’t be allowed to add more elements than the declared array
+                size.</p>
+<p class="p">All lists are initialized to <samp class="codeph apex_code"><span class="keyword">null</span></samp>. Lists can be assigned values and allocated memory using literal
+                notation. The following examples declare Integer lists using literal notation.</p>
+</div>
+</div>
+
+        <div class="example" id="ex_list_zero">
+<a name="ex_list_zero"><!-- --></a><h2 class="helpHead2">Defines an Integer list of size zero with no elements.</h2>
+<div class="exampleblock">
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">Integer</span>&gt; ints = <span class="keyword">new</span> <span class="keyword">Integer</span>[0];</pre></div>
+
+        </div>
+</div>
+
+        <div class="example" id="ex_list_six">
+<a name="ex_list_six"><!-- --></a><h2 class="helpHead2">Defines an Integer list with memory allocated for six Integers.</h2>
+<div class="exampleblock">
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">Integer</span>&gt; ints = <span class="keyword">new</span> <span class="keyword">Integer</span>[6];</pre></div>
+
+        </div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_lists_sorting.htm">List Sorting</a></strong><br>
+You can sort list elements and the sort order depends on the data type of the     elements.</li>
+</ul>
+</div>

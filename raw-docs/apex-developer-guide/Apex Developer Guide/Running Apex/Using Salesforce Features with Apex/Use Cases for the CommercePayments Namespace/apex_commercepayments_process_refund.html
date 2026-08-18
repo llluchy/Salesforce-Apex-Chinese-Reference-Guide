@@ -1,0 +1,77 @@
+<a name="apex_commercepayments_process_refund"><!-- --></a><h1 class="helpHead1">Process Refund</h1><div class="body taskbody">
+<div class="shortdesc">Process a refund in the payment gateway.</div>
+
+  <div class="section prereq p"><div class="p">
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+     <tbody class="tbody">
+      <tr>
+       <td class="subHead">Available in: Salesforce Spring ’20</td>
+
+      </tr>
+
+     </tbody>
+
+    </table>
+<br>
+</div>
+To access the <samp class="codeph nolang">commercepayments</samp> API, you need the
+   PaymentPlatform org permission.</div></div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">Get the referenced refund request object from the <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayContext.htm#apex_class_commerce_payments_PaymentGatewayContext" target="_blank">PaymentGatewayContext Class</a></samp>.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection nolang"><pre class="codeblock brush:plain">commercepayments.ReferencedRefundRequest = (commercepayments.ReferencedRefundRequest)gatewayContext.getPaymentRequest();</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Set the HTTP request object.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection nolang"><pre class="codeblock brush:plain">HttpRequest req = new HttpRequest();
+req.setHeader('Content-Type', 'application/json');
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Read the parameters from the <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_ReferencedRefundRequest.htm#apex_class_commerce_payments_ReferencedRefundRequest" target="_blank">ReferencedRefundRequest</a> object</samp> and prepare the
+     HTTP request body.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Make the HTTP call to the gateway using the<samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_PaymentsHttp.htm#apex_class_commerce_payments_PaymentsHttp" target="_blank">PaymentsHttp Class</a></samp>.</span>
+    <div class="itemgroup stepxmp">
+     <div class="codeSection nolang"><pre class="codeblock brush:plain">commercepayments.PaymentsHttp http = new commercepayments.PaymentsHttp();
+HttpResponse res = http.send(req);
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Parse the <samp class="codeph nolang">httpResponse</samp> and prepare the <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_commercepayments_ReferencedRefundResponse.htm#apex_class_commerce_payments_ReferencedRefundResponse" target="_blank">ReferencedRefundResponse</a></samp> object.</span>
+    <div class="itemgroup stepxmp">
+     
+     <div class="codeSection nolang"><pre class="codeblock brush:plain">commercepayments.ReferencedRefundResponse referencedRefundResponse = new commercepayments.ReferencedRefundResponse();
+referencedRefundResponse.setGatewayResultCode(“”);
+referencedRefundResponse.setGatewayResultCodeDescription(“”);
+referencedRefundResponse.setGatewayReferenceNumber(“”);
+referencedRefundResponse.setSalesforceResultCodeInfo(getSalesforceResultCodeInfo(commercepayments.SalesforceResultCode.SUCCESS.name())); 
+referencedRefundResponse.setGatewayReferenceDetails(“”);
+referencedRefundResponse.setAmount(double.valueOf(100);
+</pre></div>
+
+    </div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Return the <samp class="codeph nolang">referencedRefundResponse</samp>.</span>
+   </li>
+
+  </ol>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

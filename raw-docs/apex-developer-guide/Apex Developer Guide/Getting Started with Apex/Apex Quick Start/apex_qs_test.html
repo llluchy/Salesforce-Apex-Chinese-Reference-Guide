@@ -1,0 +1,199 @@
+<a name="apex_qs_test"><!-- --></a><h1 class="helpHead1">Add a Test Class</h1><div class="body taskbody">
+<div class="shortdesc">In this step, you add a test class with one test method. You also run the test and
+        verify code coverage. The test method exercises and validates the code in the trigger and
+        class. Also, it enables you to reach 100% code coverage for the trigger and
+        class.</div>
+
+        <div class="section prereq p"><div class="p">Prerequisites:<ul class="ul bulletList">
+                <li class="li">A Salesforce account in a sandbox Professional, Enterprise, Performance, or
+                    Unlimited Edition org, or an account in a Developer org.</li>
+
+                <li class="li"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_trigger.htm" title="In this step, you create a trigger for the Book__c custom object that calls the applyDiscount method of the MyHelloWorld class that you created in the previous step.">The
+                        HelloWorldTrigger Apex trigger.</a></li>
+
+            </ul>
+</div></div>
+
+        <div class="section context">
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Testing is an important part of the development process. Before you can deploy
+                Apex or package it for AppExchange, the following must be true.<ul class="ul bulletList">
+                    <li class="li">Unit tests must cover at least 75% of your Apex code, and all of those tests
+                        must complete successfully. <p class="p">Note the following. </p>
+<ul class="ul bulletList">
+                            <li class="li">When deploying Apex to a production organization, each unit test in
+                                your organization namespace is executed by default.</li>
+
+                            <li class="li"><span class="ph" id="DebugNotInCodeCoverage"><a name="DebugNotInCodeCoverage"><!-- --></a>Calls to <samp class="codeph apex_code">System.debug</samp> aren’t counted
+                                    as part of Apex code coverage.</span></li>
+
+                            <li class="li">Test methods and test classes aren’t counted as part of Apex code
+                                coverage.</li>
+
+                            <li class="li">While only 75% of your Apex code must be covered by tests, don’t
+                                focus on the percentage of code that is covered. Instead, make sure
+                                that every use case of your application is covered, including
+                                positive and negative cases, as well as bulk and single records.
+                                This approach ensures that 75% or more of your code is covered by
+                                unit tests.</li>
+
+                        </ul>
+</li>
+
+                    <li class="li">Every trigger must have some test coverage.</li>
+
+                    <li class="li">All classes and triggers must compile successfully.</li>
+
+                </ul>
+</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <ol class="ol steps enumList">
+            <li class="li step">
+                <span class="ph cmd">From Setup, enter <kbd class="ph userinput">Apex Classes</kbd> in the <span class="keyword parmname">Quick
+                        Find</span> box, then select <strong class="ph uicontrol">Apex Classes</strong> and
+                    click <strong class="ph uicontrol">New</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">In the class editor, add this test class definition, and then click
+                        <strong class="ph uicontrol">Save</strong>.</span>
+                <div class="itemgroup stepxmp">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span> 
+<span class="keyword">private</span> <span class="keyword">class</span> HelloWorldTestClass {
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> validateHelloWorld() {
+       Book__c b = <span class="keyword">new</span> Book__c(Name=<span class="string">'Behind the Cloud'</span>, Price__c=100);
+       System.debug(<span class="string">'Price before inserting new book: '</span> + b.Price__c);
+
+       <span class="onelineComment">// Insert book</span>
+       <span class="statement">insert</span> b;
+    
+       <span class="onelineComment">// Retrieve the new book</span>
+       b = [SELECT Price__c FROM Book__c WHERE Id =:b.Id];
+       System.debug(<span class="string">'Price after trigger fired: '</span> + b.Price__c);
+
+       <span class="onelineComment">// Test that the trigger correctly updated the price</span>
+       System.assertEquals(90, b.Price__c);
+    }
+}
+</pre></div>
+
+                </div>
+                <div class="itemgroup info">
+<p class="p">This class is defined using the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation. Classes defined this way should only
+                        contain test methods and any methods required to support those test methods.
+                        One advantage to creating a separate class for testing is that classes
+                        defined with <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> don’t count
+                        against your org’s limit of 6 MB of Apex code. You can also add the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation to individual
+                        methods. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="Use the @IsTest annotation to define classes and methods that only contain code used for testing your app."><samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> Annotation</a>
+                        and <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution
+                            Governors and Limits</a>.</p>
+<p class="p">The method <samp class="codeph apex_code">validateHelloWorld</samp> is defined using the
+                            <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation. This
+                        annotation means that if changes are made to the database, they’re rolled
+                        back when execution completes. You don’t have to delete any test data
+                        created in the test method.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>
+        annotation on methods is equivalent to the <samp class="codeph apex_code">testMethod</samp> keyword. As best practice, Salesforce recommends that you use <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> rather than <samp class="codeph apex_code">testMethod</samp>. The <samp class="codeph apex_code">testMethod</samp> keyword may
+        be versioned out in a future release.</p>
+</div>
+</div></div></div></div>
+<p class="p">First, the test method creates a book and inserts it into the database
+                        temporarily. The <samp class="codeph apex_code">System.debug</samp>
+                        statement writes the value of the price in the debug
+                        log.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Book__c b = <span class="keyword">new</span> Book__c(Name=<span class="string">'Behind the Cloud'</span>, Price__c=100);
+System.debug(<span class="string">'Price before inserting new book: '</span> + b.Price__c);
+
+<span class="onelineComment">// Insert book</span>
+<span class="statement">insert</span> b;
+</pre></div>
+<p class="p">After the book is inserted, the code retrieves the newly
+                        inserted book, using the ID that was initially assigned to the book when it
+                        was inserted. The <samp class="codeph apex_code">System.debug</samp>
+                        statement then logs the new price that the trigger
+                        modified.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Retrieve the new book</span>
+b = [SELECT Price__c FROM Book__c WHERE Id =:b.Id];
+System.debug(<span class="string">'Price after trigger fired: '</span> + b.Price__c);
+</pre></div>
+<p class="p">When the <samp class="codeph apex_code">MyHelloWorld</samp> class runs, it updates the <samp class="codeph apex_code">Price__c</samp> field and reduces its value by
+                        10%. The following test verifies that the method <samp class="codeph apex_code">applyDiscount</samp> ran and produced the
+                        expected
+                    result.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Test that the trigger correctly updated the price</span>
+System.assertEquals(90, b.Price__c);
+</pre></div>
+</div>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">To run this test and view code coverage information, switch to the Developer
+                    Console.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">In the Developer Console, click <span class="ph menucascade"><strong class="ph uicontrol">Test</strong> | <strong class="ph uicontrol">New Run</strong></span>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">To select your test class, click
+                    <strong class="ph uicontrol">HelloWorldTestClass</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">To add all methods in the <samp class="codeph apex_code">HelloWorldTestClass</samp> class to the test run, click <strong class="ph uicontrol">Add
+                        Selected</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">Click <strong class="ph uicontrol">Run</strong>.</span>
+                <div class="itemgroup stepresult">The test result displays in the Tests tab. Optionally, you can expand
+                    the test class in the Tests tab to view which methods were run. In this case,
+                    the class contains only one test method.</div>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">The Overall Code Coverage pane shows the code coverage of this test class. To
+                    view the percentage of lines of code in the trigger covered by this test, which
+                    is 100%, double-click the code coverage line for
+                        <strong class="ph uicontrol">HelloWorldTrigger</strong>. Because the trigger calls a method
+                    from the <samp class="codeph nolang">MyHelloWorld</samp> class, this class
+                    also has coverage (100%). To view the class coverage, double-click
+                        <strong class="ph uicontrol">MyHelloWorld</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">To open the log file, in the Logs tab, double-click the most recent log line in
+                    the list of logs. The execution log displays, including logging information
+                    about the trigger event, the call to the <samp class="codeph apex_code">applyDiscount</samp> method, and the price before and after the
+                    trigger.</span>
+            </li>
+
+        </ol>
+
+        <div class="section result"><div class="p">By now, you’ve completed all the steps necessary for writing some Apex code with a
+            test that runs in your development environment. In the real world, after you tested your
+            code and are satisfied with it, you want to deploy the code and any prerequisite
+            components to a production org. The next step shows you how to do this deployment for
+            the code and custom object you created.</div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_trigger.htm" title="Add an Apex Trigger">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_deploy.htm" title="Deploy Components to Production">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_dev_console_opening.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Open the Developer Console - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Open the Developer Console</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,46 @@
+<a name="apex_classes_field_object_describe"><!-- --></a><h1 class="helpHead1">Enforce Security with Field and SObject Describe Methods</h1><div class="body conbody">
+<div class="shortdesc">At the most granular level, you can enforce object-level and field-level permissions in
+  your code by explicitly calling the <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> and the
+  <samp class="codeph apex_code">Schema.DescribeFieldResult</samp> methods to check the current user’s access permission
+  levels.</div>
+
+  <div class="section">
+   <p class="p"> By using the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank">Schema.DescribeSObjectResult</a> methods and the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_fields_describe.htm" target="_blank">Schema.DescribeFieldResult</a> methods, you can verify that
+    the current user has the necessary permissions and perform a specific DML operation or a query
+    only if the user has sufficient permissions.</p>
+
+   <p class="p">For example, you can call the <samp class="codeph apex_code">isAccessible</samp>, <samp class="codeph apex_code">isCreateable</samp>, or <samp class="codeph apex_code">isUpdateable</samp> methods of <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> to verify whether the current user has read, create, or
+    update access to an sObject, respectively. Similarly, <samp class="codeph apex_code">Schema.DescribeFieldResult</samp> exposes these access control methods that you can call to
+    check the current user’s read, create, or update access for a field. In addition, you can call
+    the <samp class="codeph apex_code">isDeletable</samp> method provided by <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> to check if the current user has
+    permission to delete a specific sObject.</p>
+
+   <p class="p">These examples call the access control methods.</p>
+
+   <div class="p">To check the field-level update permission of the contact's email field before updating
+    it:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (Schema.sObjectType.Contact.fields.Email.isUpdateable()) {
+   <span class="onelineComment">// Update contact phone number</span>
+}</pre></div>
+</div>
+
+   <div class="p">To check the field-level create permission of the contact's email field before creating a new
+    contact:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (Schema.sObjectType.Contact.fields.Email.isCreateable()) {
+   <span class="onelineComment">// Create new contact</span>
+}</pre></div>
+</div>
+
+   <div class="p">To check the field-level read permission of the contact's email field before querying for this
+    field:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (Schema.sObjectType.Contact.fields.Email.isAccessible()) {
+   Contact c = [SELECT Email FROM Contact WHERE Id= :Id];
+}</pre></div>
+</div>
+
+   <div class="p">To check the object-level permission for the contact before deleting the
+    contact:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (Schema.sObjectType.Contact.isDeletable()) {
+   <span class="onelineComment">// Delete contact</span>
+}</pre></div>
+</div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

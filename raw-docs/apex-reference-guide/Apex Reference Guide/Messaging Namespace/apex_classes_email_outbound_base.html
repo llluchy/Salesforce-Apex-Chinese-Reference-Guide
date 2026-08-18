@@ -1,0 +1,327 @@
+<a name="apex_classes_email_outbound_base"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Email Class (Base Email Methods)</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Contains base email methods common to both single and mass
+email.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Messaging.htm" title="The Messaging namespace provides classes and methods for Salesforce notifications and email functionality.">Messaging</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Sending an email by using Apex requires
+    domain-level and user-level email verification. System-generated emails also require
+    verification of the From email address. Email delivery fails if any of these verifications is
+    incomplete. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.security_email_verification_requirements.htm&amp;language=en_US&amp;type=5" target="_blank">Requirements to Send Email from Salesforce</a>.</p>
+</div>
+</div></div></div></div>
+If
+   templates are not being used, all email content must be in plain text, HTML, or both.Visualforce
+   email templates cannot be used for mass email.</div>
+</div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Messaging_Email_methods">
+<a name="apex_Messaging_Email_methods"><!-- --></a>
+<h2 class="helpHead2">Email Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Email</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setBccSender">setBccSender(bcc)</a></strong><br>
+Indicates whether the email sender receives a copy of the email that is sent. For a mass   mail, the sender is only copied on the first email sent.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setReplyTo">setReplyTo(replyAddress)</a></strong><br>
+Optional. The email address that receives the message when a recipient replies.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setTemplateID">setTemplateID(templateId)</a></strong><br>
+The ID of the template to be merged to create this email. Specify a value for    <span class="keyword parmname">setTemplateId</span>, <span class="keyword parmname">setHtmlBody</span>, or    <span class="keyword parmname">setPlainTextBody</span>. Or, you can define both <span class="keyword parmname">setHtmlBody</span>   and <span class="keyword parmname">setPlainTextBody</span>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setSaveAsActivity">setSaveAsActivity(saveAsActivity)</a></strong><br>
+Optional. The default value is <samp class="codeph apex_code"><span class="keyword">true</span></samp>, meaning the email is saved as an activity. This argument only applies if the recipient list is based on <span class="keyword parmname">targetObjectId</span> or <span class="keyword parmname">targetObjectIds</span>. If HTML email tracking is enabled for the organization, you will be able to track open rates.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setSenderDisplayName">setSenderDisplayName(displayName)</a></strong><br>
+Optional. The name that appears on the From line of the email. This cannot be set if the object associated with a <span class="keyword parmname">setOrgWideEmailAddressId</span> for a SingleEmailMessage has defined its <span class="keyword parmname">DisplayName</span> field.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_Messaging_Email_setUseSignature">setUseSignature(useSignature)</a></strong><br>
+Indicates whether the email includes an email signature if the user has one configured. The default is <samp class="codeph apex_code"><span class="keyword">true</span></samp>, meaning if the user has a signature it is included in the email unless you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setBccSender">
+<a name="apex_Messaging_Email_setBccSender"><!-- --></a>
+ <h3 class="helpHead3">setBccSender(bcc)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Indicates whether the email sender receives a copy of the email that is sent. For a mass
+  mail, the sender is only copied on the first email sent.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBccSender(<span class="keyword">Boolean</span> bcc)</samp></p>
+
+   
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">bcc</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If the BCC compliance option is set at the organization ​level, the user cannot add
+    BCC addresses on standard messages. The following error code is returned:
+     <samp class="ph systemoutput">BCC_NOT_ALLOWED_IF_BCC_ COMPLIANCE_​ENABLED</samp>.
+    ​Contact your Salesforce representative for information on BCC compliance.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setReplyTo">
+<a name="apex_Messaging_Email_setReplyTo"><!-- --></a>
+<h3 class="helpHead3">setReplyTo(replyAddress)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Optional. The email address that receives the message when
+a recipient replies.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setReplyTo(<span class="keyword">String</span> replyAddress)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">replyAddress</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setTemplateID">
+<a name="apex_Messaging_Email_setTemplateID"><!-- --></a>
+ <h3 class="helpHead3">setTemplateID(templateId)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">The ID of the template to be merged to create this email. Specify a value for
+   <span class="keyword parmname">setTemplateId</span>, <span class="keyword parmname">setHtmlBody</span>, or
+   <span class="keyword parmname">setPlainTextBody</span>. Or, you can define both <span class="keyword parmname">setHtmlBody</span>
+  and <span class="keyword parmname">setPlainTextBody</span>.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setTemplateID(<span class="keyword">ID</span> templateId)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">templateId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="keyword parmname">setHtmlBody</span> and <span class="keyword parmname">setPlainTextBody</span> apply only to
+    single email methods, not to mass email methods.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setSaveAsActivity">
+<a name="apex_Messaging_Email_setSaveAsActivity"><!-- --></a>
+<h3 class="helpHead3">setSaveAsActivity(saveAsActivity)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Optional. The default value is <samp class="codeph apex_code"><span class="keyword">true</span></samp>, meaning the email is saved
+as an activity. This argument only applies if the recipient list is
+based on <span class="keyword parmname">targetObjectId</span> or <span class="keyword parmname">targetObjectIds</span>. If HTML email tracking is enabled for the organization, you will
+be able to track open rates.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setSaveAsActivity(<span class="keyword">Boolean</span> saveAsActivity)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">saveAsActivity</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setSenderDisplayName">
+<a name="apex_Messaging_Email_setSenderDisplayName"><!-- --></a>
+<h3 class="helpHead3">setSenderDisplayName(displayName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Optional. The name that appears on the From line of the
+email. This cannot be set if the object associated with a <span class="keyword parmname">setOrgWideEmailAddressId</span> for a SingleEmailMessage has
+defined its <span class="keyword parmname">DisplayName</span> field.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setSenderDisplayName(<span class="keyword">String</span> displayName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">displayName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_Email_setUseSignature">
+<a name="apex_Messaging_Email_setUseSignature"><!-- --></a>
+<h3 class="helpHead3">setUseSignature(useSignature)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the email includes an email signature
+if the user has one configured. The default is <samp class="codeph apex_code"><span class="keyword">true</span></samp>, meaning if the user has a signature
+it is included in the email unless you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setUseSignature(<span class="keyword">Boolean</span> useSignature)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">useSignature</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

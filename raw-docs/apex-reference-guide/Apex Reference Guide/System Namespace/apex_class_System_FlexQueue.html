@@ -1,0 +1,286 @@
+<a name="apex_class_System_FlexQueue"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">FlexQueue Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods that reorder batch jobs in the Apex flex
+      queue.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">You can place up to 100 batch jobs in a holding status for future execution. When system
+        resources become available, the jobs are taken from the top of the Apex flex queue and moved
+        to the batch job queue. Up to five queued or active jobs can be processed simultaneously for
+        each org. When a job is moved out of the flex queue for processing, its status changes from
+        Holding to Queued. Queued jobs are executed when the system is ready to process new
+        jobs.</p>
+
+      <p class="p">Use this class’s methods to reorder your <samp class="codeph apex_code">Holding</samp>
+                jobs in the flex queue.  As best practice and for safe usage, a <samp class="codeph ">FlexQueue</samp> reorder method must be the  final statement
+                in a transaction.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="p" id="flexq_move_example">
+<a name="flexq_move_example"><!-- --></a>This example moves a job to the front of the flex queue so that
+        it’s executed immediately. The job is moved by calling the <samp class="codeph apex_code">System.FlexQueue.moveJobToFront()</samp> method with the high priority job ID as the
+        parameter.<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">ID</span> highPriorityJobId = Database.executeBatch(<span class="keyword">new</span> HighPriorityBatchClass(), 200);
+boolean jobMovedToFrontOfQueue = FlexQueue.moveJobToFront(highPriorityJobId);</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm#apex_System_FlexQueue_methods">FlexQueue Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_apex_flex_queue.htm&amp;language=en_US" target="_blank" title="Monitoring the Apex Flex Queue - HTML (New Window)">Monitoring the Apex Flex Queue</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank" title="Apex Developer Guide: Using Batch Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Using Batch Apex</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_FlexQueue_methods">
+<a name="apex_System_FlexQueue_methods"><!-- --></a>
+  <h2 class="helpHead2">FlexQueue Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">FlexQueue</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm#apex_System_FlexQueue_moveAfterJob">moveAfterJob(jobToMoveId, jobInQueueId)</a></strong><br>
+Moves the job with the ID <var class="keyword varname">jobToMoveId</var> immediately       after the job with the ID <var class="keyword varname">jobInQueueId</var> in the flex queue. You can move         <var class="keyword varname">jobToMoveId</var> forward or backward in the queue. If either job isn’t in the       queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if         <var class="keyword varname">jobToMoveId</var> is already immediately after <var class="keyword varname">jobInQueueId</var>,       so no change is made.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm#apex_System_FlexQueue_moveBeforeJob">moveBeforeJob(jobToMoveId, jobInQueueId)</a></strong><br>
+Moves the job with the ID <var class="keyword varname">jobToMoveId</var> immediately       before the job with the ID <var class="keyword varname">jobInQueueId</var> in the flex queue. You can move         <var class="keyword varname">jobToMoveId</var> forward or backward in the queue. If either job isn’t in the       queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if         <var class="keyword varname">jobToMoveId</var> is already immediately before       <var class="keyword varname">jobInQueueId</var>, so no change is made.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm#apex_System_FlexQueue_moveJobToEnd">moveJobToEnd(jobId)</a></strong><br>
+Moves the specified job the end of the flex queue, to index position         <samp class="codeph apex_code">(size - 1)</samp>. All jobs after the job’s starting       position move one spot forward. If the job isn’t in the queue, it throws an element-not-found       exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or         <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the job is already at the end of the queue,       so no change is made.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FlexQueue.htm#apex_System_FlexQueue_moveJobToFront">moveJobToFront(jobId)</a></strong><br>
+Moves the specified job to the front of the flex queue, to index       position <samp class="codeph apex_code">0</samp>. All other jobs move back one spot. If the       job isn’t in the queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the job is already at the front of the queue, so no change is     made.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FlexQueue_moveAfterJob">
+<a name="apex_System_FlexQueue_moveAfterJob"><!-- --></a>
+  <h3 class="helpHead3">moveAfterJob(jobToMoveId, jobInQueueId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Moves the job with the ID <var class="keyword varname">jobToMoveId</var> immediately
+      after the job with the ID <var class="keyword varname">jobInQueueId</var> in the flex queue. You can move
+        <var class="keyword varname">jobToMoveId</var> forward or backward in the queue. If either job isn’t in the
+      queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if
+        <var class="keyword varname">jobToMoveId</var> is already immediately after <var class="keyword varname">jobInQueueId</var>,
+      so no change is made.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> moveAfterJob(Id jobToMoveId, Id
+          jobInQueueId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobToMoveId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to move.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobInQueueId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to move after.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FlexQueue_moveBeforeJob">
+<a name="apex_System_FlexQueue_moveBeforeJob"><!-- --></a>
+  <h3 class="helpHead3">moveBeforeJob(jobToMoveId, jobInQueueId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Moves the job with the ID <var class="keyword varname">jobToMoveId</var> immediately
+      before the job with the ID <var class="keyword varname">jobInQueueId</var> in the flex queue. You can move
+        <var class="keyword varname">jobToMoveId</var> forward or backward in the queue. If either job isn’t in the
+      queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if
+        <var class="keyword varname">jobToMoveId</var> is already immediately before
+      <var class="keyword varname">jobInQueueId</var>, so no change is made.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> moveBeforeJob(Id jobToMoveId, Id
+          jobInQueueId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobToMoveId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to move.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobInQueueId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to use as a reference point.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FlexQueue_moveJobToEnd">
+<a name="apex_System_FlexQueue_moveJobToEnd"><!-- --></a>
+  <h3 class="helpHead3">moveJobToEnd(jobId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Moves the specified job the end of the flex queue, to index position
+        <samp class="codeph apex_code">(size - 1)</samp>. All jobs after the job’s starting
+      position move one spot forward. If the job isn’t in the queue, it throws an element-not-found
+      exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or
+        <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the job is already at the end of the queue,
+      so no change is made.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> moveJobToEnd(Id jobId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to move.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FlexQueue_moveJobToFront">
+<a name="apex_System_FlexQueue_moveJobToFront"><!-- --></a>
+  <h3 class="helpHead3">moveJobToFront(jobId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Moves the specified job to the front of the flex queue, to index
+      position <samp class="codeph apex_code">0</samp>. All other jobs move back one spot. If the
+      job isn’t in the queue, it throws an element-not-found exception. Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the job is moved, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the job is already at the front of the queue, so no change is
+    made.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> moveJobToFront(Id jobId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jobId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The ID of the job to move.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

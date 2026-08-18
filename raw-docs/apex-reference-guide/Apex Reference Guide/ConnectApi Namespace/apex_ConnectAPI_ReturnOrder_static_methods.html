@@ -1,0 +1,173 @@
+<a name="apex_ConnectAPI_ReturnOrder_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">ReturnOrder Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Process ReturnOrders in Order Management, limited to 2,000 requests per
+  hour.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_ReturnOrder_methods">
+<a name="apex_ConnectAPI_ReturnOrder_methods"><!-- --></a>
+ <h2 class="helpHead2">ReturnOrder Methods</h2>
+
+ <div class="shortdesc">These methods are for <samp class="codeph apex_code">ReturnOrder</samp>. All methods
+  are static.</div>
+
+ 
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ReturnOrder_static_methods.htm#apex_ConnectAPI_ReturnOrder_createReturnOrder_1">createReturnOrder(returnOrderInput)</a></strong><br>
+Create a ReturnOrder and ReturnOrderLineItems for items belonging to       an OrderSummary.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ReturnOrder_static_methods.htm#apex_ConnectAPI_ReturnOrder_returnItems_1">returnItems(returnOrderId, returnItemsInput)</a></strong><br>
+Process ReturnOrderLineItems belonging to a ReturnOrder. Processing       a ReturnOrderLineItem generates a change Order and makes that ReturnOrderLineItem read-only.       The change order for a returned item or delivery charge has a positive amount and should be       used to create a credit memo. The change order for a return fee has a negative amount and       should be used to create an invoice. If a processed ReturnOrderLineItem has any remaining       expected quantity, then the API creates a separate ReturnOrderLineItem representing that       quantity.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ReturnOrder_createReturnOrder_1">
+<a name="apex_ConnectAPI_ReturnOrder_createReturnOrder_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">createReturnOrder(returnOrderInput)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Create a ReturnOrder and ReturnOrderLineItems for items belonging to
+      an OrderSummary.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">50.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.ReturnOrderOutputRepresentation
+          createReturnOrder(ConnectApi.ReturnOrderInputRepresentation
+      returnOrderInput)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">returnOrderInput</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_return_order.htm" title="Data for creating a ReturnOrder and ReturnOrderLineItems.">ConnectApi.ReturnOrderInputRepresentation</a></samp>
+</dd>
+
+          <dd class="dd">Data for creating a ReturnOrder and ReturnOrderLineItems.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_return_order_output.htm" title="ID of the created ReturnOrder.">ConnectApi.ReturnOrderOutputRepresentation</a></samp></p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ReturnOrder_static_methods.htm#apex_ConnectAPI_ReturnOrder_returnItems_1" title="Process ReturnOrderLineItems belonging to a ReturnOrder. Processing a ReturnOrderLineItem generates a change Order and makes that ReturnOrderLineItem read-only. The change order for a returned item or delivery charge has a positive amount and should be used to create a credit memo. The change order for a return fee has a negative amount and should be used to create an invoice. If a processed ReturnOrderLineItem has any remaining expected quantity, then the API creates a separate ReturnOrderLineItem representing that quantity.">returnItems(returnOrderId, returnItemsInput)</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_ReturnOrder_returnItems_1">
+<a name="apex_ConnectAPI_ReturnOrder_returnItems_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">returnItems(returnOrderId,
+    returnItemsInput)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Process ReturnOrderLineItems belonging to a ReturnOrder. Processing
+      a ReturnOrderLineItem generates a change Order and makes that ReturnOrderLineItem read-only.
+      The change order for a returned item or delivery charge has a positive amount and should be
+      used to create a credit memo. The change order for a return fee has a negative amount and
+      should be used to create an invoice. If a processed ReturnOrderLineItem has any remaining
+      expected quantity, then the API creates a separate ReturnOrderLineItem representing that
+      quantity.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">52.0</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          ConnectApi.ReturnItemsOutputRepresentation returnItems(<span class="keyword">String</span> returnOrderId,
+          ConnectApi.ReturnItemsInputRepresentation
+      returnItemsInput)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">returnOrderId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the ReturnOrder.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">returnItemsInput</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_return_items.htm" title="Data about products and delivery charges to return, as well as associated return fees."><samp class="codeph apex_code">ConnectApi.ReturnItemsInputRepresentation</samp></a>
+</dd>
+
+          <dd class="dd">Data about products and delivery charges to return, as well as associated return fees.</dd>
+
+        
+      </dl>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_return_items_output.htm" title="Output of Return Items. Includes the ID of the generated change order for items and delivery charges being returned, as well as the ID of the generated change order for any charged return fees. Also includes information about any ReturnOrderLineItems that were created to represent remaining return quantities.">ConnectApi.ReturnItemsOutputRepresentation</a></samp></p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_OrderSummary_static_methods.htm#apex_ConnectAPI_OrderSummary_createMultipleInvoices_1" title="Create Invoices to represent the charges for one or more change orders. Create Invoices for change orders that increase order amounts, such as for return fees. When you ensure the refund for a return, include the invoices for any associated return fees in the request.">createMultipleInvoices(invoicesInput)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_OrderSummary_static_methods.htm#apex_ConnectAPI_OrderSummary_ensureRefundsAsync_1" title="Ensure refunds for a CreditMemo or excess funds by sending a request to a payment provider. This method inserts a background operation into an asynchronous job queue and returns the ID of that operation so you can track its status. Payment gateway responses appear in the payment gateway log and don’t affect the background operation status.">ensureRefundsAsync(orderSummaryId, ensureRefundsInput)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ReturnOrder_static_methods.htm#apex_ConnectAPI_ReturnOrder_createReturnOrder_1" title="Create a ReturnOrder and ReturnOrderLineItems for items belonging to an OrderSummary.">createReturnOrder(returnOrderInput)</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

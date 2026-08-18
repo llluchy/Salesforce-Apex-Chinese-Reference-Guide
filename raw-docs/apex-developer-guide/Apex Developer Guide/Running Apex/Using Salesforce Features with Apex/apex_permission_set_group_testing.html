@@ -1,0 +1,41 @@
+<a name="apex_permission_set_group_testing"><!-- --></a><h1 class="helpHead1">Permission Set Groups</h1><div class="body conbody">
+<div class="shortdesc">To provide Apex test coverage for permission set groups, write tests using the <samp class="codeph ">calculatePermissionSetGroup()</samp> method in the <samp class="codeph ">System.Test</samp> class. </div>
+
+  <p class="p">The <samp class="codeph "><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_System_Test_class.htm" target="_blank">calculatePermissionSetGroup()</a></samp> method forces an immediate calculation of
+      aggregate permissions for a specified permission set group. As the forced calculation counts
+      against Apex CPU limits, and can require complex data setup, it’s a best practice to minimize
+      the number of times you perform this operation. Recalculating complex permission set groups
+      with a large number of included permission sets or overall enabled permissions can cause Apex
+      test failures because Apex CPU limits are exceeded. Apex CPU limits can also be exceeded if
+      the included permission sets in the permission set group aren’t licensed and the permission
+      set group is assigned to many users.</p>
+
+  <p class="p">Set this test to run once in a Test setup method, then reuse the data in subsequent tests. </p>
+
+  <div class="codeSection nolang"><pre class="codeblock brush:plain">@isTest public class PSGTest {
+  @isTest static void testPSG() {
+    // get the PSG by name (may have been modified in deployment)
+    PermissionSetGroup psg = [select Id, Status from PermissionSetGroup where DeveloperName='MyPSG'];
+    
+    // force calculation of the PSG if it is not already Updated
+    if (psg.Status != 'Updated') {
+      Test.calculatePermissionSetGroup(psg.Id);
+    }
+    
+    // assign PSG to current user (this fails if PSG is Outdated)
+    insert new PermissionSetAssignment(PermissionSetGroupId = psg.Id, AssigneeId = UserInfo.getUserId());
+
+    // additional tests to validate permissions granted by PSG
+  }
+}
+</pre></div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.perm_set_groups.htm&amp;type=5&amp;language=en_US" target="_blank" title="Salesforce Help: Permission Set Groups - HTML (New Window)">Salesforce Help: Permission Set Groups</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm" target="_blank" title="Apex Reference Guide: Test Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Test Class</a></div></li>
+</ul>
+</div>
+</div>

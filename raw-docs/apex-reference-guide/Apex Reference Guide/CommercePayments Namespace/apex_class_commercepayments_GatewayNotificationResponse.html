@@ -1,0 +1,140 @@
+<a name="apex_class_commercepayments_GatewayNotificationResponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">GatewayNotificationResponse Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>When the payment gateway sends a notification to the payments
+            platform, the platform responds with a <samp class="codeph apex_code">GatewayNotificationResponse</samp> indicating whether the platform succeeded or
+            failed at receiving the notification.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">
+<p class="p">You must specify the <samp class="codeph apex_code">CommercePayments</samp> namespace when creating an instance of this class.
+                The constructor of this class takes no arguments. For example:</p>
+<samp class="codeph apex_code">CommercePayments.GatewayNotificationResponse gnr = <span class="keyword">new</span>
+                CommercePayments.GatewayNotificationResponse();</samp><p class="p">When an asynchronous
+                payment gateway sends a notification, the gateway requires the platform to
+                acknowledge that it has either succeeded or failed in receiving the notification.
+                Payment gateway adapters use this class to construct the acknowledgment response,
+                which gateways expect for a notification. <samp class="codeph apex_code">GatewayNotificationResponse</samp> is the return type of the <samp class="codeph apex_code">processNotification</samp> method.</p>
+</div>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.GatewayNotificationResponse gnr = <span class="keyword">new</span> commercepayments.GatewayNotificationResponse();
+<span class="statement">if</span> (saveResult.isSuccess()) {
+    system.debug(<span class="string">'Notification accepted by platform'</span>);
+} <span class="statement">else</span> {
+    system.debug(<span class="string">'Errors in the result '</span>+ <span class="keyword">Blob</span>.valueOf(saveResult.getErrorMessage()));
+}
+gnr.setStatusCode(200);
+gnr.setResponseBody(<span class="keyword">Blob</span>.valueOf(<span class="string">'[accepted]'</span>));
+<span class="statement">return</span> gnr;</pre></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayNotificationResponse.htm#apex_commercepayments_GatewayNotificationResponse_methods">GatewayNotificationResponse Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_GatewayNotificationResponse_methods">
+<a name="apex_commercepayments_GatewayNotificationResponse_methods"><!-- --></a><h2 class="helpHead2">GatewayNotificationResponse Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">GatewayNotificationResponse</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayNotificationResponse.htm#apex_commercepayments_GatewayNotificationResponse_setResponseBody">setResponseBody(responseBody)</a></strong><br>
+Sets the body of the response to the gateway. Some gateways expect the       payments platform to acknowledge the notification with a response regardless of whether the       notification was accepted.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayNotificationResponse.htm#apex_commercepayments_GatewayNotificationResponse_setStatusCode">setStatusCode(statusCode)</a></strong><br>
+Sets the HTTP status code sent to the gateway as part of the payments             platform’s response notification.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_GatewayNotificationResponse_setResponseBody">
+<a name="apex_commercepayments_GatewayNotificationResponse_setResponseBody"><!-- --></a><h3 class="helpHead3">setResponseBody(responseBody)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the body of the response to the gateway. Some gateways expect the
+      payments platform to acknowledge the notification with a response regardless of whether the
+      notification was accepted.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setResponseBody(<span class="keyword">Blob</span> responseBody)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">responseBody</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> Common response
+                        values
+                        include <samp class="codeph nolang">accepted</samp></p>
+<div class="p">for successfully
+                        receiving the response. For
+                        example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.GatewayNotificationResponse gnr = <span class="keyword">new</span> commercepayments.GatewayNotificationResponse();
+<span class="statement">if</span> (saveResult.isSuccess()) {
+    system.debug(<span class="string">'Notification accepted by platform'</span>);
+} <span class="statement">else</span> {
+    system.debug(<span class="string">'Errors in the result '</span>+ <span class="keyword">Blob</span>.valueOf(saveResult.getErrorMessage()));
+}
+gnr.setStatusCode(200);
+gnr.setResponseBody(<span class="keyword">Blob</span>.valueOf(<span class="string">'[accepted]'</span>));
+<span class="statement">return</span> gnr;</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_GatewayNotificationResponse_setStatusCode">
+<a name="apex_commercepayments_GatewayNotificationResponse_setStatusCode"><!-- --></a><h3 class="helpHead3">setStatusCode(statusCode)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the HTTP status code sent to the gateway as part of the payments
+            platform’s response notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setStatusCode(<span class="keyword">Integer</span> statusCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">statusCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<div class="p">The status code will vary based on the type of payments platform response. Users should
+                        configure their <samp class="codeph apex_code">GatewayNotificationResponse</samp> class to account for all values
+                        that their payments platform can possibly return. For example:
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.GatewayNotificationResponse gnr = <span class="keyword">new</span> commercepayments.GatewayNotificationResponse();
+<span class="statement">if</span> (saveResult.isSuccess()) {
+    system.debug(<span class="string">'Notification accepted by platform'</span>);
+} <span class="statement">else</span> {
+    system.debug(<span class="string">'Errors in the result '</span>+ <span class="keyword">Blob</span>.valueOf(saveResult.getErrorMessage()));
+}
+gnr.setStatusCode(200);
+gnr.setResponseBody(<span class="keyword">Blob</span>.valueOf(<span class="string">'[accepted]'</span>));
+<span class="statement">return</span> gnr;</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

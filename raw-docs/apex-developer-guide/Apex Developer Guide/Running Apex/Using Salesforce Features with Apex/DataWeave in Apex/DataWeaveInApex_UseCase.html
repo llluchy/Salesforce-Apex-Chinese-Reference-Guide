@@ -1,0 +1,65 @@
+<a name="DataWeaveInApex_UseCase"><!-- --></a><h1 class="helpHead1">Examples of DataWeave in Apex</h1><div class="body conbody">
+<div class="shortdesc">Here are code samples that demonstrate DataWeave in Apex.</div>
+
+        <div class="section">
+            <p class="p">To use DataWeave in Apex, follow these instructions with associated examples. </p>
+
+            <ul class="ul bulletList">
+                <li class="li">Create a DataWeave script source file. <div class="p">For example: <samp class="codeph ">csvToContacts.dwl</samp>. <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>%dw 2.0
+input records application/csv
+output application/apex
+---
+records map(record) -&gt; {
+ FirstName: record.first_name,
+ LastName: record.last_name,
+ Email: record.email
+} as Object {class: "Contact"}
+</pre></div>
+</div>
+</li>
+
+                <li class="li">Create the associated metadata file.<p class="p">For example: <samp class="codeph ">csvToContacts.dwl-meta.xml</samp>.
+                    </p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;DataWeaveResource xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
+    &lt;apiVersion&gt;58.0&lt;/apiVersion&gt;
+    &lt;isGlobal&gt;false&lt;/isGlobal&gt;
+&lt;/DataWeaveResource&gt;
+</pre></div>
+</li>
+
+                <li class="li">Push the source to the scratch org using Salesforce CLI version v7.151.9 or
+                    higher. See <a class="xref" href="https://github.com/forcedotcom/cli/blob/main/releasenotes/sfdx/README.md#71511-may-19-2022" target="_blank" title="HTML (New Window)">Salesforce CLI Release
+                        Notes</a>.</li>
+
+                <li class="li">Invoke the DataWeave script from Apex and check the results from anonymous
+                        Apex.<div class="p">This example invokes the <samp class="codeph ">csvToContacts.dwl</samp>
+                        script.<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>// CSV data for Contacts
+String inputCsv = 'first_name,last_name,email\nCodey,"The Bear",codey@salesforce.com'; 
+DataWeave.Script dwscript = new DataWeaveScriptResource.csvToContacts();
+DataWeave.Result dwresult = dwscript.execute(new Map&lt;String, Object&gt;{'records' =&gt; inputCsv});
+List&lt;Contact&gt; results = (List&lt;Contact&gt;)dwresult.getValue();
+
+Assert.areEqual(1, results.size());
+Contact codeyContact = results[0];
+Assert.areEqual('Codey',codeyContact.FirstName);
+Assert.areEqual('The Bear',codeyContact.LastName);</pre></div>
+</div>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Extensive code samples that demonstrate the DataWeave in Apex feature are
+                available on <a class="xref" href="https://github.com/developerforce/DataWeaveInApex" target="_blank" title="HTML (New Window)">Developerforce</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

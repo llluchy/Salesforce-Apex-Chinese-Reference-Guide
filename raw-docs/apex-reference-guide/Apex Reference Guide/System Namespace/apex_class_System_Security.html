@@ -1,0 +1,289 @@
+<a name="apex_class_System_Security"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Security Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods to securely implement Apex
+    applications.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">In the context of the current user’s create, read, update, or upsert access permission, use
+        the Security class methods to:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Strip fields that aren’t visible from query and subquery results</li>
+
+        <li class="li">Remove inaccessible fields before a DML operation without causing an exception</li>
+
+        <li class="li">Sanitize SObjects that have been deserialized from an untrusted source</li>
+
+      </ul>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_methods">Security Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Security_methods">
+<a name="apex_System_Security_methods"><!-- --></a><h2 class="helpHead2">Security Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Security</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible">stripInaccessible(accessCheckType, sourceRecords, enforceRootObjectCRUD)</a></strong><br>
+Creates a list of sObjects from the source records, which are       stripped of fields that fail the field-level security checks for the current user. The method       also provides an option to enforce an object-level access check.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible_2">stripInaccessible(accessCheckType, sourceRecords)</a></strong><br>
+Creates a list of sObjects from the source records, which are stripped             of fields that fail the field-level security checks for the current         user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible_3">stripInaccessible(accessCheckType, sourceRecords, enforceRootObjectCRUD, permissionSetId)(Developer Preview)</a></strong><br>
+Creates a list of sObjects from the source records, which are       stripped of fields that fail field-level and object-level access checks. Apex enforces       field-level security (FLS) and object permissions as per the specified permission set, in       addition to the running user’s permissions. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Security_stripInaccessible">
+<a name="apex_System_Security_stripInaccessible"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">stripInaccessible(accessCheckType, sourceRecords,
+        enforceRootObjectCRUD)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates a list of sObjects from the source records, which are
+      stripped of fields that fail the field-level security checks for the current user. The method
+      also provides an option to enforce an object-level access check.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          System.SObjectAccessDecision stripInaccessible(System.AccessType accessCheckType,
+          List&lt;SObject&gt; sourceRecords, <span class="keyword">Boolean</span>
+      enforceRootObjectCRUD)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">accessCheckType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">System.AccessType</a> Uses values from the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">AccessType</a> enum. This parameter determines the type of
+            field-level access check to be performed. To check the current user's field-level
+            access, use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fields_describe.htm#apex_methods_system_fields_describe" title="Contains methods for describing sObject fields.">Schema.DescribeFieldResult</a> methods —<samp class="codeph apex_code">isCreatable()</samp>, <samp class="codeph apex_code">isAccessible()</samp>, or <samp class="codeph apex_code">isUpdatable()</samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sourceRecords</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">List&lt;SObject&gt;</a> A list of sObjects to be checked for fields that aren’t accessible in the context of
+            the current user’s operation.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">enforceRootObjectCRUD</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Indicates whether an object-level access check is performed. If this parameter is set
+            to <samp class="codeph apex_code"><span class="keyword">true</span></samp> and the access check fails, the method
+            throws an exception. The default value of this optional parameter is <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_class_System_SObjectAccessDecision" title="Contains the results of a call to the Security.stripInaccessible method and methods to retrieve those results.">System.SObjectAccessDecision</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example, the user doesn’t have permission to create the <samp class="codeph apex_code">Probability</samp> field of an Opportunity.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Opportunity&gt; opportunities = <span class="keyword">new</span> List&lt;Opportunity&gt;{
+    <span class="keyword">new</span> Opportunity(Name=<span class="string">'Opportunity1'</span>),
+    <span class="keyword">new</span> Opportunity(Name=<span class="string">'Opportunity2'</span>, Probability=95)
+};
+
+<span class="onelineComment">// Strip fields that are not creatable</span>
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.CREATABLE,
+    opportunities);
+
+<span class="onelineComment">// Print stripped records</span>
+<span class="statement">for</span> (SObject strippedOpportunity : decision.getRecords()) {
+    System.debug(strippedOpportunity);
+}
+
+<span class="onelineComment">// Print modified indexes</span>
+System.debug(decision.getModifiedIndexes());
+
+<span class="onelineComment">// Print removed fields</span>
+System.debug(decision.getRemovedFields());
+
+<span class="onelineComment">//Lines from output log</span>
+<span class="onelineComment">//|DEBUG|Opportunity:{Name=Opportunity1}</span>
+<span class="onelineComment">//|DEBUG|Opportunity:{Name=Opportunity2}</span>
+<span class="onelineComment">//|DEBUG|{1}</span>
+<span class="onelineComment">//|DEBUG|{Opportunity={Probability}}</span>
+</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Security_stripInaccessible_2">
+<a name="apex_System_Security_stripInaccessible_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">stripInaccessible(accessCheckType,
+            sourceRecords)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates a list of sObjects from the source records, which are stripped
+            of fields that fail the field-level security checks for the current
+        user.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.SObjectAccessDecision stripInaccessible(System.AccessType accessCheckType, List&lt;SObject&gt; sourceRecords)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">accessCheckType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">System.AccessType</a> Uses values from the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">AccessType</a>
+                        enum. This parameter determines the type of field-level access check to be
+                        performed. To check the current user's field-level access, use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fields_describe.htm#apex_methods_system_fields_describe" title="Contains methods for describing sObject fields.">Schema.DescribeFieldResult</a> methods —<samp class="codeph apex_code">isCreatable()</samp>, <samp class="codeph apex_code">isAccessible()</samp>, or <samp class="codeph apex_code">isUpdatable()</samp>.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sourceRecords</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">List&lt;SObject&gt;</a> A list of sObjects to be checked for fields that aren’t accessible in the context of the current
+                        user’s operation.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_class_System_SObjectAccessDecision" title="Contains the results of a call to the Security.stripInaccessible method and methods to retrieve those results.">System.SObjectAccessDecision</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+            <p class="p">In this example, the user doesn’t have permission to read the <samp class="codeph apex_code">ActualCost</samp> field of a Campaign.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Campaign&gt; campaigns = <span class="keyword">new</span> List&lt;Campaign&gt;{
+    <span class="keyword">new</span> Campaign(Name=<span class="string">'Campaign1'</span>, BudgetedCost=1000, ActualCost=2000),
+    <span class="keyword">new</span> Campaign(Name=<span class="string">'Campaign2'</span>, BudgetedCost=4000, ActualCost=1500)
+};
+<span class="statement">insert</span> campaigns;
+        
+<span class="onelineComment">// Strip fields that are not readable</span>
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.READABLE,
+    [SELECT Name, BudgetedCost, ActualCost from Campaign]);
+        
+<span class="onelineComment">// Print stripped records</span>
+<span class="statement">for</span> (SObject strippedCampaign : decision.getRecords()) {
+    System.debug(strippedCampaign); <span class="onelineComment">// Does not display ActualCost</span>
+}
+
+<span class="onelineComment">// Print modified indexes</span>
+System.debug(decision.getModifiedIndexes());
+
+<span class="onelineComment">// Print removed fields</span>
+System.debug(decision.getRemovedFields());
+
+<span class="onelineComment">//Lines from output log</span>
+<span class="onelineComment">//|DEBUG|Campaign:{Name=Campaign1, BudgetedCost=1000, Id=701xx00000011nhAAA}</span>
+<span class="onelineComment">//|DEBUG|Campaign:{Name=Campaign2, BudgetedCost=4000, Id=701xx00000011niAAA}</span>
+<span class="onelineComment">//|DEBUG|{0, 1}</span>
+<span class="onelineComment">//|DEBUG|{Campaign={ActualCost}}</span></pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Security_stripInaccessible_3">
+<a name="apex_System_Security_stripInaccessible_3"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">stripInaccessible(accessCheckType, sourceRecords,
+      enforceRootObjectCRUD, permissionSetId)(Developer Preview)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates a list of sObjects from the source records, which are
+      stripped of fields that fail field-level and object-level access checks. Apex enforces
+      field-level security (FLS) and object permissions as per the specified permission set, in
+      addition to the running user’s permissions. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Feature is available as a developer
+        preview. Feature isn’t generally available unless or until Salesforce announces its general
+        availability in documentation or in press releases or public statements. All commands,
+        parameters, and other features are subject to change or deprecation at any time, with or
+        without notice. Don’t implement functionality developed with these commands or tools in a
+        production environment. You can provide feedback and suggestions for the “Permission Sets
+        with User Mode” feature in the <a class="xref" href="https://trailhead.salesforce.com/trailblazer-community/groups/0F94S000000GvrW" target="_blank" title="HTML (New Window)">Trailblazer Community</a>.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">This feature is available in scratch orgs where the <samp class="codeph nolang">ApexUserModeWithPermset</samp> feature is enabled. If the feature isn’t enabled, Apex
+        code with this feature can be compiled but not executed.</p>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.SObjectAccessDecision
+          stripInaccessible(System.AccessType accessCheckType, List&lt;SObject&gt; sourceRecords,
+          <span class="keyword">Boolean</span> enforceRootObjectCRUD, Id permissionSetId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">accessCheckType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">System.AccessType</a> Uses values from the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_AccessType.htm" title="Specifies the access check type for the fields of an sObject.">AccessType</a> enum. This parameter determines the type of
+            field-level access check to be performed. To check the current user's field-level
+            access, use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_fields_describe.htm#apex_methods_system_fields_describe" title="Contains methods for describing sObject fields.">Schema.DescribeFieldResult</a> methods —<samp class="codeph apex_code">isCreatable()</samp>, <samp class="codeph apex_code">isAccessible()</samp>, or <samp class="codeph apex_code">isUpdatable()</samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sourceRecords</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">List&lt;SObject&gt;</a> A list of sObjects to be checked for fields that aren’t accessible in the context of
+            the current user’s operation.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">enforceRootObjectCRUD</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> Indicates whether an object-level access check is performed. If this parameter is set
+            to <samp class="codeph apex_code"><span class="keyword">true</span></samp> and the access check fails, the method
+            throws an exception. The default value of this optional parameter is <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">permissionSetId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> Permissions in the specified permission set are enforced in additon to the running
+            user’s permissions.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_class_System_SObjectAccessDecision" title="Contains the results of a call to the Security.stripInaccessible method and methods to retrieve those results.">System.SObjectAccessDecision</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

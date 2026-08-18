@@ -1,0 +1,19 @@
+<a name="connectapi_examples_get_previews"><!-- --></a><h1 class="helpHead1">Get Previews</h1><div class="body refbody">
+<div class="shortdesc">Call a method to get all supported preview formats and their respective
+    URLs.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ContentHub_static_methods.htm#apex_ConnectAPI_ContentHub_getPreviews_1" target="_blank"><samp class="codeph apex_code">getPreviews(repositoryId,
+          repositoryFileId)</samp></a> to get all supported preview formats and their
+      respective URLs and number of renditions. For each supported preview format, we show every
+      rendition URL
+      available.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">final</span> <span class="keyword">String</span> gDriveRepositoryId = <span class="string">'0XCxx00000000ODGAY'</span>, gDriveFileId = <span class="string">'document:1-zcA1BaeoQbo2_yNFiHCcK6QJTPmOke-kHFC4TYg3rk'</span>;
+<span class="keyword">final</span> ConnectApi.FilePreviewCollection previewsCollection = ConnectApi.ContentHub.getPreviews(gDriveRepositoryId, gDriveFileId);
+<span class="statement">for</span>(ConnectApi.FilePreview filePreview : previewsCollection.previews){
+   System.debug(<span class="keyword">String</span>.format(<span class="string">'Preview - URL: \'\'{0}\'\', format: \'\'{1}\'\', nbr of renditions for this format: {2}'</span>, <span class="keyword">new</span> <span class="keyword">String</span>[]{ filePreview.url, filePreview.format.name(),<span class="keyword">String</span>.valueOf(filePreview.previewUrls.size())}));
+   <span class="statement">for</span>(ConnectApi.FilePreviewUrl filePreviewUrl : filePreview.previewUrls){
+      System.debug(<span class="string">'-----&gt; Rendition URL: '</span> + filePreviewUrl.previewUrl);
+      }
+}</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

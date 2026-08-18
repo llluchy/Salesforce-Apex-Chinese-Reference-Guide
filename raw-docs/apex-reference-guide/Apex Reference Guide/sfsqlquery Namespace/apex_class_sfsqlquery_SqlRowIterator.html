@@ -1,0 +1,295 @@
+<a name="apex_class_sfsqlquery_SqlRowIterator"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SqlRowIterator Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Synchronous iterator for executing Data 360 SQL queries and retrieving results row-by-row within the current transaction. Implements <samp class="codeph ">Iterator&lt;Row&gt;</samp> and <samp class="codeph ">Iterable&lt;Row&gt;</samp> for use in both for-each and while loops. The iterator is single-use; once all rows are consumed, iterating again does not restart from the beginning.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Use <samp class="codeph ">SqlRowIterator</samp> for queries that return manageable result sets within a single transaction's governor limits. The query isn't submitted until iteration begins or until <samp class="codeph ">getQueryId()</samp> is called. For large result sets that may exceed single-transaction governor limits, use <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_SqlQueueable.htm#apex_class_sfsqlquery_SqlQueueable" title="Abstract base class for executing long-running Data 360 SQL queries asynchronously in chained Queueable jobs. Implements Queueable and Database.AllowsCallouts. Create a concrete subclass that implements processDataChunk() to process each page of results and chainNextJob() to enqueue the next job when more data remains."><samp class="codeph ">SqlQueueable</samp></a> instead.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Basic query using a for-each loop:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c, Name__c FROM accounts__dlm LIMIT 100'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    System.debug(row.getString(<span class="string">'Id__c'</span>) + <span class="string">': '</span> + row.getString(<span class="string">'Name__c'</span>));
+}</pre></div>
+<p class="p">Resume from a previously saved query ID:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.QueryHandle handle = sfsqlquery.QueryHandle.create(<span class="string">'my-query-id-123'</span>, <span class="string">'default'</span>)
+    .withOffset(500);  <span class="onelineComment">// Skip first 500 rows already processed</span>
+
+sfsqlquery.SqlRowIterator iterator = <span class="keyword">new</span> sfsqlquery.SqlRowIterator(handle);
+<span class="statement">while</span> (iterator.hasNext()) {
+    sfsqlquery.Row row = iterator.next();
+    System.debug(row.getString(<span class="string">'Name__c'</span>));
+}</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_constructors">
+<a name="apex_sfsqlquery_SqlRowIterator_constructors"><!-- --></a>
+  <h2 class="helpHead2">SqlRowIterator Constructors</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are constructors for <samp class="codeph apex_code">SqlRowIterator</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_ctor">
+<a name="apex_sfsqlquery_SqlRowIterator_ctor"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">SqlRowIterator(handle)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlRowIterator</samp> that resumes fetching results for a previously submitted query.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public SqlRowIterator(sfsqlquery.QueryHandle handle)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">handle</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_QueryHandle.htm#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a> <samp class="codeph ">QueryHandle</samp> built from</p>
+<p class="p">a previously submitted query ID and data space.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_ctor_2">
+<a name="apex_sfsqlquery_SqlRowIterator_ctor_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">SqlRowIterator(input)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">SqlRowIterator</samp> from a <samp class="codeph ">SqlStatement</samp>. Equivalent to calling <samp class="codeph ">execute()</samp> on the statement.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public SqlRowIterator(sfsqlquery.SqlStatement input)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">input</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_SqlStatement.htm#apex_class_sfsqlquery_SqlStatement" title="Encapsulates the inputs required to execute a Data 360 SQL query against a data space. Build a statement from a raw SQL string or a pre-built ConnectApi.QuerySqlInput object, and then execute synchronously with SqlRowIterator or pass it to a SqlQueueable subclass for asynchronous processing.">sfsqlquery.SqlStatement</a> <samp class="codeph ">SqlStatement</samp> that defines</p>
+<p class="p">the query to execute.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_methods">
+<a name="apex_sfsqlquery_SqlRowIterator_methods"><!-- --></a>
+  <h2 class="helpHead2">SqlRowIterator Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">SqlRowIterator</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_cancel">
+<a name="apex_sfsqlquery_SqlRowIterator_cancel"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">cancel()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Cancels the query and releases server-side resources. Any subsequent call to <samp class="codeph ">hasNext()</samp> returns <samp class="codeph ">false</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void cancel()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Cancel the query based on a condition:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c, Amount__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="keyword">Decimal</span> totalAmount = 0;
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    <span class="keyword">Decimal</span> amount = row.getDecimal(<span class="string">'Amount__c'</span>);
+    <span class="statement">if</span> (amount != <span class="keyword">null</span>) {
+        totalAmount += amount;
+        <span class="statement">if</span> (totalAmount &gt; 1000000) {
+            iterator.cancel();  <span class="onelineComment">// Stop when threshold is reached</span>
+            <span class="statement">break</span>;
+        }
+    }
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_getColumnNames">
+<a name="apex_sfsqlquery_SqlRowIterator_getColumnNames"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getColumnNames()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the ordered list of column names from the query result set. Available after the first page of results is fetched.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;String&gt; getColumnNames()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List&lt;String&gt;</a></p>
+<p class="p">An ordered list of column names as they appear in the result set.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">See <a class="xref" href="#apex_sfsqlquery_SqlRowIterator_getMetadata" title="Returns the column metadata for the query result set, including column names and their data types. Available after the first page of results is fetched.">getMetadata()</a> for a combined example.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_getMetadata">
+<a name="apex_sfsqlquery_SqlRowIterator_getMetadata"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getMetadata()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the column metadata for the query result set, including column names and their data types. Available after the first page of results is fetched.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;ConnectApi.QuerySqlMetadataItem&gt; getMetadata()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_metadata_item.htm" title="Represents the metadata associated with an SQL query output.">List&lt;ConnectApi.QuerySqlMetadataItem&gt;</a></p>
+<p class="p">A list of <samp class="codeph ">ConnectApi.QuerySqlMetadataItem</samp> objects describing each column's name and data type.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use metadata and column names for dynamic column handling:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT * FROM accounts__dlm LIMIT 10'</span>, <span class="string">'default'</span>)
+    .execute();
+
+List&lt;<span class="keyword">String</span>&gt; columns = iterator.getColumnNames();
+List&lt;ConnectApi.QuerySqlMetadataItem&gt; metadata = iterator.getMetadata();
+
+System.debug(<span class="string">'Query returned '</span> + columns.size() + <span class="string">' columns'</span>);
+<span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; metadata.size(); i++) {
+    System.debug(columns[i] + <span class="string">' ('</span> + metadata[i].type + <span class="string">')'</span>);
+}
+
+<span class="onelineComment">// Process rows using the metadata</span>
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    <span class="statement">for</span> (<span class="keyword">String</span> columnName : columns) {
+        <span class="keyword">Object</span> value = row.getObject(columnName);
+        System.debug(columnName + <span class="string">': '</span> + value);
+    }
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_getQueryId">
+<a name="apex_sfsqlquery_SqlRowIterator_getQueryId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getQueryId()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the server-assigned ID for this query. Triggers query submission if the query hasn't started yet. Save this value to resume the query in a later transaction using <samp class="codeph ">QueryHandle.create()</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getQueryId()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The server-assigned query ID string.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Save query ID for resuming later:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="keyword">String</span> queryId = iterator.getQueryId();
+<span class="onelineComment">// Store queryId to resume in a later transaction</span></pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_hasNext">
+<a name="apex_sfsqlquery_SqlRowIterator_hasNext"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">hasNext()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph ">true</samp> if more rows remain to be fetched, or <samp class="codeph ">false</samp> if all rows have been consumed or the query was canceled.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean hasNext()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p"><samp class="codeph ">true</samp> if more rows are available; <samp class="codeph ">false</samp> otherwise.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use in a while loop:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Name__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="statement">while</span> (iterator.hasNext()) {
+    sfsqlquery.Row row = iterator.next();
+    System.debug(row.getString(<span class="string">'Name__c'</span>));
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_iterator">
+<a name="apex_sfsqlquery_SqlRowIterator_iterator"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">iterator()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns this <samp class="codeph ">SqlRowIterator</samp> as an <samp class="codeph ">Iterator</samp>, enabling use in for-each loops.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Iterator iterator()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_System_List_iterator" title="Returns an instance of an iterator for this list.">Iterator</a></p>
+<p class="p">This <samp class="codeph ">SqlRowIterator</samp> instance as an <samp class="codeph ">Iterator</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_next">
+<a name="apex_sfsqlquery_SqlRowIterator_next"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">next()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns the next <samp class="codeph ">Row</samp> in the result set. Throws <samp class="codeph ">NoSuchElementException</samp> if <samp class="codeph ">hasNext()</samp> is <samp class="codeph ">false</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public sfsqlquery.Row next()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_sfsqlquery_Row.htm#apex_class_sfsqlquery_Row" title="Wraps a single Data 360 SQL query result row and provides typed accessor methods for retrieving column values by name or by 0-based index. Row instances are produced by SqlRowIterator and SqlQueueable; you don't construct Row objects directly during normal usage.">sfsqlquery.Row</a></p>
+<p class="p">The next <samp class="codeph ">Row</samp> in the result set.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Process rows one at a time:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Id__c FROM accounts__dlm LIMIT 10'</span>, <span class="string">'default'</span>)
+    .execute();
+
+<span class="statement">if</span> (iterator.hasNext()) {
+    sfsqlquery.Row firstRow = iterator.next();
+    System.debug(<span class="string">'First ID: '</span> + firstRow.getString(<span class="string">'Id__c'</span>));
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlRowIterator_toString">
+<a name="apex_sfsqlquery_SqlRowIterator_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of this <samp class="codeph ">SqlRowIterator</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A string representation of this <samp class="codeph ">SqlRowIterator</samp>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

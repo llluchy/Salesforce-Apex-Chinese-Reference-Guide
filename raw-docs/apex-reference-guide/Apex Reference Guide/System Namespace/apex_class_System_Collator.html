@@ -1,0 +1,156 @@
+<a name="apex_class_System_Collator"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Collator Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Contains methods to get locale-specific instances that can be used for comparisons
+        and sorting. Use the <samp class="codeph ">getInstance()</samp> method to obtain the
+        Collator instance for a given locale and pass the Collator as the Comparator parameter to
+        the <samp class="codeph ">list.sort()</samp> method.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Because locale-sensitive sorting can produce different
+                results depending on the user running the code, avoid using it in triggers or in
+                code that expects a particular sort order.</p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example performs a default list sort and then uses Collator to sort based on the
+                user locale.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@IsTest
+    static void userLocaleSort() {
+        
+        string userLocale = 'fr_FR';
+        
+        User u = new User(Alias = 'standt', Email='standarduser@testorg.com',
+        EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+        LocaleSidKey=userLocale, TimeZoneSidKey='America/Los_Angeles',
+        ProfileId = [SELECT Id FROM Profile WHERE Name='Standard User'].Id,
+        UserName='standarduser' + DateTime.now().getTime() + '@testorg.com');
+       
+        System.runAs(u) {
+           
+            List&lt;String&gt; shoppingList = new List&lt;String&gt; {
+                'épaule désosé Agneau',
+                'Juice',
+                'à la mélasse Galette 5 kg',
+                'Bread',
+                'Grocery'
+            };
+            
+            // Default sort
+            shoppingList.sort();
+            Assert.areEqual('Bread', shoppingList[0]);
+            
+            // Sort based on user Locale
+            Collator myCollator = Collator.getInstance();
+            shoppingList.sort(myCollator);
+            Assert.areEqual('à la mélasse Galette 5 kg', shoppingList[0]);
+            Assert.areEqual('Bread', shoppingList[1]);
+            Assert.areEqual('épaule désosé Agneau', shoppingList[2]);
+            Assert.areEqual('Grocery', shoppingList[3]);
+            Assert.areEqual('Juice', shoppingList[4]);
+        }
+    }</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Collator.htm#apex_System_Collator_methods">Collator Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Collator_methods">
+<a name="apex_System_Collator_methods"><!-- --></a><h2 class="helpHead2">Collator Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">Collator</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Collator.htm#apex_System_Collator_compare">compare(source, target)</a></strong><br>
+Perform string comparisons for a given locale.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Collator.htm#apex_System_Collator_getInstance">getInstance()</a></strong><br>
+Gets the Collator instance for the current user’s locale.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Collator_compare">
+<a name="apex_System_Collator_compare"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">compare(source, target)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Perform string comparisons for a given locale.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer compare(String source, String target)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">source</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">target</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Collator_getInstance">
+<a name="apex_System_Collator_getInstance"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getInstance()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Gets the Collator instance for the current user’s locale.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static System.Collator
+          getInstance()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_System_Collator" title="Contains methods to get locale-specific instances that can be used for comparisons and sorting. Use the getInstance() method to obtain the Collator instance for a given locale and pass the Collator as the Comparator parameter to the list.sort() method.">Collator
+        Class</a></p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

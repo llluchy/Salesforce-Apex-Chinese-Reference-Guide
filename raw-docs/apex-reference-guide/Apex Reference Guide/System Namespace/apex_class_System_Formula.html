@@ -1,0 +1,155 @@
+<a name="apex_class_System_Formula"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Formula Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods to get a builder for creating a formula instance and
+      to update all formula fields on the input SObjects.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Use the Formula class in conjunction with the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaBuilder.htm#apex_class_formulaeval_FormulaBuilder" title="Contains methods to build and validate user-defined formulas.">FormulaBuilder</a> and <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaInstance.htm#apex_class_formulaeval_FormulaInstance" title="Contains a method to evaluate the formula instance.">FormulaInstance</a> classes in the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_formulaeval.htm" title="The FormulaEval namespace provides classes and methods to evaluate dynamic formulas for SObjects and Apex objects. Use the methods to avoid unnecessary DML statements to recalculate formula field values or evaluate dynamic formula expressions.">FormulaEval</a> namespace.</p>
+
+      <p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_formulaeval.htm" target="_blank" title="HTML (New Window)">Formula Evaluation in
+        Apex</a>.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This example creates a formula instance using <samp class="codeph apex_code">Formula.builder()</samp> and the
+          <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaBuilder.htm#apex_class_formulaeval_FormulaBuilder" title="Contains methods to build and validate user-defined formulas.">FormulaBuilder</a> methods.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">FormulaEval.FormulaInstance ff = Formula.builder()
+    .withType(Account.SObjectType)
+    .withReturnType(FormulaEval.FormulaReturnType.STRING)
+    .withFormula(<span class="string">'{!name} ({!website})'</span>)
+    .parseAsTemplate(<span class="keyword">true</span>)
+    .build();
+</pre></div>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Formula.htm#apex_System_Formula_methods">Formula Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Formula_methods">
+<a name="apex_System_Formula_methods"><!-- --></a><h2 class="helpHead2">Formula Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Formula</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Formula.htm#apex_System_Formula_builder">builder()</a></strong><br>
+Creates an instance of <samp class="codeph ">FormulaBuilder</samp> for configuring     the formula with formula expression, context type, and output data type as inputs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Formula.htm#apex_System_Formula_recalculateFormulas">recalculateFormulas(sobjects)</a></strong><br>
+Updates (recalculates) all formula fields on the input     SObjects.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Formula_builder">
+<a name="apex_System_Formula_builder"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">builder()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates an instance of <samp class="codeph ">FormulaBuilder</samp> for configuring
+    the formula with formula expression, context type, and output data type as inputs.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static formulaeval.FormulaBuilder builder()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaBuilder.htm#apex_class_formulaeval_FormulaBuilder" title="Contains methods to build and validate user-defined formulas.">FormulaEval.FormulaBuilder</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Formula_recalculateFormulas">
+<a name="apex_System_Formula_recalculateFormulas"><!-- --></a><h3 class="helpHead3">recalculateFormulas(sobjects)</h3>
+<div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Updates (recalculates) all formula fields on the input
+    SObjects</span>.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;System.FormulaRecalcResult&gt;
+          recalculateFormulas(List&lt;SObject&gt; sobjects)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sobjects</var></strong>: Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt; List of sObjects whose formula fields are to be recalculated.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcResult.htm#apex_class_System_FormulaRecalcResult" title="The return type of the Formula.recalculateFormulas method.">FormulaRecalcResult Class</a>&gt;</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Recalculate formula fields on new or queried SObjects. If all data is present on the
+        SObjects, SOQL limits are not affected. If the data required to evaluate a formula field is
+        missing, that data is retrieved and limits are changed accordingly.</p>
+
+      <p class="p">The new formula values are stored in the SObjects themselves and overwrite previous values
+        of formula fields.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+a.Name = <span class="string">'Salesforce'</span>;
+a.BillingCity = <span class="string">'San Francisco'</span>;
+List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;{a};
+
+List&lt;FormulaRecalcResult&gt; results = Formula.recalculateFormulas(accounts);
+System.assert(results[0].isSuccess());
+<span class="onelineComment">// Option 1</span>
+System.debug(<span class="string">'New value: '</span> + accounts[0].get(<span class="string">'My_Formula_Field__c'</span>));
+<span class="onelineComment">// Option 2</span>
+System.debug(<span class="string">'New value: '</span> + results[0].getSObject().get(‘My_Formula_Field__c’));
+</pre></div>
+
+    </div>
+
+  </div>
+</div>
+</div>
+</div>

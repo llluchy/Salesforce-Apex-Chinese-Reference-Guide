@@ -1,0 +1,233 @@
+<a name="apex_class_CommerceExtension_Resolution"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">Resolution Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Resolution of a resolution strategy, which conditionally invokes default domain logic,
+    logic provided by an extension provider, or no logic.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_CommerceExtension.htm" title="Use the CommerceExtension namespace to define resolution strategies for registered Commerce extensions.">CommerceExtension</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">public class TaxServiceExtensionResolverSample extends commercestoretax.TaxService implements CommerceExtension.ResolutionStrategy {
+    public CommerceExtension.Resolution resolve() {
+        // The Sample Extension Provider registered with developer name as 'tax_extension_provider_for_us' will be selected for execution for en_US locale
+        if(CommerceExtension.ExtensionInfo.getLocaleString() == 'en_US') {
+            return new CommerceExtension.Resolution('tax_extension_provider_for_us');
+        }
+        // The Sample Extension Provider registered with developer name as 'tax_extension_provider_for_canada' will be selected for execution for en_CA locale
+        if(CommerceExtension.ExtensionInfo.getLocaleString() == 'en_CA') {
+            return new CommerceExtension.Resolution('tax_extension_provider_for_canada');
+        }
+        // The default Salesforce Internal Tax Api will return an empty response for German locale
+        if(CommerceExtension.ExtensionInfo.getLocaleString() == 'de') {
+            return new CommerceExtension.Resolution(CommerceExtension.ResolutionStates.OFF);
+        }
+        // The default Salesforce Internal Tax Api will be selected for execution for all other locales than US, Canada and Germany
+        return new CommerceExtension.Resolution();
+    }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_constructors">Resolution Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_methods">Resolution Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_constructors">
+<a name="apex_CommerceExtension_Resolution_constructors"><!-- --></a>
+  <h2 class="helpHead2">Resolution Constructors</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+<p class="p">The following are constructors for <samp class="codeph ">Resolution</samp>.</p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_ctor">Resolution(resolutionState)</a></strong><br>
+Constructor that takes a CommerceExtension.ResolutionStates object as an     argument.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_ctor_2">Resolution(providerName)</a></strong><br>
+Constructor that takes the name of an extension provider as an argument.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_ctor_3">Resolution()</a></strong><br>
+Default constructor for the Resolution class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_ctor">
+<a name="apex_CommerceExtension_Resolution_ctor"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">Resolution(resolutionState)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Constructor that takes a CommerceExtension.ResolutionStates object as an
+    argument.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public
+          Resolution(CommerceExtension.ResolutionStates
+      resolutionState)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">resolutionState</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_CommerceExtension_ResolutionStates.htm" title="Potential resolution states for a resolution strategy.">CommerceExtension.ResolutionStates</a></p>
+<p class="p">Resolution state.</p>
+</li>
+
+      </ul>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_ctor_2">
+<a name="apex_CommerceExtension_Resolution_ctor_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">Resolution(providerName)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Constructor that takes the name of an extension provider as an argument.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Resolution(String
+          providerName)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">providerName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the extension provider.</p>
+</li>
+
+      </ul>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_ctor_3">
+<a name="apex_CommerceExtension_Resolution_ctor_3"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">Resolution()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Default constructor for the Resolution class.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public
+      Resolution()</samp></p>
+</div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_methods">
+<a name="apex_CommerceExtension_Resolution_methods"><!-- --></a>
+  <h2 class="helpHead2">Resolution Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+<p class="p">The following are methods for <samp class="codeph ">Resolution</samp>.</p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_getProviderName">getProviderName()</a></strong><br>
+Returns the name of an extension provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_CommerceExtension_Resolution.htm#apex_CommerceExtension_Resolution_getResolutionState">getResolutionState()</a></strong><br>
+Returns the resolution state of the resolution.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_getProviderName">
+<a name="apex_CommerceExtension_Resolution_getProviderName"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getProviderName()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Returns the name of an extension provider.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String
+          getProviderName()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of an extension provider.</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_CommerceExtension_Resolution_getResolutionState">
+<a name="apex_CommerceExtension_Resolution_getResolutionState"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getResolutionState()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Returns the resolution state of the resolution.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public
+          CommerceExtension.ResolutionStates
+      getResolutionState()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_CommerceExtension_ResolutionStates.htm" title="Potential resolution states for a resolution strategy.">CommerceExtension.ResolutionStates</a></p>
+<p class="p">Resolution state of the resolution.</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

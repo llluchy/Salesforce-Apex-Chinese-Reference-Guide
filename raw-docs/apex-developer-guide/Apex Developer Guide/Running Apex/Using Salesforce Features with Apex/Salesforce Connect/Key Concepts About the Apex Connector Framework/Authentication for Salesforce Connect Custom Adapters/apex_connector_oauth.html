@@ -1,0 +1,44 @@
+<a name="apex_connector_oauth"><!-- --></a><h1 class="helpHead1">OAuth for Salesforce Connect Custom Adapters</h1><div class="body conbody">
+<div class="shortdesc">If you use OAuth 2.0 to access external data, learn how to avoid access interruptions
+        caused by expired access tokens.</div>
+
+        <div class="p">Some external systems use OAuth access tokens that expire and need to be refreshed. We
+            can automatically refresh access tokens as needed when:<ul class="ul bulletList">
+                <li class="li">The user or external data source has a valid refresh token from a previous OAuth
+                    flow.</li>
+
+                <li class="li">The sync, query, or search method in your <samp class="codeph apex_code">DataSource.Connection</samp> class throws a <samp class="codeph apex_code">DataSource.OAuthTokenExpiredException</samp>.</li>
+
+            </ul>
+</div>
+
+        <p class="p">We use the relevant OAuth credentials for the user or external data source to negotiate
+            with the remote service and refresh the token. The <samp class="codeph apex_code">DataSource.Connection</samp> class is reconstructed with the new OAuth token in
+            the <samp class="codeph apex_code">DataSource.ConnectionParams</samp> that we supply
+            to the constructor. The search or query is then reinvoked.</p>
+
+        <p class="p">If the authentication provider doesn’t provide a refresh token, access to the external
+            system is lost when the current access token expires. If a warning message appears on
+            the external data source detail page, consult your OAuth provider for information about
+            requesting offline access or a refresh token.</p>
+
+        <p class="p">For some authentication providers, requesting offline access is as simple as adding a
+            scope. For example, to request offline access from a Salesforce authentication provider,
+            add <kbd class="ph userinput">refresh_token</kbd> to the <span class="keyword parmname">Default Scopes</span>
+            field on the authentication provider definition in your Salesforce organization.</p>
+
+        <p class="p">For other authentication providers, you must request offline access in the authentication
+            URL as a query parameter. For example, with Google, append
+                <kbd class="ph userinput">?access_type=offline</kbd> to the <span class="keyword parmname">Authorize Endpoint
+                URL</span> field on the authentication provider definition in your Salesforce
+            organization. To edit the authorization endpoint, select <strong class="ph uicontrol">Open ID
+                Connect</strong> in the <span class="keyword parmname">Provider Type</span> field of the
+            authentication provider. For details, see “Configure an OpenID Connect Authentication
+            Provider” in the Salesforce Help.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_authentication.htm" title="Your DataSource.Provider class declares what types of credentials can be used to authenticate to the external system.">Authentication for Salesforce Connect Custom Adapters</a></div></li></ul>
+</div>
+</div>

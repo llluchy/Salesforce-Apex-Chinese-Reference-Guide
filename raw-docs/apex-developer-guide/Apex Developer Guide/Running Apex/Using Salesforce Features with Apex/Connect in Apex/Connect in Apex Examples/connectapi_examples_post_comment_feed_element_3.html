@@ -1,0 +1,35 @@
+<a name="connectapi_examples_post_comment_feed_element_3"><!-- --></a><h1 class="helpHead1">Post a Comment with a New File</h1><div class="body refbody">
+<div class="shortdesc">Call a method to post a comment with a new file.</div>
+
+    <div class="section"><div class="p">To post a comment and upload and attach a new file to the comment, create a <samp class="codeph apex_code">ConnectApi.CommentInput</samp> object and a <samp class="codeph apex_code">ConnectApi.BinaryInput</samp> object to pass to the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postCommentToFeedElement_2" target="_blank"><samp class="codeph apex_code">postCommentToFeedElement(communityId, feedElementId, comment,
+          feedElementFileUpload)</samp></a>
+      method.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> feedElementId = <span class="string">'0D5D0000000KtW3'</span>;
+
+ConnectApi.CommentInput commentInput = <span class="keyword">new</span> ConnectApi.CommentInput();
+
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+textSegmentInput.text = <span class="string">'Enjoy this new file.'</span>;
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+messageBodyInput.messageSegments.add(textSegmentInput);
+commentInput.body = messageBodyInput;
+
+ConnectApi.CommentCapabilitiesInput commentCapabilitiesInput = <span class="keyword">new</span> ConnectApi.CommentCapabilitiesInput();
+ConnectApi.ContentCapabilityInput contentCapabilityInput = <span class="keyword">new</span> ConnectApi.ContentCapabilityInput();
+
+commentCapabilitiesInput.content = contentCapabilityInput;
+contentCapabilityInput.title = <span class="string">'Title'</span>;
+
+commentInput.capabilities = commentCapabilitiesInput;
+
+<span class="keyword">String</span> text = <span class="string">'These are the contents of the new file.'</span>;
+<span class="keyword">Blob</span> myBlob = <span class="keyword">Blob</span>.valueOf(text);
+ConnectApi.BinaryInput binInput = <span class="keyword">new</span> ConnectApi.BinaryInput(myBlob, <span class="string">'text/plain'</span>, <span class="string">'fileName'</span>);
+
+ConnectApi.Comment commentRep = ConnectApi.ChatterFeeds.postCommentToFeedElement(Network.getNetworkId(), feedElementId, commentInput, binInput);
+</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,33 @@
+<a name="connectapi_examples_post_comment_feed_element_4"><!-- --></a><h1 class="helpHead1">Post a Comment with an Existing File</h1><div class="body refbody">
+<div class="shortdesc">Make a call to post a comment with an already uploaded file.</div>
+
+                <div class="section"><div class="p">To post a comment and attach an existing file (already uploaded to
+                        Salesforce) to the comment, create a <samp class="codeph apex_code">ConnectApi.CommentInput</samp> object to pass to <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postCommentToFeedElement_2" target="_blank"><samp class="codeph apex_code">postCommentToFeedElement(communityId, feedElementId,
+                                        comment,
+                        feedElementFileUpload)</samp></a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> feedElementId = <span class="string">'0D5D0000000KtW3'</span>;
+
+ConnectApi.CommentInput commentInput = <span class="keyword">new</span> ConnectApi.CommentInput();
+
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+textSegmentInput.text = <span class="string">'I attached this file from Salesforce Files.'</span>;
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+messageBodyInput.messageSegments.add(textSegmentInput);
+commentInput.body = messageBodyInput;
+
+ConnectApi.CommentCapabilitiesInput commentCapabilitiesInput = <span class="keyword">new</span> ConnectApi.CommentCapabilitiesInput();
+ConnectApi.ContentCapabilityInput contentCapabilityInput = <span class="keyword">new</span> ConnectApi.ContentCapabilityInput();
+
+commentCapabilitiesInput.content = contentCapabilityInput;
+contentCapabilityInput.contentDocumentId = <span class="string">'069D00000001rNJ'</span>;
+
+commentInput.capabilities = commentCapabilitiesInput;
+
+ConnectApi.Comment commentRep = ConnectApi.ChatterFeeds.postCommentToFeedElement(Network.getNetworkId(), feedElementId, commentInput, <span class="keyword">null</span>);
+
+</pre></div>
+</div></div>
+
+        </div><div id="sfdc:seealso" class="related-links"></div>

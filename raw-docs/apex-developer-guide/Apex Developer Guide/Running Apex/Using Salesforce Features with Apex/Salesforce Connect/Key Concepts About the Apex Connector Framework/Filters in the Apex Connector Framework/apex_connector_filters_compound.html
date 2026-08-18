@@ -1,0 +1,133 @@
+<a name="apex_connector_filters_compound"><!-- --></a><h1 class="helpHead1">Compound Filters in the Apex Connector Framework</h1><div class="body conbody">
+<div class="shortdesc">Filters can have child filters, which are stored in the <samp class="codeph apex_code">subfilters</samp> property.</div>
+
+        <p class="p">If a filter has children, the filter <samp class="codeph apex_code">type</samp> must be
+            one of the following.</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <thead class="thead sorted" align="left">
+                    <tr>
+                        <th class="featureTableHeader  " id="d110252e66">Filter Type</th>
+
+                        <th class="featureTableHeader  " id="d110252e69">Description</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry" headers="d110252e66" data-title="Filter Type"><samp class="codeph apex_code">AND_</samp></td>
+
+                        <td class="entry" headers="d110252e69" data-title="Description">We return all rows that match <em class="ph i">all</em> of the subfilters.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d110252e66" data-title="Filter Type"><samp class="codeph apex_code">OR_</samp></td>
+
+                        <td class="entry" headers="d110252e69" data-title="Description">We return all rows that match <em class="ph i">any</em> of the subfilters.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d110252e66" data-title="Filter Type"><samp class="codeph apex_code">NOT_</samp></td>
+
+                        <td class="entry" headers="d110252e69" data-title="Description">The filter reverses how its child filter evaluates rows. Filters of
+                            this type can have only one subfilter.</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">This code example illustrates how to deal with compound filters.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(DataSource.QueryContext context) {
+    <span class="onelineComment">// Call out to an external data source and retrieve a set of records.</span>
+    <span class="onelineComment">// We should attempt to get as much information as possible about the </span>
+    <span class="onelineComment">// query from the QueryContext, to minimize the number of records </span>
+    <span class="onelineComment">// that we return.</span>
+    List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = retrieveData(context);
+    
+    <span class="onelineComment">// This only filters the results. Anything in the query that we don’t </span>
+    <span class="onelineComment">// currently support, such as aggregation or sorting, is ignored.</span>
+    <span class="statement">return</span> DataSource.TableResult.get(context, postFilterRecords(
+        context.tableSelection.filter, rows));
+}
+
+<span class="keyword">private</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; retrieveData(DataSource.QueryContext context) {
+    <span class="onelineComment">// Call out to an external data source. Form the callout so that</span>
+    <span class="onelineComment">// it filters as much as possible on the remote site,</span>
+    <span class="onelineComment">// based on the parameters in the QueryContext.</span>
+    <span class="statement">return</span> ...;
+}
+
+<span class="keyword">private</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; postFilterRecords(
+    DataSource.Filter filter, List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows) {
+    <span class="statement">if</span> (filter == <span class="keyword">null</span>) {
+        <span class="statement">return</span> rows;
+    }
+    DataSource.FilterType type = filter.type;
+    List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; retainedRows = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+    <span class="statement">if</span> (type == DataSource.FilterType.NOT_) {
+        <span class="onelineComment">// We expect one Filter in the subfilters.</span>
+        DataSource.Filter subfilter = filter.subfilters.get(0);
+        <span class="statement">for</span> (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row : rows) {
+            <span class="statement">if</span> (!evaluate(filter, row)) {
+                retainedRows.add(row);
+            }
+        }
+        <span class="statement">return</span> retainedRows;
+    } <span class="statement">else</span> <span class="statement">if</span> (type == DataSource.FilterType.AND_) {
+        <span class="onelineComment">// For each filter, find all matches; anything that matches ALL filters </span>
+        <span class="onelineComment">// is returned.</span>
+        retainedRows = rows;
+        <span class="statement">for</span> (DataSource.Filter subfilter : filter.subfilters) {
+            retainedRows = postFilterRecords(subfilter, retainedRows);
+        }
+        <span class="statement">return</span> retainedRows;
+    } <span class="statement">else</span> <span class="statement">if</span> (type == DataSource.FilterType.OR_) {
+        <span class="onelineComment">// For each filter, find all matches. Anything that matches </span>
+        <span class="onelineComment">// at least one filter is returned.</span>
+        <span class="statement">for</span> (DataSource.Filter subfilter : filter.subfilters) {
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; matchedRows = postFilterRecords(
+                subfilter, rows);
+            retainedRows.addAll(matchedRows);
+        }
+        <span class="statement">return</span> retainedRows;
+    } <span class="statement">else</span> {
+        <span class="onelineComment">// Find all matches for this filter in our collection of records.</span>
+        <span class="statement">for</span> (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row : rows) {
+            <span class="statement">if</span> (evaluate(filter, row)) {
+                retainedRows.add(row);
+            }
+        }
+        <span class="statement">return</span> retainedRows;
+    }
+}
+
+<span class="keyword">private</span> <span class="keyword">Boolean</span> evaluate(DataSource.Filter filter, Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row) {
+    <span class="statement">if</span> (filter.type == DataSource.FilterType.EQUALS) {
+        <span class="keyword">String</span> columnName = filter.columnName;
+        <span class="keyword">Object</span> expectedValue = filter.columnValue;
+        <span class="keyword">Object</span> foundValue = row.get(columnName);
+        <span class="statement">return</span> expectedValue.equals(foundValue);
+    } <span class="statement">else</span> {
+        <span class="onelineComment">// Throw an exception; implementing other filter types is left</span>
+        <span class="onelineComment">// as an exercise for the reader.</span>
+        throwException(<span class="string">'Unexpected filter type: '</span> + filter.type);
+    }
+    <span class="statement">return</span> <span class="keyword">false</span>;
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Filter.htm" target="_blank" title="Apex Reference Guide: Filter Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Filter Class</a></div></li></ul>
+</div>
+</div>

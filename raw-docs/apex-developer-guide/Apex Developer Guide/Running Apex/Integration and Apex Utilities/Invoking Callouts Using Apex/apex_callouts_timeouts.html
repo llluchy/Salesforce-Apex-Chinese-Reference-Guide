@@ -1,0 +1,132 @@
+<a name="apex_callouts_timeouts"><!-- --></a><h1 class="helpHead1">Callout Limits and Limitations</h1><div class="body">
+    <p class="p">The following limits and limitations apply when Apex code makes a callout to an HTTP request
+      or a web services call. The web services call can be a SOAP API call or any external web
+      services call.</p>
+
+    <a name="call_timeouts_summary"><!-- --></a><ul class="ul bulletList" id="call_timeouts_summary">
+      <li class="li">A single Apex transaction can make a maximum of 100 callouts to an HTTP request or an API
+        call.</li>
+
+      <li class="li">In
+        Developer Edition orgs, you can only make up to 20 concurrent callouts to endpoints outside
+        of your Salesforce org’s domain. This limit doesn’t apply to non-Developer Edition
+        orgs.</li>
+
+      <li class="li">The default timeout is 10 seconds. A custom timeout can be defined for each callout. The
+        minimum is 1 millisecond and the maximum is 120,000 milliseconds. See the examples in the
+        next section for how to set custom timeouts for Web services or HTTP callouts.</li>
+
+      <li class="li">The maximum cumulative timeout for callouts by a single Apex transaction is 120 seconds.
+        This time is additive across all callouts invoked by the Apex transaction.</li>
+
+      <li class="li">Every org has a limit on long-running requests that run for more than 5 seconds (total
+        execution time). HTTP callout processing time is not included when calculating this limit.
+        We pause the timer for the callout and resume it when the callout completes. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and Limits</a> for Lightning Platform Apex
+        limits.</li>
+
+      <li class="li">You can’t make a callout when there are pending operations in the same transaction.
+        Things that result in pending operations are DML statements, asynchronous Apex (such as
+        future methods and batch Apex jobs), scheduled Apex, or sending email. You can make callouts
+        before performing these types of operations.</li>
+
+      <li class="li">Pending operations can occur before mock callouts in the same transaction. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing_dml.htm">Performing DML Operations and Mock Callouts</a> for WSDL-based callouts or <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing_dml.htm">Performing DML Operations and Mock Callouts</a> for HTTP callouts.</li>
+
+      <li class="li">When the header <samp class="codeph nolang">Expect: 100-Continue</samp> is added to a
+        callout request and a <samp class="codeph nolang">HTTP/1.1 100 Continue</samp> response
+        isn’t returned by the external server, a timeout occurs.</li>
+
+    </ul>
+
+    <div class="section">
+<h2 class="helpHead2">Apex Callouts in Read-Only Mode</h2>
+
+      
+      <p class="p">During read-only mode, Apex callouts to external services execute and aren’t blocked by the
+        system. Typically, you execute some follow-up operations in the same transaction after
+        receiving a response from a callout. For example, you can make a DML call to update a
+        Salesforce record. But write operations in Salesforce, such as record updates, are blocked
+        during read-only mode. This inconsistency in behavior in read-only mode can break your
+        program flow and causes issues. To avoid incorrect program behavior, we recommend that you
+        prevent making callouts in read-only mode. To check whether the org is in read-only mode,
+        call <samp class="codeph apex_code">System.getApplicationReadWriteMode()</samp>.</p>
+
+      <p class="p">The following example checks the return value of <samp class="codeph apex_code">System.getApplicationReadWriteMode()</samp>. If the return value is equal to <samp class="codeph apex_code">ApplicationReadWriteMode.READ_ONLY</samp> enum value, the org is
+        in read-only mode and the callout is skipped. Otherwise (<samp class="codeph apex_code">ApplicationReadWriteMode.DEFAULT</samp> value), the callout is performed.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This class uses Apex HTTP classes to make a callout as an example. You can also make a
+        callout using an imported WSDL through WSDL2Apex. The process for checking for read-only
+        mode is the same in either case.</p>
+</div>
+</div></div></div></div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> HttpCalloutSampleReadOnly {
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> MyReadOnlyException <span class="keyword">extends</span> Exception {}
+
+    <span class="onelineComment">// Pass in the endpoint to be used using the string url</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getCalloutResponseContents(<span class="keyword">String</span> url) {
+        
+        <span class="onelineComment">// Get Read-only mode status</span>
+        ApplicationReadWriteMode mode = System.getApplicationReadWriteMode();
+        <span class="keyword">String</span> returnValue = <span class="string">''</span>;
+        
+        <span class="statement">if</span> (mode == ApplicationReadWriteMode.READ_ONLY) {
+            <span class="onelineComment">// Prevent the callout</span>
+            <span class="statement">throw</span> <span class="keyword">new</span> MyReadOnlyException(<span class="string">'Read-only mode. Skipping callouts!'</span>);
+        } <span class="statement">else</span> <span class="statement">if</span> (mode == ApplicationReadWriteMode.DEFAULT) {
+            <span class="onelineComment">// Instantiate a new http object</span>
+            Http h = <span class="keyword">new</span> Http();
+            
+            <span class="onelineComment">// Instantiate a new HTTP request, specify the method (GET) </span>
+            <span class="onelineComment">// as well as the endpoint.</span>
+            HttpRequest req = <span class="keyword">new</span> HttpRequest();
+            req.setEndpoint(url);
+            req.setMethod(<span class="string">'GET'</span>);
+            
+            <span class="onelineComment">// Send the request, and return a response</span>
+            HttpResponse res = h.send(req);
+            returnValue = res.getBody();                        
+        }
+        <span class="statement">return</span> returnValue;
+    }
+}</pre></div>
+
+      <p class="p">Your Salesforce org is in read-only mode during some Salesforce maintenance activities,
+        such as planned site switches and instance refreshes. As part of Continuous Site Switching,
+        your Salesforce org is switched to its ready site approximately once every six months. For
+        more information about site switching, see <a class="xref" href="https://help.salesforce.com/articleView?id=Continuous-Site-Switching&amp;type=1&amp;language=en_US" target="_blank">Continuous Site Switching</a>.</p>
+
+      <p class="p">To test read-only mode in sandbox, contact Salesforce to enable the read-only mode test
+        option. Once the test option is enabled, you can toggle read-only mode on and verify your
+        apps.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="setting_timeouts_title"><a name="setting_timeouts_title"><!-- --></a>Setting Callout Timeouts</span></h2>
+
+      
+      <div class="p">The following example sets a custom timeout for Web services callouts. The example works
+        with the sample WSDL file and the generated <samp class="codeph apex_code">DocSamplePort</samp> class described in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_gen_code.htm" title="You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The WSDL2Apex tool is open source and available on GitHub.">Generated WSDL2Apex Code</a>. Set the timeout value in milliseconds by
+        assigning a value to the special <samp class="codeph apex_code">timeout_x</samp> variable
+        on the
+        stub.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="code_webService_callout"><a name="code_webService_callout"><!-- --></a>docSample.DocSamplePort stub = <span class="keyword">new</span> docSample.DocSamplePort();
+stub.timeout_x = 2000; <span class="onelineComment">// timeout in milliseconds</span>
+</pre></div>
+</div>
+
+      <p class="p">The following is an example of setting a custom timeout for HTTP callouts:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="code_http_callout"><a name="code_http_callout"><!-- --></a>HttpRequest req = <span class="keyword">new</span> HttpRequest();
+req.setTimeout(2000); <span class="onelineComment">// timeout in milliseconds</span></pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_client_certs.htm" title="Using Certificates">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm" title="Make Long-Running Callouts with Continuations">Next →</a></li>
+</ul></div>
+</div>

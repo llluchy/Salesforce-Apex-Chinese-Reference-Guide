@@ -1,0 +1,191 @@
+<a name="langCon_apex_dml_examples_upsert"><!-- --></a><h1 class="helpHead1">Upserting Records</h1><div class="body conbody">
+      <div class="section">
+         
+         <div class="p">Using the <samp class="codeph apex_code"><span class="statement">upsert</span></samp> operation, you can either
+            insert or update an existing record in one call. To determine whether a record already
+            exists, the <samp class="codeph apex_code"><span class="statement">upsert</span></samp> statement or Database method
+            uses the record’s ID as the key to match records, a custom external ID field, or
+            a standard field with the <span class="keyword parmname">idLookup</span> attribute set to true.<ul class="ul bulletList">
+               <li class="li">If the key isn’t matched, then a new object record is created.</li>
+
+               <li class="li">If the key is matched once, then the existing object record is updated. </li>
+
+               <li class="li">If the key is matched multiple times, then an error is generated and the object
+                  record is not inserted or updated.</li>
+
+            </ul>
+</div>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Custom field matching is case-insensitive only if the custom field has the
+               <strong class="ph uicontrol">Unique</strong> and <strong class="ph uicontrol">Treat "ABC" and "abc" as duplicate
+               values (case insensitive)</strong> attributes selected as part of the field
+            definition. If this is the case, “ABC123” is matched with “abc123.” </p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Examples</h2>
+
+         
+         <div class="p">The following example updates the city name for all existing accounts in the city
+            formerly known as Bombay, and also inserts a new account in San
+            Francisco:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] acctsList = [SELECT Id, Name, BillingCity
+                        FROM Account WHERE BillingCity = <span class="string">'Bombay'</span> WITH USER_MODE];
+<span class="statement">for</span> (Account a : acctsList) {
+    a.BillingCity = <span class="string">'Mumbai'</span>;
+}
+Account newAcct = <span class="keyword">new</span> Account(Name = <span class="string">'Acme'</span>, BillingCity = <span class="string">'San Francisco'</span>);
+acctsList.add(newAcct);
+<span class="statement">try</span> {
+    <span class="statement">upsert</span> <span class="statement">as</span> user acctsList;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}
+</pre></div>
+</div>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+
+         <p class="p">This next example uses the <samp class="codeph apex_code">Database.<span class="statement">upsert</span></samp>
+            method to upsert a collection of leads that are passed in. This example allows for
+            partial processing of records, that is, in case some records fail processing, the
+            remaining records are still inserted or updated. It iterates through the results and
+            adds a task to each record that was processed successfully. The task sObjects are saved
+            in a list, which is then bulk inserted. This example is followed by a test class that
+            contains a test method for testing the example.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/* This class demonstrates and tests the use of the
+ * partial processing DML operations */</span>
+
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> DmlSamples {
+    
+    <span class="multilineComment">/* This method accepts a collection of lead records and
+    creates a task for the owner(s) of any leads that were
+        created as new, that is, not updated as a result of the upsert
+        operation */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Database.upsertResult&gt; upsertLeads(List&lt;Lead&gt; leads)  {
+        
+        <span class="multilineComment">/* Perform the upsert. In this case the unique identifier for the
+        insert or update decision is the Salesforce record ID. If the
+            record ID is null the row will be inserted, otherwise an update
+            will be attempted. */</span>
+            List&lt;Database.upsertResult&gt; uResults = Database.<span class="statement">upsert</span>(leads,<span class="keyword">false</span>, AccessLevel.USER_MODE);
+        
+        <span class="multilineComment">/* This is the list for new tasks that will be inserted when new
+        leads are created. */</span>
+            List&lt;Task&gt; tasks = <span class="keyword">new</span> List&lt;Task&gt;();
+        <span class="statement">for</span>(Database.upsertResult result:uResults) {
+            <span class="statement">if</span> (result.isSuccess() &amp;&amp; result.isCreated())
+                tasks.add(<span class="keyword">new</span> Task(Subject = <span class="string">'Follow-up'</span>, WhoId = result.getId()));
+        }
+        
+        <span class="multilineComment">/* If there are tasks to be inserted, insert them */</span>
+        Database.<span class="statement">insert</span>(tasks, AccessLevel.USER_MODE);
+        
+        <span class="statement">return</span> uResults;
+    }
+}</pre></div>
+
+         
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> DmlSamplesTest {
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testUpsertLeads() {
+        <span class="multilineComment">/* We only need to test the insert side of upsert */</span>
+        List&lt;Lead&gt; leads = <span class="keyword">new</span> List&lt;Lead&gt;();
+        
+        <span class="multilineComment">/* Create a set of leads for testing */</span>
+        <span class="statement">for</span>(<span class="keyword">Integer</span> i = 0;i &lt; 100; i++) {
+            leads.add(<span class="keyword">new</span> Lead(LastName = <span class="string">'testLead'</span>, Company = <span class="string">'testCompany'</span>));
+        }
+        
+        <span class="multilineComment">/* Switch to the runtime limit context */</span>
+        Test.startTest();
+        
+        <span class="multilineComment">/* Exercise the method */</span>
+        List&lt;Database.upsertResult&gt; results = DmlSamples.upsertLeads(leads);
+        
+        <span class="multilineComment">/* Switch back to the test context for limits */</span>
+        Test.stopTest();
+        
+        <span class="multilineComment">/* ID set for asserting the tasks were created as expected */</span>
+        Set&lt;Id&gt; ids = <span class="keyword">new</span> Set&lt;Id&gt;();
+        
+        <span class="multilineComment">/* Iterate over the results, asserting success and adding the new ID
+        to the set for use in the comprehensive assertion phase below. */</span>
+        <span class="statement">for</span>(Database.upsertResult result:results) {
+            Assert.isTrue(result.isSuccess());
+            ids.add(result.getId());
+        }
+        
+        <span class="multilineComment">/* Assert that exactly one task exists for each lead that was inserted. */</span>
+        <span class="statement">for</span>(Lead l:[SELECT Id, (SELECT Subject FROM Tasks) FROM Lead WHERE Id IN :ids WITH USER_MODE]) {
+            Assert.areEqual(1,l.tasks.size());
+        }
+    }
+}</pre></div>
+
+         <p class="p">Use of <samp class="codeph apex_code"><span class="statement">upsert</span></samp> with an external ID can reduce
+            the number of DML statements in your code, and help you to avoid hitting governor limits
+            (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution
+               Governors and Limits</a>). </p>
+
+         <p class="p">This example uses <samp class="codeph apex_code"><span class="statement">upsert</span></samp> and an external ID
+            field <samp class="codeph apex_code">Line_Item_Id__c</samp> on the Asset object to
+            maintain a one-to-one relationship between an asset and an opportunity line item. Before
+            running the sample, create a custom text field on the Asset object named <samp class="codeph apex_code">Line_Item_Id__c</samp> and mark it as an external ID. For
+            information on custom fields, see  Salesforce Help.</p>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> External ID fields used in upsert calls must be unique or the user must have the
+            View All Data permission.</p>
+</div>
+</div></div></div></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> upsertExample() {
+    Opportunity opp = [SELECT Id, Name, AccountId, 
+                              (SELECT Id, PricebookEntry.Product2Id, PricebookEntry.Name 
+                               FROM OpportunityLineItems)
+                       FROM Opportunity 
+                       WHERE HasOpportunityLineItem = <span class="keyword">true</span> 
+                       WITH USER_MODE LIMIT 1]; 
+
+    Asset[] assets = <span class="keyword">new</span> Asset[]{}; 
+
+    <span class="onelineComment">// Create an asset for each line item on the opportunity</span>
+    <span class="statement">for</span> (OpportunityLineItem lineItem:opp.OpportunityLineItems) {
+
+        <span class="onelineComment">//This code populates the line item Id, AccountId, and Product2Id for each asset</span>
+        Asset asset = <span class="keyword">new</span> Asset(Name = lineItem.PricebookEntry.Name,
+                                Line_Item_ID__c = lineItem.Id,
+                                AccountId = opp.AccountId,
+                                Product2Id = lineItem.PricebookEntry.Product2Id);
+
+        assets.add(asset);
+    }
+ 
+    <span class="statement">try</span> {
+        <span class="statement">upsert</span> <span class="statement">as</span> user assets Line_Item_ID__c;  <span class="onelineComment">// This line upserts the assets list with</span>
+                                        <span class="onelineComment">// the Line_Item_Id__c field specified as the </span>
+                                        <span class="onelineComment">// Asset field that should be used for matching</span>
+                                        <span class="onelineComment">// the record that should be upserted. </span>
+    } <span class="statement">catch</span> (DmlException e) {
+        System.debug(e.getMessage());
+    }
+}</pre></div>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links"></div>

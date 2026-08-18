@@ -1,0 +1,297 @@
+<a name="apex_class_wave_QueryBuilder"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">QueryBuilder Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The QueryBuilder class provides methods for constructing well-formed
+      SAQL queries to pass to CRM Analytics.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p">wave</p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+        <p class="p">Use QueryBuilder and its associated classes, <samp class="codeph nolang">Wave.ProjectionNode</samp> and <samp class="codeph nolang">Wave.QueryNode</samp>,
+          to incrementally build your SAQL statement. For example:</p>
+
+        <div class="codeSection nolang"><pre class="codeblock brush:plain">public static void executeApexQuery(String name){
+  Wave.ProjectionNode[] projs = new Wave.ProjectionNode[]{
+    Wave.QueryBuilder.get('State').alias('State'), 
+    Wave.QueryBuilder.get('City').alias('City'), 
+    Wave.QueryBuilder.get('Revenue').avg().alias('avg_Revenue'), 
+    Wave.QueryBuilder.get('Revenue').sum().alias('sum_Revenue'),                                     
+    Wave.QueryBuilder.count().alias('count')};
+                
+  ConnectApi.LiteralJson result = Wave.QueryBuilder.load('0FbD00000004DSzKAM', '0FcD00000004FEZKA2')
+    .group(new String[]{'State', 'City'})
+    .foreach(projs)
+    .execute('q');
+  String response = result.json;
+}</pre></div>
+</div>
+
+      
+      <div class="section">
+<h2 class="helpHead2">Examples</h2>
+
+        
+        <p class="p">QueryBuilder is the core of this first phase of the CRM Analytics Apex SDK, so let’s take
+        a closer look. Here’s a simple count query.</p>
+
+        <div class="codeSection nolang"><pre class="codeblock brush:plain">Wave.ProjectionNode[] projs = new Wave.ProjectionNode[]{Wave.QueryBuilder.count().alias('c')};
+String query = Wave.QueryBuilder.load('datasetId', 'datasetVersionId').group().foreach(projs).build('q');</pre></div>
+
+        <p class="p">The resulting SAQL query looks like this:</p>
+
+        <div class="codeSection nolang"><pre class="codeblock brush:plain">q = load "datasetId/datasetVersionId";
+q = group q by all;
+q = foreach q generate count as c;</pre></div>
+
+        <p class="p">Here’s a more complex example that uses a union statement.</p>
+
+        <div class="codeSection nolang"><pre class="codeblock brush:plain">Wave.ProjectionNode[] projs = new Wave.ProjectionNode[]{Wave.QueryBuilder.get('Name'), Wave.QueryBuilder.get('AnnualRevenue').alias('Revenue')};
+Wave.QueryNode nodeOne = Wave.QueryBuilder.load('datasetOne','datasetVersionOne').foreach(projs);
+Wave.QueryNode nodeTwo = Wave.QueryBuilder.load('datasetTwo', 'datasetVersionTwo').foreach(projs);
+String query = Wave.QueryBuilder.union(new List&lt;Wave.QueryNode&gt;{nodeOne, nodeTwo}).build('q');</pre></div>
+
+        <p class="p">The resulting SAQL query has two projection streams, <var class="keyword varname">qa</var> and
+            <var class="keyword varname">qb</var>.</p>
+
+        <div class="codeSection nolang"><pre class="codeblock brush:plain">qa = load "datasetOne/datasetVersionOne";
+qa = foreach q generate Name,AnnualRevenue as Revenue;
+qb = load "datasetTwo/datasetVersionTwo";
+qb = foreach q generate Name,AnnualRevenue as Revenue;
+q = union qa, qb;</pre></div>
+
+      </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#apex_wave_QueryBuilder_methods">QueryBuilder Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_wave_QueryBuilder_methods">
+<a name="apex_wave_QueryBuilder_methods"><!-- --></a>
+  <h2 class="helpHead2">QueryBuilder Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">QueryBuilder</samp>.</p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#apex_wave_QueryBuilder_load">load(datasetID, datasetVersionID)</a></strong><br>
+Load a stream from a dataset.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#apex_wave_QueryBuilder_count">count()</a></strong><br>
+Calculate the number of rows that match the query     criteria.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#apex_wave_QueryBuilder_get">get(projection)</a></strong><br>
+Query by selecting specific attributes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#unique_1786081742">union(unionNodes)</a></strong><br>
+Combine multiple result sets into one result set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryBuilder.htm#unique_1111977491">cogroup(cogroupNodes, groups)</a></strong><br>
+Cogrouping means that two input streams are grouped independently       and arranged side by side. Only data that exists in both groups appears in the     results.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_wave_QueryBuilder_load">
+<a name="apex_wave_QueryBuilder_load"><!-- --></a>
+  <h3 class="helpHead3">load(datasetID, datasetVersionID)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Load a stream from a dataset.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          wave.QueryNode load(<span class="keyword">String</span> datasetID, <span class="keyword">String</span>
+      datasetVersionID)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">datasetID</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID of the dataset.</p>
+</li>
+
+      <li class="li">
+<strong class="ph b"><var class="keyword varname">datasetVersionID</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID identifying the version of the dataset.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryNode.htm#apex_class_wave_QueryNode" title="Define each node of the query - such as projection, groups, order, filters. Execute the query.">wave.QueryNode</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_wave_QueryBuilder_count">
+<a name="apex_wave_QueryBuilder_count"><!-- --></a>
+  <h3 class="helpHead3">count()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Calculate the number of rows that match the query
+    criteria.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          wave.ProjectionNode
+      count()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_ProjectionNode.htm#apex_class_wave_ProjectionNode" title="Add aggregate functions to the query, or define an alias.">wave.ProjectionNode</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_wave_QueryBuilder_get">
+<a name="apex_wave_QueryBuilder_get"><!-- --></a>
+  <h3 class="helpHead3">get(projection)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a></span>Query by selecting specific attributes.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          wave.ProjectionNode get(<span class="keyword">String</span>
+      proj)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">proj</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The name of the column to query.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_ProjectionNode.htm#apex_class_wave_ProjectionNode" title="Add aggregate functions to the query, or define an alias.">wave.ProjectionNode</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_1786081742">
+<a name="unique_1786081742"><!-- --></a>
+  <h3 class="helpHead3">union(unionNodes)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Combine multiple result sets into one result set.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> Wave.QueryNode union(List&lt;Wave.QueryNode&gt; unionNodes)</samp></p>
+</div>
+
+    
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+      <li class="li">
+<strong class="ph b"><var class="keyword varname">unionNodes</var></strong>:<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryNode.htm#apex_class_wave_QueryNode" title="Define each node of the query - such as projection, groups, order, filters. Execute the query.">wave.QueryNode</a>&gt;</p>
+<p class="p">List of nodes to combine.</p>
+</li>
+
+    </ul>
+</div>
+
+    
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryNode.htm#apex_class_wave_QueryNode" title="Define each node of the query - such as projection, groups, order, filters. Execute the query.">wave.QueryNode</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_1111977491">
+<a name="unique_1111977491"><!-- --></a>
+  <h3 class="helpHead3">cogroup(cogroupNodes, groups)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Cogrouping means that two input streams are grouped independently
+      and arranged side by side. Only data that exists in both groups appears in the
+    results.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span>
+          Wave.QueryNode cogroup(List&lt;Wave.QueryNode&gt; cogroupNodes,
+          List&lt;List&lt;<span class="keyword">String</span>&gt;&gt;
+      groups)</samp></p>
+</div>
+
+    
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+      <li class="li">
+<strong class="ph b"><var class="keyword varname">cogroupNodes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryNode.htm#apex_class_wave_QueryNode" title="Define each node of the query - such as projection, groups, order, filters. Execute the query.">wave.QueryNode</a></p>
+<p class="p">List of nodes to group.</p>
+</li>
+
+      <li class="li">
+<strong class="ph b"><var class="keyword varname">groups</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The type of grouping.</p>
+</li>
+
+    </ul>
+</div>
+
+    
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_wave_QueryNode.htm#apex_class_wave_QueryNode" title="Define each node of the query - such as projection, groups, order, filters. Execute the query.">wave.QueryNode</a></p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

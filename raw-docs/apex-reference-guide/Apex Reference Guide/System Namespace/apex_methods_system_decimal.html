@@ -1,0 +1,1255 @@
+<a name="apex_methods_system_decimal"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Decimal Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Contains methods for the Decimal primitive data type.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Two Decimal objects that are numerically equivalent but differ in scale (such as
+                1.1 and 1.10) generally do not have the same hashcode. Use caution when such Decimal
+                objects are used in Sets or as Map keys.</p>
+</div>
+</div></div></div></div>
+<p class="p">For more information on Decimal, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_primitives.htm" target="_blank">Decimal Data Type</a>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_decimal_rounding_mode">Rounding Mode</a></strong><br>
+Rounding mode specifies  the rounding behavior for numerical operations capable of discarding  precision.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_methods">Decimal Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_decimal_rounding_mode">
+<a name="apex_decimal_rounding_mode"><!-- --></a>
+<h2 class="helpHead2">Rounding Mode</h2>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Rounding mode specifies  the rounding behavior for numerical
+operations capable of discarding  precision.</div>
+
+<div class="section">
+<p class="p">Each rounding mode indicates how the least significant
+ returned digit of a rounded result is to be calculated. The following
+ are the valid values for <var class="keyword varname">roundingMode</var>.</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<thead class="thead sorted" align="left">
+<tr>
+<th class="featureTableHeader vertical-align-top " id="d443742e156">Name</th>
+
+<th class="featureTableHeader vertical-align-top " id="d443742e159">Description</th>
+
+</tr>
+
+</thead>
+
+<tbody class="tbody">
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">CEILING</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds towards positive infinity. That is, if the result is positive, this mode behaves the
+        same as the <samp class="codeph apex_code">UP</samp> rounding mode; if the result is
+        negative, it behaves the same as the <samp class="codeph apex_code">DOWN</samp> rounding
+        mode. Note that this rounding mode never decreases the calculated value. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">CEILING</samp> round mode result:
+          6</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">CEILING</samp> round mode result:
+          2</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">CEILING</samp> round mode result:
+          -1</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">CEILING</samp> round mode result:
+          -2</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_ceiling">CEILING Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">DOWN</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds towards zero. This rounding mode always discards any fractions (decimal points) prior
+        to executing. Note that this rounding mode never increases the magnitude of the calculated
+        value. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">DOWN</samp> round mode result:
+          5</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">DOWN</samp> round mode result:
+          1</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">DOWN</samp> round mode result:
+          -1</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">DOWN</samp> round mode result:
+          -2</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_down">DOWN Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">FLOOR</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds towards negative infinity. That is, if the result is positive, this mode behaves the
+        same as the<samp class="codeph apex_code">DOWN</samp> rounding mode; if negative, this
+        mode behaves the same as the <samp class="codeph apex_code">UP</samp> rounding mode. Note
+        that this rounding mode never increases the calculated value. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">FLOOR</samp> round mode result:
+          5</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">FLOOR</samp> round mode result:
+          1</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">FLOOR</samp> round mode result:
+          -2</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">FLOOR</samp> round mode result:
+          -3</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_floor">FLOOR Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">HALF_DOWN</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds towards the “nearest neighbor” unless both neighbors are equidistant, in
+        which case this mode rounds down. This rounding mode behaves the same as the <samp class="codeph apex_code">UP</samp> rounding mode if the discarded fraction (decimal point)
+        is &gt; 0.5; otherwise, it behaves the same as <samp class="codeph apex_code">DOWN</samp>
+        rounding mode. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">HALF_DOWN</samp> round mode result:
+          5</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">HALF_DOWN</samp> round mode result:
+          1</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">HALF_DOWN</samp> round mode
+          result: -1</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">HALF_DOWN</samp> round mode
+                                        result: -3</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_half_down">HALF_DOWN Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">HALF_EVEN</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds <span class="ph" id="half_even_defn1"><a name="half_even_defn1"><!-- --></a>towards the “nearest neighbor” unless both
+         neighbors are equidistant, in which case, this mode rounds towards the even neighbor.
+        </span>This rounding mode behaves the same as the <samp class="codeph apex_code">HALF_UP</samp> rounding mode if the digit to the left of the discarded fraction (decimal
+        point) is odd. It behaves the same as the <samp class="codeph apex_code">HALF_DOWN</samp>
+        rounding method if it is even. For example: <ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">HALF_EVEN</samp> round mode result:
+          6</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">HALF_EVEN</samp> round mode result:
+          1</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">HALF_EVEN</samp> round mode
+          result: -1</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">HALF_EVEN</samp> round mode
+          result: -3</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_half_even">HALF_EVEN Rounding Mode Example</a>.</p>
+<span class="ph" id="half_even_defn2"><a name="half_even_defn2"><!-- --></a>Note that this rounding mode statistically minimizes cumulative error
+         when applied repeatedly over a sequence of calculations. </span>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">HALF_UP</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds towards the “nearest neighbor” unless both neighbors are equidistant, in
+        which case, this mode rounds up. This rounding method behaves the same as the <samp class="codeph apex_code">UP</samp> rounding method if the discarded fraction (decimal
+        point) is &gt;= 0.5; otherwise, this rounding method behaves the same as the <samp class="codeph apex_code">DOWN</samp> rounding method. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">HALF_UP</samp> round mode result:
+          6</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">HALF_UP</samp> round mode result:
+          1</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">HALF_UP</samp> round mode result:
+          -1</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">HALF_UP</samp> round mode result:
+          -3</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_half_up">HALF_UP Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">UNNECESSARY</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Asserts that the requested operation has an exact result, which means that no rounding is
+                                necessary. If this rounding mode is specified on an operation that
+                                yields an inexact result, a MathException is thrown. For example: <ul class="ul bulletList">
+                                    <li class="li">Input number 5.5: <samp class="codeph apex_code">UNNECESSARY</samp> round mode result:
+                                        MathException</li>
+
+                                    <li class="li">Input number 1.1: <samp class="codeph apex_code">UNNECESSARY</samp> round mode result:
+                                        MathException</li>
+
+                                    <li class="li">Input number 1.0: <samp class="codeph apex_code">UNNECESSARY</samp> round mode result: 1</li>
+
+                                    <li class="li">Input number -1.0: <samp class="codeph apex_code">UNNECESSARY</samp> round mode result: -1</li>
+
+                                    <li class="li">Input number -2.2: <samp class="codeph apex_code">UNNECESSARY</samp> round mode result:
+                                        MathException</li>
+
+                                </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_unnecessary">UNNECESSARY Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+<tr>
+<td class="entry" headers="d443742e156" data-title="Name"><samp class="codeph apex_code">UP</samp></td>
+
+<td class="entry" headers="d443742e159" data-title="Description">Rounds away from zero. This rounding mode always truncates any fractions (decimal points)
+        prior to executing. Note that this rounding mode never decreases the magnitude of the
+        calculated value. For example:<ul class="ul bulletList">
+         <li class="li">Input number 5.5: <samp class="codeph apex_code">UP</samp> round mode result: 6</li>
+
+         <li class="li">Input number 1.1: <samp class="codeph apex_code">UP</samp> round mode result: 2</li>
+
+         <li class="li">Input number -1.1: <samp class="codeph apex_code">UP</samp> round mode result:
+          -2</li>
+
+         <li class="li">Input number -2.7: <samp class="codeph apex_code">UP</samp> round mode result:
+          -3</li>
+
+        </ul>
+<p class="p">For an example, see <a class="xref" href="#ex_up">UP Rounding Mode Example</a>.</p>
+</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+</div>
+
+<div class="example" id="ex_ceiling">
+<a name="ex_ceiling"><!-- --></a><h3 class="helpHead3">CEILING Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{6, 2, -1, -2};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.CEILING));
+}
+</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_down">
+<a name="ex_down"><!-- --></a><h3 class="helpHead3">DOWN Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{5, 1, -1, -2};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.DOWN));
+}</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_floor">
+<a name="ex_floor"><!-- --></a><h3 class="helpHead3">FLOOR Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{5, 1, -2, -3};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.FLOOR));
+}</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_half_down">
+<a name="ex_half_down"><!-- --></a><h3 class="helpHead3">HALF_DOWN Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{5, 1, -1, -3};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.HALF_DOWN));
+}</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_half_even">
+<a name="ex_half_even"><!-- --></a><h3 class="helpHead3">HALF_EVEN Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{6, 1, -1, -3};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.HALF_EVEN));
+}
+</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_half_up">
+<a name="ex_half_up"><!-- --></a><h3 class="helpHead3">HALF_UP Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{6, 1, -1, -3};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.HALF_UP));
+}
+</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_unnecessary">
+<a name="ex_unnecessary"><!-- --></a><h3 class="helpHead3">UNNECESSARY Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> example1 = 5.5;
+<span class="keyword">Decimal</span> example2 = 1.0;
+system.assertEquals(1,
+    example2.round(System.RoundingMode.UNNECESSARY));
+<span class="statement">try</span>{
+    example1.round(System.RoundingMode.UNNECESSARY);
+} <span class="statement">catch</span>(Exception E) {
+    system.assertEquals(<span class="string">'System.MathException'</span>, E.getTypeName());
+}</pre></div>
+
+</div>
+</div>
+
+<div class="example" id="ex_up">
+<a name="ex_up"><!-- --></a><h3 class="helpHead3">UP Rounding Mode Example</h3>
+<div class="exampleblock">
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span>[] example = <span class="keyword">new</span> <span class="keyword">Decimal</span>[]{5.5, 1.1, -1.1, -2.7};
+<span class="keyword">Long</span>[] expected = <span class="keyword">new</span> <span class="keyword">Long</span>[]{6, 2, -2, -3};
+<span class="statement">for</span>(integer x = 0; x &lt; example.size(); x++){
+    System.assertEquals(expected[x],
+        example[x].round(System.RoundingMode.UP));
+}</pre></div>
+
+</div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Decimal_methods">
+<a name="apex_System_Decimal_methods"><!-- --></a>
+<h2 class="helpHead2">Decimal Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code"><span class="keyword">Decimal</span></samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_abs">abs()</a></strong><br>
+Returns the absolute value of the Decimal.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_divide">divide(divisor, scale)</a></strong><br>
+Divides this Decimal by the specified divisor, and sets the scale, that is, the number of decimal places, of the result using the specified scale.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_divide_2">divide(divisor, scale, roundingMode)</a></strong><br>
+Divides this Decimal by the specified divisor, sets the scale, that is, the number of decimal places, of the result using the specified scale, and if necessary, rounds the value using the rounding mode.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_doubleValue">doubleValue()</a></strong><br>
+Returns the Double value of this Decimal.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_format">format()</a></strong><br>
+Returns the String value of this Decimal using the locale of the context user. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_intValue">intValue()</a></strong><br>
+Returns the Integer value of this Decimal.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_longValue">longValue()</a></strong><br>
+Returns the Long value of this Decimal.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_pow">pow(exponent)</a></strong><br>
+Returns the value of this decimal raised to the power of the specified exponent.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_precision">precision()</a></strong><br>
+Returns the total number of digits for the Decimal.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_round">round()</a></strong><br>
+Returns the rounded approximation of this Decimal. The number  is rounded to zero decimal places using half-even rounding mode, that  is, it rounds towards the “nearest neighbor” unless both neighbors are equidistant, in which case, this mode rounds  towards the even neighbor.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_round_2">round(roundingMode)</a></strong><br>
+Returns the rounded approximation of this Decimal. The number  is rounded to zero decimal places using the rounding mode specified by the rounding mode. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_scale">scale()</a></strong><br>
+Returns the scale of the Decimal, that is, the number of decimal  places.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_setScale">setScale(scale)</a></strong><br>
+Returns the Decimal scaled to the specified number of decimal places, using half-even     rounding, if necessary. Half-even rounding mode rounds toward the “nearest     neighbor.” If both neighbors are equidistant, the number is rounded toward the even     neighbor.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_setScale_2">setScale(scale, roundingMode)</a></strong><br>
+Returns the Decimal scaled to the specified number of decimal places, using the specified                 rounding mode, if necessary.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_stripTrailingZeros">stripTrailingZeros()</a></strong><br>
+Returns the Decimal with any trailing zeros removed.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_toPlainString">toPlainString()</a></strong><br>
+Returns the String value of this Decimal, without using scientific notation.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_valueOf">valueOf(doubleToDecimal)</a></strong><br>
+Returns a Decimal that contains the value of the specified Double.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_valueOf_2">valueOf(longToDecimal)</a></strong><br>
+Returns a Decimal that contains the value of the specified Long.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_decimal.htm#apex_System_Decimal_valueOf_3">valueOf(stringToDecimal)</a></strong><br>
+Returns a Decimal that contains the value of the specified String. As in Java, the string is interpreted as representing a signed Decimal.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_abs">
+<a name="apex_System_Decimal_abs"><!-- --></a>
+<h3 class="helpHead3">abs()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the absolute value of the Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> abs()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = -6.02214129;
+System.assertEquals(6.02214129, myDecimal.abs());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_divide">
+<a name="apex_System_Decimal_divide"><!-- --></a>
+<h3 class="helpHead3">divide(divisor, scale)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Divides this Decimal by the specified divisor, and sets
+the scale, that is, the number of decimal places, of the result using
+the specified scale.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> divide(<span class="keyword">Decimal</span> divisor, <span class="keyword">Integer</span>
+scale)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">divisor</var></strong>: Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scale</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> decimalNumber = 19;
+<span class="keyword">Decimal</span> result = decimalNumber.divide(100, 3);
+System.assertEquals(0.190, result);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_divide_2">
+<a name="apex_System_Decimal_divide_2"><!-- --></a>
+<h3 class="helpHead3">divide(divisor, scale, roundingMode)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Divides this Decimal by the specified divisor, sets the
+scale, that is, the number of decimal places, of the result using
+the specified scale, and if necessary, rounds the value using the
+rounding mode.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> divide(<span class="keyword">Decimal</span> divisor, <span class="keyword">Integer</span> scale,
+     System.RoundingMode roundingMode)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">divisor</var></strong>: Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scale</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">roundingMode</var></strong>: Type: <a class="xref" href="#apex_decimal_rounding_mode" title="Rounding mode specifies the rounding behavior for numerical operations capable of discarding precision.">System.RoundingMode</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 12.4567;
+<span class="keyword">Decimal</span> divDec = myDecimal.divide(7, 2, System.RoundingMode.UP);
+System.assertEquals(divDec, 1.78);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_doubleValue">
+<a name="apex_System_Decimal_doubleValue"><!-- --></a>
+<h3 class="helpHead3">doubleValue()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Double value of this Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> doubleValue()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 6.62606957;
+<span class="keyword">Double</span> value = myDecimal.doubleValue();
+System.assertEquals(6.62606957, value);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_format">
+<a name="apex_System_Decimal_format"><!-- --></a>
+<h3 class="helpHead3">format()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the String value of this Decimal using the locale
+of the context user. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> format()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Scientific notation will
+be used if an exponent is needed.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// U.S. locale</span>
+<span class="keyword">Decimal</span> myDecimal = 12345.6789;
+system.assertEquals(<span class="string">'12,345.679'</span>, myDecimal.format());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_intValue">
+<a name="apex_System_Decimal_intValue"><!-- --></a>
+<h3 class="helpHead3">intValue()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Integer value of this Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> intValue()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 1.602176565;
+system.assertEquals(1, myDecimal.intValue());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_longValue">
+<a name="apex_System_Decimal_longValue"><!-- --></a>
+<h3 class="helpHead3">longValue()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Long value of this Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Long</span> longValue()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 376.730313461;
+system.assertEquals(376, myDecimal.longValue());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_pow">
+<a name="apex_System_Decimal_pow"><!-- --></a>
+<h3 class="helpHead3">pow(exponent)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the value of this decimal raised to the power of
+the specified exponent.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> pow(<span class="keyword">Integer</span> exponent)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">exponent</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The value of <var class="keyword varname">exponent</var> must  be between 0 and
+32,767.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If you use <samp class="codeph apex_code">MyDecimal.pow(0)</samp>, 1 is returned. </p>
+<p class="p">The <samp class="codeph apex_code">Math.pow</samp> method  does
+accept negative values. </p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 4.12;
+<span class="keyword">Decimal</span> powDec = myDecimal.pow(2);
+System.assertEquals(powDec, 16.9744);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_precision">
+<a name="apex_System_Decimal_precision"><!-- --></a>
+<h3 class="helpHead3">precision()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the total number of digits for the Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> precision()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">For example, if the Decimal value
+was 123.45, <samp class="codeph apex_code">precision</samp> returns
+5. If the Decimal value is 123.123, <samp class="codeph apex_code">precision</samp> returns 6.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> D1 = 123.45;
+<span class="keyword">Integer</span> precision1 = D1.precision();
+system.assertEquals(precision1, 5);
+<span class="keyword">Decimal</span> D2 = 123.123;
+<span class="keyword">Integer</span> precision2 = D2.precision();
+system.assertEquals(precision2, 6);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_round">
+<a name="apex_System_Decimal_round"><!-- --></a>
+<h3 class="helpHead3">round()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the rounded approximation of this Decimal. The
+number  is rounded to zero decimal places using half-even rounding
+mode, that  is, it rounds towards the “nearest neighbor”
+unless both neighbors are equidistant, in which case, this mode rounds
+ towards the even neighbor.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Long</span> round()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Note that this rounding mode statistically
+ minimizes cumulative error when applied repeatedly over a sequence
+ of calculations.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> D = 4.5;
+<span class="keyword">Long</span> L = D.round();
+System.assertEquals(4, L);
+
+<span class="keyword">Decimal</span> D1 = 5.5;
+<span class="keyword">Long</span> L1 = D1.round();
+System.assertEquals(6, L1);
+
+<span class="keyword">Decimal</span> D2 = 5.2;
+<span class="keyword">Long</span> L2 = D2.round();
+System.assertEquals(5, L2);
+
+<span class="keyword">Decimal</span> D3 = -5.7;
+<span class="keyword">Long</span> L3 = D3.round();
+System.assertEquals(-6, L3);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_round_2">
+<a name="apex_System_Decimal_round_2"><!-- --></a>
+<h3 class="helpHead3">round(roundingMode)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the rounded approximation of this Decimal. The
+number  is rounded to zero decimal places using the rounding mode
+specified by the rounding mode. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Long</span> round(System.RoundingMode roundingMode)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">roundingMode</var></strong>: Type: <a class="xref" href="#apex_decimal_rounding_mode" title="Rounding mode specifies the rounding behavior for numerical operations capable of discarding precision.">System.RoundingMode</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_scale">
+<a name="apex_System_Decimal_scale"><!-- --></a>
+<h3 class="helpHead3">scale()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the scale of the Decimal, that is, the number of
+decimal  places.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> scale()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 9.27400968;
+system.assertEquals(8, myDecimal.scale());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_setScale">
+<a name="apex_System_Decimal_setScale"><!-- --></a>
+<h3 class="helpHead3">setScale(scale)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Decimal scaled to the specified number of decimal places, using half-even
+    rounding, if necessary. Half-even rounding mode rounds toward the “nearest
+    neighbor.” If both neighbors are equidistant, the number is rounded toward the even
+    neighbor.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> setScale(<span class="keyword">Integer</span> scale)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scale</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The value of <var class="keyword varname">scale</var> must be between –33 and 33.
+            If the value of <var class="keyword varname">scale</var> is negative, your unscaled value is multiplied
+            by 10 to the power of the negation of <var class="keyword varname">scale</var>. For example, after this
+            operation, the value of <var class="keyword varname">d</var> is <samp class="codeph nolang">4*10^3</samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> d = 4000;
+d = d.setScale(-3);</pre></div>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">If you do not explicitly set the scale for a Decimal, the item from which the Decimal is created
+        determines the scale.<ul class="ul bulletList">
+                                        <li class="li">If the Decimal is created as part of a query, the scale
+                                            is based on the scale of the field returned from the
+                                            query.</li>
+
+                                        <li class="li">If the Decimal is created from a String, the scale is
+                                            the number of characters after the decimal point of the
+                                            String.</li>
+
+                                        <li class="li">If the Decimal is created from a non-decimal number, the
+                                            number is first converted to a String. The scale is then
+                                            set using the number of characters after the decimal
+                                            point.</li>
+
+                                    </ul>
+</div>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 8.987551787;
+<span class="keyword">Decimal</span> setScaled = myDecimal.setscale(3);
+System.assertEquals(8.988, setScaled);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_setScale_2">
+<a name="apex_System_Decimal_setScale_2"><!-- --></a>
+<h3 class="helpHead3">setScale(scale, roundingMode)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Decimal scaled to the specified number of decimal places, using the specified
+                rounding mode, if necessary.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> setScale(<span class="keyword">Integer</span> scale, System.RoundingMode
+roundingMode)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scale</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">roundingMode</var></strong>: Type: <a class="xref" href="#apex_decimal_rounding_mode" title="Rounding mode specifies the rounding behavior for numerical operations capable of discarding precision.">System.RoundingMode</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">If you do not explicitly set the scale for a Decimal, the item from which the Decimal is created
+        determines the scale.<ul class="ul bulletList">
+                                        <li class="li">If the Decimal is created as part of a query, the scale
+                                            is based on the scale of the field returned from the
+                                            query.</li>
+
+                                        <li class="li">If the Decimal is created from a String, the scale is
+                                            the number of characters after the decimal point of the
+                                            String.</li>
+
+                                        <li class="li">If the Decimal is created from a non-decimal number, the
+                                            number is first converted to a String. The scale is then
+                                            set using the number of characters after the decimal
+                                            point.</li>
+
+                                    </ul>
+</div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_stripTrailingZeros">
+<a name="apex_System_Decimal_stripTrailingZeros"><!-- --></a>
+<h3 class="helpHead3">stripTrailingZeros()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Decimal with any trailing zeros removed.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Decimal</span> stripTrailingZeros()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 1.10000;
+<span class="keyword">Decimal</span> stripped = myDecimal.stripTrailingZeros();
+System.assertEquals(stripped, 1.1);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_toPlainString">
+<a name="apex_System_Decimal_toPlainString"><!-- --></a>
+<h3 class="helpHead3">toPlainString()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the String value of this Decimal, without using
+scientific notation.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toPlainString()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> myDecimal = 12345.6789;
+System.assertEquals(<span class="string">'12345.6789'</span>, myDecimal.toPlainString());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_valueOf">
+<a name="apex_System_Decimal_valueOf"><!-- --></a>
+<h3 class="helpHead3">valueOf(doubleToDecimal)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a Decimal that contains the value of the specified
+Double.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Decimal</span> valueOf(<span class="keyword">Double</span> doubleToDecimal)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">doubleToDecimal</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Double</span> myDouble = 2.718281828459045;
+<span class="keyword">Decimal</span> myDecimal = <span class="keyword">Decimal</span>.valueOf(myDouble);
+System.assertEquals(2.718281828459045, myDecimal);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_valueOf_2">
+<a name="apex_System_Decimal_valueOf_2"><!-- --></a>
+<h3 class="helpHead3">valueOf(longToDecimal)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a Decimal that contains the value of the specified
+Long.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Decimal</span> valueOf(<span class="keyword">Long</span> longToDecimal)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">longToDecimal</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Long</span> myLong = 299792458;
+<span class="keyword">Decimal</span> myDecimal = <span class="keyword">Decimal</span>.valueOf(myLong);
+System.assertEquals(299792458, myDecimal);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Decimal_valueOf_3">
+<a name="apex_System_Decimal_valueOf_3"><!-- --></a>
+<h3 class="helpHead3">valueOf(stringToDecimal)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a Decimal that contains the value of the specified
+String. As in Java, the string is interpreted as representing a signed
+Decimal.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Decimal</span> valueOf(<span class="keyword">String</span> stringToDecimal)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">stringToDecimal</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_decimal" title="Contains methods for the Decimal primitive data type.">Decimal</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> temp = <span class="string">'12.4567'</span>;
+<span class="keyword">Decimal</span> myDecimal = <span class="keyword">Decimal</span>.valueOf(temp);</pre></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,179 @@
+<a name="apex_interface_Auth_ConfirmUserRegistrationHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ConfirmUserRegistrationHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Manages single sign-on (SSO) user mappings between Salesforce and a
+      third-party identity provider. Use this interface to confirm user mappings before updating
+      them.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">When you set up SSO with a third-party identity provider, you create a class that
+        implements a registration handler using the <samp class="codeph ">Auth.RegistrationHandler</samp> interface. This class manages the process of creating
+        and updating users. For advanced use cases that require you to confirm user information
+        during the update process, implement the <samp class="codeph ">Auth.ConfirmUserRegistrationHandler</samp> interface in your class. This interface must
+        be implemented in addition to <samp class="codeph ">Auth.RegistrationHandler</samp>.</p>
+
+      <p class="p">You can use the <samp class="codeph ">Auth.ConfirmUserRegistrationHandler</samp>
+        interface to ensure that users are mapped correctly between Salesforce and the third party.
+        When a user who has previously logged in with an authentication provider logs in again, you
+        can confirm that the incoming user data is consistent with the user's third-party
+        identifier. If not, you can identify which user is supposed to be logged in.</p>
+
+      <p class="p">You can also use the <samp class="codeph ">Auth.ConfirmUserRegistrationHandler</samp>
+        interface to switch context for users with multiple records. For example, a user has two
+        records—an admin user and a standard user. When the user logs in, the third-party identity
+        provider confirms the account used to log in and sends the response to Salesforce via the
+          <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.remoteaccess_using_userinfo_endpoint.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">UserInfo endpoint</a>. You can
+        then use this information to determine whether to log in the user as an admin or standard
+        user.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfirmUserRegistrationHandler.htm#apex_Auth_ConfirmUserRegistrationHandler_methods">ConfirmUserRegistrationHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfirmUserRegistrationHandler.htm#apex_interface_Auth_ConfirmUserRegistrationHandler_Example">ConfirmUserRegistrationHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_ConfirmUserRegistrationHandler_methods">
+<a name="apex_Auth_ConfirmUserRegistrationHandler_methods"><!-- --></a><h2 class="helpHead2">ConfirmUserRegistrationHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">ConfirmUserRegistrationHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfirmUserRegistrationHandler.htm#apex_Auth_ConfirmUserRegistrationHandler_confirmUser">confirmUser(userId, tpalId, portalId, userdata)</a></strong><br>
+Returns the ID of the user to be logged in based on their mapping to a       third-party identifier. This method is called before calling the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_auth_plugin.htm#apex_Auth_RegistrationHandler_updateUser" target="_blank" title="HTML (New Window)"><samp class="codeph ">updateUser()</samp></a> method. It's called only if the incoming user has previously       logged in and has a third-party account link to a Salesforce user.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConfirmUserRegistrationHandler_confirmUser">
+<a name="apex_Auth_ConfirmUserRegistrationHandler_confirmUser"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">confirmUser(userId, tpalId, portalId,
+    userdata)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the ID of the user to be logged in based on their mapping to a
+      third-party identifier. This method is called before calling the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_auth_plugin.htm#apex_Auth_RegistrationHandler_updateUser" target="_blank" title="HTML (New Window)"><samp class="codeph ">updateUser()</samp></a> method. It's called only if the incoming user has previously
+      logged in and has a third-party account link to a Salesforce user.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Id confirmUser(Id userId, Id tpalId, Id portalId,
+          Auth.UserData userdata)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the user who is mapped to the third-party identifier via a third-party account
+            link.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tpalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The third-party account link corresponding to the third-party identifier.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">portalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The portal ID the user is logging in to. If there's no portal configured, this value can be
+              null.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userData</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_UserData.htm#apex_class_Auth_UserData" target="_blank" title="HTML (New Window)">Auth.UserData</a></p>
+<p class="p">Contains user information from the third-party identity provider.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The Id of the user to be logged in. If null, login fails.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Auth_ConfirmUserRegistrationHandler_Example">
+<a name="apex_interface_Auth_ConfirmUserRegistrationHandler_Example"><!-- --></a><h2 class="helpHead2">ConfirmUserRegistrationHandler Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">This example implements the <samp class="codeph apex_code">Auth.ConfirmUserRegistrationHandler</samp> interface during the user update
+                process to confirm that the correct user is logging in based on their email address
+                and last name.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> StandardUserRegistrationHandler <span class="keyword">implements</span> Auth.RegistrationHandler, Auth.ConfirmUserRegistrationHandler {
+    <span class="keyword">global</span> User createUser(Id portalId, Auth.UserData data){
+        User u = <span class="keyword">new</span> User();
+        Profile p = [SELECT Id FROM profile WHERE name=<span class="string">'Standard User'</span>];
+        u.username = data.username + <span class="string">'@salesforce.com'</span>;
+        u.email = data.email;
+        u.lastName = data.lastName;
+        u.firstName = data.firstName;
+        <span class="keyword">String</span> alias = data.username;
+        <span class="statement">if</span>(alias.length() &gt; 8) {
+            alias = alias.substring(0, 8);
+        }
+        u.alias = alias;
+        u.languagelocalekey = data.attributeMap.get(<span class="string">'language'</span>);
+        u.localesidkey = data.locale;
+        u.emailEncodingKey = <span class="string">'UTF-8'</span>;
+        u.timeZoneSidKey = <span class="string">'America/Los_Angeles'</span>;
+        u.profileId = p.Id;
+        <span class="statement">return</span> u;
+    }
+    
+    <span class="keyword">global</span> <span class="keyword">void</span> updateUser(Id userId, Id portalId, Auth.UserData data) {
+        User u = <span class="keyword">new</span> User(id=userId);
+        u.username = data.username + <span class="string">'@salesforce.com'</span>;
+        u.email = data.email;
+        u.lastName = data.lastName;
+        u.firstName = data.firstName;
+        <span class="keyword">String</span> alias = data.username;
+        <span class="statement">if</span>(alias.length() &gt; 8) {
+            alias = alias.substring(0, 8);
+        }
+        u.alias = alias;
+        u.languagelocalekey = data.attributeMap.get(<span class="string">'language'</span>);
+        u.localesidkey = data.locale;
+        <span class="statement">update</span>(u);
+    }
+    
+    <span class="keyword">global</span> Id confirmUser(Id userId, Id tpalId, Id portalId, Auth.UserData data) {
+        <span class="statement">if</span> (data.email.contains(data.lastName)) { <span class="onelineComment">// looks genuine </span>
+            <span class="statement">return</span> userId;
+        } <span class="statement">else</span> { <span class="onelineComment">// find the right user</span>
+            User confirmedUser = [SELECT id FROM user WHERE email=:data.email];
+            <span class="statement">return</span> confirmedUser.Id;
+        }
+    }
+}</pre></div>
+<p class="p">The following example tests the implementation:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> StandardUserRegistrationHandlerTest {
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testConfirmUser() {
+        StandardUserRegistrationHandler handler = <span class="keyword">new</span> StandardUserRegistrationHandler();
+        Auth.UserData sampleData = <span class="keyword">new</span> Auth.UserData(<span class="string">'idA'</span>, <span class="string">'firstName'</span>, <span class="string">'A'</span>,
+            <span class="string">'firstName A'</span>, <span class="string">'userA@example.org'</span>, <span class="keyword">null</span>, <span class="string">'usernameA'</span>, <span class="string">'en_US'</span>, <span class="string">'facebook'</span>,
+            <span class="keyword">null</span>, <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;{<span class="string">'language'</span> =&gt; <span class="string">'en_US'</span>});
+        User u = handler.createUser(<span class="keyword">null</span>, sampleData);
+        <span class="statement">insert</span>(u);
+        <span class="keyword">String</span> uid = u.id;
+        
+        sampleData = <span class="keyword">new</span> Auth.UserData(<span class="string">'idB'</span>, <span class="string">'firstName'</span>, <span class="string">'B'</span>,
+            <span class="string">'firstName B'</span>, <span class="string">'userA@example.org'</span>, <span class="keyword">null</span>, <span class="string">'usernameB'</span>, <span class="string">'en_US'</span>, <span class="string">'facebook'</span>,
+            <span class="keyword">null</span>, <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;{}); <span class="onelineComment">// note that user B is using userA's email</span>
+        Id confirmedUserId = handler.confirmUser(uid, <span class="string">'060xx0000004Eh6'</span>, <span class="keyword">null</span>, sampleData);
+        System.assertEquals(uid, confirmedUserId); <span class="onelineComment">// we should see userA's id</span>
+    }
+}</pre></div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,144 @@
+<a name="apex_json_json"><!-- --></a><h1 class="helpHead1">Roundtrip Serialization and Deserialization</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">JSON</samp> class methods to perform roundtrip
+        serialization and deserialization of your JSON content. These methods enable you to
+        serialize objects into JSON-formatted strings and to deserialize JSON strings back into
+        objects.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Serialize and Deserialize a List of Invoices</h2>
+
+            
+            <div class="p">This example creates a list of <samp class="codeph apex_code">InvoiceStatement</samp> objects and serializes the list. Next, the serialized
+                JSON string is used to deserialize the list again and the sample verifies that the
+                new list contains the same invoices that were present in the original
+                list.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> JSONRoundTripSample {
+  
+    <span class="keyword">public</span> <span class="keyword">class</span> InvoiceStatement {
+        <span class="keyword">Long</span> invoiceNumber;
+        <span class="keyword">Datetime</span> statementDate;
+        <span class="keyword">Decimal</span> totalPrice;
+        
+        <span class="keyword">public</span> InvoiceStatement(<span class="keyword">Long</span> i, <span class="keyword">Datetime</span> dt, <span class="keyword">Decimal</span> price)
+        {
+            invoiceNumber = i;
+            statementDate = dt;
+            totalPrice = price;
+        }
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> SerializeRoundtrip() {
+        <span class="keyword">Datetime</span> dt = <span class="keyword">Datetime</span>.now(); 
+        <span class="onelineComment">// Create a few invoices.</span>
+        InvoiceStatement inv1 = <span class="keyword">new</span> InvoiceStatement(1,<span class="keyword">Datetime</span>.valueOf(dt),1000);
+        InvoiceStatement inv2 = <span class="keyword">new</span> InvoiceStatement(2,<span class="keyword">Datetime</span>.valueOf(dt),500);
+        <span class="onelineComment">// Add the invoices to a list.</span>
+        List&lt;InvoiceStatement&gt; invoices = <span class="keyword">new</span> List&lt;InvoiceStatement&gt;();
+        invoices.add(inv1);
+        invoices.add(inv2);
+              
+        <span class="onelineComment">// Serialize the list of InvoiceStatement objects.</span>
+        <span class="keyword">String</span> JSONString = JSON.serialize(invoices);
+        System.debug(<span class="string">'Serialized list of invoices into JSON format: '</span> + JSONString);
+        
+        <span class="onelineComment">// Deserialize the list of invoices from the JSON string.</span>
+        List&lt;InvoiceStatement&gt; deserializedInvoices = 
+          (List&lt;InvoiceStatement&gt;)JSON.deserialize(JSONString, List&lt;InvoiceStatement&gt;.<span class="keyword">class</span>);
+        System.assertEquals(invoices.size(), deserializedInvoices.size());
+        <span class="keyword">Integer</span> i=0;
+        <span class="statement">for</span> (InvoiceStatement deserializedInvoice :deserializedInvoices) {
+            system.debug(<span class="string">'Deserialized:'</span> + deserializedInvoice.invoiceNumber + <span class="string">','</span> 
+            + deserializedInvoice.statementDate.formatGmt(<span class="string">'MM/dd/yyyy  HH:mm:ss.SSS'</span>)
+            + <span class="string">', '</span> + deserializedInvoice.totalPrice); 
+            system.debug(<span class="string">'Original:'</span> + invoices[i].invoiceNumber + <span class="string">','</span> 
+            + invoices[i].statementDate.formatGmt(<span class="string">'MM/dd/yyyy  HH:mm:ss.SSS'</span>) 
+            + <span class="string">', '</span> + invoices[i].totalPrice); 
+            i++;
+        }
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+        <div class="section" id="json_seralization_considerations">
+<a name="json_seralization_considerations"><!-- --></a><h2 class="helpHead2">JSON Serialization Considerations</h2>
+
+            
+            <p class="p">The behavior of the <samp class="codeph apex_code">serialize</samp> method differs
+                depending on the Salesforce API version of the Apex code saved.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b">Serialization of queried sObject with additional fields set</strong>: For Apex saved using Salesforce API version 27.0 and earlier, if queried
+                        sObjects have additional fields set, these fields aren’t included in
+                        the serialized JSON string returned by the <samp class="codeph apex_code">serialize</samp> method. Starting with Apex saved using Salesforce
+                        API version 28.0, the additional fields are included in the serialized JSON
+                        string. This example adds a field to a contact after it has been queried, and then
+                        serializes the contact. The assertion statement verifies that the JSON
+                        string contains the additional field. The assertion passes for Apex saved
+                        using Salesforce API version 28.0 and
+                        later.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Contact con = [SELECT Id, LastName, AccountId FROM Contact LIMIT 1]; 
+<span class="onelineComment">// Set additional field</span>
+con.FirstName = <span class="string">'Joe'</span>; 
+<span class="keyword">String</span> jsonstring = Json.serialize(con); 
+System.debug(jsonstring); 
+System.assert(jsonstring.contains(<span class="string">'Joe'</span>) == <span class="keyword">true</span>);</pre></div>
+</li>
+
+                <li class="li">
+<strong class="ph b">Serialization of aggregate query result fields</strong>: For Apex saved using Salesforce API version 27.0, results of aggregate
+                        queries don’t include the fields in the SELECT statement when
+                        serialized using the <samp class="codeph apex_code">serialize</samp>
+                        method. For earlier API versions or for API version 28.0 and later,
+                        serialized aggregate query results include all fields in the SELECT
+                        statement. This aggregate query returns two fields: the count of ID fields and the
+                        account name.
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> jsonString = JSON.serialize(
+    Database.query(<span class="string">'SELECT Count(Id),Account.Name FROM Contact WHERE Account.Name != null GROUP BY Account.Name LIMIT 1'</span>));
+    System.debug(jsonString);
+
+<span class="onelineComment">// Expected output in API v 26 and earlier or v28 and later</span>
+<span class="onelineComment">// [{"attributes":{"type":"AggregateResult"},"expr0":2,"Name":"acct1"}]</span></pre></div>
+</li>
+
+                <li class="li">
+<strong class="ph b">Serialization of empty fields</strong>: Starting with API version 28.0, null fields aren’t serialized and aren’t
+                        included in the JSON string, unlike in earlier versions. This change doesn’t
+                        affect deserializing JSON strings with JSON methods, such as <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_deserialize" target="_blank">Json.deserialize()</a>. This change is
+                        noticeable when you inspect the JSON string. For
+                        example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> jsonString = JSON.serialize(
+                 [SELECT Id, Name, Website FROM Account WHERE Website = <span class="keyword">null</span> LIMIT 1]);
+System.debug(jsonString);
+
+<span class="onelineComment">// In v27.0 and earlier, the string includes the null field and looks like the following.</span>
+<span class="onelineComment">// {"attributes":{...},"Id":"001D000000Jsm0WIAR","Name":"Acme","Website":null}</span>
+
+<span class="onelineComment">// In v28.0 and later, the string doesn’t include the null field and looks like </span>
+<span class="onelineComment">//  the following.</span>
+<span class="onelineComment">// {"attributes":{...},"Name":"Acme","Id":"001D000000Jsm0WIAR"}}</span>
+</pre></div>
+</li>
+
+                <li class="li">
+<strong class="ph b">Serialization of IDs</strong>: In API version 34.0 and earlier, ID comparison using <samp class="codeph apex_code">==</samp> fails for IDs that have been through
+                        roundtrip JSON serialization and deserialization.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">JSON Deserialization Considerations</h2>
+
+            
+            <p class="p">JSON from aggregate results can’t be deserialized back into Apex AggregateResult
+                objects because they have no named fields.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm" target="_blank" title="Apex Reference Guide: JSON Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: JSON Class</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,77 @@
+<a name="apex_json_jsongenerator"><!-- --></a><h1 class="helpHead1">JSON Generator</h1><div class="body conbody">
+<div class="shortdesc">Using the <samp class="codeph apex_code">JSONGenerator</samp> class methods, you can generate standard JSON-encoded content.</div>
+
+<p class="p">You can construct JSON content, element by element, using the standard
+JSON encoding. To do so, use the methods in the <samp class="codeph apex_code">JSONGenerator</samp> class.</p>
+
+<div class="section">
+<h2 class="helpHead2">JSONGenerator Sample</h2>
+<p class="p">This example generates
+a JSON string in pretty print format by using the methods of the <samp class="codeph apex_code">JSONGenerator</samp> class. The example first
+adds a number field and a string field, and then adds a field to contain
+an object field of a list of integers, which gets deserialized properly.
+Next, it adds the <samp class="codeph apex_code">A</samp> object
+into the <samp class="codeph apex_code"><span class="keyword">Object</span> A</samp> field, which
+also gets deserialized.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> JSONGeneratorSample{
+
+    <span class="keyword">public</span> <span class="keyword">class</span> A { 
+        <span class="keyword">String</span> str;
+        
+        <span class="keyword">public</span> A(<span class="keyword">String</span> s) { str = s; }
+    }
+
+    <span class="keyword">static</span> <span class="keyword">void</span> generateJSONContent() {
+        <span class="onelineComment">// Create a JSONGenerator object.</span>
+        <span class="onelineComment">// Pass true to the constructor for pretty print formatting.</span>
+        JSONGenerator gen = JSON.createGenerator(<span class="keyword">true</span>);
+        
+        <span class="onelineComment">// Create a list of integers to write to the JSON string.</span>
+        List&lt;integer&gt; intlist = <span class="keyword">new</span> List&lt;integer&gt;();
+        intlist.add(1);
+        intlist.add(2);
+        intlist.add(3);
+        
+        <span class="onelineComment">// Create an object to write to the JSON string.</span>
+        A x = <span class="keyword">new</span> A(<span class="string">'X'</span>);
+        
+        <span class="onelineComment">// Write data to the JSON string.</span>
+        gen.writeStartObject();
+        gen.writeNumberField(<span class="string">'abc'</span>, 1.21);
+        gen.writeStringField(<span class="string">'def'</span>, <span class="string">'xyz'</span>);
+        gen.writeFieldName(<span class="string">'ghi'</span>);
+        gen.writeStartObject();
+        
+        gen.writeObjectField(<span class="string">'aaa'</span>, intlist);
+        
+        gen.writeEndObject();
+        
+        gen.writeFieldName(<span class="string">'Object A'</span>);
+        
+        gen.writeObject(x);
+        
+        gen.writeEndObject();
+        
+        <span class="onelineComment">// Get the JSON string.</span>
+        <span class="keyword">String</span> pretty = gen.getAsString();
+        
+        System.assertEquals(<span class="string">'{\n'</span> +
+        <span class="string">'  "abc" : 1.21,\n'</span> +
+        <span class="string">'  "def" : "xyz",\n'</span> +
+        <span class="string">'  "ghi" : {\n'</span> +
+        <span class="string">'    "aaa" : [ 1, 2, 3 ]\n'</span> +
+        <span class="string">'  },\n'</span> +
+        <span class="string">'  "Object A" : {\n'</span> +
+        <span class="string">'    "str" : "X"\n'</span> +
+        <span class="string">'  }\n'</span> +
+        <span class="string">'}'</span>, pretty);
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_JsonGenerator.htm" target="_blank" title="Apex Reference Guide: JSONGenerator Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: JSONGenerator Class</a></div></li></ul>
+</div>
+</div>

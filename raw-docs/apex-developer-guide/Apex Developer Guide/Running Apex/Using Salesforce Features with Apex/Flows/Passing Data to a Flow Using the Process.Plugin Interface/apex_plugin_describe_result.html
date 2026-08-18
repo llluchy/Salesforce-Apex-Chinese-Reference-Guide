@@ -1,0 +1,174 @@
+<a name="apex_plugin_describe_result"><!-- --></a><h1 class="helpHead1">Using the <span class="titlecodeph">Process.PluginDescribeResult</span>
+        Class</h1><div class="body refbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">Process.Plugin</samp> interface <samp class="codeph apex_code">describe</samp> method to dynamically provide both input and
+        output parameters for the flow. This method returns the <samp class="codeph apex_code">Process.PluginDescribeResult</samp> class.</div>
+
+        <div class="section">
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>We recommend using the <samp class="codeph apex_code">@InvocableMethod</samp> annotation instead of the <samp class="codeph apex_code">Process.Plugin</samp> interface.<ul class="ul bulletList">
+          <li class="li">The interface doesn’t support Blob, Collection, and sObject, data types, and it
+            doesn’t support bulk operations. After you implement the interface on a class, the class
+            can be referenced only from flows.</li>
+
+          <li class="li"> The annotation supports all data types and bulk operations. After you implement the
+            annotation on a class, the class can be referenced from flows, processes, and the Custom
+            Invocable Actions REST API endpoint.</li>
+
+          <li class="li">Legacy Apex actions aren’t supported in auto-layout in Flow Builder. Legacy Apex
+            actions are only available to be added in free-form in Flow Builder. Existing actions
+            can be edited in both auto-layout and free-form mode.</li>
+
+          <li class="li">You can customize how invocable actions created with <samp class="codeph apex_code">@InvocableMethod</samp> appear in Flow Builder by using the
+            InvocableActionExtension metadata file. Control parameter order, add picklists, create
+            custom headers, and build partial custom property editors.</li>
+
+        </ul>
+</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">The <samp class="codeph apex_code">Process.PluginDescribeResult</samp> class doesn’t
+                support the following functions.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Queries</li>
+
+                <li class="li">Data modification</li>
+
+                <li class="li">Email</li>
+
+                <li class="li">Apex nested callouts</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">
+<span class="titlecodeph">Process.PluginDescribeResult</span> Class and
+                Subclass Properties</h2>
+
+            
+            <div class="p">Here’s the constructor for the <samp class="codeph apex_code">Process.PluginDescribeResult</samp>
+                class.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult <var class="keyword varname">classname</var> = <span class="keyword">new</span> Process.PluginDescribeResult(); </pre></div>
+</div>
+
+            <ul class="ul bulletList">
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginDescribeResult.htm" target="_blank">PluginDescribeResult Class
+                    Properties</a></li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginDescribeResult_InputParameter.htm" target="_blank">PluginDescribeResult.InputParameter Class
+                        Properties</a></li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginDescribeResult_OutputParameter.htm" target="_blank">PluginDescribeResult.OutputParameter Class
+                        Properties</a></li>
+
+            </ul>
+
+            <div class="p">Here’s the constructor for the <samp class="codeph apex_code">Process.PluginDescribeResult.InputParameter</samp>
+                class.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult.InputParameter <var class="keyword varname">ip</var> = <span class="keyword">new</span> 
+    Process.PluginDescribeResult.InputParameter(<var class="keyword varname">Name</var>,<var class="keyword varname">Optional_description_string</var>, 
+      Process.PluginDescribeResult.ParameterType.<var class="keyword varname">Enum</var>, <var class="keyword varname">Boolean_required</var>);</pre></div>
+</div>
+
+            <div class="p">Here’s the constructor for the <samp class="codeph apex_code">Process.PluginDescribeResult.OutputParameter</samp>
+                class.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult.OutputParameter <var class="keyword varname">op</var> = <span class="keyword">new</span> 
+    <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(<var class="keyword varname">Name</var>,<var class="keyword varname">Optional description string</var>, 
+       Process.PluginDescribeResult.ParameterType.<var class="keyword varname">Enum</var>);</pre></div>
+</div>
+
+        <p class="p">To use the <samp class="codeph apex_code">Process.PluginDescribeResult</samp> class,
+            create instances of these subclasses.</p>
+
+        <ul class="ul bulletList">
+            <li class="li"><samp class="codeph apex_code">Process.PluginDescribeResult.InputParameter</samp></li>
+
+            <li class="li"><samp class="codeph apex_code">Process.PluginDescribeResult.OutputParameter</samp></li>
+
+        </ul>
+
+        
+        
+        <div class="p">
+<samp class="codeph apex_code">Process.PluginDescribeResult.InputParameter</samp> is a
+            list of input parameters and has the following
+            format.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult.inputParameters = 
+      <span class="keyword">new</span> List&lt;Process.PluginDescribeResult.InputParameter&gt;{ 
+         <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(<var class="keyword varname">Name</var>,<var class="keyword varname">Optional_description_string</var>, 
+      Process.PluginDescribeResult.ParameterType.<var class="keyword varname">Enum</var>, <var class="keyword varname">Boolean_required</var>)</pre></div>
+</div>
+
+        <div class="p">For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult result = <span class="keyword">new</span> Process.PluginDescribeResult(); 
+result.setDescription(<span class="string">'this plugin gets the name of a user'</span>);
+result.setTag (<span class="string">'userinfo'</span>);<strong class="ph b">
+result.inputParameters = new List&lt;Process.PluginDescribeResult.InputParameter&gt;{ 
+    new Process.PluginDescribeResult.InputParameter('FullName', 
+       Process.PluginDescribeResult.ParameterType.STRING, true),
+    new Process.PluginDescribeResult.InputParameter('DOB', 
+       Process.PluginDescribeResult.ParameterType.DATE, true),
+    }; </strong></pre></div>
+</div>
+
+        <div class="p">
+<samp class="codeph apex_code">Process.PluginDescribeResult.OutputParameter</samp> is a
+            list of output parameters and has the following
+            format.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult.outputParameters = <span class="keyword">new</span> List&lt;Process.PluginDescribeResult.OutputParameter&gt;{ 
+    <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(<var class="keyword varname">Name</var>,<var class="keyword varname">Optional description string</var>, 
+       Process.PluginDescribeResult.ParameterType.<var class="keyword varname">Enum</var>)</pre></div>
+</div>
+
+        <div class="p">For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult result = <span class="keyword">new</span> Process.PluginDescribeResult(); 
+result.setDescription(<span class="string">'this plugin gets the name of a user'</span>);
+result.setTag (<span class="string">'userinfo'</span>);<strong class="ph b">
+result.outputParameters = new List&lt;Process.PluginDescribeResult.OutputParameter&gt;{
+    new Process.PluginDescribeResult.OutputParameter('URL', 
+        Process.PluginDescribeResult.ParameterType.STRING),</strong>
+</pre></div>
+</div>
+
+        <p class="p">Both classes take the <samp class="codeph apex_code">Process.PluginDescribeResult.ParameterType</samp> Enum. Valid values are:</p>
+
+        <ul class="ul bulletList">
+                <li class="li">BOOLEAN</li>
+
+                <li class="li">DATE</li>
+
+                <li class="li">DATETIME</li>
+
+                <li class="li">DECIMAL</li>
+
+                <li class="li">DOUBLE</li>
+
+                <li class="li">FLOAT</li>
+
+                <li class="li">ID</li>
+
+                <li class="li">INTEGER</li>
+
+                <li class="li">LONG</li>
+
+                <li class="li">STRING</li>
+
+                <li class="li">TIME</li>
+
+            </ul>
+
+        
+        
+        <div class="p">For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Process.PluginDescribeResult result = <span class="keyword">new</span> Process.PluginDescribeResult(); 
+        result.outputParameters = <span class="keyword">new</span> List&lt;Process.PluginDescribeResult.OutputParameter&gt;{
+            <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(<span class="string">'URL'</span>, 
+            Process.PluginDescribeResult.ParameterType.STRING, <span class="keyword">true</span>),
+            <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(<span class="string">'STATUS'</span>, 
+            Process.PluginDescribeResult.ParameterType.<strong class="ph b">STRING</strong>),
+            }; </pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

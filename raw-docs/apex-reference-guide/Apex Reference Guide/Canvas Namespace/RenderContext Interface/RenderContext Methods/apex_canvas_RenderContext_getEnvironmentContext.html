@@ -1,0 +1,61 @@
+<a name="apex_canvas_RenderContext_getEnvironmentContext"><!-- --></a><h1 class="helpHead1">getEnvironmentContext()</h1><div class="body refbody">
+<div class="shortdesc">Retrieves the environment context information.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Canvas.EnvironmentContext
+                    getEnvironmentContext()</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_canvas_EnvironmentContext.htm" title="Use this interface to retrieve environment context information, such as the app display location or the configuration parameters.">Canvas.EnvironmentContext</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Use this method to get the environment context information for your canvas app.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following example implementation of the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_canvas_CanvasLifecycleHandler.htm" title="Implement this interface to control context information and add custom behavior during the application render phase.">CanvasLifecycleHandler</a>
+                onRender() method uses the provided RenderContext to retrieve the environment
+                context information and then modifies the custom parameters.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> onRender(Canvas.RenderContext renderContext) {
+   Canvas.EnvironmentContext env = 
+        renderContext.getEnvironmentContext();
+        
+    <span class="onelineComment">// Retrieve the custom params</span>
+    Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; previousParams = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)
+          JSON.deserializeUntyped(env.getParametersAsJSON());
+
+    previousParams.put(<span class="string">'param1'</span>,1);
+    previousParams.put(<span class="string">'param2'</span>,3.14159);
+
+    ...
+
+    <span class="onelineComment">// Now, add in some opportunity record IDs</span>
+    Opportunity[] o = [select id, name from opportunity];
+    previousParams.put(<span class="string">'opportunities'</span>,o);
+
+    <span class="onelineComment">// Now, replace the parameters</span>
+    env.setParametersAsJSON(JSON.serialize(previousParams));
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

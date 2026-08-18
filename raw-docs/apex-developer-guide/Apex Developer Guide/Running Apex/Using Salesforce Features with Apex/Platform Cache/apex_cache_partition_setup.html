@@ -1,0 +1,87 @@
+<a name="apex_cache_partition_setup"><!-- --></a><h1 class="helpHead1">Platform Cache Partitions</h1><div class="body conbody">
+<div class="shortdesc">Use Platform Cache partitions to improve the performance of your applications.
+    Partitions allow you to distribute cache space in the way that works best for your applications.
+    Caching data to designated partitions ensures that it’s not overwritten by other applications or
+    less-critical data.</div>
+
+    <p class="p">To use Platform Cache, first set up partitions using the Platform Cache Partition tool in
+      Setup. Once you’ve set up partitions, you can add, access, and remove data from them using the
+      Platform Cache Apex API.</p>
+
+    <p class="p">To access the Partition tool in Setup, enter <kbd class="ph userinput">Platform Cache</kbd> in the
+        <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">Platform Cache</strong>.</p>
+
+    <div class="p">Use the Partition tool to: <ul class="ul bulletList">
+        <li class="li">Setup a Platform Cache partition with Provider Free capacity.</li>
+
+        <li class="li">Request trial cache.</li>
+
+        <li class="li">Create, edit, or delete cache partitions.</li>
+
+        <li class="li">Allocate the session cache and org cache capacities of each partition to balance
+          performance across apps.</li>
+
+        <li class="li">View a snapshot of the org’s current cache capacity, breakdown, and partition
+          allocations (in KB or MB).</li>
+
+        <li class="li">View details about each partition.</li>
+
+        <li class="li">Make any partition the default partition.</li>
+
+      </ul>
+</div>
+
+    <p class="p">To use Platform Cache, create at least one partition. Each partition has one session cache
+      and one org cache segment and you can allocate separate capacity to each segment. Session
+      cache can be used to store data for individual user sessions, and org cache is for data that
+      any users in an org can access. You can distribute your org’s cache space across any number of
+      partitions. Session and org cache allocations can be zero, or five or greater, and they must
+      be whole numbers. The sum of all partition allocations, including the default partition,
+      equals the Platform Cache total allocation. The total allocated capacity of all cache segments
+      must be less than or equal to the org’s overall capacity.</p>
+
+    <p class="p">You can define any partition as the default partition, but you can have only one default
+      partition. When a partition has no allocation, cache operations (such as get and put) are not
+      invoked, and no error is returned.</p>
+
+    <p class="p">When performing cache operations within the default partition, you can omit the partition
+      name from the key.</p>
+
+    <p class="p">After you set up partitions, you can use Apex code to perform cache operations on a
+      partition. For example, use the <samp class="codeph apex_code">Cache.SessionPartition</samp>
+      and <samp class="codeph apex_code">Cache.OrgPartition</samp> classes to put, retrieve, or
+      remove values on a specific partition’s cache. Use <samp class="codeph apex_code">Cache.Session</samp> and <samp class="codeph apex_code">Cache.Org</samp> to get a
+      partition or perform cache operations by using a fully qualified key.</p>
+
+    <div class="section">
+<h2 class="helpHead2">Packaging Platform Cache Partitions</h2>
+
+      
+      <div class="p">When packaging an application that uses Platform Cache, add any referenced partitions to
+        your packages explicitly. Partitions aren’t pulled into packages automatically, as other
+        dependencies are. Partition validation occurs during run time, rather than compile time.
+        Therefore, if a partition is missing from a package, you don’t receive an error message at
+        compile time.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If platform cache code is intended for a package, don’t use the default
+          partition in the package. Instead, explicitly reference and package a non-default
+          partition. Any package containing the default partition can’t be deployed.</p>
+</div>
+</div></div></div></div>
+</div>
+
+      
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_cache_Partition.htm" target="_blank" title="Apex Reference Guide: Partition Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Partition Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_cache_OrgPartition.htm" target="_blank" title="Apex Reference Guide: OrgPartition Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: OrgPartition Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_cache_SessionPartition.htm" target="_blank" title="Apex Reference Guide: SessionPartition Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: SessionPartition Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_platformcachepartition.htm" target="_blank" title="Metadata API Developer’s Guide: Platform Cache Partition Type - HTML (New Window)">Metadata API Developer’s Guide: Platform Cache Partition Type</a></div></li>
+</ul>
+</div>
+</div>

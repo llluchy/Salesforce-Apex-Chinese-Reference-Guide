@@ -1,0 +1,177 @@
+<a name="apex_class_Auth_ExternalClientAppOauthHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ExternalClientAppOauthHandler Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods for extending the behavior of an external client app. For example,
+    customize how an external client app is invoked depending on the protocol used. This class gives
+    you more control over the interaction between Salesforce and your external client
+    app.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">When you create an external client app, you specify general information about the app and
+        settings for OAuth. To customize how the app is invoked, create a external client app
+        handler with the <samp class="codeph ">ExternalClientAppOauthHandler</samp> Apex
+        class. For example, use this class to support new authentication protocols or respond to
+        user attributes in a way that benefits the business process.</p>
+
+      <p class="p">When you create an external client app handler, you also configure the
+          <samp class="codeph ">ExternalClientAppOauthHandler</samp> class to run as an execution
+        user. The execution user authorizes access for the external client app. For example, when
+        you use the authorize method, the execution user authorizes the external client app to
+        access data.</p>
+
+      <p class="p">If you don't specify an execution user, the plug-in runs as an Automated Process User,
+        which is a system user that executes tasks behind the scenes. Most <samp class="codeph nolang">ExternalClientAppOauthHandler</samp> methods require that you
+        specify an execution user, with the exception of the <samp class="codeph ">customAttributes</samp> method.</p>
+
+    </div>
+
+    
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ExternalClientAppOauthHandler.htm#apex_Auth_ExternalClientAppOauthHandler_methods">ExternalClientAppOauthHandler Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_ExternalClientAppOauthHandler_methods">
+<a name="apex_Auth_ExternalClientAppOauthHandler_methods"><!-- --></a><h2 class="helpHead2">ExternalClientAppOauthHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">ExternalClientAppOauthHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ExternalClientAppOauthHandler.htm#apex_Auth_ExternalClientAppOauthHandler_authorize">authorize(userId, ecAppId, isAdminApproved, context)</a></strong><br>
+Authorizes the specified user to access the external client app. If the external client     app is set for users to self-authorize, this method isn’t invoked.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ExternalClientAppOauthHandler.htm#apex_Auth_ExternalClientAppOauthHandler_customAttributes">customAttributes(userId, ecAppId, formulaDefinedAttributes, context)</a></strong><br>
+Sets new attributes for the specified user. When the external client app gets the user’s     attributes from the UserInfo endpoint, use this method to update the attribute     values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ExternalClientAppOauthHandler.htm#apex_Auth_ExternalClientAppOauthHandler_refresh">refresh(userId, ecAppId, context)</a></strong><br>
+Salesforce calls this method during a refresh token exchange.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ExternalClientAppOauthHandler_authorize">
+<a name="apex_Auth_ExternalClientAppOauthHandler_authorize"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">authorize(userId, ecAppId, isAdminApproved, context)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Authorizes the specified user to access the external client app. If the external client
+    app is set for users to self-authorize, this method isn’t invoked.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean authorize(Id userId, Id ecAppId, Boolean isAdminApproved, Auth.InvocationContext context)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ecAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">isAdminApproved</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The approval state of the specified user when the external client app requires approval.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_InvocationContext.htm" title="The context in which the connected app is invoked, such as the protocol flow used and the token type issued, if any. Developers can use the context information to write code that is unique to the type of invocation.">Auth.InvocationContext</a></p>
+<p class="p">The context in which the external client app is invoked.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p"> A returned value of <samp class="codeph ">true</samp> indicates that the user is
+        approved.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ExternalClientAppOauthHandler_customAttributes">
+<a name="apex_Auth_ExternalClientAppOauthHandler_customAttributes"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">customAttributes(userId, ecAppId, formulaDefinedAttributes, context)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets new attributes for the specified user. When the external client app gets the user’s
+    attributes from the UserInfo endpoint, use this method to update the attribute
+    values.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Map&lt;String,String&gt; customAttributes(Id userId, Id ecAppId, Map&lt;String,String&gt; formulaDefinedAttributes, Auth.InvocationContext context)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ecAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID for the external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">formulaDefinedAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A map of the current set of attributes from the UserInfo endpoint (OAuth) or from a SAML
+            assertion. For more information, see The UserInfo Endpoint in the online help.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: Auth.InvocationContext</p>
+<p class="p">The context in which the external client app is invoked.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A map of the updated set of attributes.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ExternalClientAppOauthHandler_refresh">
+<a name="apex_Auth_ExternalClientAppOauthHandler_refresh"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">refresh(userId, ecAppId, context)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Salesforce calls this method during a refresh token exchange.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void refresh(Id userId, Id ecAppId, Auth.InvocationContext context)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user requesting the refresh token.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ecAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the external client app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: Auth.InvocationContext</p>
+<p class="p">The context in which the external client app is invoked.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

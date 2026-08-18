@@ -1,0 +1,476 @@
+<a name="apex_ConnectAPI_Chatter_static_methods"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Chatter Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Access information about followers and subscriptions for
+records.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_methods">
+<a name="apex_ConnectAPI_Chatter_methods"><!-- --></a>
+ <h2 class="helpHead2">Chatter Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These methods are for <samp class="codeph apex_code">Chatter</samp>. All methods are
+  static.</div>
+
+  <div class="section">
+   <p class="p" id="ChatterRateLimit"><a name="ChatterRateLimit"><!-- --></a>All methods in this class require Chatter and are subject to the per
+    user, per namespace, per hour rate limit.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Chatter_static_methods.htm#apex_ConnectAPI_Chatter_deleteSubscription">deleteSubscription(communityId, subscriptionId)</a></strong><br>
+Delete a subscription. Use this method to stop following a record, a user, or a     file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Chatter_static_methods.htm#apex_ConnectAPI_Chatter_getFollowers">getFollowers(communityId, recordId)</a></strong><br>
+Get the first page of followers for a record.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Chatter_static_methods.htm#apex_ConnectAPI_Chatter_getFollowers_2">getFollowers(communityId, recordId, pageParam, pageSize)</a></strong><br>
+Get a page of followers for a record. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Chatter_static_methods.htm#apex_ConnectAPI_Chatter_getSubscription">getSubscription(communityId, subscriptionId)</a></strong><br>
+Get information about a subscription.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Chatter_static_methods.htm#apex_ConnectAPI_Chatter_submitDigestJob_1">submitDigestJob(period)</a></strong><br>
+Submit a daily or weekly Chatter email digest job.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_deleteSubscription">
+<a name="apex_ConnectAPI_Chatter_deleteSubscription"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">deleteSubscription(communityId,
+    subscriptionId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Delete a subscription. Use this method to stop following a record, a user, or a
+    file.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">28.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> deleteSubscription(<span class="keyword">String</span> communityId,
+          <span class="keyword">String</span> subscriptionId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">subscriptionId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID for a subscription.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">“Following” a user, group, or record is the same as “subscribing” to a user, group, or record. A “follower” is the user who followed the user, group, or record. A “subscription” is an object describing the relationship between the follower and the user, group, or record they followed.<p class="p">To leave
+        a group, call <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterGroups_static_methods.htm#apex_ConnectAPI_ChatterGroups_deleteMember" title="Remove a member from a group."><samp class="codeph apex_code">deleteMember(communityId, membershipId)</samp></a>.</p>
+</div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">When you follow a user, the call to <samp class="codeph apex_code">ConnectApi.ChatterUsers.follow</samp> returns a <samp class="codeph apex_code">ConnectApi.Subscription</samp> object. To stop following the user, pass the <samp class="codeph apex_code">id</samp> property of that object to this method.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="deleteSubscriptionEx"><a name="deleteSubscriptionEx"><!-- --></a>ConnectApi.Chatter.deleteSubscription(<span class="keyword">null</span>, <span class="string">'0E8RR0000004CnK0AU'</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_follow_record.htm" target="_blank" title="Follow a Record - HTML (New Window)">Follow a Record</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ChatterUsers_static_methods.htm#apex_ConnectAPI_ChatterUsers_follow" title="Follow a user or record.">follow(communityId, userId, subjectId)</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_getFollowers">
+<a name="apex_ConnectAPI_Chatter_getFollowers"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getFollowers(communityId, recordId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get the first page of followers for a record.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">28.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.FollowerPage getFollowers(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> recordId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or the keyword <samp class="codeph apex_code">me</samp>.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_Follower_Page.htm" title="Page of followers.">ConnectApi.​FollowerPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">“Following” a user, group, or record is the same as “subscribing” to a user, group, or record. A “follower” is the user who followed the user, group, or record. A “subscription” is an object describing the relationship between the follower and the user, group, or record they followed.</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_follow_record.htm" target="_blank" title="Follow a Record - HTML (New Window)">Follow a Record</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_getFollowers_2">
+<a name="apex_ConnectAPI_Chatter_getFollowers_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getFollowers(communityId, recordId, pageParam,
+                  pageSize)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a page of followers for a record. </div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">28.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.FollowerPage getFollowers(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> recordId, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or the keyword <samp class="codeph apex_code">me</samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageParam</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageSize</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_Follower_Page.htm" title="Page of followers.">ConnectApi.​FollowerPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">“Following” a user, group, or record is the same as “subscribing” to a user, group, or record. A “follower” is the user who followed the user, group, or record. A “subscription” is an object describing the relationship between the follower and the user, group, or record they followed.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_follow_record.htm" target="_blank" title="Follow a Record - HTML (New Window)">Follow a Record</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_getSubscription">
+<a name="apex_ConnectAPI_Chatter_getSubscription"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getSubscription(communityId, subscriptionId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get information about a subscription.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">28.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Subscription getSubscription(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> subscriptionId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">subscriptionId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">The ID for a subscription.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_subscription.htm" title="Subscription.">ConnectApi.​Subscription</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">“Following” a user, group, or record is the same as “subscribing” to a user, group, or record. A “follower” is the user who followed the user, group, or record. A “subscription” is an object describing the relationship between the follower and the user, group, or record they followed.</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectapi_examples_follow_record.htm" target="_blank" title="Follow a Record - HTML (New Window)">Follow a Record</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Chatter_submitDigestJob_1">
+<a name="apex_ConnectAPI_Chatter_submitDigestJob_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">submitDigestJob(period)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Submit a daily or weekly Chatter email digest job.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">37.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.DigestJobRepresentation
+          submitDigestJob(ConnectApi.DigestPeriod period)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <p class="p"><strong class="ph b"><var class="keyword varname">period</var></strong></p>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#DigestFrequencyEnum"><samp class="codeph apex_code">ConnectApi.DigestPeriod</samp></a></p>
+
+      <p class="p">Time period that’s included in a Chatter email digest.
+            Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">DailyDigest</samp>—The email includes up to the 50 latest posts from the previous day.</li>
+ <li class="li">
+<samp class="codeph apex_code">WeeklyDigest</samp>—The email includes up to the 50 latest posts from the previous week.</li>
+</ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_digest_job.htm#apex_connectapi_output_digest_job" title="Represents a successfully enqueued API digest job request."><samp class="codeph apex_code">ConnectApi.DigestJob</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The times when Chatter sends email digests are not configurable in
+      the UI. To control when email digests are sent and to use this method, contact Salesforce to
+      enable API-only Chatter Digests.<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexref" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Enabling API-only Chatter Digests
+        disables the scheduled digests for your org. You must call the API for your users to receive
+        their digests.</p>
+</div>
+</div></div></div></div>
+<p class="p">We recommend scheduling digest jobs by implementing the Apex <samp class="codeph apex_code">Schedulable</samp> interface with this method. To monitor your
+        digest jobs from Setup, enter <kbd class="ph userinput">Background Jobs</kbd> in the <span class="keyword parmname">Quick
+          Find</span> box, then select <strong class="ph uicontrol">Background Jobs</strong>.</p>
+</div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="p">Schedule daily
+        digests:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ExampleDigestJob1 <span class="keyword">implements</span> Schedulable {
+   <span class="keyword">global</span> <span class="keyword">void</span> execute(SchedulableContext context) {
+      ConnectApi.Chatter.submitDigestJob(ConnectApi.DigestPeriod.DailyDigest);
+   }
+}</pre></div>
+</div>
+
+      <div class="p">Schedule weekly
+        digests:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ExampleDigestJob2 <span class="keyword">implements</span> Schedulable {
+   <span class="keyword">global</span> <span class="keyword">void</span> execute(SchedulableContext context) {
+      ConnectApi.Chatter.submitDigestJob(ConnectApi.DigestPeriod.WeeklyDigest);
+   }
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_scheduler.htm" target="_blank" title="Apex Scheduler - HTML (New Window)">Apex Scheduler</a></div></li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>

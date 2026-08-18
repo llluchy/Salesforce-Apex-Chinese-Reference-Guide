@@ -1,0 +1,296 @@
+<a name="apex_shopping_cart_example_walkthru"><!-- --></a><h1 class="helpHead1">Shipping Invoice Example Walk-Through</h1><div class="body">
+  <p class="p">The sample application in this section includes traditional Salesforce functionality blended
+   with Apex. Many of the syntactic and semantic features of Apex, along with common idioms, are
+   illustrated in this application. </p>
+
+  <div class="box message info" id="HelloCodeSamples">
+<a name="HelloCodeSamples"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The Shipping Invoice sample requires custom objects. You can either
+   create these on your own, or download the objects and Apex code as an unmanaged package from the
+   Salesforce AppExchange. To obtain the sample assets in your org, install the <a class="xref" href="https://appexchange.salesforce.com/listingDetail?listingId=a0N30000001saDCEAY" target="_blank" title="html (New Window)">Apex Tutorials Package</a>. This package also
+   contains sample code and objects for the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_qs_HelloWorld.htm" target="_blank">Apex Quick Start</a>.</p>
+</div>
+</div></div></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"><span class="ph">Scenario</span></h2>
+<div class="p">
+<p class="p">In this sample application, the user
+    creates a new shipping invoice, or order, and then adds items to the invoice. The total amount
+    for the order, including shipping cost, is automatically calculated and updated based on the
+    items added or deleted from the invoice. </p>
+</div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2"><span class="ph" id="sc_example_data_model"><a name="sc_example_data_model"><!-- --></a>Data and Code Models</span></h2>
+<div class="p">
+<p class="p">This sample application uses two new
+    objects: Item and Shipping_invoice. </p>
+<div class="p">The following assumptions are made:<ul class="ul bulletList">
+     <li class="li">Item A cannot be in both orders shipping_invoice1 and shipping_invoice2. Two customers
+      cannot obtain the same (physical) product. </li>
+
+     <li class="li">The tax rate is 9.25%. </li>
+
+     <li class="li">The shipping rate is 75 cents per pound.</li>
+
+     <li class="li">Once an order is over $100, the shipping discount is applied (shipping becomes free).</li>
+
+    </ul>
+</div>
+<p class="p">The fields in the Item custom object include:</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader vertical-align-top " id="d2051e95">Name</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e98">Type</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e101">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d2051e95" data-title="Name">Name</td>
+
+       <td class="entry" headers="d2051e98" data-title="Type">String</td>
+
+       <td class="entry" headers="d2051e101" data-title="Description">The name of the item </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e95" data-title="Name">Price</td>
+
+       <td class="entry" headers="d2051e98" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e101" data-title="Description">The price of the item</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e95" data-title="Name">Quantity</td>
+
+       <td class="entry" headers="d2051e98" data-title="Type">Number</td>
+
+       <td class="entry" headers="d2051e101" data-title="Description">The number of items in the order</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e95" data-title="Name">Weight</td>
+
+       <td class="entry" headers="d2051e98" data-title="Type">Number</td>
+
+       <td class="entry" headers="d2051e101" data-title="Description">The weight of the item, used to calculate shipping costs</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e95" data-title="Name">Shipping_invoice</td>
+
+       <td class="entry" headers="d2051e98" data-title="Type">Master-Detail (shipping_invoice)</td>
+
+       <td class="entry" headers="d2051e101" data-title="Description">The order this item is associated with</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+<p class="p">The fields in the Shipping_invoice custom object include:</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader vertical-align-top " id="d2051e186">Name</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e189">Type</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e192">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">Name</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">String</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The name of the shipping invoice/order</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">Subtotal</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The subtotal</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">GrandTotal</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The total amount, including tax and shipping</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">Shipping</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The amount charged for shipping (assumes $0.75 per pound)</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">ShippingDiscount</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">Only applied once when subtotal amount reaches $100</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">Tax</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Currency</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The amount of tax (assumes 9.25%)</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e186" data-title="Name">TotalWeight</td>
+
+       <td class="entry" headers="d2051e189" data-title="Type">Number</td>
+
+       <td class="entry" headers="d2051e192" data-title="Description">The total weight of all items</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+<p class="p">All of the Apex for this application is contained in triggers. This application has
+    the following triggers:</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+     
+     
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader vertical-align-top " id="d2051e304">Object</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e307">Trigger Name</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e310">When Runs</th>
+
+       <th class="featureTableHeader vertical-align-top " id="d2051e313">Description</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d2051e304" data-title="Object">Item</td>
+
+       <td class="entry" headers="d2051e307" data-title="Trigger Name">Calculate</td>
+
+       <td class="entry" headers="d2051e310" data-title="When Runs">after insert, after update, after delete</td>
+
+       <td class="entry" headers="d2051e313" data-title="Description">Updates the shipping invoice, calculates the totals and shipping</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d2051e304" data-title="Object">Shipping_invoice</td>
+
+       <td class="entry" headers="d2051e307" data-title="Trigger Name">ShippingDiscount</td>
+
+       <td class="entry" headers="d2051e310" data-title="When Runs">after update</td>
+
+       <td class="entry" headers="d2051e313" data-title="Description">Updates the shipping invoice, calculating if there is a shipping discount</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+<div class="p">The following is the general flow of user actions and when triggers run:<div class="fig fignone">
+<span class="figcap">Flow of user action and triggers for the shopping cart application </span>
+     
+     <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fshopping_cart_app_flow.png&folder=apexcode" alt="Flow of user action and triggers for shopping cart application"></span>
+    </div>
+</div>
+<ol class="ol enumList">
+    <li class="li">User clicks <span class="ph menucascade"><strong class="ph uicontrol">Orders</strong> | <strong class="ph uicontrol">New</strong></span>, names the shipping invoice and clicks <strong class="ph uicontrol">Save</strong>.</li>
+
+    <li class="li">User clicks <span class="ph menucascade"><strong class="ph uicontrol">New Item</strong></span>, fills out information, and clicks <strong class="ph uicontrol">Save</strong>.</li>
+
+    <li class="li">Calculate trigger runs. Part of the Calculate trigger updates the shipping invoice.</li>
+
+    <li class="li">ShippingDiscount trigger runs.</li>
+
+    <li class="li">User can then add, delete or change items in the invoice. </li>
+
+   </ol>
+<p class="p">In <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_shopping_cart_example_code.htm">Shipping Invoice Example Code</a> both of the triggers and the
+    test class are listed. The comments in the code explain the functionality. </p>
+</div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Testing the Shipping Invoice Application</h2>
+
+   
+   <p class="p">Before an application can be included as part of a package, 75% of the code must be covered by
+    unit tests. Therefore, one piece of the shipping invoice application is a class used for testing
+    the triggers. </p>
+
+   <div class="p">The test class verifies the following actions are completed successfully:<ul class="ul bulletList">
+     <li class="li">Inserting items </li>
+
+     <li class="li">Updating items </li>
+
+     <li class="li">Deleting items</li>
+
+     <li class="li">Applying shipping discount</li>
+
+     <li class="li">Negative test for bad input</li>
+
+    </ul>
+</div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_shopping_cart_example_code.htm" title="Shipping Invoice Example Code">Next →</a></li>
+</ul></div>
+</div>

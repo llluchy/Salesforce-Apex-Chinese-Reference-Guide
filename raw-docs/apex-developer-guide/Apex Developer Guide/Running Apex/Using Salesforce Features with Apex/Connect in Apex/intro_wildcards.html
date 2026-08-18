@@ -1,0 +1,79 @@
+<a name="intro_wildcards"><!-- --></a><h1 class="helpHead1">Wildcards</h1><div class="body conbody">
+<div class="shortdesc">Use wildcard characters to match text patterns in Connect REST API and Connect in Apex
+    searches.</div>
+
+<div class="p">A common use for wildcards is searching a feed. Pass a search string and wildcards in the <samp class="codeph nolang">q</samp> parameter. This example is a Connect REST API
+      request:<div class="codeSection nolang"><pre class="codeblock brush:plain">/chatter/feed-elements?q=chat*</pre></div>
+</div>
+
+<div class="p">This example is a Connect in Apex method
+      call:<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.ChatterFeeds.searchFeedElements(<span class="keyword">null</span>, <span class="string">'chat*'</span>);</pre></div>
+</div>
+
+    <p class="p">You can specify the following wildcard characters to match text patterns in your search:</p>
+
+    
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+        
+        
+        <thead class="thead sorted" align="left">
+          <tr>
+            <th class="featureTableHeader  " id="d56258e52">Wildcard</th>
+
+            <th class="featureTableHeader  " id="d56258e55">Description</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody class="tbody">
+          <tr>
+            <td class="entry" headers="d56258e52" data-title="Wildcard">*</td>
+
+            <td class="entry" headers="d56258e55" data-title="Description">
+              <p class="p">Asterisks match zero or more characters at the middle or end of your search term.
+                For example, a search for <em class="ph i">john*</em> finds items that start with <em class="ph i">john</em>, such
+                as, <em class="ph i">john</em>, <em class="ph i">johnson</em>, or <em class="ph i">johnny</em>. A search for <em class="ph i">mi* meyers</em>
+                finds items with <em class="ph i">mike meyers</em> or <em class="ph i">michael meyers</em>.</p>
+
+              <p class="p">If you are searching for a literal asterisk in a word or phrase, then escape the
+                asterisk (precede it with the <samp class="codeph soql">\</samp> character).</p>
+
+            </td>
+
+          </tr>
+
+          <tr>
+            <td class="entry" headers="d56258e52" data-title="Wildcard">?</td>
+
+            <td class="entry" headers="d56258e55" data-title="Description">Question marks match only one character in the middle or end of your search term.
+              For example, a search for <em class="ph i">jo?n</em> finds items with the term <em class="ph i">john</em> or
+                <em class="ph i">joan</em> but not <em class="ph i">jon</em> or <em class="ph i">johan</em>. You can't use a ? in a lookup
+              search.</td>
+
+          </tr>
+
+        </tbody>
+
+      </table></div>
+
+    <p class="p">When using wildcards, consider the following notes:</p>
+
+    <ul class="ul bulletList">
+      <li class="li">The more focused your wildcard search, the faster the search results are returned, and the
+        more likely the results will reflect your intention. For example, to search for all
+        occurrences of the word <samp class="codeph nolang">prospect</samp> (or <samp class="codeph nolang">prospects</samp>, the plural form), it is more efficient to specify
+          <samp class="codeph nolang">prospect*</samp> in the search string than to specify a less
+        restrictive wildcard search (such as <samp class="codeph nolang">prosp*</samp>) that could
+        return extraneous matches (such as <samp class="codeph nolang">prosperity</samp>).</li>
+
+      <li class="li">Tailor your searches to find all variations of a word. For example, to find <samp class="codeph nolang">property</samp> and <samp class="codeph nolang">properties</samp>,
+        you would specify <samp class="codeph nolang">propert*</samp>.</li>
+
+      <li class="li">Punctuation is indexed. To find <samp class="codeph soql">*</samp> or <samp class="codeph soql">?</samp> inside a phrase, you must enclose your search string in
+        quotation marks and you must escape the special character. For example, <samp class="codeph soql">"where are you\?"</samp> finds the phrase <samp class="codeph nolang">where are you?</samp>. The escape character (<samp class="codeph soql">\</samp>) is
+        required in order for this search to work correctly.</li>
+
+    </ul>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

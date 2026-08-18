@@ -1,0 +1,994 @@
+<a name="apex_class_Auth_AuthConfiguration"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">AuthConfiguration Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="AuthConfiguration_class_desc"><a name="AuthConfiguration_class_desc"><!-- --></a>Contains methods for configuring settings for
+      users to log in to a Salesforce org using their authentication provider credentials instead of
+      their Salesforce credentials. The authentication provider can be any authentication provider
+      that supports the OpenID Connect protocol, such as Google, Facebook, or Twitter. Users log in
+      to either an Experience Cloud site
+        (<span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.my.site.com</span>) or your My Domain
+      login URL
+      (<span class="ph filepath">https://<var class="keyword varname">MyDomainName</var>.my.salesforce.com</span>).</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This example shows how to call some methods on the <samp class="codeph apex_code">Auth.AuthConfiguration</samp> class. Before you can run this sample, you must provide
+        valid values for the URLs and developer name.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityUrl = <span class="string">'</span><var class="keyword varname">MyDomainName</var>.my.site.com<span class="string">';
+</span><span class="keyword">String</span> startUrl = <span class="string">'&lt;Add URL&gt;'</span>;
+Auth.AuthConfiguration authConfig = <span class="keyword">new</span> Auth.AuthConfiguration(communityUrl,startUrl);
+List&lt;AuthProvider&gt; authPrvs = authConfig.getAuthProviders();
+<span class="keyword">String</span> bColor = authConfig.getBackgroundColor();
+<span class="keyword">String</span> fText = authConfig.getFooterText();
+
+<span class="keyword">String</span> sso = Auth.AuthConfiguration.getAuthProviderSsoUrl(communityUrl, startUrl, <span class="string">'developerName'</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_constructors">
+<a name="apex_Auth_AuthConfiguration_constructors"><!-- --></a>
+ <h2 class="helpHead2">AuthConfiguration Constructors</h2>
+
+ 
+ <div class="body refbody">
+  <div class="section">
+   <div class="p">The following are constructors for <samp class="codeph apex_code">AuthConfiguration</samp>.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph ">AuthConfiguration (networkId,
+      startUrl)</samp> constructor is deprecated in API version 56.0 and later.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  </div>
+
+  
+ </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_ctor">
+<a name="apex_Auth_AuthConfiguration_ctor"><!-- --></a>
+  <h3 class="helpHead3">AuthConfiguration(communityOrCustomUrl, startUrl)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Creates an instance of the <samp class="codeph apex_code">AuthConfiguration</samp>
+    class using the specified URL for an Experience Cloud site or a My Domain subdomain and the
+    start URL for authenticated users.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> AuthConfiguration(<span class="keyword">String</span> communityOrCustomUrl, <span class="keyword">String</span>
+          startUrl)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityOrCustomUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The URL for the domain, which can be a Salesforce subdomain created with My Domain
+              (<span class="ph filepath">my.salesforce.com</span>) or a subdomain of an Experience Cloud site
+              (<span class="ph filepath">force.com</span>).</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The page users see after successfully logging in to the Experience Cloud site or My
+            Domain subdomain.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_methods">
+<a name="apex_Auth_AuthConfiguration_methods"><!-- --></a>
+    <h2 class="helpHead2">AuthConfiguration Methods</h2>
+
+    
+    <div class="body refbody">
+        <div class="section">
+            <p class="p"><span class="ph" id="sessionmanagement_methods_desc"><a name="sessionmanagement_methods_desc"><!-- --></a>The following are methods for <samp class="codeph apex_code">AuthConfiguration</samp>. Use these methods to
+                    manage and customize authentication for a Salesforce
+                    community.</span></p>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAllowInternalUserLoginEnabled">getAllowInternalUserLoginEnabled()</a></strong><br>
+Indicates whether the Experience Cloud site allows internal users to       log in using the Experience Cloud site login page. To enable, admins configure the setting         <strong class="ph uicontrol">Allow internal users to log in directly to the experience</strong> on the       Login &amp; Registration page in Experience Workspaces. It’s disabled by     default.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAuthConfig">getAuthConfig()</a></strong><br>
+Returns the AuthConfig sObject, which represents the          authentication options for an Experience Cloud site or Salesforce My Domain       subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAuthConfigProviders">getAuthConfigProviders()</a></strong><br>
+Returns the list of authentication providers          configured for an Experience Cloud site or Salesforce My Domain subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAuthProviders">getAuthProviders()</a></strong><br>
+Returns the list of authentication providers available          for an Experience Cloud site or Salesforce My Domain subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAuthProviderSsoDomainUrl">getAuthProviderSsoDomainUrl(communityUrl, startUrl, developerName)</a></strong><br>
+Returns the single sign-on URL for an Experience Cloud site       subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getAuthProviderSsoUrl">getAuthProviderSsoUrl(communityUrl, startUrl, developerName)</a></strong><br>
+Returns the single sign-on URL for an Experience             Cloud site or Salesforce My Domain subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getBackgroundColor">getBackgroundColor()</a></strong><br>
+Returns the color for the background of the login page for a community.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getCertificateLoginEnabled">getCertificateLoginEnabled(domainUrl)</a></strong><br>
+Returns true if certificate-based authentication is enabled for the My       Domain URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getCertificateLoginUrl">getCertificateLoginUrl(domainUrl, startUrl)</a></strong><br>
+Returns the certificate-based authentication endpoint for the My       Domain URL if the org has certificate-based authentication enabled.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getDefaultProfileForRegistration">getDefaultProfileForRegistration()</a></strong><br>
+Returns the profile ID assigned to new community   users.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getFooterText">getFooterText()</a></strong><br>
+Returns the text at the bottom of the login page for a community.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getForgotPasswordUrl">getForgotPasswordUrl()</a></strong><br>
+Returns the URL for the standard or custom Forgot Password page that       is specified for an Experience Cloud site or portal by the administrator.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getHeadlessForgotPasswordEnabled">getHeadlessForgotPasswordEnabled()</a></strong><br>
+Returns <samp class="codeph ">true</samp> if the Headless       Forgot Password Flow is enabled.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getHeadlessFrgtPswEnabled">getHeadlessFrgtPswEnabled()</a></strong><br>
+This method will be deprecated in a future release. Use the <samp class="codeph ">getHeadlessForgotPasswordEnabled()</samp> method in this class instead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getHeadlessPasswordlessLoginEnabled">getHeadlessPasswordlessLoginEnabled()</a></strong><br>
+Determines if headless passwordless login is enabled.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getHeadlessRegistrationEnabled">getHeadlessRegistrationEnabled()</a></strong><br>
+Determines if the Headless Registration Flow is enabled.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getLogoUrl">getLogoUrl()</a></strong><br>
+Returns the location of the icon image at the bottom of the login page for a community.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getRightFrameUrl">getRightFrameUrl()</a></strong><br>
+Returns the URL for the right-frame content to display on the right       side of the Experience Cloud site login page. The admin supplies the URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getSamlProviders">getSamlProviders()</a></strong><br>
+Returns the list of SAML-based authentication providers          available for an Experience Cloud site or Salesforce My Domain subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getSamlSsoUrl">getSamlSsoUrl(communityUrl, startURL, samlId)</a></strong><br>
+Returns the single sign-on URL for an Experience Cloud site       or Salesforce My Domain subdomain.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_SessionManagement_getSelfRegistrationEnabled">getSelfRegistrationEnabled()</a></strong><br>
+Indicates whether the current community       allows new users to create their own account by filling out a registration     form.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getSelfRegistrationUrl">getSelfRegistrationUrl()</a></strong><br>
+Returns the location of the self-registration page for new users to sign up for an   account with a community.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_getStartUrl">getStartUrl()</a></strong><br>
+Returns the start page of an Experience Cloud site or       Salesforce My Domain subdomain. This URL is the first page that users see when they log       in.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_SessionManagement_getUsernamePasswordEnabled">getUsernamePasswordEnabled()</a></strong><br>
+Indicates whether the current community is       set to display a login form asking for a username and password. You can configure the community       not to request a username and password if it is for unauthenticated users or users logging in       with a third-party authentication provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthConfiguration.htm#apex_Auth_AuthConfiguration_isCommunityUsingSiteAsContainer">isCommunityUsingSiteAsContainer()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the Experience       Cloud site uses Site.com pages; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAllowInternalUserLoginEnabled">
+<a name="apex_Auth_AuthConfiguration_getAllowInternalUserLoginEnabled"><!-- --></a>
+  <h3 class="helpHead3">getAllowInternalUserLoginEnabled()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Indicates whether the Experience Cloud site allows internal users to
+      log in using the Experience Cloud site login page. To enable, admins configure the setting
+        <strong class="ph uicontrol">Allow internal users to log in directly to the experience</strong> on the
+      Login &amp; Registration page in Experience Workspaces. It’s disabled by
+    default.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span>
+        getAllowInternalUserLoginEnabled()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<div class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">If true, internal users log in to an Experience Cloud site from the site’s login page with
+        their internal credentials. If they navigate to their internal org from the Experience Cloud
+        site, they don't have to log in again.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAuthConfig">
+<a name="apex_Auth_AuthConfiguration_getAuthConfig"><!-- --></a>
+   <h3 class="helpHead3">getAuthConfig()</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getAuthConfig_desc"><a name="getAuthConfig_desc"><!-- --></a>Returns the AuthConfig sObject, which represents the
+         authentication options for an Experience Cloud site or Salesforce My Domain
+      subdomain.</span></div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> AuthConfig getAuthConfig()</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: AuthConfig</p>
+
+         <p class="p">The AuthConfig sObject for the Experience Cloud site or Salesforce My Domain
+            subdomain.</p>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAuthConfigProviders">
+<a name="apex_Auth_AuthConfiguration_getAuthConfigProviders"><!-- --></a>
+   <h3 class="helpHead3">getAuthConfigProviders()</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getAuthConfigProviders_desc"><a name="getAuthConfigProviders_desc"><!-- --></a>Returns the list of authentication providers
+         configured for an Experience Cloud site or Salesforce My Domain subdomain.</span></div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;AuthConfigProviders&gt;
+               getAuthConfigProviders()</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;AuthConfigProviders&gt;</p>
+
+         <p class="p">A list of authentication providers (AuthConfigProviders sObjects), which are children of
+            the AuthProvider sObject.</p>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAuthProviders">
+<a name="apex_Auth_AuthConfiguration_getAuthProviders"><!-- --></a>
+   <h3 class="helpHead3">getAuthProviders()</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getAuthProviders_desc"><a name="getAuthProviders_desc"><!-- --></a>Returns the list of authentication providers available
+         for an Experience Cloud site or Salesforce My Domain subdomain.</span></div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;AuthProvider&gt;
+            getAuthProviders()</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;AuthProvider&gt;</p>
+
+         <p class="p">A list of authentication providers (AuthProvider sObjects) for the Experience Cloud site
+            or My Domain subdomain.</p>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAuthProviderSsoDomainUrl">
+<a name="apex_Auth_AuthConfiguration_getAuthProviderSsoDomainUrl"><!-- --></a>
+  <h3 class="helpHead3">getAuthProviderSsoDomainUrl(communityUrl, startUrl, developerName)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the single sign-on URL for an Experience Cloud site
+      subdomain.</span></div>
+
+    <div class="section">
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+        <p class="p">For better performance, we recommend using this method instead of <samp class="codeph apex_code">getAuthProviderSsoUrl</samp>. If the authentication provider
+          has <span class="keyword parmname">User Subdomain for Callback</span> enabled, changing the single sign-on
+          URL also changes the callback URL to use the Experience Cloud site subdomain. Before
+          switching to this method, update the callback URL in your third-party applications to
+          avoid getting an invalid callback URL error during single sign-on.</p>
+
+      </p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getAuthProviderSsoDomainUrl(<span class="keyword">String</span>
+          communityUrl, <span class="keyword">String</span> startUrl, <span class="keyword">String</span> developerName)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The URL for the Experience Cloud site subdomain. If null or specified as an empty
+              string, you get the single sign-on URL for the org’s My Domain.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The page that users see after logging in to the Experience Cloud site subdomain.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">developerName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The unique name of the authentication provider.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The Single Sign-On Initialization URL for the Experience Cloud site subdomain.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getAuthProviderSsoUrl">
+<a name="apex_Auth_AuthConfiguration_getAuthProviderSsoUrl"><!-- --></a>
+    <h3 class="helpHead3">getAuthProviderSsoUrl(communityUrl, startUrl, developerName)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getAuthProviderSsoUrl_desc"><a name="getAuthProviderSsoUrl_desc"><!-- --></a>Returns the single sign-on URL for an Experience
+            Cloud site or Salesforce My Domain subdomain.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getAuthProviderSsoUrl(<span class="keyword">String</span>
+                    communityUrl, <span class="keyword">String</span> startUrl, <span class="keyword">String</span> developerName)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">communityUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The URL for the Experience Cloud site or My Domain subdomain. If not null
+                        and not specified as an empty string, you get the URL for the Experience
+                        Cloud site. If null or specified as an empty string, you get the URL for a
+                        custom domain.</p>
+</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The page that users see after logging in to the Experience Cloud site or My
+                        Domain subdomain.</p>
+</li>
+
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">developerName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The unique name of the authentication provider.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+            <p class="p">The Single Sign-On Initialization URL for the Experience Cloud site or Salesforce My
+                Domain subdomain.</p>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getBackgroundColor">
+<a name="apex_Auth_AuthConfiguration_getBackgroundColor"><!-- --></a>
+<h3 class="helpHead3">getBackgroundColor()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getBackgroundColor_desc"><a name="getBackgroundColor_desc"><!-- --></a>Returns the color for the background of the login page for a community.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getBackgroundColor()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getCertificateLoginEnabled">
+<a name="apex_Auth_AuthConfiguration_getCertificateLoginEnabled"><!-- --></a><h3 class="helpHead3">getCertificateLoginEnabled(domainUrl)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns true if certificate-based authentication is enabled for the My
+      Domain URL.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getCertificateLoginEnabled(<span class="keyword">String</span> domainUrl)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">domainUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The My Domain URL that is being checked for certificate-based authentication.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getCertificateLoginUrl">
+<a name="apex_Auth_AuthConfiguration_getCertificateLoginUrl"><!-- --></a><h3 class="helpHead3">getCertificateLoginUrl(domainUrl, startUrl)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the certificate-based authentication endpoint for the My
+      Domain URL if the org has certificate-based authentication enabled.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getCertificateLoginUrl(<span class="keyword">String</span> domainUrl, <span class="keyword">String</span> startUrl)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">domainUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The My Domain URL being checked for its certificate-based authentication endpoint .</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The page that the user is directed to after logging in to the My Domain with certificate-based
+            authentication.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The certificate-based authentication endpoint for the My Domain URL: <samp class="codeph nolang"><var class="keyword varname">mydomainURL</var>:8443/services/certauth?startURL=<var class="keyword varname">startURLParam</var></samp></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getDefaultProfileForRegistration">
+<a name="apex_Auth_AuthConfiguration_getDefaultProfileForRegistration"><!-- --></a>
+<h3 class="helpHead3">getDefaultProfileForRegistration()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getDefaultProfileForRegistration_desc"><a name="getDefaultProfileForRegistration_desc"><!-- --></a>Returns the profile ID assigned to new community
+  users.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDefaultProfileForRegistration()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The profile ID.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getFooterText">
+<a name="apex_Auth_AuthConfiguration_getFooterText"><!-- --></a>
+<h3 class="helpHead3">getFooterText()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getFooterText_desc"><a name="getFooterText_desc"><!-- --></a>Returns the text at the bottom of the login page for a community.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getFooterText()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The text string displayed at the bottom of the login page, for example “Log in with an existing
+    account.”</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getForgotPasswordUrl">
+<a name="apex_Auth_AuthConfiguration_getForgotPasswordUrl"><!-- --></a><h3 class="helpHead3">getForgotPasswordUrl()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the URL for the standard or custom Forgot Password page that
+      is specified for an Experience Cloud site or portal by the administrator.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getForgotPasswordUrl()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">URL for the standard or custom Forgot Password page.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getHeadlessForgotPasswordEnabled">
+<a name="apex_Auth_AuthConfiguration_getHeadlessForgotPasswordEnabled"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getHeadlessForgotPasswordEnabled()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shordesc"><a name="shordesc"><!-- --></a>Returns <samp class="codeph ">true</samp> if the Headless
+      Forgot Password Flow is enabled.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean
+          getHeadlessForgotPasswordEnabled()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getHeadlessFrgtPswEnabled">
+<a name="apex_Auth_AuthConfiguration_getHeadlessFrgtPswEnabled"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getHeadlessFrgtPswEnabled()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">This method will be deprecated in a future release. Use the <samp class="codeph ">getHeadlessForgotPasswordEnabled()</samp> method in this class instead.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public Boolean getHeadlessFrgtPswEnabled()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getHeadlessPasswordlessLoginEnabled">
+<a name="apex_Auth_AuthConfiguration_getHeadlessPasswordlessLoginEnabled"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getHeadlessPasswordlessLoginEnabled()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Determines if headless passwordless login is enabled.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean getHeadlessPasswordlessLoginEnabled()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Returns <samp class="codeph nolang">true</samp> if headless passwordless login is enabled.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getHeadlessRegistrationEnabled">
+<a name="apex_Auth_AuthConfiguration_getHeadlessRegistrationEnabled"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getHeadlessRegistrationEnabled()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Determines if the Headless Registration Flow is enabled.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean getHeadlessRegistrationEnabled()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Returns <samp class="codeph nolang">true</samp> if headless registration is enabled.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getLogoUrl">
+<a name="apex_Auth_AuthConfiguration_getLogoUrl"><!-- --></a>
+ <h3 class="helpHead3">getLogoUrl()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getLogoUrl_desc"><a name="getLogoUrl_desc"><!-- --></a>Returns the location of the icon image at the bottom of the login page for a community.</span></div>
+
+ <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLogoUrl()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The path to the icon image.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getRightFrameUrl">
+<a name="apex_Auth_AuthConfiguration_getRightFrameUrl"><!-- --></a>
+  <h3 class="helpHead3">getRightFrameUrl()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the URL for the right-frame content to display on the right
+      side of the Experience Cloud site login page. The admin supplies the URL.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLoginRightFrameUrl()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+    <div class="section">
+      <p class="p">URL for the right-frame content of the Experience Cloud site login page. Salesforce creates
+        an inline (iframe) on the right side of the login page to display the contents specified by
+        the URL.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getSamlProviders">
+<a name="apex_Auth_AuthConfiguration_getSamlProviders"><!-- --></a>
+   <h3 class="helpHead3">getSamlProviders()</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getSamlProviders_desc"><a name="getSamlProviders_desc"><!-- --></a>Returns the list of SAML-based authentication providers
+         available for an Experience Cloud site or Salesforce My Domain subdomain.</span></div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;SamlSsoConfig&gt;
+            getSamlProviders()</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;SamlSsoConfig&gt;</p>
+
+         <p class="p">A list of SAML-based authentication providers, which are SamlSsoConfig sObjects.</p>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getSamlSsoUrl">
+<a name="apex_Auth_AuthConfiguration_getSamlSsoUrl"><!-- --></a>
+  <h3 class="helpHead3">getSamlSsoUrl(communityUrl, startURL, samlId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getSamlSsoUrl_desc"><a name="getSamlSsoUrl_desc"><!-- --></a>Returns the single sign-on URL for an Experience Cloud site
+      or Salesforce My Domain subdomain.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getSamlSsoUrl(<span class="keyword">String</span> communityUrl,
+          <span class="keyword">String</span> startURL, <span class="keyword">String</span> samlId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">communityUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The URL for the Experience Cloud site or My Domain subdomain. If not <samp class="codeph apex_code"><span class="keyword">null</span></samp> and not specified as an empty string, you get the
+            URL for the Experience Cloud site. If <samp class="codeph apex_code"><span class="keyword">null</span></samp> or
+            specified as an empty string, you get the URL for a My Domain subdomain.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The page users see after successfully logging in to the Experience Cloud site or My
+            Domain subdomain</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">samlId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The unique identifier of the SamlSsoConfig standard object for the Experience Cloud
+            site or My Domain subdomain</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The Single Sign-On Initialization URL for the Experience Cloud site or Salesforce My Domain
+        subdomain.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_SessionManagement_getSelfRegistrationEnabled">
+<a name="apex_Auth_SessionManagement_getSelfRegistrationEnabled"><!-- --></a>
+  <h3 class="helpHead3">getSelfRegistrationEnabled()</h3>
+
+  
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getSelfRegistrationEnabled_desc"><a name="getSelfRegistrationEnabled_desc"><!-- --></a>Indicates whether the current community
+      allows new users to create their own account by filling out a registration
+    form.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getSelfRegistrationEnabled()</samp></p>
+
+      </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+ 
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getSelfRegistrationUrl">
+<a name="apex_Auth_AuthConfiguration_getSelfRegistrationUrl"><!-- --></a>
+ <h3 class="helpHead3">getSelfRegistrationUrl()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getSelfRegistrationUrl_desc"><a name="getSelfRegistrationUrl_desc"><!-- --></a>Returns the location of the self-registration page for new users to sign up for an
+  account with a community.</span></div>
+
+ <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getSelfRegistrationUrl()</samp></p>
+
+   </div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The location of the self-registration page.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_getStartUrl">
+<a name="apex_Auth_AuthConfiguration_getStartUrl"><!-- --></a>
+  <h3 class="helpHead3">getStartUrl()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getStartUrl_desc"><a name="getStartUrl_desc"><!-- --></a>Returns the start page of an Experience Cloud site or
+      Salesforce My Domain subdomain. This URL is the first page that users see when they log
+      in.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getStartUrl()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The location of the start page for the Experience Cloud site or My Domain subdomain.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_SessionManagement_getUsernamePasswordEnabled">
+<a name="apex_Auth_SessionManagement_getUsernamePasswordEnabled"><!-- --></a>
+  <h3 class="helpHead3">getUsernamePasswordEnabled()</h3>
+
+  
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="getUsernamePasswordEnabled_desc"><a name="getUsernamePasswordEnabled_desc"><!-- --></a>Indicates whether the current community is
+      set to display a login form asking for a username and password. You can configure the community
+      not to request a username and password if it is for unauthenticated users or users logging in
+      with a third-party authentication provider.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getUsernamePasswordEnabled()</samp></p>
+
+      </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+ 
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthConfiguration_isCommunityUsingSiteAsContainer">
+<a name="apex_Auth_AuthConfiguration_isCommunityUsingSiteAsContainer"><!-- --></a><h3 class="helpHead3">isCommunityUsingSiteAsContainer()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the Experience
+      Cloud site uses Site.com pages; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isCommunityUsingSiteAsContainer()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

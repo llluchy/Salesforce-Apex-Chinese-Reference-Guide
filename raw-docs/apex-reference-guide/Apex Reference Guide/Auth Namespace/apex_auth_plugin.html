@@ -1,0 +1,435 @@
+<a name="apex_auth_plugin"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">RegistrationHandler Interface</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Salesforce provides the ability to use an authentication provider, such
+as Facebook© or Janrain©, for single sign-on into Salesforce.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">To set up single sign-on, you must create a class that implements <samp class="codeph apex_code">Auth.RegistrationHandler</samp>. Classes implementing the <samp class="codeph apex_code">Auth.RegistrationHandler</samp> interface are specified as the <span class="keyword parmname">Registration
+     Handler</span> in authentication provider definitions, and enable single sign-on into
+    Salesforce portals and organizations from third-party services such as Facebook.<span class="ph" id="apex_auth_plugin_defn2"><a name="apex_auth_plugin_defn2"><!-- --></a> Using information from the authentication providers, your class
+     must perform the logic of creating and updating user data as appropriate, including any
+     associated account and contact records.</span><div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>During the user update process, you can use
+     the <samp class="codeph "><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfirmUserRegistrationHandler.htm#apex_Auth_ConfirmUserRegistrationHandler_confirmUser" title="Returns the ID of the user to be logged in based on their mapping to a third-party identifier. This method is called before calling the updateUser() method. It's called only if the incoming user has previously logged in and has a third-party account link to a Salesforce user.">confirmUser()</a></samp> method to ensure that users are correctly mapped between
+     Salesforce and the third party. For more information, see the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_ConfirmUserRegistrationHandler.htm#apex_interface_Auth_ConfirmUserRegistrationHandler" title="Manages single sign-on (SSO) user mappings between Salesforce and a third-party identity provider. Use this interface to confirm user mappings before updating them.">ConfirmUserRegistrationHandler Interface</a>.</p>
+</div>
+</div></div></div></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_Auth_RegistrationHandler_methods">RegistrationHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_auth_plugin_part2">Storing User Information and Getting Access Tokens</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_auth_plugin_example">Auth.RegistrationHandler Example Implementation</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_auth_plugin_example_error">Auth.RegistrationHandler Error Example</a></strong><br>
+This example implements the <samp class="codeph apex_code">Auth.RegistrationHandler</samp> interface and shows how to use a custom exception to display   an error message in the URL of the page. If you don’t use a custom exception, the error code and   description appear in the URL and the error description appears on the page.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_RegistrationHandler_methods">
+<a name="apex_Auth_RegistrationHandler_methods"><!-- --></a>
+<h2 class="helpHead2">RegistrationHandler Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">RegistrationHandler</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_Auth_RegistrationHandler_createUser">createUser(portalId, userData)</a></strong><br>
+Returns a User object using the specified portal ID and user information from the third         party, such as the username and email address. The User object corresponds to the third         party’s user information. It can be a new user that hasn’t been inserted in         your org’s database, or it can represent an existing user record in the database. If it’s a         new User object, Salesforce inserts a user record for you.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_auth_plugin.htm#apex_Auth_RegistrationHandler_updateUser">updateUser(userId, portalId, userData)</a></strong><br>
+Updates the specified user’s information. This method is called if the user has   logged in before with the authentication provider and then logs in again.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_RegistrationHandler_createUser">
+<a name="apex_Auth_RegistrationHandler_createUser"><!-- --></a>
+<h3 class="helpHead3">createUser(portalId, userData)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a User object using the specified portal ID and user information from the third
+        party, such as the username and email address. The User object corresponds to the third
+        party’s user information. It can be a new user that hasn’t been inserted in
+        your org’s database, or it can represent an existing user record in the database. If it’s a
+        new User object, Salesforce inserts a user record for you.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> User createUser(<span class="keyword">ID</span> portalId, Auth.UserData
+userData)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">portalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userData</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_UserData.htm#apex_class_Auth_UserData" title="Stores user information for authentication provider registration handlers, including handlers that implement the Auth.RegistrationHandler interface and handlers built using Flow Builder.">Auth.UserData</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: User</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p" id="portalID"><a name="portalID"><!-- --></a>The <var class="keyword varname">portalID</var> value can be null or an empty key if there’s no
+                portal configured with this provider.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_RegistrationHandler_updateUser">
+<a name="apex_Auth_RegistrationHandler_updateUser"><!-- --></a>
+ <h3 class="helpHead3">updateUser(userId, portalId, userData)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Updates the specified user’s information. This method is called if the user has
+  logged in before with the authentication provider and then logs in again.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void updateUser(<span class="keyword">ID</span> userId, <span class="keyword">ID</span> portalId, Auth.UserData
+     userData)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">portalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">userData</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_UserData.htm#apex_class_Auth_UserData" title="Stores user information for authentication provider registration handlers, including handlers that implement the Auth.RegistrationHandler interface and handlers built using Flow Builder.">Auth.UserData</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p" id="portalID"><a name="portalID"><!-- --></a>The <var class="keyword varname">portalID</var> value can be null or an empty key if there's no
+    portal configured with this provider.</p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_auth_plugin_part2">
+<a name="apex_auth_plugin_part2"><!-- --></a>
+ <h2 class="helpHead2">Storing User Information and Getting Access Tokens</h2>
+
+ 
+ <div class="body">
+    <p class="p">The <samp class="codeph apex_code">Auth.UserData</samp> class is used to store user
+      information for <samp class="codeph apex_code">Auth.RegistrationHandler</samp>. The
+      third-party identity provider can send back a large collection of data about the user,
+      including their username, email address, locale, and more. The Salesforce authentication
+      provider framework converts this data into a common format with the <samp class="codeph apex_code">Auth.UserData</samp> class and then sendsit to the registration
+      handler.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If you use a <a class="xref" href="https://help.salesforce.com/s/articleView?language=en_US&amp;id=xcloud.sso_predefined_authentication_provider_parent.htm" target="_blank">predefined Salesforce authentication provider</a>,
+      Salesforce constructs the <samp class="codeph ">Auth.UserData</samp> object for you.
+      If you use a <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/authproviderplugin.htm" target="_blank">custom authentication provider plug-in</a>, it's up to you
+      to determine how you store information in the <samp class="codeph ">Auth.UserData</samp> object.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">If the registration handler wants to use the rest of the data, the <samp class="codeph apex_code">Auth.UserData</samp> class has an <samp class="codeph apex_code">attributeMap</samp> variable. The attribute map is a map of strings (<samp class="codeph apex_code">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;</samp>) for the raw values of all the data
+      from the third party. Because the map is <samp class="codeph apex_code">&lt;<span class="keyword">String</span>,
+        <span class="keyword">String</span>&gt;</samp>, values that the third party returns that aren't strings (like an array of
+      URLs or a map) are converted into an appropriate string representation. The map includes
+      everything returned by the third-party authentication provider, including the items
+      automatically converted into the common format.</p>
+
+    <p class="p">To learn about <samp class="codeph apex_code">Auth.UserData</samp> properties, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_UserData.htm#apex_class_Auth_UserData" title="Stores user information for authentication provider registration handlers, including handlers that implement the Auth.RegistrationHandler interface and handlers built using Flow Builder.">Auth.UserData Class</a>.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can only perform DML operations on additional sObjects in the same transaction with
+      User objects under certain circumstances. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_non_mix_sobjects.htm" target="_blank">sObjects That Cannot Be Used Together in DML
+        Operations</a>.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p" id="AccessTokenText"><a name="AccessTokenText"><!-- --></a>For all authentication providers except Janrain, after a user is
+      authenticated using a provider, the access token associated with that provider for this user
+      can be obtained in Apex using the <samp class="codeph apex_code">Auth.AuthToken</samp> Apex
+      class. <samp class="codeph apex_code">Auth.AuthToken</samp> provides two methods to retrieve
+      access tokens. One is <samp class="codeph apex_code">getAccessToken</samp>, which obtains a
+      single access token. Use this method if the user ID is mapped to a single third-party user. If
+      the user ID is mapped to multiple third-party users, use <samp class="codeph apex_code">getAccessTokenMap</samp>, which returns a map of access tokens for each third-party user.
+      For more information about authentication providers, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=experience.sso_authentication_providers.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Authentication Providers</a> in
+        <em class="ph i">Salesforce Help</em>.</p>
+
+    <p class="p">When using Janrain as an authentication provider, you must use the Janrain <samp class="codeph apex_code">accessCredentials</samp> dictionary values to retrieve the access
+      token or its equivalent. Only some providers supported by Janrain provide an access token,
+      while other providers use other fields. The Janrain <samp class="codeph apex_code">accessCredentials</samp> fields are returned in the <samp class="codeph apex_code">attributeMap</samp> variable of the <samp class="codeph apex_code">Auth.UserData</samp>
+      class. See the <a class="xref" href="http://developers.janrain.com/documentation/api/auth_info/" target="_blank" title="HTML (New Window)">Janrain <samp class="codeph apex_code">auth_info</samp></a>
+      documentation for more information on <samp class="codeph apex_code">accessCredentials</samp>.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Not all Janrain account types return <samp class="codeph apex_code">accessCredentials</samp>. Sometimes you must change your account type to receive the
+      information.</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">To learn about the <samp class="codeph apex_code">Auth.AuthToken</samp> methods, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthToken.htm#apex_class_Auth_AuthToken" title="Contains methods for getting and revoking access and refresh tokens that are issued when a user logs in via a single sign-on (SSO) flow that uses an authentication provider, such as Facebook.">Auth.AuthToken Class</a>.</p>
+
+    <div class="section">
+<h3 class="helpHead3">User Information in the ID Token and User Info Response</h3>
+
+      
+      <p class="p">Some identity providers send additional user information in an ID token or in a user info
+        response. To extract user information from these responses, there are some extra steps.</p>
+
+      <p class="p">An ID token is formatted as a JWT and includes information about the authenticated user. If
+        the identity provider sends an ID token, Salesforce stores the full encoded JWT in the
+          <samp class="codeph ">idToken</samp> property. Salesforce also stores the decoded
+        JWT payload of the ID token in the <samp class="codeph ">idTokenJSONString</samp>
+        property.</p>
+
+      <p class="p">Salesforce doesn't validate the ID token. To validate it, use methods in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWTUtil.htm" target="_blank"><samp class="codeph ">Auth.JWTUtil</samp></a>
+        class and pass in the encoded JWT stored in the <samp class="codeph ">idToken</samp>
+        property. The methods in the <samp class="codeph ">Auth.JWTUtil</samp> class all
+        return an instance of the <samp class="codeph ">Auth.JWT</samp> object.</p>
+
+      <p class="p">Once you validate the JWT, you can use methods in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Auth_JWT.htm" target="_blank"><samp class="codeph ">Auth.JWT</samp></a> class to
+        access specific claims. For example, the Apex code in this snippet validates the ID token
+        using a public keys endpoint from the identity provider and then retrieves the value of an
+          <samp class="codeph ">email</samp> claim stored in the token.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Auth.JWT jwt = Auth.JWTUtil.validateJWTWithKeysEndpoint(userdata.idToken, keysEndpoint, true);
+
+// Retrieve email claim from id token
+String email = (String) jwt.getAdditionalClaims().get('email');
+System.debug(email);
+</pre></div>
+
+      <p class="p">Alternatively, to access specific claims in the <samp class="codeph ">idTokenJSONString</samp> property, you can deserialize the JSON string and then write
+        code to retrieve the claim you want. To deserialize the <samp class="codeph ">idTokenJSONString</samp>, use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_deserialize" target="_blank"><samp class="codeph ">JSON.deserialize (jsonString,
+            apexType)</samp></a> method in the <samp class="codeph ">System.JSON</samp>
+        class.</p>
+
+      <p class="p">The user info response, if returned by the identity provider, is also a JSON object that
+        has been serialized into a string. The user info response is stored in the <samp class="codeph ">userInfoJSONString</samp> property. You can use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_deserialize" target="_blank"><samp class="codeph ">JSON.deserialize (jsonString,
+            apexType)</samp></a> method to deserialize the user info response so that you can
+        retrieve specific information.</p>
+
+      <p class="p">This example snippet creates a custom class to store the user info response. It then
+        deserializes the user info response in the <samp class="codeph ">userInfoJSONString</samp> into this custom class structure.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public class UserInfoResponse {
+    public String preferred_username;   
+    public String email;
+    public Boolean email_verified;  
+    public String given_name;  
+    public String family_name; 
+    public String locale; 
+}
+
+UserInfoResponse userInfo = (UserInfoResponse)System.JSON.deserialize(userData.userInfoJSONString, UserInfoResponse.class);
+System.debug(userInfo.email);
+</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_auth_plugin_example">
+<a name="apex_auth_plugin_example"><!-- --></a>
+<h2 class="helpHead2">Auth.RegistrationHandler Example Implementation</h2>
+
+
+    <div class="body">
+        <div class="section">
+            <p class="p">This example implements the <samp class="codeph apex_code">Auth.RegistrationHandler</samp> interface that creates as well as updates a
+                standard user based on data provided by the authentication provider. Error checking
+                has been omitted to keep the example simple.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> StandardUserRegistrationHandler <span class="keyword">implements</span> Auth.RegistrationHandler{
+    <span class="keyword">global</span> User createUser(Id portalId, Auth.UserData data) {
+        User u = <span class="keyword">new</span> User();
+        Profile p = [SELECT Id FROM profile WHERE name=<span class="string">'Standard User'</span>];
+        u.Username = data.username + <span class="string">'@salesforce.com'</span>;
+        u.Email = data.email;
+        u.LastName = data.lastName;
+        u.FirstName = data.firstName;
+        <span class="keyword">String</span> alias = data.username;
+        <span class="statement">if</span>(alias.length() &gt; 8) {
+            alias = alias.substring(0, 8);
+        }
+        u.Alias = alias;
+        u.LanguageLocaleKey = data.attributeMap.get(<span class="string">'language'</span>);
+        u.LocaleSidKey = data.locale;
+        u.EmailEncodingKey = <span class="string">'UTF-8'</span>;
+        u.TimeZoneSidKey = <span class="string">'America/Los_Angeles'</span>;
+        u.ProfileId = p.Id;
+        <span class="statement">return</span> u;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">void</span> updateUser(Id userId, Id portalId, Auth.UserData data) {
+        User u = <span class="keyword">new</span> User(id=userId);
+        u.Username = data.username + <span class="string">'@salesforce.com'</span>;
+        u.Email = data.email;
+        u.LastName = data.lastName;
+        u.FirstName = data.firstName;
+        <span class="keyword">String</span> alias = data.username;
+        <span class="statement">if</span>(alias.length() &gt; 8) {
+            alias = alias.substring(0, 8);
+        }
+        u.Alias = alias;
+        u.LanguageLocaleKey = data.attributeMap.get(<span class="string">'language'</span>);
+        u.LocaleSidKey = data.locale;
+        <span class="statement">update</span>(u);
+    }
+}</pre></div>
+
+            <p class="p">The following example tests the above code.</p>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> StandardUserRegistrationHandlerTest {
+<span class="keyword">static</span> testMethod <span class="keyword">void</span> testCreateAndUpdateUser() {
+    StandardUserRegistrationHandler handler = <span class="keyword">new</span> StandardUserRegistrationHandler();
+    Auth.UserData sampleData = <span class="keyword">new</span> Auth.UserData(<span class="string">'testId'</span>, <span class="string">'testFirst'</span>, <span class="string">'testLast'</span>,
+        <span class="string">'testFirst testLast'</span>, <span class="string">'testuser@example.org'</span>, <span class="keyword">null</span>, <span class="string">'testuserlong'</span>, <span class="string">'en_US'</span>, <span class="string">'facebook'</span>,
+        <span class="keyword">null</span>, <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;{<span class="string">'language'</span> =&gt; <span class="string">'en_US'</span>});
+    User u = handler.createUser(<span class="keyword">null</span>, sampleData);
+    System.assertEquals(<span class="string">'testuserlong@salesforce.com'</span>, u.username);
+    System.assertEquals(<span class="string">'testuser@example.org'</span>, u.email);
+    System.assertEquals(<span class="string">'testLast'</span>, u.lastName);
+    System.assertEquals(<span class="string">'testFirst'</span>, u.firstName);
+    System.assertEquals(<span class="string">'testuser'</span>, u.alias);
+    <span class="statement">insert</span>(u);
+    <span class="keyword">String</span> uid = u.id;
+    
+    sampleData = <span class="keyword">new</span> Auth.UserData(<span class="string">'testNewId'</span>, <span class="string">'testNewFirst'</span>, <span class="string">'testNewLast'</span>,
+        <span class="string">'testNewFirst testNewLast'</span>, <span class="string">'testnewuser@example.org'</span>, <span class="keyword">null</span>, <span class="string">'testnewuserlong'</span>, <span class="string">'en_US'</span>, <span class="string">'facebook'</span>,
+        <span class="keyword">null</span>, <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;{<span class="string">'language'</span> =&gt; <span class="string">'en_US'</span>});
+    handler.updateUser(uid, <span class="keyword">null</span>, sampleData);
+    
+    User updatedUser = [SELECT username, email, firstName, lastName, alias FROM user WHERE id=:uid];
+    System.assertEquals(<span class="string">'testnewuserlong@salesforce.com'</span>, updatedUser.username);
+    System.assertEquals(<span class="string">'testnewuser@example.org'</span>, updatedUser.email);
+    System.assertEquals(<span class="string">'testNewLast'</span>, updatedUser.lastName);
+    System.assertEquals(<span class="string">'testNewFirst'</span>, updatedUser.firstName);
+    System.assertEquals(<span class="string">'testnewu'</span>, updatedUser.alias);
+}
+}</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_auth_plugin_example_error">
+<a name="apex_auth_plugin_example_error"><!-- --></a>
+ <h2 class="helpHead2">Auth.RegistrationHandler Error Example</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">This example implements the <samp class="codeph apex_code">Auth.RegistrationHandler</samp> interface and shows how to use a custom exception to display
+  an error message in the URL of the page. If you don’t use a custom exception, the error code and
+  description appear in the URL and the error description appears on the page.</div>
+
+  <div class="section">
+   <p class="p">To limit this example to the custom exception, some code was omitted. </p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> RegHandler <span class="keyword">implements</span> Auth.RegistrationHandler {
+
+    <span class="keyword">class</span> RegHandlerException <span class="keyword">extends</span> Exception {}
+
+        <span class="keyword">global</span> User createUser(Id portalId, Auth.UserData data){
+            List&lt;Profile&gt; profiles = [SELECT Id, Name, UserType FROM Profile WHERE Name = <span class="string">'Power User'</span>]; 
+            Profile profile = profiles.isEmpty() ? <span class="keyword">null</span> : profiles[0]; 
+            <span class="statement">if</span>(profile==<span class="keyword">null</span>) 
+               <span class="statement">throw</span> <span class="keyword">new</span> RegHandlerException(<span class="string">'Cannot find the profile. For help, contact your administrator.'</span>); 
+... 
+        } 
+
+        <span class="keyword">global</span> <span class="keyword">void</span> updateUser(Id userId, Id portalId, Auth.UserData data){
+            User u = <span class="keyword">new</span> User(id=userId);
+            u.lastName = data.lastName;
+            u.firstName = data.firstName;
+            <span class="statement">update</span>(u);
+        }
+}</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+</div>

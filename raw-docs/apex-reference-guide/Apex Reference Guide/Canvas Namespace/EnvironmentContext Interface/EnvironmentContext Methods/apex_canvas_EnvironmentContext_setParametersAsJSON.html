@@ -1,0 +1,79 @@
+<a name="apex_canvas_EnvironmentContext_setParametersAsJSON"><!-- --></a><h1 class="helpHead1">setParametersAsJSON(jsonString)</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the custom parameters for the canvas app.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setParametersAsJSON(<span class="keyword">String</span>
+                    jsonString)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Parameters</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">jsonString</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The custom parameters that you need to set, serialized into a JSON format
+                        string.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+            
+            <p class="p">Type: Void</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Use this method to set the current custom parameters for the canvas app. The
+                parameters must be provided in a JSON string. You can use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_serialize" title="Serializes Apex objects into JSON content.">System.JSON.<samp class="codeph apex_code">serialize(objectToSerialize)</samp></a> method to serialize a map into
+                a JSON string.</p>
+
+            <p class="p">Setting the custom parameters will overwrite the custom parameters that are set for
+                the current request. If you need to modify the current custom parameters, first get
+                the current set of custom parameters by using <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_canvas_EnvironmentContext_getParametersAsJSON.htm" title="Retrieves the current custom parameters for the canvas app. Parameters are returned as a JSON string."><samp class="codeph apex_code">getParametersAsJSON()</samp></a>, modify the
+                retrieved parameter set as needed, and then use this modified set in your call to
+                setParametersAsJSON().</p>
+
+            <p class="p">If the provided JSON string exceeds 32KB, a System.CanvasException will be
+                thrown.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example gets the current custom parameters, adds a new
+                    <span class="keyword parmname">newCustomParam</span> parameter with a value of
+                ‘TESTVALUE’, and sets the current custom parameters.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Canvas.EnvironmentContext env = renderContext.getEnvironmentContext();
+
+<span class="onelineComment">// Get current custom params</span>
+Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; previousParams = 
+    (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) JSON.deserializeUntyped(env.getParametersAsJSON());
+
+<span class="onelineComment">// Add a new custom param</span>
+previousParams.put(<span class="string">'newCustomParam'</span>,<span class="string">'TESTVALUE'</span>);
+
+<span class="onelineComment">// Now replace the parameters with the current parameters plus our new custom param</span>
+env.setParametersAsJSON(JSON.serialize(previousParams));
+</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

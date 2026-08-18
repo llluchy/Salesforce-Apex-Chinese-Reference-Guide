@@ -1,0 +1,75 @@
+<a name="apex_classes_annotation_JsonAccess"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">JsonAccess</span>
+    Annotation</h1><div class="body conbody">
+<div class="shortdesc">The <samp class="codeph apex_code">@JsonAccess</samp> annotation defined at Apex class
+    level controls whether instances of the class can be serialized or deserialized. If the
+    annotation restricts the JSON or XML serialization and deserialization, a runtime <samp class="codeph apex_code">JSONException</samp> exception is thrown.</div>
+
+    <div class="p">The <samp class="codeph apex_code">serializable</samp> and <samp class="codeph apex_code">deserializable</samp> parameters of the <samp class="codeph apex_code">@JsonAccess</samp> annotation enforce the contexts in which Apex allows serialization and
+      deserialization. You can specify one or both parameters, but you can’t specify the annotation
+      with no parameters. The valid values for the parameters to indicate whether serialization and
+      deserialization are allowed:<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph apex_code">never</samp>: never allowed</li>
+
+        <li class="li">
+<samp class="codeph apex_code">sameNamespace</samp>: allowed only for Apex code in the
+          same namespace</li>
+
+        <li class="li">
+<samp class="codeph apex_code">samePackage</samp>: allowed only for Apex code in the
+          same package (impacts only second-generation packages)</li>
+
+        <li class="li">
+<samp class="codeph apex_code">always</samp>: always allowed for any Apex code</li>
+
+      </ul>
+</div>
+
+    <p class="p">This example code shows an Apex class marked with the <samp class="codeph apex_code">@JsonAccess</samp> annotation.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// SomeSerializableClass is serializable in the same package and deserializable in the wider namespace</span>
+
+@JsonAccess(serializable=<span class="string">'samePackage'</span> deserializable=<span class="string">'sameNamespace'</span>)
+<span class="keyword">public</span> <span class="keyword">class</span> SomeSerializableClass { }
+
+
+<span class="onelineComment">// AlwaysDeserializable class is always deserializable and serializable only in the same namespace (default value from version 49.0 and later)</span>
+
+@JsonAccess(deserializable=<span class="string">'always'</span>)
+<span class="keyword">public</span> <span class="keyword">class</span> AlwaysDeserializable { }</pre></div>
+
+    <div class="section">
+<h2 class="helpHead2">
+<span class="titlecodeph">JsonAccess</span> Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">If an Apex class annotated with <samp class="codeph apex_code">JsonAccess</samp> is
+          extended, the extended class doesn’t inherit this property. </li>
+
+        <li class="li">If the <samp class="codeph apex_code">toString</samp> method is applied on objects
+          that mustn't be serialized, private data can be exposed. You must override the <samp class="codeph apex_code">toString</samp> method on objects whose data must be protected.
+          For example, serializing an object stored as a key in a Map invokes the <samp class="codeph apex_code">toString</samp> method. The generated map includes key (string)
+          and value entries, thus exposing all the fields of the object.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In versions 48.0 and earlier, the default access for deserialization is <samp class="codeph apex_code">always</samp> and the default access for serialization is <samp class="codeph apex_code">sameNamespace</samp> to preserve the existing behavior. From
+        version 49.0 onwards, the default access for both serialization and deserialization is
+          <samp class="codeph apex_code">sameNamespace</samp>.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="IsTest Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm" title="NamespaceAccessible Annotation">Next →</a></li>
+</ul></div>
+</div>

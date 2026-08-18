@@ -1,0 +1,114 @@
+<a name="apex_web_services_methods_considerations"><!-- --></a><h1 class="helpHead1"><span class="ph" id="webservice_considerations_title"><a name="webservice_considerations_title"><!-- --></a>Considerations for Using the <span class="titlecodeph">webservice</span> Keyword</span></h1><div class="body">
+    <div class="p">When using the <samp class="codeph apex_code">webservice</samp>
+      keyword, keep the following considerations in mind: <ul class="ul bulletList">
+        <li class="li">Use the <samp class="codeph apex_code">webservice</samp> keyword to define top-level
+          methods and outer class methods. You can’t use the <samp class="codeph apex_code">webservice</samp> keyword to define a class or an inner class method.</li>
+
+        <li class="li">You cannot use the <samp class="codeph apex_code">webservice</samp> keyword to define
+          an interface, or to define an interface's methods and variables.</li>
+
+        <li class="li">System-defined enums cannot be used in Web service methods.</li>
+
+        <li class="li">You cannot use the <samp class="codeph apex_code">webservice</samp> keyword in a
+          trigger.</li>
+
+        <li class="li">All classes that contain methods defined with the <samp class="codeph apex_code">webservice</samp> keyword must be declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. If a method or inner class is declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>, the outer, top-level class must also be defined
+          as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. </li>
+
+        <li class="li">Methods defined with the <samp class="codeph apex_code">webservice</samp> keyword are
+          inherently global. Any Apex code that has access to the class can use these methods. You
+          can consider the <samp class="codeph apex_code">webservice</samp> keyword as a type of
+          access modifier that enables more access than <samp class="codeph apex_code"><span class="keyword">global</span></samp>. </li>
+
+        <li class="li"><span class="ph" id="webservice_static"><a name="webservice_static"><!-- --></a>Define any method that uses the <samp class="codeph apex_code">webservice</samp> keyword as <samp class="codeph apex_code"><span class="keyword">static</span></samp>.</span></li>
+
+        <li class="li"><span class="ph" id="webservice_depr_man_pkg"><a name="webservice_depr_man_pkg"><!-- --></a>You cannot deprecate <samp class="codeph apex_code">webservice</samp> methods or variables in managed package
+            code.</span></li>
+
+        <li class="li">Because there are no SOAP analogs for certain Apex elements, methods defined with the
+            <samp class="codeph apex_code">webservice</samp> keyword cannot take the following
+          elements as parameters. While these elements can be used within the method, they also
+          cannot be marked as return values.<ul class="ul bulletList">
+            <li class="li">Maps</li>
+
+            <li class="li">Sets</li>
+
+            <li class="li">Pattern objects</li>
+
+            <li class="li">Matcher objects</li>
+
+            <li class="li">Exception objects</li>
+
+          </ul>
+</li>
+
+        <li class="li">Use the <samp class="codeph apex_code">webservice</samp> keyword with
+          any member variables that you want to expose as part of a Web service. Do not mark these
+          member variables as <samp class="codeph apex_code"><span class="keyword">static</span></samp>.</li>
+
+      </ul>
+</div>
+
+    <div class="p">Considerations for calling Apex SOAP Web service methods:<ul class="ul bulletList">
+        <li class="li">Salesforce denies access to Web service and <samp class="codeph apex_code">executeanonymous</samp> requests from an AppExchange package that has
+            <span class="keyword parmname">Restricted</span> access.</li>
+
+        <li class="li">Apex classes and triggers saved (compiled) using API version 15.0 and higher produce a
+          runtime error if you assign a String value that is too long for the field.</li>
+
+        <li class="li">If a login call is made from the API for a user with an expired or temporary password,
+          subsequent API calls to custom Apex SOAP Web service methods aren't supported and result
+          in the INVALID_OPERATION_WITH_EXPIRED_PASSWORD error. Reset the user's password and make a
+          call with an unexpired password to be able to call Apex Web service methods.</li>
+
+      </ul>
+</div>
+
+    <div class="p">The following example shows a class with Web service member variables and a Web service
+      method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> SpecialAccounts {
+
+  <span class="keyword">global</span> <span class="keyword">class</span> AccountInfo {
+     webservice <span class="keyword">String</span> AcctName;
+     webservice <span class="keyword">Integer</span> AcctNumber;
+  }
+
+  webservice <span class="keyword">static</span> Account createAccount(AccountInfo info) {
+    Account acct = <span class="keyword">new</span> Account();
+    acct.Name = info.AcctName;
+    acct.AccountNumber = <span class="keyword">String</span>.valueOf(info.AcctNumber);
+    <span class="statement">insert</span> acct;
+    <span class="statement">return</span> acct;
+  }
+
+  webservice <span class="keyword">static</span> Id [] createAccounts(Account parent, 
+       Account child, Account grandChild) {
+
+        <span class="statement">insert</span> parent;
+        child.parentId = parent.Id;
+        <span class="statement">insert</span> child;
+        grandChild.parentId = child.Id;
+        <span class="statement">insert</span> grandChild;
+
+        Id [] results = <span class="keyword">new</span> Id[3];
+        results[0] = parent.Id;
+        results[1] = child.Id;
+        results[2] = grandChild.Id;
+        <span class="statement">return</span> results;
+    }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Test class for the previous class.</span>
+<span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> SpecialAccountsTest {
+  testMethod <span class="keyword">static</span> <span class="keyword">void</span> testAccountCreate() {
+    SpecialAccounts.AccountInfo info = <span class="keyword">new</span> SpecialAccounts.AccountInfo();
+    info.AcctName = <span class="string">'Manoj Cheenath'</span>;
+    info.AcctNumber = 12345;
+    Account acct = SpecialAccounts.createAccount(info);
+    System.assert(acct != <span class="keyword">null</span>);
+  }
+}</pre></div>
+</div>
+
+    <p class="p">You can invoke this Web service using AJAX. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_and_ajax.htm" title="The AJAX toolkit includes built-in support for invoking Apex through anonymous blocks or public webservice methods.">Apex in AJAX</a>.</p>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

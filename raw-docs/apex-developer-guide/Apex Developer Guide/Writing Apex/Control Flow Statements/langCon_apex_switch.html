@@ -1,0 +1,259 @@
+<a name="langCon_apex_switch"><!-- --></a><h1 class="helpHead1">Switch Statements</h1><div class="body">
+<div class="shortdesc">Apex provides a <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement that tests
+        whether an expression matches one of several values and branches accordingly.</div>
+
+        <p class="p">The syntax is:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on expression {
+    when value1 {		<span class="onelineComment">// when block 1</span>
+        <span class="onelineComment">// code block 1</span>
+    }	
+    when value2 {		<span class="onelineComment">// when block 2</span>
+        <span class="onelineComment">// code block 2</span>
+    }
+    when value3 {		<span class="onelineComment">// when block 3</span>
+        <span class="onelineComment">// code block 3</span>
+    }
+    when <span class="statement">else</span> {		  <span class="onelineComment">// default block, optional</span>
+        <span class="onelineComment">// code block 4</span>
+    }
+}</pre></div>
+
+        <p class="p">The <samp class="codeph apex_code">when</samp> value can be a single value, multiple
+            values, or sObject types. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">when value1 {
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">when value2, value3 {
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">when TypeName VariableName {
+}</pre></div>
+
+        <p class="p">The <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement evaluates the expression and
+            executes the code block for the matching <samp class="codeph apex_code">when</samp>
+            value. If no value matches, the <samp class="codeph apex_code">when <span class="statement">else</span></samp> code
+            block is executed. If there isn’t a <samp class="codeph apex_code">when <span class="statement">else</span></samp>
+            block, no action is taken.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+            <p class="p">There is no fall-through. After the code block is executed, the <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement exits.</p>
+
+        </p>
+</div>
+</div></div></div></div>
+
+        <div class="p">Apex <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement expressions can be one of
+            the following types.<ul class="ul bulletList">
+                <li class="li">Integer</li>
+
+                <li class="li">Long</li>
+
+                <li class="li">sObject</li>
+
+                <li class="li">String</li>
+
+                <li class="li">Enum</li>
+
+            </ul>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">When Blocks</h2>
+
+            
+            <p class="p">Each <samp class="codeph apex_code">when</samp> block has a value that the
+                expression is matched against. These values can take one of the following forms.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">when <samp class="codeph nolang">literal</samp> {} (a when block can have
+                    multiple, comma-separated literal clauses)</li>
+
+                <li class="li">when SObjectType <samp class="codeph nolang">identifier</samp> {}</li>
+
+                <li class="li">when <samp class="codeph nolang">enum_value</samp> {}</li>
+
+            </ul>
+
+            <p class="p">The value <samp class="codeph apex_code"><span class="keyword">null</span></samp> is a legal value for all
+                types. </p>
+
+            <p class="p">Each <samp class="codeph apex_code">when</samp> value must be unique. For example,
+                you can use the literal <var class="keyword varname">x</var> only in one <samp class="codeph apex_code">when</samp> block clause. A <samp class="codeph apex_code">when</samp> block is matched one time at most. </p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">When Else Block</h2>
+
+            
+            <p class="p">If no <samp class="codeph apex_code">when</samp> values match the expression, the
+                    <samp class="codeph apex_code">when <span class="statement">else</span></samp> block is executed.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce recommends including a <samp class="codeph apex_code">when
+                    <span class="statement">else</span></samp> block, especially with enum types, although it isn’t required.
+                When you build a <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement using enum
+                values provided by a managed package, your code might not behave as expected if a
+                new version of the package contains additional enum values. You can prevent this
+                problem by including a <samp class="codeph apex_code">when <span class="statement">else</span></samp> block to
+                handle unanticipated values.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">If you include a <samp class="codeph apex_code">when <span class="statement">else</span></samp> block, it must be
+                the last block in the <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Examples with Literals</h2>
+<div class="p">
+            
+            <p class="p">You can use literal <samp class="codeph apex_code">when</samp> values for switching
+                on Integer, Long, and String types. String clauses are case-sensitive. For example,
+                “orange” is a different value than “ORANGE.”</p>
+
+            <div class="sectiondiv"><strong class="ph b">Single Value Example</strong></div>
+            <p class="p">The following example uses integer literals for <samp class="codeph apex_code">when</samp> values.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on i {
+   when 2 {
+       System.debug(<span class="string">'when block 2'</span>);
+   }
+   when -3 {
+       System.debug(<span class="string">'when block -3'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'default'</span>);
+   }
+}</pre></div>
+
+            <div class="sectiondiv"><strong class="ph b">Null Value Example</strong></div>
+            <p class="p">Because all types in Apex are nullable, a <samp class="codeph apex_code">when</samp> value can be <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on i {
+   when 2 {
+       System.debug(<span class="string">'when block 2'</span>);
+   }
+   when <span class="keyword">null</span> {
+       System.debug(<span class="string">'bad integer'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'default '</span> + i);
+   }
+}</pre></div>
+
+            <div class="sectiondiv"><strong class="ph b">Multiple Values Examples</strong></div>
+            <p class="p">The Apex <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement doesn’t
+                fall-through, but a <samp class="codeph apex_code">when</samp> clause can include
+                multiple literal values to match against. You can also nest Apex <samp class="codeph apex_code"><span class="statement">switch</span></samp> statements to provide multiple execution
+                paths within a <samp class="codeph apex_code">when</samp> clause.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on i {
+   when 2, 3, 4 {
+       System.debug(<span class="string">'when block 2 and 3 and 4'</span>);
+   }
+   when 5, 6 {
+       System.debug(<span class="string">'when block 5 and 6'</span>);
+   }
+   when 7 {
+       System.debug(<span class="string">'when block 7'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'default'</span>);
+   }
+}</pre></div>
+
+            <div class="sectiondiv"><strong class="ph b">Method Example</strong></div>
+            <p class="p">Instead of switching on a variable expression, the following example switches on the
+                result of a method call.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on someInteger(i) {
+   when 2 {
+       System.debug(<span class="string">'when block 2'</span>);
+   }
+   when 3 {
+       System.debug(<span class="string">'when block 3'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'default'</span>);
+   }
+}</pre></div>
+
+        </div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example with sObjects</h2>
+
+            
+            <p class="p">Switching on an sObject value allows you to implicitly perform <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> checks and casting. For example,
+                consider the following code that uses if-else statements.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (sobject <span class="statement">instanceof</span> Account) {
+    Account a = (Account) sobject;
+    System.debug(<span class="string">'account '</span> + a);
+} <span class="statement">else</span> <span class="statement">if</span> (sobject <span class="statement">instanceof</span> Contact) {
+    Contact c = (Contact) sobject;
+    System.debug(<span class="string">'contact '</span> + c);
+} <span class="statement">else</span> {
+    System.debug(<span class="string">'default'</span>);
+}</pre></div>
+
+            <p class="p">You can replace and simplify this code with the following <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on sobject {
+   when Account a {
+       System.debug(<span class="string">'account '</span> + a);
+   }
+   when Contact c {
+       System.debug(<span class="string">'contact '</span> + c);
+   }
+   when <span class="keyword">null</span> {
+       System.debug(<span class="string">'null'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'default'</span>);
+   }
+}</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can use only one sObject type per <samp class="codeph apex_code">when</samp>
+                block.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example with Enums</h2>
+
+            
+            <p class="p">A <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement that uses enum <samp class="codeph apex_code">when</samp> values doesn’t require a <samp class="codeph apex_code">when <span class="statement">else</span></samp> block, but it is recommended. You can
+                use multiple enum values per <samp class="codeph apex_code">when</samp> block
+                clause.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">switch</span> on season {
+   when WINTER {
+       System.debug(<span class="string">'boots'</span>);
+   }
+   when SPRING, SUMMER {
+       System.debug(<span class="string">'sandals'</span>);
+   }
+   when <span class="statement">else</span> {
+       System.debug(<span class="string">'none of the above'</span>);
+   }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

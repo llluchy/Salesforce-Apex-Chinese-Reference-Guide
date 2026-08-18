@@ -1,0 +1,216 @@
+<a name="apex_class_sfsqlquery_SqlTester"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SqlTester Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Test utility for mocking Data 360 SQL query API responses in Apex tests. The framework automatically detects the test context via <samp class="codeph ">Test.isRunningTest()</samp> and returns mocked responses when configured. Call <samp class="codeph ">clearMocks()</samp> before each test to ensure a clean state.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">You provide mock column metadata and mock row data. The framework auto-generates the query submission and status responses from your mock data. Use <samp class="codeph ">setMockRows()</samp> to set a single page of results, or call <samp class="codeph ">enqueueMockRows()</samp> multiple times to simulate multi-page results. If you call <samp class="codeph ">cancel()</samp> in a test, any subsequent fetch against that query ID raises an exception in the mock layer, simulating production cancellation behavior.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Set up a single-page mock and test an iterator:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">static</span> <span class="keyword">void</span> testBasicQuery() {
+    sfsqlquery.SqlTester.clearMocks();
+
+    ConnectApi.QuerySqlMetadataItem col = <span class="keyword">new</span> ConnectApi.QuerySqlMetadataItem();
+    col.name = <span class="string">'Name__c'</span>;
+    col.type = ConnectApi.TypeEnum.VARCHAR;
+    sfsqlquery.SqlTester.setMockMetadata(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlMetadataItem&gt;{ col });
+
+    ConnectApi.QuerySqlRow mockRow = <span class="keyword">new</span> ConnectApi.QuerySqlRow();
+    mockRow.rowData = <span class="keyword">new</span> List&lt;<span class="keyword">Object</span>&gt;{ <span class="string">'Acme'</span> };
+    sfsqlquery.SqlTester.setMockRows(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlRow&gt;{ mockRow });
+
+    sfsqlquery.SqlRowIterator iterator = sfsqlquery.SqlStatement.create(<span class="string">'SELECT Name__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+        .execute();
+
+    Assert.isTrue(iterator.hasNext());
+    sfsqlquery.Row row = iterator.next();
+    Assert.areEqual(<span class="string">'Acme'</span>, row.getString(<span class="string">'Name__c'</span>));
+}</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_methods">
+<a name="apex_sfsqlquery_SqlTester_methods"><!-- --></a>
+  <h2 class="helpHead2">SqlTester Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">SqlTester</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_clearMocks">
+<a name="apex_sfsqlquery_SqlTester_clearMocks"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">clearMocks()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Resets all mock state, including metadata, rows, and page queues. Call this at the start of each test method to ensure a clean state.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static void clearMocks()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Clear mocks at the start of each test:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">static</span> <span class="keyword">void</span> testMyQuery() {
+    sfsqlquery.SqlTester.clearMocks();
+    <span class="onelineComment">// Set up fresh mocks for this test</span>
+    <span class="onelineComment">// ... test code ...</span>
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_enqueueMockRows">
+<a name="apex_sfsqlquery_SqlTester_enqueueMockRows"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">enqueueMockRows(rows)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Adds a page of mock rows to the result queue. Call this multiple times to simulate multi-page results. Each call adds one page; pages are returned in the order they were enqueued.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static void enqueueMockRows(List&lt;ConnectApi.QuerySqlRow&gt; rows)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">rows</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_row.htm" title="Represents data associated with the an SQL query output.">List&lt;ConnectApi.QuerySqlRow&gt;</a></p>
+<p class="p">List of <samp class="codeph ">ConnectApi.QuerySqlRow</samp> objects representing one page of results.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Simulate multi-page results for SqlQueueable:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">static</span> <span class="keyword">void</span> testMultiPageQuery() {
+    sfsqlquery.SqlTester.clearMocks();
+
+    <span class="onelineComment">// Set up metadata</span>
+    ConnectApi.QuerySqlMetadataItem col = <span class="keyword">new</span> ConnectApi.QuerySqlMetadataItem();
+    col.name = <span class="string">'Name__c'</span>;
+    col.type = ConnectApi.TypeEnum.VARCHAR;
+    sfsqlquery.SqlTester.setMockMetadata(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlMetadataItem&gt;{ col });
+
+    <span class="onelineComment">// Page 1</span>
+    ConnectApi.QuerySqlRow page1Row = <span class="keyword">new</span> ConnectApi.QuerySqlRow();
+    page1Row.rowData = <span class="keyword">new</span> List&lt;<span class="keyword">Object</span>&gt;{ <span class="string">'Page 1 Data'</span> };
+    sfsqlquery.SqlTester.enqueueMockRows(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlRow&gt;{ page1Row });
+
+    <span class="onelineComment">// Page 2</span>
+    ConnectApi.QuerySqlRow page2Row = <span class="keyword">new</span> ConnectApi.QuerySqlRow();
+    page2Row.rowData = <span class="keyword">new</span> List&lt;<span class="keyword">Object</span>&gt;{ <span class="string">'Page 2 Data'</span> };
+    sfsqlquery.SqlTester.enqueueMockRows(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlRow&gt;{ page2Row });
+
+    <span class="onelineComment">// Execute queueable - will process both pages</span>
+    Test.startTest();
+    System.enqueueJob(<span class="keyword">new</span> MyQueryJob(
+        sfsqlquery.SqlStatement.create(<span class="string">'SELECT Name__c FROM accounts__dlm'</span>, <span class="string">'default'</span>)
+    ));
+    Test.stopTest();
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_isRunningTest">
+<a name="apex_sfsqlquery_SqlTester_isRunningTest"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">isRunningTest()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph ">true</samp> if the framework is currently executing within a test context. The framework calls this internally to decide whether to return mocked responses.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static Boolean isRunningTest()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p"><samp class="codeph ">true</samp> if executing in a test context; <samp class="codeph ">false</samp> otherwise.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_setMockMetadata">
+<a name="apex_sfsqlquery_SqlTester_setMockMetadata"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setMockMetadata(metadata)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the mock column metadata that the framework returns for all queries in the current test. Call this before executing any query.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static void setMockMetadata(List&lt;ConnectApi.QuerySqlMetadataItem&gt; metadata)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">metadata</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_metadata_item.htm" title="Represents the metadata associated with an SQL query output.">List&lt;ConnectApi.QuerySqlMetadataItem&gt;</a></p>
+<p class="p">List of <samp class="codeph ">ConnectApi.QuerySqlMetadataItem</samp> objects that define the column names and types for the mocked query results.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Define column metadata for mocked results:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.QuerySqlMetadataItem idCol = <span class="keyword">new</span> ConnectApi.QuerySqlMetadataItem();
+idCol.name = <span class="string">'Id__c'</span>;
+idCol.type = ConnectApi.TypeEnum.VARCHAR;
+
+ConnectApi.QuerySqlMetadataItem amountCol = <span class="keyword">new</span> ConnectApi.QuerySqlMetadataItem();
+amountCol.name = <span class="string">'Amount__c'</span>;
+amountCol.type = ConnectApi.TypeEnum.DECIMAL;
+
+sfsqlquery.SqlTester.setMockMetadata(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlMetadataItem&gt;{ idCol, amountCol });</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_SqlTester_setMockRows">
+<a name="apex_sfsqlquery_SqlTester_setMockRows"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setMockRows(rows)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets a single page of mock rows to return for the query. Use <samp class="codeph ">enqueueMockRows()</samp> instead when simulating multi-page results.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static void setMockRows(List&lt;ConnectApi.QuerySqlRow&gt; rows)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">rows</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_query_sql_row.htm" title="Represents data associated with the an SQL query output.">List&lt;ConnectApi.QuerySqlRow&gt;</a></p>
+<p class="p">List of <samp class="codeph ">ConnectApi.QuerySqlRow</samp> objects representing the single page of results to return.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Set a single page of mock results:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.QuerySqlRow row1 = <span class="keyword">new</span> ConnectApi.QuerySqlRow();
+row1.rowData = <span class="keyword">new</span> List&lt;<span class="keyword">Object</span>&gt;{ <span class="string">'acc-001'</span>, 1000.00 };
+
+ConnectApi.QuerySqlRow row2 = <span class="keyword">new</span> ConnectApi.QuerySqlRow();
+row2.rowData = <span class="keyword">new</span> List&lt;<span class="keyword">Object</span>&gt;{ <span class="string">'acc-002'</span>, 2500.50 };
+
+sfsqlquery.SqlTester.setMockRows(<span class="keyword">new</span> List&lt;ConnectApi.QuerySqlRow&gt;{ row1, row2 });</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>

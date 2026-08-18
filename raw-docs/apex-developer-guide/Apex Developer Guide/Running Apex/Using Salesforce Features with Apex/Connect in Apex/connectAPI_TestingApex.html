@@ -1,0 +1,80 @@
+<a name="connectAPI_TestingApex"><!-- --></a><h1 class="helpHead1">Testing <span class="titlecodeph">ConnectApi</span> Code</h1><div class="body conbody">
+<div class="shortdesc">Like all Apex code, Connect in Apex code requires test coverage.</div>
+
+<p class="p">Connect in Apex methods run in the context of the current user (also called the <em class="ph i">context
+                user</em>). The methods have access to whatever the context user has access to.
+            Connect in Apex doesn’t support the <samp class="codeph apex_code">runAs</samp> system
+            method.</p>
+
+<p class="p">Most Connect in Apex methods require access to real org data, and fail unless used in test
+            methods marked <samp class="codeph apex_code"><span class="keyword">@IsTest(SeeAllData=true)</span></samp>. </p>
+
+<p class="p">However, some Connect in Apex methods, such as <samp class="codeph apex_code">getFeedElementsFromFeed</samp>, are not permitted to access org data in tests and
+            must be used with special test methods that register outputs to be returned in a test
+            context. If a method requires a <samp class="codeph apex_code">setTest</samp> method,
+            the requirement is stated in the method’s “Usage” section. </p>
+
+        <p class="p">A test method name is the regular method name with a <samp class="codeph apex_code">setTest</samp> prefix. The test method signature (combination of parameters)
+            matches a signature of the regular method. For example, if the regular method has three
+            overloads, the test method has three overloads. </p>
+
+<p class="p">Using Connect in Apex test methods is similar to testing web services in Apex. First, build the
+            data you expect the method to return. To build data, create output objects and set their
+            properties. To create objects, you can use no-argument constructors for any non-abstract
+            output classes. If you’re testing binary input parameters, use the same instance for
+            creating and executing data.</p>
+
+<p class="p">After you build the data, call the test method to register the data. Call the test method that
+            has the same signature as the regular method you’re testing.</p>
+
+<p class="p">After you register the test data, run the regular method. When you run the regular method, the
+            registered data is returned.</p>
+
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Use the test method signature that matches the regular method signature. If
+            data wasn't registered with the matching set of parameters when you call the regular
+            method, you receive an exception.</p>
+</div>
+</div></div></div></div>
+
+<div class="p">This example shows a test that constructs an <samp class="codeph apex_code">ConnectApi.FeedElementPage</samp> and registers it to be returned when <samp class="codeph apex_code">getFeedElementsFromFeed</samp> is called with a particular
+            combination of parameters.
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> NewsFeedClass {
+    <span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">Integer</span> getNewsFeedCount() {
+        ConnectApi.FeedElementPage elements = 
+            ConnectApi.ChatterFeeds.getFeedElementsFromFeed(<span class="keyword">null</span>,
+                ConnectApi.FeedType.News, <span class="string">'me'</span>);
+        <span class="statement">return</span> elements.elements.size();
+    }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> NewsFeedClassTest {
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> doTest() {
+        <span class="onelineComment">// Build a simple feed item</span>
+        ConnectApi.FeedElementPage testPage = <span class="keyword">new</span> ConnectApi.FeedElementPage();
+        List&lt;ConnectApi.FeedItem&gt; testItemList = <span class="keyword">new</span> List&lt;ConnectApi.FeedItem&gt;();
+        testItemList.add(<span class="keyword">new</span> ConnectApi.FeedItem());
+        testItemList.add(<span class="keyword">new</span> ConnectApi.FeedItem());
+        testPage.elements = testItemList;
+
+        <span class="onelineComment">// Set the test data</span>
+        ConnectApi.ChatterFeeds.setTestGetFeedElementsFromFeed(<span class="keyword">null</span>,
+            ConnectApi.FeedType.News, <span class="string">'me'</span>, testPage);
+
+        <span class="onelineComment">// The method returns the test page, which we know has two items in it.</span>
+        Test.startTest();
+        System.assertEquals(2, NewsFeedClass.getNewsFeedCount());
+        Test.stopTest();
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_testing.htm" title="Apex provides a testing framework that allows you to write unit tests, run your tests, check test results, and have code coverage results.">Testing Apex</a></div></li></ul>
+</div>
+</div>

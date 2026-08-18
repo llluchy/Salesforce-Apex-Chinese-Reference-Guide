@@ -1,0 +1,345 @@
+<a name="apex_interface_QuickAction_QuickActionDefaultsHandler"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">QuickActionDefaultsHandler Interface</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The <samp class="codeph apex_code">QuickAction.QuickActionDefaultsHandler</samp> interface lets you specify the default
+      values for the standard Email and Send Email actions in the case feed. You can use this
+      interface to specify the From address, CC address, BCC address, subject, and email body for the Email
+      action in the case feed. You can use the interface to pre-populate these fields based on the
+      context where the action is displayed, such as the case origin (for example, country) and
+      subject. </span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_QuickAction.htm" title="The QuickAction namespace provides classes and methods for quick actions.">QuickAction</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">To specify default values for the standard Email action in the case feed, create a class
+        that implements <samp class="codeph apex_code">QuickAction.QuickActionDefaultsHandler</samp>.</p>
+
+      <p class="p">The <samp class="codeph apex_code">QuickAction.QuickActionDefaultsHandler</samp>
+        interface works in Salesforce Classic and Lightning Experience. </p>
+
+      <div class="p">When working in Lightning Experience, keep the following things in mind:<ul class="ul bulletList">
+          <li class="li">The interface overrides email values set up with predefined IDs.</li>
+
+          <li class="li">The interface works with the out-of-the-box Email action provided on cases. You can
+            also use the interface with custom Email actions for the case object.</li>
+
+          <li class="li">The interface in Lightning Experience doesn’t support: <ul class="ul bulletList">
+              <li class="li">Email attachments</li>
+
+              <li class="li">Custom email fields</li>
+
+              <li class="li">Visualforce email templates, which are a type of email template available in
+                Salesforce Classic </li>
+
+            </ul>
+</li>
+
+          <li class="li">The From field determines the from address picklist. While you can’t customize this
+            picklist in Send Email action types via the QuickActionDefaultsHandler interface, you
+            can customize the From Address field. To customize this field, remove the From field
+            from the SendEmail quick action layout and add the From Address field instead. Then
+            provide a valid and verified from address in the QuickActionDefaultsHandler code. This
+            address must be the current user’s address, an organization-wide email address that the
+            current user has access to, or an Email-to-Case routing address.</li>
+
+          <li class="li">If your Apex interface adds content to the email body, merge fields display as
+            unresolved. During preview and send, the merge fields resolve.</li>
+
+        </ul>
+</div>
+
+      <p class="p">When you implement this interface, provide an empty parameterless constructor. </p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_QuickAction_QuickActionDefaultsHandler.htm#apex_QuickAction_QuickActionDefaultsHandler_methods">QuickActionDefaultsHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_QuickAction_QuickActionDefaultsHandler.htm#apex_interface_QuickAction_QuickActionDefaultsHandler_Example">QuickActionDefaultsHandler Example Implementations</a></strong><br>
+These examples are implementations of the <samp class="codeph apex_code">QuickAction.QuickActionDefaultsHandler</samp> interface.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_QuickAction_QuickActionDefaultsHandler_methods">
+<a name="apex_QuickAction_QuickActionDefaultsHandler_methods"><!-- --></a><h2 class="helpHead2">QuickActionDefaultsHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">QuickActionDefaultsHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_QuickAction_QuickActionDefaultsHandler.htm#apex_QuickAction_QuickActionDefaultsHandler_onInitDefaults">onInitDefaults(actionDefaults)</a></strong><br>
+Implement this method to provide default values for the standard       Email action in the case feed. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_QuickAction_QuickActionDefaultsHandler_onInitDefaults">
+<a name="apex_QuickAction_QuickActionDefaultsHandler_onInitDefaults"><!-- --></a>
+  <h3 class="helpHead3">onInitDefaults(actionDefaults)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Implement this method to provide default values for the standard
+      Email action in the case feed. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> onInitDefaults(QuickAction.QuickActionDefaults[]
+          actionDefaults)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">actionDefaults</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_QuickAction_QuickActionDefaults.htm#apex_class_QuickAction_QuickActionDefaults" title="Represents an abstract Apex class that provides the context for running the standard Email Action on Case Feed and the container of the Email Message fields for the action payload. You can override the target fields before the standard Email Action is rendered.">QuickAction.QuickActionDefaults[]</a></p>
+<p class="p">This array contains only one item of type <samp class="codeph apex_code">QuickAction.SendEmailQuickActionDefaults</samp>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_QuickAction_QuickActionDefaultsHandler_Example">
+<a name="apex_interface_QuickAction_QuickActionDefaultsHandler_Example"><!-- --></a>
+    <h2 class="helpHead2">QuickActionDefaultsHandler Example Implementations</h2>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">These examples are implementations of the <samp class="codeph apex_code">QuickAction.QuickActionDefaultsHandler</samp> interface.</div>
+
+        <div class="section">
+            <p class="p">In this example, the <samp class="codeph apex_code">onInitDefaults</samp> method
+                checks whether the element passed in the array is for the standard Email action in
+                the case feed. Then, it performs a query to retrieve the case that corresponds to
+                the context ID. Next, it sets the value of the BCC address of the corresponding
+                email message to a default value. The default value is based on the case reason.
+                Finally, it sets the default values of the email template properties. The <samp class="codeph apex_code">onInitDefaults</samp> method determines the default
+                values based on two criteria: first, whether a reply action on an email message
+                initiated the call to the method, and second, whether any previous emails attached
+                to the case are associated with the call.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> EmailPublisherLoader <span class="keyword">implements</span> QuickAction.QuickActionDefaultsHandler {
+    <span class="onelineComment">// Empty constructor</span>
+    <span class="keyword">global</span> EmailPublisherLoader() {
+    }
+    
+    <span class="onelineComment">// The main interface method</span>
+    <span class="keyword">global</span> <span class="keyword">void</span> onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
+        QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = <span class="keyword">null</span>;
+    
+    
+        <span class="onelineComment">// Check if the quick action is the standard case feed Email action</span>
+        <span class="statement">for</span> (<span class="keyword">Integer</span> j = 0; j &lt; defaults.size(); j++) {
+            <span class="statement">if</span> (defaults.get(j) <span class="statement">instanceof</span> QuickAction.SendEmailQuickActionDefaults &amp;&amp; 
+               defaults.get(j).getTargetSObject().getSObjectType() == 
+                   EmailMessage.sObjectType &amp;&amp; 
+               defaults.get(j).getActionName().equals(<span class="string">'Case.Email'</span>) &amp;&amp; 
+               defaults.get(j).getActionType().equals(<span class="string">'Email'</span>)) {
+                   sendEmailDefaults = 
+                       (QuickAction.SendEmailQuickActionDefaults)defaults.get(j);
+                   <span class="statement">break</span>;
+            }
+        }
+        
+        <span class="statement">if</span> (sendEmailDefaults != <span class="keyword">null</span>) {
+            Case c = [SELECT Status, Reason FROM Case 
+                      WHERE Id=:sendEmailDefaults.getContextId()];
+        
+            EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject();    
+            <span class="onelineComment">// Set BCC address to make sure each email goes for audit</span>
+            emailMessage.BccAddress = getBccAddress(c.Reason);
+            
+            <span class="multilineComment">/* 
+            Set Template related fields 
+            when the In Reply To Id field is null we know the interface 
+            is called on page load. Here we check if 
+            there are any previous emails attached to the case and load 
+            the 'New_Case_Created' or 'Automatic_Response' template.
+            When the In Reply To Id field is not null we know that 
+            the interface is called on click of reply/reply all 
+            of an email and we load the 'Default_reply_template' template
+            */</span>
+            <span class="statement">if</span> (sendEmailDefaults.getInReplyToId() == <span class="keyword">null</span>) {
+                <span class="keyword">Integer</span> emailCount = [SELECT count() FROM EmailMessage 
+                                      WHERE ParentId=:sendEmailDefaults.getContextId()];
+                <span class="statement">if</span> (emailCount!= <span class="keyword">null</span> &amp;&amp; emailCount &gt; 0) {
+                    sendEmailDefaults.setTemplateId(
+                        getTemplateIdHelper(<span class="string">'Automatic_Response'</span>));
+                } <span class="statement">else</span> {
+                    sendEmailDefaults.setTemplateId(
+                        getTemplateIdHelper(<span class="string">'New_Case_Created'</span>));
+                }
+                sendEmailDefaults.setInsertTemplateBody(<span class="keyword">false</span>);
+                sendEmailDefaults.setIgnoreTemplateSubject(<span class="keyword">false</span>);
+            } <span class="statement">else</span> {
+                sendEmailDefaults.setTemplateId(
+                    getTemplateIdHelper(<span class="string">'Default_reply_template'</span>));
+                sendEmailDefaults.setInsertTemplateBody(<span class="keyword">false</span>);
+                sendEmailDefaults.setIgnoreTemplateSubject(<span class="keyword">true</span>);
+            }
+        }
+    }
+    
+    <span class="keyword">private</span> Id getTemplateIdHelper(<span class="keyword">String</span> templateApiName) {
+        Id templateId = <span class="keyword">null</span>;
+        <span class="statement">try</span> {
+            templateId = [select id, name from EmailTemplate 
+                          where developername = : templateApiName].id;   
+        } <span class="statement">catch</span> (Exception e) {
+            system.debug(<span class="string">'Unble to locate EmailTemplate using name: '</span> + 
+                templateApiName + <span class="string">' refer to Setup | Communications Templates '</span> 
+                    + templateApiName);
+        }
+        <span class="statement">return</span> templateId;
+    }
+<span class="keyword">private</span> <span class="keyword">String</span> getBccAddress(<span class="keyword">String</span> reason) {
+        <span class="statement">if</span> (reason != <span class="keyword">null</span> &amp;&amp; reason.equals(<span class="string">'Technical'</span>)) 
+            { <span class="statement">return</span> <span class="string">'support_technical@mycompany.com'</span>; } 
+        <span class="statement">else</span> <span class="statement">if</span> (reason != <span class="keyword">null</span> &amp;&amp; reason.equals(<span class="string">'Billing'</span>)) 
+            { <span class="statement">return</span> <span class="string">'support_billing@mycompany.com'</span>; } 
+        <span class="statement">else</span> { <span class="statement">return</span> <span class="string">'support@mycompany.com'</span>; }
+    }
+
+    
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+            <p class="p">In this example, the <samp class="codeph apex_code">onInitDefaults</samp> method
+                checks whether the element passed in the array is for the standard Email action in
+                the case feed. Then it performs a query to determine if the case Priority is set to
+                    <var class="keyword varname">High</var>. If the Priority is set to <var class="keyword varname">High</var>, the
+                email address <var class="keyword varname">managers@acme.com</var> is appended to the BCC field.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> EmailPublisherForHighPriorityCases <span class="keyword">implements</span> QuickAction.QuickActionDefaultsHandler {
+    <span class="onelineComment">// Empty constructor</span>
+    <span class="keyword">global</span> EmailPublisherForHighPriorityCases() {
+    }
+    
+    <span class="onelineComment">// The main interface method</span>
+    <span class="keyword">global</span> <span class="keyword">void</span> onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
+        QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = (QuickAction.SendEmailQuickActionDefaults)defaults.get(0);
+        EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject(); 
+        
+        Case c = [SELECT CaseNumber, Priority FROM Case WHERE Id=:sendEmailDefaults.getContextId()];
+
+        <span class="onelineComment">// If case severity is “High,” append “managers@acme.com” to the existing (and possibly blank) BCC field</span>
+        <span class="statement">if</span> (c.Priority != <span class="keyword">null</span> &amp;&amp; c.Priority.equals(<span class="string">'High'</span>)) { <span class="onelineComment">// Priority is 'High'</span>
+            emailMessage.BccAddress = <span class="string">'managers@acme.com'</span>;        
+        }        
+    } 
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+            <p class="p">In this example, the <samp class="codeph apex_code">onInitDefaults</samp> method
+                checks whether the element passed in the array is for the standard Email action in
+                the case feed. Then it performs a query to determine if the case Type is set to
+                    <var class="keyword varname">Problem</var>. If the type is set to <var class="keyword varname">Problem</var>,
+                the <var class="keyword varname">First Response</var> email template is inserted into the body of
+                the email. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> EmailPublisherForCaseType <span class="keyword">implements</span> QuickAction.QuickActionDefaultsHandler {
+    <span class="onelineComment">// Empty constructor</span>
+    <span class="keyword">global</span> EmailPublisherForCaseType() {
+    }
+    
+    <span class="onelineComment">// The main interface method</span>
+    <span class="keyword">global</span> <span class="keyword">void</span> onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
+    QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = (QuickAction.SendEmailQuickActionDefaults)defaults.get(0);
+    EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject(); 
+    
+    Case c = [SELECT CaseNumber, Type FROM Case WHERE Id=:sendEmailDefaults.getContextId()];    
+    
+    <span class="onelineComment">// If case type is “Problem,” insert the “First Response” email template</span>
+    <span class="statement">if</span> (c.CaseNumber != <span class="keyword">null</span> &amp;&amp; c.Type.equals(<span class="string">'Problem'</span>)) { 
+        sendEmailDefaults.setTemplateId(<span class="string">'Insert Email Template ID Here'</span>);   <span class="onelineComment">// Set the template Id corresponding to First Response</span>
+        sendEmailDefaults.setInsertTemplateBody(<span class="keyword">true</span>);
+        sendEmailDefaults.setIgnoreTemplateSubject(<span class="keyword">false</span>);
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+            <p class="p">In this example, the <samp class="codeph apex_code">onInitDefaults</samp> method
+                checks whether the element passed in the array is for the standard Email action in
+                the case feed. Then it performs a query to determine if the email is a Reply or
+                Reply All email. If the email is a Reply or Reply All email, the corresponding email
+                templates for these emails are inserted into the body of the email. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> EmailPublisherForReplyAndReplyAll <span class="keyword">implements</span> QuickAction.QuickActionDefaultsHandler {
+
+    <span class="onelineComment">// Empty constructor</span>
+    <span class="keyword">global</span> EmailPublisherForReplyAndReplyAll() {
+
+    }   
+
+    <span class="onelineComment">// The main interface method</span>
+    <span class="keyword">global</span> <span class="keyword">void</span> onInitDefaults(QuickAction.QuickActionDefaults[] defaults) {
+
+    QuickAction.SendEmailQuickActionDefaults sendEmailDefaults = (QuickAction.SendEmailQuickActionDefaults)defaults.get(0);
+    EmailMessage emailMessage = (EmailMessage)sendEmailDefaults.getTargetSObject();   
+
+    <span class="onelineComment">// If the email is a “Reply” email, insert the “Reply Email Template” to the email body</span>
+    <span class="statement">if</span> (sendEmailDefaults.getActionName().equals(<span class="string">'EmailMessage._Reply'</span>)) {
+        sendEmailDefaults.setTemplateId(<span class="string">'Insert Reply Email Template ID Here'</span>);
+
+        sendEmailDefaults.setInsertTemplateBody(<span class="keyword">true</span>);
+        sendEmailDefaults.setIgnoreTemplateSubject(<span class="keyword">false</span>);
+
+    <span class="onelineComment">// If the email is a “Reply All” email, insert the “Reply All Email Template” to the email body</span>
+    } <span class="statement">else</span> <span class="statement">if</span> (sendEmailDefaults.getActionName().equals(<span class="string">'EmailMessage._ReplyAll'</span>)) {
+        sendEmailDefaults.setTemplateId(<span class="string">'Insert Reply All Email Template ID Here'</span>);
+
+        sendEmailDefaults.setInsertTemplateBody(<span class="keyword">true</span>);
+        sendEmailDefaults.setIgnoreTemplateSubject(<span class="keyword">false</span>);
+
+}</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>

@@ -1,0 +1,201 @@
+<a name="apex_testing_unit_tests"><!-- --></a><h1 class="helpHead1">What Are Apex Unit Tests?</h1><div class="body">
+        <p class="p">To facilitate the development of robust, error-free code, Apex supports the creation and
+            execution of <dfn class="term">unit tests</dfn>. Unit tests are class methods that verify whether a
+            particular piece of code is working properly. Unit test methods take no arguments,
+            commit no data to the database, and send no emails. Such methods are flagged with the
+                <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation in the method definition.
+            Unit test methods must be defined in test classes, that is, classes annotated with
+                <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>.</p>
+
+        <div class="p">For example: <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> myClass {
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> myTest() {
+        <span class="onelineComment">// code_block</span>
+    }
+}</pre></div>
+</div>
+
+        <p class="p">Use the <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation to define classes and
+            methods that only contain code used for testing your application. The <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotation can take multiple modifiers
+            within parentheses and separated by blanks.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>
+        annotation on methods is equivalent to the <samp class="codeph apex_code">testMethod</samp> keyword. As best practice, Salesforce recommends that you use <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> rather than <samp class="codeph apex_code">testMethod</samp>. The <samp class="codeph apex_code">testMethod</samp> keyword may
+        be versioned out in a future release.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">This example of a test class contains two test methods.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> MyTestClass {
+
+   <span class="onelineComment">// Methods for testing</span>
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test1() {
+      <span class="onelineComment">// Implement test code</span>
+   }
+
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> test2() {
+      <span class="onelineComment">// Implement test code</span>
+   }
+
+}</pre></div>
+
+        <p class="p">Classes and methods defined as <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> can be
+            either <samp class="codeph apex_code"><span class="keyword">private</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>. The access level of test classes methods
+            doesn’t matter. You need not add an access modifier when defining a test class or
+            test methods. The default access level in Apex is private. The testing framework can
+            always find the test methods and execute them, regardless of their access level.</p>
+
+        <p class="p">Classes defined as <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> must be top-level
+            classes and can't be interfaces or enums.</p>
+
+        <p class="p">Methods of a test class can only be called from a test method or code invoked by a test
+            method; non-test requests can’t invoke it. </p>
+
+        <p class="p">This example shows a class to be tested and its corresponding test class. It contains two
+            methods and a constructor.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> TVRemoteControl {
+    <span class="onelineComment">// Volume to be modified</span>
+    <span class="keyword">Integer</span> volume;
+    <span class="onelineComment">// Constant for maximum volume value</span>
+    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">Integer</span> MAX_VOLUME = 50;    
+    
+    <span class="onelineComment">// Constructor</span>
+    <span class="keyword">public</span> TVRemoteControl(<span class="keyword">Integer</span> v) {
+        <span class="onelineComment">// Set initial value for volume</span>
+        volume = v;
+    }
+        
+    <span class="keyword">public</span> <span class="keyword">Integer</span> increaseVolume(<span class="keyword">Integer</span> amount) {
+        volume += amount;
+        <span class="statement">if</span> (volume &gt; MAX_VOLUME) {
+            volume = MAX_VOLUME;
+        } 
+        <span class="statement">return</span> volume;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">Integer</span> decreaseVolume(<span class="keyword">Integer</span> amount) {
+        volume -= amount;
+        <span class="statement">if</span> (volume &lt; 0) {
+            volume = 0;
+        }  
+        <span class="statement">return</span> volume;
+    }    
+    
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getMenuOptions() {
+        <span class="statement">return</span> <span class="string">'AUDIO SETTINGS - VIDEO SETTINGS'</span>;
+    }
+       
+}</pre></div>
+
+        <p class="p">This example contains the corresponding test class with four test methods. Each method in
+            the previous class is called. Although there’s sufficient test coverage, the test
+            methods in the test class perform extra testing to verify boundary conditions.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">class</span> TVRemoteControlTest {
+    <span class="keyword">@IsTest</span> 
+    <span class="keyword">static</span> <span class="keyword">void</span> testVolumeIncrease() {
+        TVRemoteControl rc = <span class="keyword">new</span> TVRemoteControl(10);
+        <span class="keyword">Integer</span> newVolume = rc.increaseVolume(15);
+        System.assertEquals(25, newVolume);
+    }
+    
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testVolumeDecrease() {
+        TVRemoteControl rc = <span class="keyword">new</span> TVRemoteControl(20);
+        <span class="keyword">Integer</span> newVolume = rc.decreaseVolume(15);
+        System.assertEquals(5, newVolume);        
+    } 
+        
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testVolumeIncreaseOverMax() {
+        TVRemoteControl rc = <span class="keyword">new</span> TVRemoteControl(10);
+        <span class="keyword">Integer</span> newVolume = rc.increaseVolume(100);
+        System.assertEquals(50, newVolume);        
+    }
+    
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testVolumeDecreaseUnderMin() {
+        TVRemoteControl rc = <span class="keyword">new</span> TVRemoteControl(10);
+        <span class="keyword">Integer</span> newVolume = rc.decreaseVolume(100);
+        System.assertEquals(0, newVolume);        
+    }
+    
+    <span class="keyword">@IsTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testGetMenuOptions() {
+        <span class="onelineComment">// Static method call. No need to create a class instance.</span>
+        <span class="keyword">String</span> menu = TVRemoteControl.getMenuOptions();
+        System.assertNotEquals(<span class="keyword">null</span>, menu);
+        System.assertNotEquals(<span class="string">''</span>, menu);
+    }
+}</pre></div>
+
+        <div class="section">
+<h2 class="helpHead2">Unit Test Considerations</h2>
+
+            
+            <p class="p">Here are some things to note about unit tests.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Starting with Salesforce API 28.0, test methods can no longer reside in non-test
+                    classes and must be part of classes annotated with <samp class="codeph apex_code">IsTest</samp>. See the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_testvisible.htm"><samp class="codeph apex_code">TestVisible</samp></a> annotation to learn
+                    how you can access private class members from a test class.</li>
+
+                <li class="li">Test methods can’t be used to test Web service callouts. Instead, use
+                    mock callouts. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing.htm" title="Generated code is saved as an Apex class containing the methods you can invoke for calling the web service. To deploy or package this Apex class and other accompanying code, 75% of the code must have test coverage, including the methods in the generated class. By default, test methods don’t support web service callouts, and tests that perform web service callouts fail. To prevent tests from failing and to increase code coverage, Apex provides the built-in WebServiceMock interface and the Test.setMock method. Use WebServiceMock and Test.setMock to receive fake responses in a test method.">Test Web Service Callouts</a> and <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_restful_http_testing.htm" title="To deploy or package Apex, 75% of your code must have test coverage. By default, test methods don’t support HTTP callouts, so tests that perform callouts fail. Enable HTTP callout testing by instructing Apex to generate mock responses in tests, using Test.setMock.">Testing HTTP
+                        Callouts</a>.</li>
+
+                <li class="li">You can’t send email messages from a test method.</li>
+
+                <li class="li">Since test methods don’t commit data created in the test, you
+                    don’t have to delete test data upon completion.</li>
+
+                <li class="li">If the value of a static member variable in a test class is changed in a
+                    testSetup or test method, the new value isn’t preserved. Other test methods in
+                    this class get the original value of the static member variable. This behavior
+                    also applies when the static member variable is defined in another class and
+                    accessed in test methods.</li>
+
+                <li class="li">For some sObjects that have fields with unique constraints, inserting duplicate
+                    sObject records results in an error. For example, inserting CollaborationGroup
+                    sObjects with the same names results in an error because CollaborationGroup
+                    records must have unique names.</li>
+
+                <li class="li">Tracked changes for a record (FeedTrackedChange records) in Chatter feeds aren't
+                    available when test methods modify the associated record. FeedTrackedChange
+                    records require the change to the parent record they're associated with to be
+                    committed to the database before they're created. Since test methods don't
+                    commit data, they don't result in the creation of FeedTrackedChange records.
+                    Similarly, field history tracking records can't be created in test methods
+                    because they require other sObject records to be committed first. For example,
+                    AccountHistory records can’t be created in test methods because Account records
+                    must be committed first.</li>
+
+                <li class="li">If your tests include DML, make sure that you don’t exceed the MAX_DML_ROWS
+                    limit. See “Miscellaneous Apex Limits” in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and Limits</a>
+</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_testing_testvisible.htm">Accessing Private Test Class Members</a><br>
+</li>
+</ol>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="Use the @IsTest annotation to define classes and methods that only contain code used for testing your app.">IsTest Annotation</a></div></li></ul>
+</div>
+</div>

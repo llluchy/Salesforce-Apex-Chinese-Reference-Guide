@@ -1,0 +1,176 @@
+<a name="langCon_apex_loops_for_SOQL"><!-- --></a><h1 class="helpHead1">SOQL For Loops</h1><div class="body">
+<div class="shortdesc">SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loops iterate over all of the
+        sObject records returned by a SOQL query.</div>
+
+        <div class="p">The syntax of a SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loop is
+            either:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (<var class="keyword varname">variable</var> : [<var class="keyword varname">soql_query</var>]) {
+    <var class="keyword varname">code_block</var>
+}</pre></div>
+
+            or<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (<var class="keyword varname">variable_list</var> : [<var class="keyword varname">soql_query</var>]) {
+    <var class="keyword varname">code_block</var>
+}</pre></div>
+</div>
+
+        <div class="p">Both <samp class="codeph apex_code">
+                <var class="keyword varname">variable</var></samp> and <samp class="codeph apex_code">
+                <var class="keyword varname">variable_list</var></samp> must be of the same type as the sObjects
+            that are returned by the <samp class="codeph apex_code">
+                <var class="keyword varname">soql_query</var></samp>. As in standard SOQL queries, the <samp class="codeph apex_code">[<var class="keyword varname">soql_query</var>]</samp> statement can refer
+            to code expressions in their <samp class="codeph apex_code">WHERE</samp> clauses
+            using the <samp class="codeph apex_code">: </samp> syntax. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> s = <span class="string">'Acme'</span>;
+<span class="statement">for</span> (Account a : [SELECT Id, Name from Account
+                  where Name LIKE :(s+<span class="string">'%'</span>)]) {
+    <span class="onelineComment">// Your code</span>
+}</pre></div>
+</div>
+
+        <div class="p">The following example combines creating a list from a SOQL query, with the DML <samp class="codeph apex_code"><span class="statement">update</span></samp>
+            method.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a list of account records from a SOQL query</span>
+List&lt;Account&gt; accs = [SELECT Id, Name FROM Account WHERE Name = <span class="string">'Siebel'</span>]; 
+
+<span class="onelineComment">// Loop through the list and update the Name field</span>
+<span class="statement">for</span>(Account a : accs){
+   a.Name = <span class="string">'Oracle'</span>;
+}
+
+<span class="onelineComment">// Update the database</span>
+<span class="statement">update</span> accs;
+</pre></div>
+</div>
+
+        <div class="section" id="soql_for_loop_desc">
+<a name="soql_for_loop_desc"><!-- --></a><h2 class="helpHead2">SOQL For Loops Versus Standard SOQL Queries</h2>
+
+            
+            <p class="p">SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loops differ from standard SOQL
+                statements because of the method they use to retrieve sObjects. While the standard
+                queries discussed in <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL.htm" title="You can evaluate Salesforce Object Query Language (SOQL) or Salesforce Object Search Language (SOSL) statements on-the-fly in Apex by surrounding the statement in square brackets.">SOQL and SOSL Queries</a> can retrieve either the <samp class="codeph apex_code">count</samp> of a query or a number of object records,
+                SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loops retrieve all sObjects, using
+                efficient chunking with calls to the <samp class="codeph apex_code">query</samp>
+                and <samp class="codeph apex_code">queryMore</samp> methods of SOAP API.
+                Developers can avoid the limit on heap size by using a SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loop to process query results that return
+                multiple records. However, this approach can result in more CPU cycles being used.
+                See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Total heap size</a>.</p>
+
+            <p class="p">Queries including an <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_agg_fns.htm" title="Aggregate functions in SOQL, such as SUM() and MAX(), allow you to roll up and summarize your data in a query.">aggregate function</a> don't support <samp class="codeph apex_code">queryMore</samp>. A run-time exception occurs if you
+                use a query containing an aggregate function that returns more than 2,000 rows in a
+                    <samp class="codeph apex_code"><span class="statement">for</span></samp> loop.</p>
+
+            <p class="p">For fine-grained control over the results of a SOQL query, consider using Apex
+                cursors. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cursors.htm" target="_blank">Apex Cursors</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">SOQL For Loop Formats</h2>
+
+            
+            <div class="p">SOQL <samp class="codeph apex_code"><span class="statement">for</span></samp> loops can process records one at a
+                time using a single sObject variable, or in batches of 200 sObjects at a time using
+                an sObject list:<a name="ForLoopSingleVersusList"><!-- --></a><ul class="ul bulletList" id="ForLoopSingleVersusList">
+                    <li class="li">The single sObject format executes the <samp class="codeph apex_code"><span class="statement">for</span></samp> loop's <samp class="codeph apex_code">&lt;code_block&gt;</samp> one time per sObject record. Consequently,
+                        it’s  easy to understand and use, but is grossly inefficient if you want to
+                        use data manipulation language (DML) statements within the <samp class="codeph apex_code"><span class="statement">for</span></samp> loop body. Each DML statement ends
+                        up processing only one sObject at a time.</li>
+
+                    <li class="li">The sObject list format executes the <samp class="codeph apex_code"><span class="statement">for</span></samp> loop's <samp class="codeph apex_code">&lt;code_block&gt;</samp> one time per list of 200 sObjects.
+                        Consequently, it’s a little more difficult to understand and use, but is the
+                        optimal choice if you must use DML statements within the <samp class="codeph apex_code"><span class="statement">for</span></samp> loop body. Each DML statement can
+                        bulk process a list of sObjects at a time. </li>
+
+                </ul>
+</div>
+
+            <div class="p">For example, the following code illustrates the difference between the two types of
+                SOQL query <samp class="codeph apex_code"><span class="statement">for</span></samp> loops:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a savepoint because the data should not be committed to the database</span>
+Savepoint sp = Database.setSavepoint(); 
+
+<span class="statement">insert</span> <span class="keyword">new</span> Account[]{<span class="keyword">new</span> Account(Name = <span class="string">'yyy'</span>), 
+                     <span class="keyword">new</span> Account(Name = <span class="string">'yyy'</span>), 
+                     <span class="keyword">new</span> Account(Name = <span class="string">'yyy'</span>)};
+
+<span class="onelineComment">// The single sObject format executes the for loop once per returned record</span>
+<span class="keyword">Integer</span> i = 0;
+<span class="statement">for</span> (Account tmp : [SELECT Id FROM Account WHERE Name = <span class="string">'yyy'</span>]) {
+    i++;
+}
+System.assert(i == 3); <span class="onelineComment">// Since there were three accounts named 'yyy' in the</span>
+                       <span class="onelineComment">// database, the loop executed three times</span>
+
+<span class="onelineComment">// The sObject list format executes the for loop once per returned batch</span>
+<span class="onelineComment">// of records</span>
+i = 0;
+<span class="keyword">Integer</span> j;
+<span class="statement">for</span> (Account[] tmp : [SELECT Id FROM Account WHERE Name = <span class="string">'yyy'</span>]) {
+    j = tmp.size();
+    i++;
+}
+System.assert(j == 3); <span class="onelineComment">// The lt should have contained the three accounts</span>
+                       <span class="onelineComment">// named 'yyy'</span>
+System.assert(i == 1); <span class="onelineComment">// Since a single batch can hold up to 200 records and,</span>
+                       <span class="onelineComment">// only three records should have been returned, the </span>
+                       <span class="onelineComment">// loop should have executed only once</span>
+
+<span class="onelineComment">// Revert the database to the original state</span>
+Database.rollback(sp); </pre></div>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <ul class="ul bulletList">
+                    <li class="li">The <samp class="codeph apex_code"><span class="statement">break</span></samp> and <samp class="codeph apex_code"><span class="statement">continue</span></samp> keywords can be used in both
+                        types of inline query <samp class="codeph apex_code"><span class="statement">for</span></samp> loop
+                        formats. When using the sObject list format, <samp class="codeph apex_code"><span class="statement">continue</span></samp> skips to the next list of sObjects.</li>
+
+                    <li class="li">DML statements can only process up to 10,000 records at a time, and sObject
+                        list <samp class="codeph nolang">for</samp> loops process records in
+                        batches of 200. Consequently, if you’re inserting, updating, or deleting
+                        more than one record per returned record in an sObject list <samp class="codeph nolang">for</samp> loop, it’s possible to encounter
+                        runtime limit’s errors. </li>
+
+                    <li class="li">You can get a <samp class="codeph apex_code">QueryException</samp> in a
+                        SOQL <samp class="codeph nolang">for</samp> loop with the message <samp class="codeph nolang">Aggregate query has too many rows for direct
+                            assignment, use FOR loop</samp>. This exception is sometimes thrown
+                        when accessing a large set of child records (200 or more) of a retrieved
+                        sObject inside the loop, or when getting the size of such a record set. For
+                        example, the query in the following SOQL <samp class="codeph nolang">for</samp> loop retrieves child contacts for a particular account. If
+                        this account contains more than 200 child contacts, the statements in the
+                            <samp class="codeph nolang">for</samp> loop cause an exception.
+                            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (Account acct : [SELECT Id, Name, (SELECT Id, Name FROM Contacts) 
+                    FROM Account WHERE Id IN (<span class="string">'&lt;ID value&gt;'</span>)]) { 
+    List&lt;Contact&gt; contactList = acct.Contacts; <span class="onelineComment">// Causes an error</span>
+    <span class="keyword">Integer</span> count = acct.Contacts.size(); <span class="onelineComment">// Causes an error</span>
+    <span class="onelineComment">// Note: If JSON.serialize() is used here on acct, the resulting JSON won't have the complete set of Contacts</span>
+}</pre></div>
+<div class="p">To avoid getting this exception, use a <samp class="codeph nolang">for</samp> loop to iterate over the child
+                            records, as
+                            follows.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (Account acct : [SELECT Id, Name, (SELECT Id, Name FROM Contacts) 
+                    FROM Account WHERE Id IN (<span class="string">'&lt;ID value&gt;'</span>)]) { 
+    <span class="keyword">Integer</span> count=0;
+    <span class="statement">for</span> (Contact c : acct.Contacts) {
+        count++;
+    }
+}</pre></div>
+</div>
+<p class="p">In this example, if <samp class="codeph nolang">JSON.serialize()</samp> is used on <var class="keyword varname">acct</var>, only
+                            the records that have been retrieved so far will be returned and
+                            serialized. Because the Apex SOQL for-loop mechanism is designed to
+                            minimize the amount of heap usage by keeping only a subset of the record
+                            data in memory, the complete sObject and any subquery sObjects will not
+                            be available to obtain complete serialization.</p>
+</li>
+
+                </ul>
+
+            </p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

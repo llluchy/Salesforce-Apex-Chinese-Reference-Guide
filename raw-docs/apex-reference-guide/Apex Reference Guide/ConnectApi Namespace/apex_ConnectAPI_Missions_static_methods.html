@@ -1,0 +1,498 @@
+<a name="apex_ConnectAPI_Missions_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">Missions Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Export and purge mission activity for users. Get a user’s mission progress. Update
+  mission activity counts for users.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_methods">
+<a name="apex_ConnectAPI_Missions_methods"><!-- --></a>
+ <h2 class="helpHead2">Missions Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These methods are for <samp class="codeph apex_code">Missions</samp>. All methods are
+  static.</div>
+
+  <div class="section">
+   <p class="p">All methods in this class require Chatter and are subject to the per user, per namespace, per hour rate limit.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Missions_static_methods.htm#apex_ConnectAPI_Missions_exportUserMissionsActivities_1">exportUserMissionsActivities(communityId, userId)</a></strong><br>
+Export mission activity for a user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Missions_static_methods.htm#apex_ConnectAPI_Missions_userMissionsProgress_1">getUserMissionsProgress(communityId, userId)</a></strong><br>
+Get mission activity progress for a user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Missions_static_methods.htm#apex_ConnectAPI_Missions_purgeUserMissionsActivities_1">purgeUserMissionsActivities(communityId, userId)</a></strong><br>
+Start a job to purge mission activity for a user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Missions_static_methods.htm#apex_ConnectAPI_Missions_purgeUserMissionsActivities_2">purgeUserMissionsActivities(communityId)</a></strong><br>
+Start a job to purge mission activity for all users.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Missions_static_methods.htm#apex_ConnectAPI_Missions_updateUserActivityCount_1">updateUserMissionActivityCount(activityType, activityCount, communityId, userId)</a></strong><br>
+Update the mission activity count for a user.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_exportUserMissionsActivities_1">
+<a name="apex_ConnectAPI_Missions_exportUserMissionsActivities_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">exportUserMissionsActivities(communityId,
+    userId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Export mission activity for a user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">45.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.UserMissionActivitiesJob
+          exportUserMissionsActivities(<span class="keyword">String</span> communityId, <span class="keyword">String</span> userId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">userId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the user.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_user_mission_activities_job.htm" title="User mission activities job."><samp class="codeph apex_code">ConnectApi.UserMissionActivitiesJob</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">You can export these activities with this method.<ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">FeedItemAnswerAQuestion</samp>—User answered a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemLikeSomething</samp>—User liked a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemMarkAnswerAsBest</samp>—User marked an answer as the best answer.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemPostQuestion</samp>—User posted a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAComment</samp>—User received a comment on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveALike</samp>—User received a like on a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAnAnswer</samp>—User received an answer to a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAComment</samp>—User commented on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAPost</samp>—User made a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemYourAnswerMarkedBest</samp>—​User’s answer was marked as the best answer.</li>
+</ul>
+</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_userMissionsProgress_1">
+<a name="apex_ConnectAPI_Missions_userMissionsProgress_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getUserMissionsProgress(communityId, userId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get mission activity progress for a user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">46.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.UserMissionActivityCollection
+          getUserMissionsProgress(<span class="keyword">String</span> communityId, <span class="keyword">String</span> userId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">userId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the user.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_user_mission_activity_collection.htm" title="List of mission activities for a user.">ConnectApi.UserMissionActivityCollection</a></samp></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_purgeUserMissionsActivities_1">
+<a name="apex_ConnectAPI_Missions_purgeUserMissionsActivities_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">purgeUserMissionsActivities(communityId,
+    userId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Start a job to purge mission activity for a user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">45.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.UserMissionActivitiesJob
+          purgeUserMissionsActivities(<span class="keyword">String</span> communityId, <span class="keyword">String</span> userId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">userId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the user.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_user_mission_activities_job.htm" title="User mission activities job."><samp class="codeph apex_code">ConnectApi.UserMissionActivitiesJob</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">This method purges these activities.<ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">FeedItemAnswerAQuestion</samp>—User answered a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemLikeSomething</samp>—User liked a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemMarkAnswerAsBest</samp>—User marked an answer as the best answer.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemPostQuestion</samp>—User posted a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAComment</samp>—User received a comment on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveALike</samp>—User received a like on a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAnAnswer</samp>—User received an answer to a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAComment</samp>—User commented on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAPost</samp>—User made a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemYourAnswerMarkedBest</samp>—​User’s answer was marked as the best answer.</li>
+</ul>
+</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_purgeUserMissionsActivities_2">
+<a name="apex_ConnectAPI_Missions_purgeUserMissionsActivities_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">purgeUserMissionsActivities(communityId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Start a job to purge mission activity for all users.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">49.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.UserMissionActivitiesJob
+          purgeUserMissionsActivities(<span class="keyword">String</span> communityId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_user_mission_activities_job.htm" title="User mission activities job."><samp class="codeph apex_code">ConnectApi.UserMissionActivitiesJob</samp></a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">This method purges these activities.<ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">FeedItemAnswerAQuestion</samp>—User answered a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemLikeSomething</samp>—User liked a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemMarkAnswerAsBest</samp>—User marked an answer as the best answer.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemPostQuestion</samp>—User posted a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAComment</samp>—User received a comment on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveALike</samp>—User received a like on a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAnAnswer</samp>—User received an answer to a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAComment</samp>—User commented on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAPost</samp>—User made a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemYourAnswerMarkedBest</samp>—​User’s answer was marked as the best answer.</li>
+</ul>
+</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Missions_updateUserActivityCount_1">
+<a name="apex_ConnectAPI_Missions_updateUserActivityCount_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">updateUserMissionActivityCount(activityType, activityCount,
+      communityId, userId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Update the mission activity count for a user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">45.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.UserMissionActivityStatus
+          updateUserMissionActivityCount(ConnectApi.UserMissionActivityType activityType, <span class="keyword">Integer</span>
+          activityCount, <span class="keyword">String</span> communityId, <span class="keyword">String</span> userId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <p class="p"><strong class="ph b"><var class="keyword varname">activityType</var></strong></p>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#userMissionActivityTypeEnum"><samp class="codeph apex_code">ConnectApi.UserMissionActivityType</samp></a></p>
+
+      <p class="p">Type of mission activity for a user.
+            Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">FeedItemAnswerAQuestion</samp>—User answered a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemLikeSomething</samp>—User liked a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemMarkAnswerAsBest</samp>—User marked an answer as the best answer.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemPostQuestion</samp>—User posted a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAComment</samp>—User received a comment on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveALike</samp>—User received a like on a post or comment.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemReceiveAnAnswer</samp>—User received an answer to a question.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAComment</samp>—User commented on a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemWriteAPost</samp>—User made a post.</li>
+ <li class="li">
+<samp class="codeph apex_code">FeedItemYourAnswerMarkedBest</samp>—​User’s answer was marked as the best answer.</li>
+</ul>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">activityCount</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Number of mission activities of the specified type for the user.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">userId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID of the user.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_user_mission_activity_output.htm" title="Status of mission activity for a user."><samp class="codeph apex_code">ConnectApi.UserMissionActivityStatus</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+</div>
+</div>

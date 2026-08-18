@@ -1,0 +1,1008 @@
+<a name="apex_pages_standardsetcontroller"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">StandardSetController Class</h1>
+
+ 
+ 
+ <div class="body">
+<div class="shortdesc">
+<samp class="codeph apex_code">StandardSetController</samp> objects allow you to
+  create list controllers similar to, or as extensions of, the pre-built Visualforce list
+  controllers provided by Salesforce.</div>
+
+  
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_ApexPages.htm" title="The ApexPages namespace provides classes used in Visualforce controllers.">ApexPages</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <div class="p">The <samp class="codeph apex_code">StandardSetController</samp> class also contains a
+     <dfn class="term">prototype object</dfn>. This is a single <samp class="codeph nolang">sObject</samp>
+    contained within the Visualforce StandardSetController class. If the prototype object's fields
+    are set, those values are used during the save action, meaning that the values are applied to
+    every record in the set controller's collection. This is useful for writing pages that perform
+    mass updates (applying identical changes to fields within a collection of objects). <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Fields
+     that are required in other Salesforce objects will keep the same requiredness when used by the
+     prototype object.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+
+   
+   <div class="p">You can instantiate a StandardSetController in either of the following ways:<ul class="ul bulletList">
+     <li class="li">From a list of
+      sObjects:<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;account&gt; accountList = [SELECT Name FROM Account LIMIT 20];
+ApexPages.StandardSetController ssc = <span class="keyword">new</span> ApexPages.StandardSetController(accountList);</pre></div>
+</li>
+
+     <li class="li">From a query
+       locator:<div class="codeSection apex_code"><pre class="codeblock brush:apex">ApexPages.StandardSetController ssc = 
+<span class="keyword">new</span> ApexPages.StandardSetController(Database.getQueryLocator([SELECT Name,CloseDate FROM Opportunity]));</pre></div>
+</li>
+
+    </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The maximum record limit for StandardSetController is <span class="ph" id="StandardSetController_max_records"><a name="StandardSetController_max_records"><!-- --></a>10,000</span> records. Instantiating
+     StandardSetController using a query locator returning more than 10,000 records causes a
+     LimitException to be thrown. However, instantiating StandardSetController with a list of more
+     than 10,000 records doesn’t throw an exception, and instead truncates the records to the
+     limit.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">
+<div class="p">The
+    following example shows how a StandardSetController object can be used in the constructor for a
+    custom list
+    controller:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> opportunityList2Con {
+    <span class="onelineComment">// ApexPages.StandardSetController must be instantiated</span>
+    <span class="onelineComment">// for standard list controllers</span>
+    <span class="keyword">public</span> ApexPages.StandardSetController setCon {
+        get {
+            <span class="statement">if</span>(setCon == <span class="keyword">null</span>) {
+                setCon = <span class="keyword">new</span> ApexPages.StandardSetController(Database.getQueryLocator(
+                    [SELECT Name, CloseDate FROM Opportunity]));
+            }
+            <span class="statement">return</span> setCon;
+        }
+        set;
+    }
+
+    <span class="onelineComment">// Initialize setCon and return a list of records</span>
+    <span class="keyword">public</span> List&lt;Opportunity&gt; getOpportunities() {
+        <span class="statement">return</span> (List&lt;Opportunity&gt;) setCon.getRecords();
+    }
+}</pre></div>
+</div>
+<div class="p">The following Visualforce markup shows how the controller above can be used
+    in a page:
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"opportunityList2Con"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span>&gt;
+        <span class="tag">&lt;apex:pageBlockTable</span><span class="attribute"> value=</span><span class="string">"{!opportunities}"</span><span class="attribute"> var=</span><span class="string">"o"</span>&gt;
+            <span class="tag">&lt;apex:column</span><span class="attribute"> value=</span><span class="string">"{!o.Name}"</span>/&gt;
+            <span class="tag">&lt;apex:column</span><span class="attribute"> value=</span><span class="string">"{!o.CloseDate}"</span>/&gt;
+        <span class="tag">&lt;/apex:pageBlockTable</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+</div>
+</div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_constructors">StandardSetController Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_methods">StandardSetController Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_constructors">
+<a name="apex_ApexPages_StandardSetController_constructors"><!-- --></a>
+<h2 class="helpHead2">StandardSetController Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">StandardSetController</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_ctor">StandardSetController(queryLocator)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">ApexPages.StandardSetController</samp> class for the list of objects returned by the query   locator.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_ctor_2">StandardSetController(controllerSObjects)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">ApexPages.StandardSetController</samp> class for the specified list of standard or custom   objects.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_ctor">
+<a name="apex_ApexPages_StandardSetController_ctor"><!-- --></a>
+<h3 class="helpHead3">StandardSetController(queryLocator)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates an instance of the <samp class="codeph apex_code">ApexPages.StandardSetController</samp> class for the list of objects returned by the query
+  locator.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> StandardSetController(Database.QueryLocator
+     queryLocator)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">queryLocator</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_batch.htm#apex_methods_system_database_batch" title="Represents the record set returned by Database.getQueryLocator and used with Batch Apex.">Database.QueryLocator</a> A query locator representing a list of sObjects.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_ctor_2">
+<a name="apex_ApexPages_StandardSetController_ctor_2"><!-- --></a>
+<h3 class="helpHead3">StandardSetController(controllerSObjects)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates an instance of the <samp class="codeph apex_code">ApexPages.StandardSetController</samp> class for the specified list of standard or custom
+  objects.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> StandardSetController(List&lt;sObject&gt;
+               controllerSObjects)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">controllerSObjects</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_methods">sObject</a>&gt; A List of standard or custom objects.</li>
+
+</ul>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="p">
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;account&gt; accountList = [SELECT Name FROM Account LIMIT 20];
+ApexPages.StandardSetController ssc = <span class="keyword">new</span> ApexPages.StandardSetController(accountList);</pre></div>
+
+   </div>
+
+  </div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_methods">
+<a name="apex_ApexPages_StandardSetController_methods"><!-- --></a>
+<h2 class="helpHead2">StandardSetController Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">StandardSetController</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_cancel">cancel()</a></strong><br>
+Returns the PageReference of the original page, if known, or the home page.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_first">first()</a></strong><br>
+Changes the set of records that the controller returns to the first   page of records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getCompleteResult">getCompleteResult()</a></strong><br>
+Indicates whether there are more records in the set than the maximum record limit. If this is false, there are more records than you can process using the list controller. The maximum record limit is 10,000 records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getFilterId">getFilterId()</a></strong><br>
+Returns the ID of the filter that is currently in context.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getHasNext">getHasNext()</a></strong><br>
+Indicates whether there are more records after the current page set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getHasPrevious">getHasPrevious()</a></strong><br>
+Indicates whether there are more records before the current page set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getListViewOptions">getListViewOptions()</a></strong><br>
+Returns a list of the listviews available to the current user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getPageNumber">getPageNumber()</a></strong><br>
+Returns the page number of the current page set. Note that the first page returns 1.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getPageSize">getPageSize()</a></strong><br>
+Returns the number of records included in each page set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getRecord">getRecord()</a></strong><br>
+Returns the sObject that represents the changes to the selected records. This retrieves the prototype object contained within the class, and is used for performing mass updates.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getRecords">getRecords()</a></strong><br>
+Returns the list of sObjects in the current page set. This list is immutable, i.e. you can't call <samp class="codeph apex_code">clear</samp>() on it.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getResultSize">getResultSize()</a></strong><br>
+Returns the number of records in the set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_getSelected">getSelected()</a></strong><br>
+Returns the list of sObjects that have been selected.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_last">last()</a></strong><br>
+Changes the set of records that the controller returns to the last   page of records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_next">next()</a></strong><br>
+Changes the set of records that the controller returns to the next   page of records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_previous">previous()</a></strong><br>
+Changes the set of records that the controller returns to the   previous page of records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_save">save()</a></strong><br>
+Inserts new records or updates existing records that have been changed. After this operation is finished, it returns a PageReference to the original page, if known, or the home page.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_setFilterID">setFilterID(filterId)</a></strong><br>
+Sets the filter ID of the controller.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_setpageNumber">setpageNumber(pageNumber)</a></strong><br>
+Sets the page number.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_setPageSize">setPageSize(pageSize)</a></strong><br>
+Sets the number of records in each page set.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_ApexPages_StandardSetController_setSelected">setSelected(selectedRecords)</a></strong><br>
+Set the selected records to the records specified in the       <var class="keyword varname">selectedRecords</var> argument.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_cancel">
+<a name="apex_ApexPages_StandardSetController_cancel"><!-- --></a>
+<h3 class="helpHead3">cancel()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the PageReference of the original page, if known,
+or the home page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference cancel()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_first">
+<a name="apex_ApexPages_StandardSetController_first"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">first()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Changes the set of records that the controller returns to the first
+  page of records.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void first()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getCompleteResult">
+<a name="apex_ApexPages_StandardSetController_getCompleteResult"><!-- --></a>
+<h3 class="helpHead3">getCompleteResult()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether there are more records in the set than
+the maximum record limit. If this is false, there are more records
+than you can process using the list controller. The maximum record
+limit is 10,000 records.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getCompleteResult()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getFilterId">
+<a name="apex_ApexPages_StandardSetController_getFilterId"><!-- --></a>
+<h3 class="helpHead3">getFilterId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID of the filter that is currently in context.</div>
+
+    <div class="section">
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph nolang">getFilterID()</samp> method
+        doesn’t support list views without filter IDs, such as the Recently
+        Viewed list view. In these cases, the method returns the first filter ID
+        of the object’s available list views. If called within an <samp class="codeph nolang">&lt;apex:enhancedList&gt;</samp> component, the
+        method returns the filter ID of the last used list view.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getFilterId()</samp></p>
+
+      
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_list_views.htm" target="_blank" title="Visualforce Developer Guide: List Views with Standard
+       List Controllers - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: List Views with Standard
+       List Controllers</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getHasNext">
+<a name="apex_ApexPages_StandardSetController_getHasNext"><!-- --></a>
+<h3 class="helpHead3">getHasNext()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether there are more records after the current
+page set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getHasNext()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getHasPrevious">
+<a name="apex_ApexPages_StandardSetController_getHasPrevious"><!-- --></a>
+<h3 class="helpHead3">getHasPrevious()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether there are more records before the current
+page set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getHasPrevious()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getListViewOptions">
+<a name="apex_ApexPages_StandardSetController_getListViewOptions"><!-- --></a>
+<h3 class="helpHead3">getListViewOptions()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a list of the listviews available to the current
+user.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.SelectOption getListViewOptions()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_pages_selectoption" title="A SelectOption object specifies one of the possible values for a Visualforce selectCheckboxes, selectList, or selectRadio component.">System.SelectOption</a>[]</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_list_views.htm" target="_blank" title="Visualforce Developer Guide: List Views with Standard
+       List Controllers - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: List Views with Standard
+       List Controllers</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getPageNumber">
+<a name="apex_ApexPages_StandardSetController_getPageNumber"><!-- --></a>
+<h3 class="helpHead3">getPageNumber()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the page number of the current page set. Note that
+the first page returns 1.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getPageNumber()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getPageSize">
+<a name="apex_ApexPages_StandardSetController_getPageSize"><!-- --></a>
+<h3 class="helpHead3">getPageSize()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the number of records included in each page set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getPageSize()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getRecord">
+<a name="apex_ApexPages_StandardSetController_getRecord"><!-- --></a>
+<h3 class="helpHead3">getRecord()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the sObject that represents the changes to the
+selected records. This retrieves the prototype object contained within
+the class, and is used for performing mass updates.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> sObject getRecord()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a></p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_custom_list_controller.htm" target="_blank" title="Visualforce Developer Guide: Building a Custom List
+       Controller - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Building a Custom List
+       Controller</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getRecords">
+<a name="apex_ApexPages_StandardSetController_getRecords"><!-- --></a>
+<h3 class="helpHead3">getRecords()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the list of sObjects in the current page set. This
+list is immutable, i.e. you can't call <samp class="codeph apex_code">clear</samp>() on it.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> sObject[] getRecords()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a>[]</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_custom_list_controller.htm" target="_blank" title="Visualforce Developer Guide: Building a Custom List
+       Controller - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Building a Custom List
+       Controller</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getResultSize">
+<a name="apex_ApexPages_StandardSetController_getResultSize"><!-- --></a>
+<h3 class="helpHead3">getResultSize()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the number of records in the set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getResultSize()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_getSelected">
+<a name="apex_ApexPages_StandardSetController_getSelected"><!-- --></a>
+<h3 class="helpHead3">getSelected()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the list of sObjects that have been selected.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> sObject[] getSelected()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a>[]</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_last">
+<a name="apex_ApexPages_StandardSetController_last"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">last()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Changes the set of records that the controller returns to the last
+  page of records.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void last()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_next">
+<a name="apex_ApexPages_StandardSetController_next"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">next()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Changes the set of records that the controller returns to the next
+  page of records.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void next()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_previous">
+<a name="apex_ApexPages_StandardSetController_previous"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">previous()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Changes the set of records that the controller returns to the
+  previous page of records.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void previous()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_save">
+<a name="apex_ApexPages_StandardSetController_save"><!-- --></a>
+<h3 class="helpHead3">save()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Inserts new records or updates existing records that have
+been changed. After this operation is finished, it returns a PageReference
+to the original page, if known, or the home page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference save()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_actions.htm" target="_blank" title="Visualforce Developer Guide: Standard List Controller
+       Actions - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Standard List Controller
+       Actions</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_setFilterID">
+<a name="apex_ApexPages_StandardSetController_setFilterID"><!-- --></a>
+<h3 class="helpHead3">setFilterID(filterId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the filter ID of the controller.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setFilterID(<span class="keyword">String</span> filterId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">filterId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_setpageNumber">
+<a name="apex_ApexPages_StandardSetController_setpageNumber"><!-- --></a>
+<h3 class="helpHead3">setpageNumber(pageNumber)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the page number.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setpageNumber(<span class="keyword">Integer</span> pageNumber)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">pageNumber</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_setPageSize">
+<a name="apex_ApexPages_StandardSetController_setPageSize"><!-- --></a>
+<h3 class="helpHead3">setPageSize(pageSize)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the number of records in each page set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setPageSize(<span class="keyword">Integer</span> pageSize)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">pageSize</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_StandardSetController_setSelected">
+<a name="apex_ApexPages_StandardSetController_setSelected"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setSelected(selectedRecords)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Set the selected records to the records specified in the
+      <var class="keyword varname">selectedRecords</var> argument.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setSelected(sObject[]
+          selectedRecords)</samp></p>
+
+      
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">selectedRecords</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a>[]</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use the <samp class="codeph apex_code">setSelected()</samp> method in
+        your Apex controller or controller extension to manually set the records
+        displayed on a Visualforce page. The <samp class="codeph apex_code">setSelected()</samp> method overwrites any previously selected
+        records with the records specified in the
+          <var class="keyword varname">selectedRecords</var> argument.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code">AccountNamePage</samp> shows a table
+        of account names. <samp class="codeph apex_code">MyControllerExtension</samp>’s constructor contains a SOQL query
+        that returns a list of accounts. This list is passed into <samp class="codeph apex_code">setSelected()</samp> so that the account
+        records in the list are selected and displayed in the table.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">&lt;!-- AccountNamePage.page --&gt;
+&lt;apex:page standardController=<span class="string">"Account"</span> recordSetVar=<span class="string">"accounts"</span> extensions=<span class="string">"MyControllerExtension"</span>&gt;
+    &lt;apex:pageBlock&gt;
+        &lt;apex:pageBlockTable value=<span class="string">"{!accounts}"</span> var=<span class="string">"acc"</span>&gt;
+            &lt;apex:column value=<span class="string">"{!acc.name}"</span>/&gt;
+        &lt;/apex:pageBlockTable&gt;
+    &lt;/apex:pageBlock&gt;
+&lt;/apex:page&gt;
+
+
+<span class="onelineComment">// MyControllerExtension.cls</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> MyControllerExtension {
+    <span class="keyword">private</span> ApexPages.StandardSetController setController;
+
+    <span class="keyword">public</span> MyControllerExtension(ApexPages.StandardSetController setController) {
+        <span class="statement">this</span>.setController = setController;
+        
+        Account [] records = [SELECT Id, Name FROM Account LIMIT 30];
+        setController.setSelected(records);
+    }
+}
+</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_sosc_access_data.htm" target="_blank" title="Visualforce Developer Guide: Accessing Data with List
+       Controllers - HTML (New Window)"><em class="ph i">Visualforce Developer Guide</em>: Accessing Data with List
+       Controllers</a></div></li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>

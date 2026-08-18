@@ -1,0 +1,27 @@
+<a name="apex_connector_paging"><!-- --></a><h1 class="helpHead1">Paging with the Apex Connector Framework</h1><div class="body conbody">
+<div class="shortdesc">When displaying a large set of records in the user interface, Salesforce breaks the
+        set into batches and displays one batch. You can then page through those batches. However,
+        custom adapters for Salesforce Connect don’t automatically support paging of any kind. To
+        support paging through external object data that’s obtained by a custom adapter, implement
+        server-driven or client-driven paging.</div>
+
+        <p class="p">With server-driven paging, the external system controls the paging and ignores any batch
+            boundaries or page sizes that are specified in queries. To enable server-driven paging,
+            declare the <samp class="codeph apex_code">QUERY_PAGINATION_SERVER_DRIVEN</samp>
+            capability in your <samp class="codeph apex_code">DataSource.Provider</samp> class.
+            Also, your Apex code must generate a query token and use it to determine and fetch the
+            next batch of results.</p>
+
+        <p class="p">With client-driven paging, you use <samp class="codeph nolang">LIMIT</samp> and <samp class="codeph nolang">OFFSET</samp> clauses to page through result sets. Factor in
+            the <samp class="codeph apex_code">offset</samp> and <samp class="codeph apex_code">maxResults</samp> properties in the <samp class="codeph apex_code">DataSource.QueryContext</samp> to determine which rows to return. For example,
+            suppose that the result set has 20 rows with numeric <samp class="codeph apex_code">ExternalID</samp> values from 1 to 20. If we ask for an <samp class="codeph apex_code">offset</samp> of <samp class="codeph nolang">5</samp> and
+                <samp class="codeph apex_code">maxResults</samp> of <samp class="codeph nolang">5</samp>, we expect to get the rows with IDs <samp class="codeph nolang">6</samp>–<samp class="codeph nolang">10</samp>. We recommend that you do all
+            filtering in the external system, outside of Apex, using methods that the external
+            system supports.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_QueryContext.htm" target="_blank" title="Apex Reference Guide: QueryContext Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: QueryContext Class</a></div></li></ul>
+</div>
+</div>

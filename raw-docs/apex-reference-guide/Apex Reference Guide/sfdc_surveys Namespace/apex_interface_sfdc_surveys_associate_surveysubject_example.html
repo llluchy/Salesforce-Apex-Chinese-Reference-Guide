@@ -1,0 +1,80 @@
+<a name="apex_interface_sfdc_surveys_associate_surveysubject_example"><!-- --></a><h1 class="helpHead1">Example Implementation to Associate SurveySubjects with SurveyInvitation and
+        SurveyResponses</h1><div class="body refbody">
+<div class="shortdesc">If no survey responses are populated, create a custom code to associate
+   SurveySubjects with SurveyInvitation and SurveyResponses.</div>
+
+  <div class="section">
+   <p class="p">This example shows how to associate SurveySubjects with SurveyInvitation and
+                SurveyResponses.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CreateEntriesInSurveyInvitationRespRL {
+    <span class="onelineComment">// Utility to create SurveyInvitation and SurveySubject record</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> addEntry(<span class="keyword">String</span> associatedRecordId, <span class="keyword">String</span> surveyId, <span class="keyword">String</span> participantId) {
+        <span class="keyword">String</span> invitationId = createSurveyInvitation(surveyId, participantId);
+ 
+        createSurveySubject(invitationId, associatedRecordId);
+    }
+ 
+    <span class="onelineComment">// Create an unauthenticated invitation by setting the surveyId and participantId</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">String</span> createSurveyInvitation(<span class="keyword">String</span> surveyId, <span class="keyword">String</span> participantId) {
+        SurveyInvitation surveyInv = <span class="keyword">new</span> SurveyInvitation();
+        surveyInv.Name = <span class="string">'SurveyInvitationForCase'</span>; <span class="onelineComment">// add your survey invitation name here</span>
+        surveyInv.ParticipantId = participantId;
+        surveyInv.CommunityId = <span class="string">'0DBRM0000004n4y'</span>; <span class="onelineComment">//add your community id here</span>
+        surveyInv.OptionsAllowGuestUserResponse = <span class="keyword">true</span>;
+        surveyInv.SurveyId = surveyId;
+ 
+        <span class="onelineComment">// Insert the SurveyInvitation Record</span>
+        <span class="statement">insert</span> surveyInv;
+ 
+        <span class="statement">return</span> surveyInv.Id;
+    }
+ 
+    <span class="onelineComment">// Associate the above invitation to the required record (eg: Case, Opportunity...)</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> createSurveySubject(<span class="keyword">String</span> invitationId, <span class="keyword">String</span> associatedRecordId) {
+        SurveySubject subj = <span class="keyword">new</span> SurveySubject();
+        subj.Name = <span class="string">'Sur_Subject_for_invitation'</span>;
+        subj.ParentId = invitationId; <span class="onelineComment">// similary you can use survey response id to associate survey subject to a response record.</span>
+        subj.SubjectId = associatedRecordId;
+ 
+        <span class="onelineComment">// Insert the SurveySubject Record</span>
+        <span class="statement">insert</span> subj;
+    }
+}
+ 
+ 
+ 
+<span class="onelineComment">//Use this trigger to create a survey subject record associated to</span>
+<span class="onelineComment">//the Survey Response record</span>
+ 
+<span class="keyword">trigger</span> SurveyResponseForCaseTrigger on SurveyResponse (after <span class="statement">insert</span>) {
+        
+    System.debug(<span class="string">'Inside Survey response trigger '</span>);
+     <span class="statement">for</span>(SurveyResponse sr: Trigger.New)
+    {
+      SurveySubject subj = <span class="keyword">new</span> SurveySubject();
+        subj.Name = <span class="string">'Sur_Subject_for_response'</span>;
+        subj.ParentId = sr.id; <span class="onelineComment">//Associating survey response id</span>
+        
+       <span class="onelineComment">//Get the associatedRecordId recordId (like Case, Opportunity etc) using the SurveyInvitation Id and </span>
+       <span class="onelineComment">//assigning it to SubjectId, assuming we inserted SurveySubject record for the associated invitation </span>
+       <span class="onelineComment">//using the previous code</span>
+       
+       List&lt;SurveySubject&gt; SurSubj=[select subjectid from SurveySubject where parentid = :sr.invitationId];
+        <span class="statement">for</span>(SurveySubject sub:SurSubj){
+            <span class="keyword">String</span> ids=<span class="keyword">String</span>.valueOf(sub.subjectid).substring(0,3);
+            <span class="statement">if</span>(<span class="string">'500'</span>.equals(ids)){
+                
+                subj.SubjectId =sub.subjectid;
+        <span class="onelineComment">// Insert the SurveySubject Record</span>
+            <span class="statement">insert</span> subj;
+                <span class="statement">break</span>;
+        
+            }
+    
+}
+</pre></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

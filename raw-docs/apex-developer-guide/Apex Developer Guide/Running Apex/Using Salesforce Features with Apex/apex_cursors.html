@@ -1,0 +1,234 @@
+<a name="apex_cursors"><!-- --></a><h1 class="helpHead1">Apex Cursors</h1><div class="body conbody">
+<div class="shortdesc">Use Apex cursors to break up the processing of a SOQL query
+        result into pieces that can be processed within the bounds of a single transaction. Cursors
+        provide you with the ability to work with large query result sets, while not actually
+        returning the entire result set. You can traverse a query result in parts, with the
+        flexibility to navigate forward and back in the result set. Package developers and advanced
+        developers can use cursors to work with high-volume and high-resource processing jobs.
+        Cursors combined with chained queueable Apex jobs are a powerful alternative to batch Apex
+        and address some of batch Apex’s limitations.</div>
+
+        <div class="section">
+            <p class="p">Apex cursors are stateless and generate results from the offset position that is
+                specified in the <samp class="codeph ">Cursor.fetch(integer position, integer
+                    count)</samp> method. You must track the offsets or positions of the results
+                within your particular processing scenario.</p>
+
+            <p class="p">A cursor is created when a SOQL query is executed on a <samp class="codeph ">Database.getCursor()</samp> or <samp class="codeph ">Database.getCursorWithBinds()</samp> call. When a <samp class="codeph ">Cursor.fetch(integer position, integer count)</samp> method is invoked with
+                an offset position and the count of records to fetch, the corresponding rows are
+                returned from the cursor. The maximum number of rows per cursor is 50 million, regardless of whether the operation is synchronous or asynchronous. To get the
+                number of cursor rows returned from the SOQL query, use <samp class="codeph ">Cursor.getNumRecords()</samp>.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex Cursors establish a fixed set of resulting record IDs when they’re created.
+                Subsequent record updates after the cursor is established don’t affect the existing
+                set of record IDs. For example, if an object field is updated such that the record
+                no longer meets the initial <samp class="codeph apex_code">WHERE</samp> clause of
+                the SOQL query, the record ID remains in the result set. Similarly, subsequent
+                changes to record sharing rules don’t alter the result set.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">Calling the <samp class="codeph ">Cursor.fetch()</samp> method counts against
+                the SOQL query limit, and the rows fetched count against the SOQL query row limit.
+                You can make a maximum of 100
+                <samp class="codeph ">Cursor.fetch()</samp> calls per transaction.</p>
+
+            <p class="p">Apex cursors throw these new System exceptions: <samp class="codeph ">System.FatalCursorException</samp> and <samp class="codeph ">System.TransientCursorException</samp>. Transactions that fail with <samp class="codeph ">System.TransientCursorException</samp> can be retried.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Apex Cursor Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> QueryChunkingQueueable <span class="keyword">implements</span> Queueable {
+    <span class="keyword">private</span> Database.Cursor locator;
+    <span class="keyword">private</span> <span class="keyword">Integer</span> position;
+
+    <span class="keyword">public</span> QueryChunkingQueueable() {
+        locator = Database.getCursor(
+            <span class="string">'SELECT Id FROM Contact WHERE LastActivityDate = LAST_N_DAYS:400'</span>,
+            AccessLevel.USER_MODE);
+        position = 0;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext ctx) {
+        <span class="keyword">Integer</span> remainingRows = locator.getNumRecords() - position;
+        <span class="statement">if</span> (remainingRows == 0) {
+            <span class="statement">return</span>; <span class="onelineComment">// Nothing to do</span>
+        }
+
+        <span class="onelineComment">// Take the minimum of batch size and remaining rows to avoid over-fetching</span>
+        <span class="keyword">Integer</span> fetchSize = Math.min(200, remainingRows);
+
+        List&lt;Contact&gt; scope = locator.fetch(position, 200);
+        position += scope.size();
+        <span class="onelineComment">// do something, like archive or delete the scope list records</span>
+        <span class="statement">if</span> (position &lt; locator.getNumRecords()) {
+            <span class="onelineComment">// process the next chunk</span>
+            System.enqueueJob(<span class="statement">this</span>);
+        }
+    }
+}
+
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Pagination Cursors</h2>
+
+            
+            <p class="p">Like a standard Apex cursor, an Apex pagination cursor provides a pointer to a large
+                SOQL query result set. However, an Apex pagination cursor is designed for UI-based
+                pagination, such as multipage record lists. </p>
+
+            <p class="p">To create a pagination cursor, call <samp class="codeph nolang">Database.getPaginationCursor()</samp> or <samp class="codeph nolang">Database.getPaginationCursorWithBinds()</samp> with a SOQL query as an
+                argument. A single <samp class="codeph nolang">Database.PaginationCursor</samp>
+                instance can have a maximum of 100,000 rows, regardless of whether the operation is synchronous or asynchronous. This
+                size limit is lower than that of a regular Apex cursor, as pagination cursors are
+                designed for human-readable data. </p>
+
+            <p class="p">However, pagination cursors have a higher instance daily limit than that of regular
+                Apex cursors. Whereas standard cursors are limited to 10,000 instances per org per 24-hour period, pagination cursors are limited to 200,000 instances per org per 24-hour period. This higher instance limit supports many
+                users accessing records lists that rely on smaller pagination cursors.</p>
+
+            <p class="p">To retrieve a page of rows from a pagination cursor, call <samp class="codeph nolang">PaginationCursor.fetchPage(integer start, integer pageSize)</samp>. The
+                    <var class="keyword varname">start</var> parameter is the zero-based index from which to begin
+                fetching rows, and the <var class="keyword varname">pageSize</var> is the maximum number of rows to
+                retrieve for this page. The maximum <var class="keyword varname">pageSize</var> value is 2000 rows.</p>
+
+            <p class="p">Unlike a standard Apex cursor, a pagination cursor retrieves a complete page of
+                records, where record rows deleted after the creation of the cursor are skipped over
+                by default. This way, the number of rows displayed per page is consistent.</p>
+
+            <p class="p">For example, let’s say that you create a standard cursor and a pagination cursor on
+                the same SOQL query, where the result set is 100 rows. After the cursors are
+                created, you delete the first five rows in the set, indexed 0-4. If you then call
+                    <samp class="codeph nolang">Cursor.fetch(0, 20)</samp>, only 15 rows are
+                retrieved—rows indexed 5-19. However, if you call <samp class="codeph nolang">PaginationCursor.fetchPage(0, 20)</samp>, 20 rows are retrieved—rows indexed
+                5-24. The <samp class="codeph nolang">fetchPage()</samp> method automatically
+                skips over the five deleted records so that a complete page is retrieved.</p>
+
+            <p class="p">To manage this handling of deleted records, the <samp class="codeph nolang">fetchPage()</samp> method returns a <samp class="codeph nolang">Database.CursorFetchResult</samp> object instead of only the list of results.
+                The <samp class="codeph nolang">Database.CursorFetchResult</samp> object
+                encapsulates the rows retrieved and information for the next pagination call.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">To retrieve the rows as a list of sObjects, call <samp class="codeph nolang">CursorFetchResult.getRecords()</samp>.</li>
+
+                <li class="li">To retrieve the number of deleted rows that the cursor skipped in the <samp class="codeph nolang">fetchPage()</samp> operation, call <samp class="codeph nolang">CursorFetchResult.getDeletedRows()</samp>.</li>
+
+                <li class="li">To retrieve the next page of results, first call <samp class="codeph nolang">CursorFetchResult.getNextIndex()</samp>, and then use the return value as
+                    the <var class="keyword varname">start</var> parameter in the next <samp class="codeph nolang">fetchPage()</samp> call.</li>
+
+                <li class="li">To determine whether to make subsequent calls to <samp class="codeph nolang">fetchPage()</samp>, use the <samp class="codeph nolang">CursorFetchResult.isDone()</samp> method. The method returns <samp class="codeph nolang">true</samp> if the specified
+                        <var class="keyword varname">pageSize</var> is reached, which indicates that a full page of
+                    results is retrieved. It also returns <samp class="codeph nolang">true</samp>
+                    if the pagination cursor reaches the end of a result set before the specified
+                        <var class="keyword varname">pageSize</var> is reached, which indicates that a partial,
+                    final page of results is retrieved.</li>
+
+            </ul>
+<p class="p">Calling the <samp class="codeph nolang">PaginationCursor.fetchPage()</samp> and <samp class="codeph nolang">PaginationCursor.fetchDeleted()</samp> methods count
+                against the SOQL query limit, and the rows fetched count against the SOQL query row
+                limit.</p>
+
+            <p class="p">Apex pagination cursors throw these System exceptions: <samp class="codeph nolang">System.FatalCursorException</samp> and <samp class="codeph nolang">System.TransientCursorException</samp>. Transactions that fail with <samp class="codeph nolang">System.TransientCursorException</samp> can be retried.</p>
+
+        </div>
+
+        
+        <div class="section">
+<h2 class="helpHead2">Cursors and Pagination Cursor Limits</h2>
+
+            
+            <p class="p">To get limits on Apex cursors and Apex pagination cursors, use these methods in the
+                    <samp class="codeph ">Limits</samp> class.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<samp class="codeph nolang">Limits.getApexCursorRows()</samp> and its upper
+                    bound <samp class="codeph nolang">Limits.getLimitApexCursorRows()</samp>
+                    method</li>
+
+                <li class="li">
+<samp class="codeph nolang">Limits.getFetchCallsOnApexCursor()</samp> and its
+                    upper bound <samp class="codeph nolang">Limits.getLimitFetchCallsOnApexCursor()</samp> method</li>
+
+                <li class="li">
+<samp class="codeph nolang">Limits.getApexCursors()</samp> and its upper bound
+                        <samp class="codeph nolang">Limits.getLimitApexCursors()</samp>
+                    method</li>
+
+                <li class="li">
+<samp class="codeph nolang">Limits.getApexPaginationCursors()</samp> and its
+                    upper bound <samp class="codeph nolang">Limits.getLimitApexPaginationCursors()</samp> method</li>
+
+                <li class="li">
+<samp class="codeph nolang">Limits.getApexPaginationCursorRows()</samp> and
+                    its upper bound <samp class="codeph nolang">Limits.getLimitApexPaginationCursorRows()</samp> method</li>
+
+            </ul>
+
+            <p class="p">To view transaction and daily limits for Apex cursors and Apex pagination cursors,
+                see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits</a>.</p>
+
+            <p class="p">Apex cursors and pagination cursors have the same expiration limits as API Query
+                cursors. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_apicursors.htm" target="_blank">API Query Cursor Limits</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Apex Cursor and Pagination Cursor Limits Example</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a standard cursor</span>
+Database.Cursor cursor = Database.getCursor(<span class="string">'SELECT Id, Name FROM Account LIMIT 20'</span>);
+System.debug(<span class="string">'Standard Cursors: '</span> + Limits.getApexCursors() + <span class="string">'/'</span> + Limits.getLimitApexCursors());
+System.debug(<span class="string">'Standard Cursor Rows: '</span> + Limits.getApexCursorRows() + <span class="string">'/'</span> + Limits.getLimitApexCursorRows());
+
+<span class="onelineComment">// Fetch records</span>
+List&lt;Account&gt; batch1 = cursor.fetch(0, 10);
+List&lt;Account&gt; batch2 = cursor.fetch(10, 10);
+
+<span class="onelineComment">// Create a pagination cursor</span>
+Database.PaginationCursor pagCursor = Database.getPaginationCursor(<span class="string">'SELECT Id, Name FROM Account LIMIT 15'</span>);
+System.debug(<span class="string">'Pagination Cursors: '</span> + Limits.getApexPaginationCursors() + <span class="string">'/'</span> + Limits.getLimitApexPaginationCursors());
+System.debug(<span class="string">'Pagination Cursor Rows: '</span> + Limits.getApexPaginationCursorRows() + <span class="string">'/'</span> + Limits.getLimitApexPaginationCursorRows());
+
+<span class="onelineComment">// Fetch a page</span>
+Database.CursorFetchResult page = pagCursor.fetchPage(0, 5);
+
+<span class="onelineComment">// Check shared fetch call limit</span>
+System.debug(<span class="string">'Fetch Calls: '</span> + Limits.getFetchCallsOnApexCursor() + <span class="string">'/'</span> + Limits.getLimitFetchCallsOnApexCursor());
+
+<span class="onelineComment">// Get daily limits map</span>
+Map&lt;<span class="keyword">String</span>, System.OrgLimit&gt; limitMap = OrgLimits.getMap();
+
+<span class="onelineComment">// Standard cursor daily limit</span>
+System.OrgLimit dailyCursorLimit = limitMap.get(<span class="string">'DailyApexCursorLimit'</span>);
+System.debug(<span class="string">'Daily Cursors: '</span> + dailyCursorLimit.getValue() + <span class="string">'/'</span> + dailyCursorLimit.getLimit());
+
+<span class="onelineComment">// Pagination cursor daily limit</span>
+System.OrgLimit dailyPCursorLimit = limitMap.get(<span class="string">'DailyApexPCursorLimit'</span>);
+System.debug(<span class="string">'Daily Pagination Cursors: '</span> + dailyPCursorLimit.getValue() + <span class="string">'/'</span> + dailyPCursorLimit.getLimit());
+
+<span class="onelineComment">// Shared daily rows limit</span>
+System.OrgLimit dailyRowsLimit = limitMap.get(<span class="string">'DailyApexCursorRowsLimit'</span>);
+System.debug(<span class="string">'Daily Cursor Rows: '</span> + dailyRowsLimit.getValue() + <span class="string">'/'</span> + dailyRowsLimit.getLimit());</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Database_Cursor.htm" target="_blank" title="Apex Reference Guide: Cursor Class - HTML (New Window)"><em class="ph i">Apex Reference Guide:</em> Cursor Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Database_PaginationCursor.htm" target="_blank" title="Apex Reference Guide: PaginationCursor Class - HTML (New Window)"><em class="ph i">Apex Reference Guide:</em> PaginationCursor Class</a></div></li>
+</ul>
+</div>
+</div>

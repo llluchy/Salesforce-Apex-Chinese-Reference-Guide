@@ -1,0 +1,71 @@
+<a name="apex_connector_external_id"><!-- --></a><h1 class="helpHead1">External IDs for Salesforce Connect External Objects</h1><div class="body conbody">
+<div class="shortdesc">When you access external data with a custom adapter for Salesforce Connect, the
+        values of the External ID standard field on an external object come from the <samp class="codeph apex_code">DataSource.Column</samp> named <samp class="codeph apex_code">ExternalId</samp>.</div>
+
+        <p class="p">Each external object has an <span class="keyword parmname">External ID</span> standard field. Its values
+            uniquely identify each external object record in your org. When the external object is
+            the parent in an external lookup relationship, the External ID standard field is used to
+            identify the child records.</p>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+            
+            <ul class="ul bulletList">
+                <li class="li">The custom adapter’s Apex code must declare the <samp class="codeph apex_code">DataSource.Column</samp> named <samp class="codeph apex_code">ExternalId</samp> and provide its values.</li>
+
+                <li class="li">
+<span class="ph" id="external_id_values_stored"><a name="external_id_values_stored"><!-- --></a>Don’t use sensitive data as the values of the
+                        External ID standard field or fields designated as name fields, because
+                        Salesforce sometimes stores those values.</span><ul class="ul bulletList">
+                        <li class="li"><span class="ph" id="external_id_values_stored_external_lookup"><a name="external_id_values_stored_external_lookup"><!-- --></a>External lookup
+                                relationship fields on child records store and display the External
+                                ID values of the parent records.</span></li>
+
+                        <li class="li">
+<span class="ph" id="external_id_values_stored_id_mapping"><a name="external_id_values_stored_id_mapping"><!-- --></a>For
+                                internal use only, Salesforce stores the External ID value of each
+                                row that’s retrieved from the external system.</span>
+                            <span class="ph" id="external_id_values_stored_id_mapping_hdv"><a name="external_id_values_stored_id_mapping_hdv"><!-- --></a>This behavior doesn’t
+                                apply to external objects that are associated with high-data-volume
+                                external data sources.</span>
+</li>
+
+                    </ul>
+</li>
+
+            </ul>
+
+        </p>
+</div>
+</div></div></div></div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">This excerpt from a sample <samp class="codeph apex_code">DataSource.Connection</samp> class shows the <samp class="codeph apex_code">DataSource.Column</samp> named <samp class="codeph apex_code">ExternalId</samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables =
+        <span class="keyword">new</span> List&lt;DataSource.Table&gt;();
+    List&lt;DataSource.Column&gt; columns;
+    columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+    columns.add(DataSource.Column.text(<span class="string">'title'</span>, 255));
+    columns.add(DataSource.Column.text(<span class="string">'description'</span>,255));
+    columns.add(DataSource.Column.text(<span class="string">'createdDate'</span>,255));
+    columns.add(DataSource.Column.text(<span class="string">'modifiedDate'</span>,255));
+    columns.add(DataSource.Column.url(<span class="string">'selfLink'</span>));
+    columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+    columns.add(DataSource.Column.text(<span class="string">'</span><strong class="ph b">ExternalId</strong><span class="string">',255));
+</span>    tables.add(DataSource.Table.get(<span class="string">'googleDrive'</span>,<span class="string">'title'</span>,
+        columns));
+    <span class="statement">return</span> tables;
+    }</pre></div>
+</div></div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Column.htm" target="_blank" title="Apex Reference Guide: Column Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Column Class</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,193 @@
+<a name="apex_uninstall_handler"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">UninstallHandler Interface</h1>
+
+  
+  
+  <div class="body">
+<div class="shortdesc">Enables custom code to run after a managed package is uninstalled.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p" id="apex_uninstall_handler_p1"><a name="apex_uninstall_handler_p1"><!-- --></a>App developers can implement this interface to specify Apex
+        code that runs automatically after a subscriber uninstalls a managed package. This makes it
+        possible to perform cleanup and notification tasks based on details of the
+        subscriber’s organization.</p>
+
+      <p class="p">The uninstall script is subject to default governor limits. It runs as a special system
+        user that represents your package, so all operations performed by the script will appear to
+        be done by your package. You can access this user by using UserInfo. You will only see this
+        user at runtime, not while running tests. </p>
+
+      <p class="p">If the script fails, the uninstall continues but none of the changes performed by the
+        script are committed. Any errors in the script are emailed to the user specified in the
+          <strong class="ph uicontrol">Notify on Apex Error</strong> field of the package. If no user is specified,
+        the uninstall details will be unavailable. </p>
+
+      <p class="p">The uninstall script has the following restrictions. You can’t use it to initiate
+        batch, scheduled, and future jobs, to access Session IDs, or to perform callouts. </p>
+
+      <div class="p" id="apex_uninstall_handler_p2">
+<a name="apex_uninstall_handler_p2"><!-- --></a>The <samp class="codeph apex_code">UninstallHandler</samp>
+        interface has a single method called <samp class="codeph apex_code">onUninstall</samp>,
+        which specifies the actions to be performed on
+        uninstall.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">interface</span> UninstallHandler {
+  <span class="keyword">void</span> onUninstall(UninstallContext context)};
+</pre></div>
+</div>
+
+      <div class="p">The <samp class="codeph apex_code">onUninstall</samp> method takes a context object as
+        its argument, which provides the following information.<ul class="ul bulletList">
+          <li class="li">The org ID of the organization in which the uninstall takes place.</li>
+
+          <li class="li">The user ID of the user who initiated the uninstall.</li>
+
+        </ul>
+</div>
+
+      <div class="p">The context argument is an object whose type is the <samp class="codeph apex_code">UninstallContext</samp> interface. This interface is automatically implemented by the
+        system. The following definition of the <samp class="codeph apex_code">UninstallContext</samp> interface shows the methods you can call on the context
+        argument.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">interface</span> UninstallContext { 
+  <span class="keyword">ID</span> organizationId();
+  <span class="keyword">ID</span> uninstallerId();
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_uninstall_handler.htm#apex_System_UninstallHandler_methods">UninstallHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_uninstall_handler.htm#apex_uninstall_handler_example">UninstallHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_UninstallHandler_methods">
+<a name="apex_System_UninstallHandler_methods"><!-- --></a>
+<h2 class="helpHead2">UninstallHandler Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">UninstallHandler</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_uninstall_handler.htm#apex_System_UninstallHandler_onUninstall">onUninstall(context)</a></strong><br>
+Specifies the actions to be performed on uninstall.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_UninstallHandler_onUninstall">
+<a name="apex_System_UninstallHandler_onUninstall"><!-- --></a>
+<h3 class="helpHead3">onUninstall(context)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies the actions to be performed on uninstall.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void onUninstall(UninstallContext context)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: UninstallContext</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_uninstall_handler_example">
+<a name="apex_uninstall_handler_example"><!-- --></a>
+<h2 class="helpHead2">UninstallHandler Example Implementation</h2>
+
+
+<div class="body">
+<div class="section">
+<h3 class="helpHead3">Example of an Uninstall Script</h3>
+
+            <p class="p">This sample uninstall script performs the following actions on package uninstall.</p>
+<div class="p">
+      <ul class="ul bulletList">
+        <li class="li">Inserts an entry in the feed describing which user did the uninstall and in which
+          organization</li>
+
+        <li class="li">Creates and sends an email message confirming the uninstall to that user</li>
+
+      </ul>
+
+    </div>
+<div class="p">
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> UninstallClass <span class="keyword">implements</span> UninstallHandler {
+  <span class="keyword">global</span> <span class="keyword">void</span> onUninstall(UninstallContext ctx) {
+    FeedItem feedPost = <span class="keyword">new</span> FeedItem();
+    feedPost.parentId = ctx.uninstallerID();
+    feedPost.body = <span class="string">'Thank you for using our application!'</span>;
+    <span class="statement">insert</span> feedPost;
+
+    User u = [Select Id, Email from User where Id =:ctx.uninstallerID()];   
+    <span class="keyword">String</span> toAddress= u.Email;
+    <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[] {toAddress};
+    Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+    mail.setToAddresses(toAddresses);
+    mail.setReplyTo(<span class="string">'support@package.dev'</span>);
+    mail.setSenderDisplayName(<span class="string">'My Package Support'</span>);
+    mail.setSubject(<span class="string">'Package uninstall successful'</span>);
+    mail.setPlainTextBody(<span class="string">'Thanks for uninstalling the package.'</span>);
+    Messaging.sendEmail(<span class="keyword">new</span> Messaging.Email[] { mail });
+  }
+}</pre></div>
+
+    </div>
+<p class="p">You can test an uninstall script using the <samp class="codeph apex_code">testUninstall</samp> method of the <samp class="codeph apex_code">Test</samp> class. This method takes as its argument a class that implements the <samp class="codeph apex_code">UninstallHandler</samp> interface.</p>
+<div class="p">This sample shows how to test an uninstall script
+      implemented in the <samp class="codeph apex_code">UninstallClass</samp> Apex
+      class.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">static</span> <span class="keyword">void</span> testUninstallScript() {
+  Id UninstallerId = UserInfo.getUserId();
+  List&lt;FeedItem&gt; feedPostsBefore = 
+    [SELECT Id FROM FeedItem WHERE parentId=:UninstallerId AND CreatedDate=TODAY];
+  Test.testUninstall(<span class="keyword">new</span> UninstallClass());
+  List&lt;FeedItem&gt; feedPostsAfter = 
+    [SELECT Id FROM FeedItem WHERE parentId=:UninstallerId AND CreatedDate=TODAY];
+  System.assertEquals(feedPostsBefore.size() + 1, feedPostsAfter.size(), 
+    <span class="string">'Post to uninstaller failed.'</span>);
+}</pre></div>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>

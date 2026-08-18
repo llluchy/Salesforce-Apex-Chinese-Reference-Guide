@@ -1,0 +1,154 @@
+<a name="apex_enum_DataSource_Capability"><!-- --></a><h1 class="helpHead1">Capability Enum</h1><div class="body refbody">
+<div class="shortdesc">Declares which functional operations the external system supports. Also specifies
+    required endpoint settings for the external data source definition.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <div class="p">The <samp class="codeph apex_code">DataSource.Provider</samp> class returns <samp class="codeph apex_code">DataSource.Capability</samp> enum values, which:<ul class="ul bulletList">
+          <li class="li">Specify the functional capabilities of the external system.</li>
+
+          <li class="li">Determine which endpoint settings are available on the external data source definition
+            in Salesforce.</li>
+
+        </ul>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Enum Values</h2>
+
+      
+      <p class="p">The following are the values of the <samp class="codeph apex_code">DataSource.Capability</samp> enum.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d116130e77">Value</th>
+
+              <th class="featureTableHeader  " id="d116130e80">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">MULTI_PICKLIST</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">The external system supports multi-picklist fields.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">PICKLIST</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">The external system supports picklist fields.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">QUERY_PAGINATION_SERVER_DRIVEN</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">With server-driven paging, the external system determines the page sizes and
+                batch boundaries. The external system’s paging settings can optimize the external
+                system’s performance and improve the load times for external objects in your org.
+                Also, the external data set can change while your users or the Lightning Platform
+                are paging through the result set. Typically, server-driven paging adjusts batch
+                boundaries to accommodate changing data sets more effectively than client-driven
+                  paging.<p class="p">If you enable server-driven paging on an external data source,
+                  Salesforce ignores the requested page sizes, including the default <samp class="codeph nolang">queryMore()</samp> batch size of 500 rows. The pages
+                  returned by the external system determine the batches, but each page can’t exceed
+                  2,000 rows. Also, the Apex code must generate a query token and use it to
+                  determine and fetch the next batch of results.</p>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">QUERY_TOTAL_SIZE</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">The external system can provide the total number of rows that meet the query
+                criteria, even when requested to return a smaller batch size. This capability
+                enables you to simplify how you paginate results by using <samp class="codeph nolang">queryMore()</samp>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">REQUIRE_ENDPOINT</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Requires the administrator to specify the endpoint in the URL field in the
+                external data source definition.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">REQUIRE_HTTPS</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Requires the endpoint URL to use secure HTTP. If <samp class="codeph apex_code">REQUIRE_ENDPOINT</samp> isn’t declared, <samp class="codeph apex_code">REQUIRE_HTTPS</samp> is ignored.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">ROW_CREATE</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Allows creating of external data.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">ROW_DELETE</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Allows deleting external data.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">ROW_QUERY</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Allows API and SOQL queries of the external data. Also allows reports on the
+                external objects.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">ROW_UPDATE</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Allows updating external data.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d116130e77" data-title="Value"><samp class="codeph apex_code">SEARCH</samp></td>
+
+              <td class="entry" headers="d116130e80" data-title="Description">Allows SOSL and Salesforce searches of the external data.<p class="p">When the custom
+                  adapter declares the <samp class="codeph apex_code">SEARCH</samp> capability,
+                  you can control which external objects are searchable by selecting or deselecting
+                    <strong class="ph uicontrol">Allow Search</strong> on each external object. However, syncing
+                  always overwrites the external object’s search status to match the search status
+                  of the external data source.</p>
+<p class="p">Only text, text area, and long text area fields
+                  on external objects can be searched. If an external object has no searchable
+                  fields, searches on that object return no records.</p>
+</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/apex/HTViewHelpDoc?id=ext_data_sync_database.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Validate and Sync an External Data Source - HTML (New Window)"><em class="ph i">Salesforce Help:</em> Validate and Sync an External Data Source</a></div></li></ul>
+</div>
+</div>

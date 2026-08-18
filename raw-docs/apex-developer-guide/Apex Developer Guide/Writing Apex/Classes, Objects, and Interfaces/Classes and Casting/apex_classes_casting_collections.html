@@ -1,0 +1,47 @@
+<a name="apex_classes_casting_collections"><!-- --></a><h1 class="helpHead1">Collection Casting</h1><div class="body">
+<p class="p">Because collections in Apex have a declared type at runtime, Apex allows collection casting.  </p>
+
+<p class="p">Collections can be cast in a similar manner that arrays can be
+cast in Java. For example, a list of CustomerPurchaseOrder objects
+can be assigned to a list of PurchaseOrder objects if class <samp class="codeph apex_code">CustomerPurchaseOrder</samp> is a child
+of class <samp class="codeph apex_code">PurchaseOrder</samp>. </p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">class</span> PurchaseOrder {
+
+    Public <span class="keyword">class</span> CustomerPurchaseOrder <span class="keyword">extends</span> PurchaseOrder {
+
+    }
+    {
+        List&lt;PurchaseOrder&gt; POs = <span class="keyword">new</span> PurchaseOrder[] {};
+        List&lt;CustomerPurchaseOrder&gt; CPOs = <span class="keyword">new</span> CustomerPurchaseOrder[]{};
+        POs = CPOs;
+    }
+}</pre></div>
+
+<p class="p">Once the <samp class="codeph apex_code">CustomerPurchaseOrder</samp> list is assigned to the
+                <samp class="codeph apex_code">PurchaseOrder</samp> list variable, it can be cast
+            back to a list of CustomerPurchaseOrder objects, but only because that instance was
+            originally instantiated as a list of CustomerPurchaseOrder objects. A list of
+            PurchaseOrder objects that is instantiated as such cannot be cast to a list of
+            CustomerPurchaseOrder objects, even if the list of PurchaseOrder objects contains only
+            CustomerPurchaseOrder objects.</p>
+
+<p class="p">If the user of a PurchaseOrder list that only includes CustomerPurchaseOrders
+objects tries to insert a non-CustomerPurchaseOrder subclass of <samp class="codeph apex_code">PurchaseOrder</samp> (such as <samp class="codeph apex_code">InternalPurchaseOrder</samp>), a runtime
+exception results. This is because Apex collections have a declared type at runtime.</p>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Maps behave in the same way as lists with regards to the value side of the Map. If the value
+            side of map A can be cast to the value side of map B, and they have the same key type,
+            then map A can be cast to map B. A runtime error results if the casting is not valid
+            with the particular map at runtime.</p>
+</div>
+</div></div></div></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_collections.htm" title="Classes and Collections">← Previous</a></li>
+</ul></div>
+</div>

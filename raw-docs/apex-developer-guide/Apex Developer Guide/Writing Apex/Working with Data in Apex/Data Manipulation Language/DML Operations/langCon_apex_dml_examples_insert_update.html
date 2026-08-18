@@ -1,0 +1,132 @@
+<a name="langCon_apex_dml_examples_insert_update"><!-- --></a><h1 class="helpHead1">Inserting and Updating Records</h1><div class="body conbody">
+<div class="shortdesc">Using DML, you can insert new records and commit them to the database. Similarly, you
+        can update the field values of existing records.</div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Where possible, we changed noninclusive terms to align with our
+            company value of Equality. We maintained certain terms to avoid any effect on
+            customer implementations.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">This example inserts three account records and updates an existing account record. First,
+            three Account sObjects are created and added to a list. An insert statement bulk inserts
+            the list of accounts as an argument. Then, the second account record is updated, the
+            billing city is updated, and the update statement is called to persist the change in the
+            database.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accts = <span class="keyword">new</span> List&lt;Account&gt;();
+<span class="statement">for</span>(<span class="keyword">Integer</span> i=0;i&lt;3;i++) {
+    Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Acme'</span> + i, 
+                            BillingCity=<span class="string">'San Francisco'</span>);
+    accts.add(a);
+}
+Account accountToUpdate;
+<span class="statement">try</span> {
+    <span class="statement">insert</span> accts;        
+    
+    <span class="onelineComment">// Update account Acme2.</span>
+    accountToUpdate = 
+        [SELECT BillingCity FROM Account 
+         WHERE Name=<span class="string">'Acme2'</span> AND BillingCity=<span class="string">'San Francisco'</span>
+         LIMIT 1];
+    <span class="onelineComment">// Update the billing city.</span>
+    accountToUpdate.BillingCity = <span class="string">'New York'</span>;
+    <span class="onelineComment">// Make the update call.</span>
+    <span class="statement">update</span> accountToUpdate;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'An unexpected error has occurred: '</span> + e.getMessage());
+}
+
+<span class="onelineComment">// Verify that the billing city was updated to New York.</span>
+Account afterUpdate = 
+    [SELECT BillingCity FROM Account WHERE Id=:accountToUpdate.Id];
+System.assertEquals(<span class="string">'New York'</span>, afterUpdate.BillingCity);</pre></div>
+
+        <div class="section">
+<h2 class="helpHead2">Inserting Related Records</h2>
+
+            
+            <p class="p">You can insert records related to existing records if a relationship has already been
+                defined between the two objects, such as a lookup or master-detail relationship. A
+                record is associated with a related record through a foreign key ID. For example,
+                when inserting a new contact, you can specify the contact’s related account record
+                by setting the value of the <samp class="codeph apex_code">AccountId</samp>
+                field.</p>
+
+            <p class="p">This example adds a contact to an account (the related record) by setting the <samp class="codeph apex_code">AccountId</samp> field on the contact. Contact and
+                Account are linked through a lookup relationship.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Account acct = <span class="keyword">new</span> Account(Name=<span class="string">'SFDC Account'</span>);
+    <span class="statement">insert</span> acct;
+
+    <span class="onelineComment">// Once the account is inserted, the sObject will be </span>
+    <span class="onelineComment">// populated with an ID.</span>
+    <span class="onelineComment">// Get this ID.</span>
+    <span class="keyword">ID</span> acctID = acct.<span class="keyword">ID</span>;
+
+    <span class="onelineComment">// Add a contact to this account.</span>
+    Contact con = <span class="keyword">new</span> Contact(
+        FirstName=<span class="string">'Joe'</span>,
+        LastName=<span class="string">'Smith'</span>,
+        Phone=<span class="string">'415.555.1212'</span>,
+        AccountId=acctID);
+    <span class="statement">insert</span> con;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'An unexpected error has occurred: '</span> + e.getMessage());
+}
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Updating Related Records</h2>
+
+            
+            <div class="p">Fields on related records can't be updated with the same call to the DML operation
+                and require a separate DML call. For example, if inserting a new contact, you can
+                specify the contact's related account record by setting the value of the <samp class="codeph apex_code">AccountId</samp> field. However, you can't change the
+                account's name without updating the account itself with a separate DML call.
+                Similarly, when updating a contact, if you also want to update the contact’s
+                related account, you must make two DML calls. The following example updates a
+                contact and its related account using two <samp class="codeph apex_code"><span class="statement">update</span></samp>
+                statements.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    <span class="onelineComment">// Query for the contact, which has been associated with an account.</span>
+    Contact queriedContact = [SELECT Account.Name 
+                              FROM Contact 
+                              WHERE FirstName = <span class="string">'Joe'</span> AND LastName=<span class="string">'Smith'</span>
+                              LIMIT 1];
+
+    <span class="onelineComment">// Update the contact's phone number</span>
+    queriedContact.Phone = <span class="string">'415.555.1213'</span>;
+
+    <span class="onelineComment">// Update the related account industry</span>
+    queriedContact.Account.Industry = <span class="string">'Technology'</span>;
+
+    <span class="onelineComment">// Make two separate calls </span>
+    <span class="onelineComment">// 1. This call is to update the contact's phone.</span>
+    <span class="statement">update</span> queriedContact;
+    <span class="onelineComment">// 2. This call is to update the related account's Industry field.</span>
+    <span class="statement">update</span> queriedContact.Account; 
+} <span class="statement">catch</span>(Exception e) {
+    System.debug(<span class="string">'An unexpected error has occurred: '</span> + e.getMessage());
+}
+</pre></div>
+</div>
+
+        </div>
+
+        
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_nested_object.htm">Relating Records by Using an External ID</a></strong><br>
+Add related records by using a custom external ID field on the parent record.   Associating records through the external ID field is an alternative to using the record ID. You   can add a related record to another record only if a relationship (such as master-detail or   lookup) has been defined for the objects involved.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_dml_foreign_keys.htm">Creating Parent and Child Records in a Single Statement Using Foreign Keys</a></strong><br>
+</li>
+</ul>
+</div>

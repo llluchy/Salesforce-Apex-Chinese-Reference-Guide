@@ -1,0 +1,83 @@
+<a name="langCon_apex_collections_sets"><!-- --></a><h1 class="helpHead1">Sets</h1><div class="body">
+<div class="shortdesc">A set is an unordered collection of elements that do not contain any duplicates. Set
+        elements can be of any data type—primitive types, collections, sObjects, user-defined
+        types, and built-in Apex types. </div>
+
+        <p class="p">This table represents a set of strings that uses city names:</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                
+                
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry">'San Francisco'</td>
+
+                        <td class="entry">'New York'</td>
+
+                        <td class="entry">'Paris'</td>
+
+                        <td class="entry">'Tokyo'</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">Sets can contain collections that can be nested within one another. For example, you can
+            have a set of lists of sets of Integers. A set can contain up to seven levels of nested
+            collections inside it, that is, up to eight levels overall.</p>
+
+        <div class="p">To declare a set, use the <samp class="codeph apex_code">Set</samp> keyword followed
+            by the primitive data type name within &lt;&gt; characters. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Set&lt;<span class="keyword">String</span>&gt; myStringSet = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;();</pre></div>
+</div>
+
+        <p class="p">The following example shows how to create a set with two hardcoded string values.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Defines a new set with two elements</span>
+Set&lt;<span class="keyword">String</span>&gt; set1 = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;{<span class="string">'New York'</span>, <span class="string">'Paris'</span>};
+</pre></div>
+
+        <p class="p">To access elements in a set, use the system methods provided by Apex. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Define a new set</span>
+Set&lt;<span class="keyword">Integer</span>&gt; mySet = <span class="keyword">new</span> Set&lt;<span class="keyword">Integer</span>&gt;();
+<span class="onelineComment">// Add two elements to the set</span>
+mySet.add(1);
+mySet.add(3);
+<span class="onelineComment">// Assert that the set contains the integer value we added</span>
+System.assert(mySet.contains(1)); 
+<span class="onelineComment">// Remove the integer value from the set</span>
+mySet.remove(1); </pre></div>
+
+        <p class="p">The following example shows how to create a set from elements of another set.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Define a new set that contains the</span>
+<span class="onelineComment">// elements of the set created in the previous example</span>
+Set&lt;<span class="keyword">Integer</span>&gt; mySet2 = <span class="keyword">new</span> Set&lt;<span class="keyword">Integer</span>&gt;(mySet);
+<span class="onelineComment">// Assert that the set size equals 1</span>
+<span class="onelineComment">// Note: The set from the previous example contains only one value</span>
+System.assert(mySet2.size() == 1);
+</pre></div>
+
+        <p class="p">For more information, including a complete list of all supported set system methods, see
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_set.htm" target="_blank">Set Class</a>.</p>
+
+        <div class="p">Note the following limitations on sets:<ul class="ul bulletList">
+                <li class="li">Unlike Java, Apex developers do not need to reference the algorithm that is used
+                    to implement a set in their declarations (for example, <samp class="codeph apex_code">HashSet</samp> or <samp class="codeph apex_code">TreeSet</samp>). Apex uses a hash structure for all sets.</li>
+
+                <li class="li">A set is an unordered collection—you can’t access a set element at a
+                    specific index. You can only iterate over set elements. </li>
+
+                <li class="li">The iteration order of set elements is deterministic, so you can rely on the
+                    order being the same in each subsequent execution of the same code.</li>
+
+            </ul>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

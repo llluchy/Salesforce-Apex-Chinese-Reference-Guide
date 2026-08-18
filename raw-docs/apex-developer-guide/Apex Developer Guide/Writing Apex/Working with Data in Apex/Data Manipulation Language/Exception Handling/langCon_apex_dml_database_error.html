@@ -1,0 +1,41 @@
+<a name="langCon_apex_dml_database_error"><!-- --></a><h1 class="helpHead1">Returned Database Errors</h1><div class="body conbody">
+<p class="p">While DML statements always return exceptions when an operation
+fails for one of the records being processed and the operation is
+rolled back for all records, Database class methods can either do
+so or allow partial success for record processing. In the latter case
+of partial processing, Database class methods don’t throw exceptions.
+Instead, they return a list of errors for any errors that occurred
+on failed records.</p>
+
+<p class="p">The errors provide details about the failures and are contained
+in the result of the Database class method. For example, a <samp class="codeph apex_code">SaveResult</samp> object is returned for
+insert and update operations. Like all returned results, <samp class="codeph apex_code">SaveResult</samp> contains a method called <samp class="codeph apex_code">getErrors</samp> that returns a list of <samp class="codeph apex_code">Database.Error</samp> objects, representing
+the errors encountered, if any.</p>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">This example shows how to get the
+errors returned by a <samp class="codeph nolang">Database.insert</samp> operation. It inserts two accounts, one of which doesn’t
+have the required Name field, and sets the second parameter to <samp class="codeph apex_code"><span class="keyword">false</span></samp>: <samp class="codeph nolang">Database.insert(accts, false);</samp>. This sets the partial processing
+option. Next, the example checks if the call had any failures through <samp class="codeph apex_code"><span class="statement">if</span> (!sr.isSuccess())</samp> and then iterates
+through the errors, writing error information to the debug log.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create two accounts, one of which is missing a required field</span>
+Account[] accts = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>),
+    <span class="keyword">new</span> Account()};
+Database.SaveResult[] srList = Database.<span class="statement">insert</span>(accts, <span class="keyword">false</span>);
+
+<span class="onelineComment">// Iterate through each returned result</span>
+<span class="statement">for</span> (Database.SaveResult sr : srList) {
+    <span class="statement">if</span> (!sr.isSuccess()) {
+        <span class="onelineComment">// Operation failed, so get all errors                </span>
+        <span class="statement">for</span>(Database.Error err : sr.getErrors()) {
+            System.debug(<span class="string">'The following error has occurred.'</span>);                    
+            System.debug(err.getStatusCode() + <span class="string">': '</span> + err.getMessage());
+            System.debug(<span class="string">'Fields that affected this error: '</span> + err.getFields());
+        }
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

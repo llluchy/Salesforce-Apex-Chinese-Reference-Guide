@@ -1,0 +1,45 @@
+<a name="apex_classes_name_shadowing"><!-- --></a><h1 class="helpHead1">Name Shadowing</h1><div class="body">
+<p class="p">Member variables can be shadowed by local variables—in particular
+function arguments. This allows methods and constructors of the standard
+Java form:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Public Class Shadow {
+  <span class="keyword">String</span> s;
+  Shadow(<span class="keyword">String</span> s) { <span class="statement">this</span>.s = s; } <span class="onelineComment">// Same name ok</span>
+  setS(<span class="keyword">String</span> s) { <span class="statement">this</span>.s = s; } <span class="onelineComment">// Same name ok</span>
+}
+</pre></div>
+
+<p class="p">Member variables in one class can shadow member variables with
+the same name in a parent classes. This can be useful if the two classes
+are in different top-level classes and written by different teams.
+For example, if one has a reference to a class C and wants to gain
+access to a member variable M in parent class P (with the same name
+as a member variable in C) the reference should be assigned to a reference
+to P first.</p>
+
+<p class="p">Static variables can be shadowed across the class hierarchy—so
+if P defines a static S, a subclass C can also declare a static S.
+References to S inside C refer to that static—in order to reference
+the one in P, the syntax P.S must be used. </p>
+
+<p class="p">Static class variables cannot be referenced through a class instance.
+They must be referenced using the raw variable name by itself (inside
+that top-level class file) or prefixed with the class name. For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> p1 { 
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">Integer</span> CLASS_INT = 1;
+  <span class="keyword">public</span> <span class="keyword">class</span> c { };
+}
+p1.c c = <span class="keyword">new</span> p1.c();
+<span class="onelineComment">// This is illegal</span>
+<span class="onelineComment">// Integer i = c.CLASS_INT;</span>
+<span class="onelineComment">// This is correct</span>
+<span class="keyword">Integer</span> i = p1.CLASS_INT;
+</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_naming_conventions.htm" title="Naming Conventions">← Previous</a></li>
+</ul></div>
+</div>

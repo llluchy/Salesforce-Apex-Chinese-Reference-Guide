@@ -1,0 +1,309 @@
+<a name="apex_manpkgs_subscriber_version"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Set Package Versions for Apex Classes and Triggers</h1>
+
+
+<div class="body conbody">
+<div class="shortdesc">As a managed package subscriber, you can specify which package version that your managed
+    Apex classes and triggers use. Set the package version in Setup, through metadata deployments,
+    or with API requests.</div>
+
+  <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> In Summer ’25 and later, package subscribers can use version settings to specify the
+      version of a migrated second-generation managed package (2GP) that an Apex class or trigger
+      depends on. This functionality is already available to first-generation managed packages
+      (1GP), but isn’t yet supported in 2GP packages that weren’t converted from a 1GP package. See
+        <a class="xref" href="https://help.salesforce.com/s/articleView?id=005101483&amp;type=1&amp;language=en_US" target="_blank">Apex Version Settings in Migrated Second-Generation Managed Packages
+        (2GP)</a>.</p>
+</div>
+</div></div></div></div>
+
+  <p class="p">A package version is a number that identifies the set of components uploaded in a package. The
+   version number has the format majorNumber.minorNumber.patchNumber (for example, 2.1.3). The major
+   and minor numbers increase to a chosen value during every major release. The patchNumber is
+   generated and updated only for a patch release. </p>
+
+  <p class="p">If you install a new package version, only one instance of each component exists in the
+      package, but the components can emulate older versions. Say that you use a managed package
+      that contains an Apex class. If the publisher decides to deprecate a method in the Apex class
+      and release a new package version, you still see only one instance of the Apex class after
+      installing the new version. However, this Apex class can still emulate the previous version
+      for any code that references the deprecated method in the older version.</p>
+
+  <p class="p">By default, an Apex class or trigger that references a managed package is associated with the
+      package version installed when that class or trigger was last saved or deployed. For example,
+      say that you install version 1.0 of Package A, and then create and deploy an Apex class that
+      references that managed package. If you upgrade to version 2.0 of Package A but don’t redeploy
+      the class, then the class remains associated with version 1.0. However, if you upgrade Package
+      A to version 2.0 and then redeploy the class, then the class is now associated with version
+      2.0. </p>
+
+  <p class="p">You can override the default package version settings for an Apex class or trigger. When set to
+      a specific package version, the class or trigger views the package’s global Apex as if that
+      version was installed. Explicitly setting a package version is useful if your class or trigger
+      relies on an older shape of a packaged component. For an example where overriding the default
+      package version is vital to maintain backwards compatibility, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_safe_upgrades.htm" title="Learn how to upgrade a managed package safely through this extended example. See the actions that package developers and subscribers can take to ensure a smooth transition and safeguard the backwards compatibility of existing integrations.">Safely Upgrade Packages
+        from Developer and Subscriber Perspectives</a>.</p>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_package_versions.htm" title="A managed package component can exhibit different behavior in different package versions. By versioning managed Apex, you can add and refine components in the managed package, while maintaining backwards compatibility for existing subscribers.">Version Apex in Managed Packages (for package developers)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_safe_upgrades.htm" title="Learn how to upgrade a managed package safely through this extended example. See the actions that package developers and subscribers can take to ensure a smooth transition and safeguard the backwards compatibility of existing integrations.">Safely Upgrade Packages from Developer and Subscriber Perspectives</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic task nested1" lang="en-us" lang="en-us" id="apex_manpkgs_subscriber_version_ui">
+<a name="apex_manpkgs_subscriber_version_ui"><!-- --></a>
+ <h2 class="helpHead2">Set a Package Version in Setup</h2>
+
+ 
+ 
+ <div class="body taskbody">
+<div class="shortdesc">Associate an Apex class or trigger with a specific package version in Setup.</div>
+
+  <div class="section context"><div class="p">To configure the package version settings for an Apex class or trigger:</div></div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">From Setup, enter <kbd class="ph userinput">Apex Classes</kbd> or <kbd class="ph userinput">Apex
+      Triggers</kbd> in the Quick Find box, and then select <strong class="ph uicontrol">Apex
+      Classes</strong> or <strong class="ph uicontrol">Apex Triggers</strong>.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">From the list, click <strong class="ph uicontrol">Edit</strong> for the Apex class or trigger that you
+     want to configure.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Click the <strong class="ph uicontrol">Version Settings</strong> tab.</span>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">From the Version dropdown for the managed package, select the desired version referenced by
+     the class or trigger.</span>
+    <div class="itemgroup info">The class or trigger continues to use this version even if your install later versions of
+     the managed package, unless you manually update the version setting.</div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Click <strong class="ph uicontrol">Save</strong>.</span>
+   </li>
+
+  </ol>
+
+  <div class="section postreq">
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If the package is referenced in the class or trigger, you can’t remove a class or trigger’s
+    version setting for a managed package. To find where the class or trigger references a managed
+    package, on the class or trigger’s Detail page, click <strong class="ph uicontrol">Show
+    Dependencies</strong>.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic task nested1" lang="en-us" lang="en-us" id="apex_manpkgs_subscriber_version_mdapi">
+<a name="apex_manpkgs_subscriber_version_mdapi"><!-- --></a>
+ <h2 class="helpHead2">Set a Package Version in Metadata API </h2>
+
+ 
+ 
+ <div class="body taskbody">
+<div class="shortdesc">Associate an Apex class or trigger with a specific package version by using Metadata
+  API.</div>
+
+  <div class="section context">
+   <p class="p">With the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_classes.htm#PackageVersion" target="_blank" title="HTML (New Window)">PackageVersion</a> field, you specify
+    a managed package version in an Apex class or trigger’s metadata.</p>
+
+  </div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">Identify the managed package’s reference ID. This ID is either the subscriber package ID
+     for migrated 2GP managed packages or the package namespace for 1GP managed packages.</span>
+    <ol type="a" class="ol substeps enumList">
+     <li class="li substep">
+      <span class="ph cmd">From Setup, in the Quick Find box, enter <kbd class="ph userinput">Installed Packages</kbd>, and
+       select <strong class="ph uicontrol">Installed Packages</strong>.</span>
+     </li>
+
+     <li class="li substep">
+            <span class="ph cmd">Locate the installed package that you want to reference and click the Package
+              Name.</span>
+          </li>
+
+     <li class="li substep">
+      <span class="ph cmd">On the Installed Package Detail page, locate the Version Setting field. The field
+       identifies the type of reference ID. </span>
+     </li>
+
+    </ol>
+
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">In the Apex class or trigger’s metadata file, add a <samp class="codeph xml"><span class="tag">&lt;packageVersions</span>&gt;</samp> element. If your Apex class or trigger references multiple
+     managed packages, include a separate <samp class="codeph xml"><span class="tag">&lt;packageVersions</span>&gt;</samp>
+     element for each package. </span>
+   </li>
+
+   <li class="li step">
+        <span class="ph cmd">Within the <samp class="codeph xml"><span class="tag">&lt;packageVersions</span>&gt;</samp> element, add the
+          required fields and the desired values.</span>
+        <ul class="ul choices bulletList">
+          <li class="li choice">For migrated 2GP managed packages, add the <samp class="codeph xml">packageId</samp> field.</li>
+
+          <li class="li choice">For 1GP managed packages, use the <samp class="codeph xml">namespace</samp>
+            field instead.</li>
+
+        </ul>
+
+      </li>
+
+  </ol>
+
+  <div class="example">
+<h3 class="sectiontitle">Example</h3>
+<div class="exampleblock">
+      <p class="p">Here’s an example declarative metadata definition of an Apex class that references a
+        migrated 2GP managed package.</p>
+
+      <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;?xml</span><span class="attribute"> version=</span>"1.0"<span class="attribute"> encoding=</span>"UTF-8"?&gt;
+<span class="tag">&lt;ApexClass</span><span class="attribute"> xmlns=</span>"http://soap.sforce.com/2006/04/metadata"&gt;
+    <span class="tag">&lt;apiVersion</span>&gt;66.0<span class="tag">&lt;/apiVersion</span>&gt;
+    <span class="tag">&lt;packageVersions</span>&gt;
+        <span class="tag">&lt;majorNumber</span>&gt;3<span class="tag">&lt;/majorNumber</span>&gt;
+        <span class="tag">&lt;minorNumber</span>&gt;0<span class="tag">&lt;/minorNumber</span>&gt;
+        <span class="tag">&lt;packageId</span>&gt;033xx0000000001<span class="tag">&lt;/packageId</span>&gt;
+    <span class="tag">&lt;/packageVersions</span>&gt;
+    <span class="tag">&lt;status</span>&gt;Active<span class="tag">&lt;/status</span>&gt;
+<span class="tag">&lt;/ApexClass</span>&gt;
+</pre></div>
+
+      <p class="p">Here’s an example declarative metadata definition of an Apex class that references a 1GP
+        managed package.</p>
+
+      <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;?xml</span><span class="attribute"> version=</span>"1.0"<span class="attribute"> encoding=</span>"UTF-8"?&gt;
+<span class="tag">&lt;ApexClass</span><span class="attribute"> xmlns=</span>"http://soap.sforce.com/2006/04/metadata"&gt;
+    <span class="tag">&lt;apiVersion</span>&gt;66.0<span class="tag">&lt;/apiVersion</span>&gt;
+    <span class="tag">&lt;packageVersions</span>&gt;
+        <span class="tag">&lt;majorNumber</span>&gt;3<span class="tag">&lt;/majorNumber</span>&gt;
+        <span class="tag">&lt;minorNumber</span>&gt;0<span class="tag">&lt;/minorNumber</span>&gt;
+        <span class="tag">&lt;namespace</span>&gt;pkg1<span class="tag">&lt;/namespace</span>&gt;
+    <span class="tag">&lt;/packageVersions</span>&gt;
+    <span class="tag">&lt;status</span>&gt;Active<span class="tag">&lt;/status</span>&gt;
+<span class="tag">&lt;/ApexClass</span>&gt;
+</pre></div>
+
+    </div>
+</div>
+
+  <div class="section postreq">
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><p class="p"><strong class="ph b">Metadata Usage Note for Migrated 2GP Packages</strong></p>
+<p class="p">If you set a package version for an Apex class or trigger that references a 1GP managed package
+          before Summer ’25, your existing version settings remain valid when the developer migrates
+          the package to 2GP.</p>
+<p class="p">If you retrieve metadata using Salesforce API version 61.0 and earlier, <samp class="codeph xml"><span class="tag">&lt;namespace</span>&gt;</samp> is still used in the <samp class="codeph xml"><span class="tag">&lt;packageVersions</span>&gt;</samp> section of the <span class="ph filepath">meta.xml</span> file to
+          identify the referenced migrated 2GP package. If you retrieve metadata using API version
+          62.0 and later, <samp class="codeph xml"><span class="tag">&lt;packageId</span>&gt;</samp> is used in the <samp class="codeph apex_code">&lt;packageVersions&gt;</samp> section instead.</p>
+<p class="p">An error can occur if you deploy metadata using <samp class="codeph xml"><span class="tag">&lt;packageId</span>&gt;</samp>
+          to an org that still has the 1GP or 2GP pre-migrated version of the package installed. To
+          resolve this issue, either upgrade the target org to the migrated package, or edit the
+            <samp class="codeph xml"><span class="tag">&lt;packageVersions</span>&gt;</samp> section to use <samp class="codeph xml"><span class="tag">&lt;namespace</span>&gt;</samp> instead.</p>
+</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic task nested1" lang="en-us" lang="en-us" id="apex_manpkgs_subscriber_version_rest">
+<a name="apex_manpkgs_subscriber_version_rest"><!-- --></a>
+ <h2 class="helpHead2">Set a Package Version in API Requests</h2>
+
+ 
+ 
+ <div class="body taskbody">
+<div class="shortdesc">Specify a managed package version by using the package version header in your API
+  request.</div>
+
+  <ol class="ol steps enumList">
+   <li class="li step">
+    <span class="ph cmd">Identify the managed package’s reference ID. This ID is either the subscriber package ID
+     for migrated 2GP managed packages or the package namespace for 1GP managed packages.</span>
+    <ol type="a" class="ol substeps enumList">
+     <li class="li substep">
+      <span class="ph cmd">From Setup, in the Quick Find box, enter <kbd class="ph userinput">Installed Packages</kbd>, and
+       select <strong class="ph uicontrol">Installed Packages</strong>.</span>
+     </li>
+
+     <li class="li substep">
+            <span class="ph cmd">Locate the installed package that you want to reference and click the Package
+              Name.</span>
+          </li>
+
+     <li class="li substep">
+      <span class="ph cmd">On the Installed Package Detail page, locate the Version Setting field. The field
+       identifies the type of reference ID.</span>
+     </li>
+
+    </ol>
+
+    <div class="itemgroup info">If the Version Setting field is set to <samp class="codeph nolang">packageID</samp>,
+     then the value of the Package field is the package’s reference ID. If the Version Setting field
+     is set to <samp class="codeph nolang">namespace</samp>, then the value of the Namespace field
+     is the package’s reference ID.</div>
+   </li>
+
+   <li class="li step">
+    <span class="ph cmd">Set the package version header according to the managed package’s reference ID and the
+     desired package version.</span>
+    <ul class="ul choices bulletList">
+     <li class="li choice">For REST API calls, use the <samp class="codeph nolang">x-sfdc-packageversion-[packageId/namespace]</samp> header. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/headers_packageversion.htm" target="_blank" title="HTML (New Window)">Package Version Header</a> in
+            the <cite class="cite">REST API Developer Guide</cite>.</li>
+
+     <li class="li choice">For SOAP API calls, use the <samp class="codeph apex_code">PackageVersionHeader</samp> header. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_header_packageversionheader.htm" target="_blank" title="HTML (New Window)">PackageVersionHeader</a> in the
+       <cite class="cite">SOAP API Developer Guide</cite>.</li>
+
+    </ul>
+
+   </li>
+
+  </ol>
+
+  <div class="section postreq">
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If a package version isn’t specified in a request header, the API client uses the version
+    of the package specified in Setup. To set this value, from Setup, enter
+     <kbd class="ph userinput">API</kbd> in the Quick Find box and select <strong class="ph uicontrol">API</strong>. Then
+    click <strong class="ph uicontrol">Configure Enterprise Package Version Settings</strong> under Enterprise
+    Package Version Settings.</p>
+</div>
+</div></div></div></div>
+
+
+  </div>
+
+ </div>
+
+</div>
+</div>

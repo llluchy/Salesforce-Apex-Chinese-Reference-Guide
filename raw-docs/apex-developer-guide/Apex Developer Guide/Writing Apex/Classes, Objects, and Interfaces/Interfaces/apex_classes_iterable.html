@@ -1,0 +1,196 @@
+<a name="apex_classes_iterable"><!-- --></a><h1 class="helpHead1">Custom Iterators</h1><div class="body">
+<div class="p">
+<span class="ph" id="IteratorDefn"><a name="IteratorDefn"><!-- --></a>An iterator traverses through every item in a collection. For example, in a
+                procedural
+                loop, you define a condition for exiting the loop, and you must
+                provide some means of traversing the collection, that is, an
+                iterator.</span>
+            In this example, <samp class="codeph apex_code">count</samp> is
+            incremented by 1 every time the loop is
+            executed.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">while</span> (count &lt; 11) {
+   System.debug(count);
+      count++;
+   }</pre></div>
+</div>
+
+<p class="p">Using the <samp class="codeph apex_code">Iterator</samp> interface you can create a custom set
+            of instructions for traversing a List through a loop. The iterator is useful for data
+            that exists in sources outside of Salesforce that you would normally define the scope of
+            using a <samp class="codeph apex_code">SELECT</samp> statement. Iterators can also be
+            used if you have multiple <samp class="codeph apex_code">SELECT</samp> statements. </p>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="using_iterators"><a name="using_iterators"><!-- --></a>Using Custom
+                    Iterators</span></h2>
+<div class="p">
+<p class="p">To
+                use custom iterators, you must create an Apex class that implements the <samp class="codeph apex_code">Iterator</samp> interface. </p>
+<div class="p">The <samp class="codeph apex_code">Iterator</samp> interface has the following instance
+                    methods:
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                        
+                        
+                        
+                        
+                        <thead class="thead sorted" align="left">
+                            <tr>
+                                <th class="featureTableHeader vertical-align-top " id="d33965e97">Name</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e100">Arguments</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e103">Returns</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e106">Description</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody class="tbody">
+                            <tr>
+                                <td class="entry" headers="d33965e97" data-title="Name"><samp class="codeph apex_code">hasNext</samp></td>
+
+                                <td class="entry" headers="d33965e100" data-title="Arguments"></td>
+
+                                <td class="entry" headers="d33965e103" data-title="Returns">Boolean</td>
+
+                                <td class="entry" headers="d33965e106" data-title="Description">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if
+                                    there’s another item in the collection being traversed, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise. </td>
+
+                            </tr>
+
+                            <tr>
+                                <td class="entry" headers="d33965e97" data-title="Name"><samp class="codeph apex_code">next</samp></td>
+
+                                <td class="entry" headers="d33965e100" data-title="Arguments"></td>
+
+                                <td class="entry" headers="d33965e103" data-title="Returns">Any type</td>
+
+                                <td class="entry" headers="d33965e106" data-title="Description">Returns the next item in the collection. </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table></div>
+</div>
+<p class="p">All methods in the <samp class="codeph apex_code">Iterator</samp>
+                interface must be declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp> or
+                    <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</p>
+<div class="p">
+                This example
+                code uses a custom iterator to iterate through a list of
+                strings.<div class="codeSection apex_code"><pre class="codeblock brush:apex">IterableString x = <span class="keyword">new</span> IterableString(<span class="string">'This is a really cool test.'</span>);
+
+<span class="statement">while</span>(x.hasNext()){
+   system.debug(x.next());
+} 
+</pre></div>
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Using Custom Iterators with <span class="titlecodeph">Iterable</span>
+</h2>
+<div class="p">
+<p class="p">If
+                you don’t want to use a custom iterator with a list, but instead want to create your
+                own data structure, you can use the <samp class="codeph apex_code">Iterable</samp> interface to generate the data structure.</p>
+<div class="p">The <samp class="codeph apex_code">Iterable</samp> interface has the following method:
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                        
+                        
+                        
+                        
+                        <thead class="thead sorted" align="left">
+                            <tr>
+                                <th class="featureTableHeader vertical-align-top " id="d33965e204">Name</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e207">Arguments</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e210">Returns</th>
+
+                                <th class="featureTableHeader vertical-align-top " id="d33965e213">Description</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody class="tbody">
+                            <tr>
+                                <td class="entry" headers="d33965e204" data-title="Name"><samp class="codeph apex_code">iterator</samp></td>
+
+                                <td class="entry" headers="d33965e207" data-title="Arguments"></td>
+
+                                <td class="entry" headers="d33965e210" data-title="Returns">Iterator class</td>
+
+                                <td class="entry" headers="d33965e213" data-title="Description">Returns a reference to the iterator for this interface.
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table></div>
+</div>
+<p class="p">The <samp class="codeph apex_code">iterator</samp> method must be
+                declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>. It creates a reference to the iterator
+                that you can then use to traverse the data structure. </p>
+<div class="p">In the following example a custom iterator iterates through a collection:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CustomIterator
+   <span class="keyword">implements</span> Iterator&lt;Account&gt;{ 
+ 
+   <span class="keyword">private</span> List&lt;Account&gt; accounts;
+   <span class="keyword">private</span> <span class="keyword">Integer</span> currentIndex;
+ 
+   <span class="keyword">public</span> CustomIterator(List&lt;Account&gt; accounts){
+       <span class="statement">this</span>.accounts = accounts;
+       <span class="statement">this</span>.currentIndex = 0;
+   }
+ 
+   <span class="keyword">public</span> <span class="keyword">Boolean</span> hasNext(){ 
+       <span class="statement">return</span> currentIndex &lt; accounts.size();
+   }    
+ 
+   <span class="keyword">public</span> Account next(){
+       <span class="statement">if</span>(hasNext()) {
+           <span class="statement">return</span> accounts[currentIndex++];
+       } <span class="statement">else</span> {
+           <span class="statement">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">'Iterator has no more elements.'</span>);
+       }
+   } 
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CustomIterable <span class="keyword">implements</span> Iterable&lt;Account&gt; {
+   <span class="keyword">public</span> Iterator&lt;Account&gt; iterator(){
+      List&lt;Account&gt; accounts =
+      [SELECT Id, Name,
+       NumberOfEmployees 
+       FROM Account
+       LIMIT 10];
+      <span class="statement">return</span> <span class="keyword">new</span> CustomIterator(accounts);
+   }
+}</pre></div>
+</div>
+<div class="p">The following is a batch job that uses an
+                iterator:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> BatchClass <span class="keyword">implements</span> Database.Batchable&lt;Account&gt;{
+   <span class="keyword">public</span> Iterable&lt;Account&gt; start(Database.BatchableContext info){
+       <span class="statement">return</span> <span class="keyword">new</span> CustomIterable();
+   }
+   <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext info, List&lt;Account&gt; scope){
+       List&lt;Account&gt; accsToUpdate = <span class="keyword">new</span> List&lt;Account&gt;();
+       <span class="statement">for</span>(Account acc : scope){
+           acc.Name = <span class="string">'changed'</span>;
+           acc.NumberOfEmployees = 69;
+           accsToUpdate.add(acc);
+       }
+       <span class="statement">update</span> accsToUpdate;
+   }
+   <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext info){
+   }
+}</pre></div>
+</div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

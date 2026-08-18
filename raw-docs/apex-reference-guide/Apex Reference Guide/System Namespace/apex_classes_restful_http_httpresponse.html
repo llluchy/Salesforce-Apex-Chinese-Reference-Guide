@@ -1,0 +1,560 @@
+<a name="apex_classes_restful_http_httpresponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">HttpResponse Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Use the <samp class="codeph apex_code">HttpResponse</samp> class to handle the HTTP response returned by the <samp class="codeph apex_code">Http</samp> class.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Use the XML classes or JSON Classes
+to parse XML or JSON content in the body of a response accessed by <samp class="codeph apex_code">HttpResponse</samp>.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">In the following <span class="ph" id="getxmlstreamreader_sample"><a name="getxmlstreamreader_sample"><!-- --></a><samp class="codeph apex_code">getXmlStreamReader</samp> example</span>, content is retrieved
+        via an HTTP callout, then the XML is parsed using the <samp class="codeph apex_code">XmlStreamReader</samp> class.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ReaderFromCalloutSample {
+    <span class="keyword">public</span> <span class="keyword">void</span> getAndParse() {
+ 
+        <span class="onelineComment">// Get the XML document from the endpoint</span>
+        Http http = <span class="keyword">new</span> Http();
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(URL.getOrgDomainUrl().toExternalForm() + <span class="string">'/services/data'</span>);
+        req.setMethod(<span class="string">'GET'</span>);
+        req.setHeader(<span class="string">'Accept'</span>, <span class="string">'application/xml'</span>);
+        HttpResponse res = http.send(req);
+
+        <span class="onelineComment">// Log the XML content</span>
+        System.debug(res.getBody());
+ 
+        <span class="onelineComment">// Generate the HTTP response as an XML stream</span>
+        XmlStreamReader reader = res.getXmlStreamReader();
+ 
+        <span class="onelineComment">// Read through the XML</span>
+        <span class="statement">while</span>(reader.hasNext()) {
+            System.debug(<span class="string">'Event Type:'</span> + reader.getEventType());
+            <span class="statement">if</span> (reader.getEventType() == XmlTag.START_ELEMENT) {
+            System.debug(reader.getLocalName());
+            }
+        reader.next();
+        }
+ 
+  }
+}</pre></div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_methods_system_json_overview.htm" target="_blank" title="Apex Developer Guide: JSON Support - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: JSON Support</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_xml_support.htm" target="_blank" title="Apex Developer Guide: XML Support - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: XML Support</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_HttpResponse_methods">
+<a name="apex_System_HttpResponse_methods"><!-- --></a>
+<h2 class="helpHead2">HttpResponse Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">HttpResponse</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getBody">getBody()</a></strong><br>
+Retrieves the body returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getBodyAsBlob">getBodyAsBlob()</a></strong><br>
+Retrieves the body returned in the response as a Blob.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getBodyDocument">getBodyDocument()</a></strong><br>
+Retrieves the body returned in the response as a DOM document.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getHeader">getHeader(key)</a></strong><br>
+Retrieves the contents of the response header.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getHeaderKeys">getHeaderKeys()</a></strong><br>
+Retrieves an array of header keys returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getStatus">getStatus()</a></strong><br>
+Retrieves the status message returned for the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getStatusCode">getStatusCode()</a></strong><br>
+Retrieves the value of the status code returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_getXmlStreamReader">getXmlStreamReader()</a></strong><br>
+Returns an <samp class="codeph apex_code">XmlStreamReader</samp> that parses the body of the callout response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_setBody">setBody(body)</a></strong><br>
+Specifies the body returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_setBodyAsBlob">setBodyAsBlob(body)</a></strong><br>
+Specifies the body returned in the response using a Blob.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_setHeader">setHeader(key, value)</a></strong><br>
+Specifies the contents of the response header.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_setStatus">setStatus(status)</a></strong><br>
+Specifies the status message returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_setStatusCode">setStatusCode(statusCode)</a></strong><br>
+Specifies the value of the status code returned in the response.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_System_HttpResponse_toString">toString()</a></strong><br>
+Returns the status message and status code returned in the response, for example:</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getBody">
+<a name="apex_System_HttpResponse_getBody"><!-- --></a>
+ <h3 class="helpHead3">getBody()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Retrieves the body returned in the response.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getBody()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Limit 6 MB for synchronous Apex or 12 MB for asynchronous Apex. The HTTP request and response
+    sizes count towards the total heap size.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getBodyAsBlob">
+<a name="apex_System_HttpResponse_getBodyAsBlob"><!-- --></a>
+ <h3 class="helpHead3">getBodyAsBlob()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Retrieves the body returned in the response as a Blob.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Blob</span> getBodyAsBlob()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Limit 6 MB for synchronous Apex or 12 MB for asynchronous Apex. The HTTP request and response
+    sizes count towards the total heap size.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getBodyDocument">
+<a name="apex_System_HttpResponse_getBodyDocument"><!-- --></a>
+<h3 class="helpHead3">getBodyDocument()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the body returned in the response as a DOM document.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Dom.Document getBodyDocument()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code">Dom.Document</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use it as a shortcut for:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> xml = httpResponse.getBody();
+Dom.Document domDoc = <span class="keyword">new</span> Dom.Document(xml);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getHeader">
+<a name="apex_System_HttpResponse_getHeader"><!-- --></a>
+<h3 class="helpHead3">getHeader(key)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the contents of the response header.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getHeader(<span class="keyword">String</span> key)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getHeaderKeys">
+<a name="apex_System_HttpResponse_getHeaderKeys"><!-- --></a>
+<h3 class="helpHead3">getHeaderKeys()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves an array of header keys returned in the response.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span>[] getHeaderKeys()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>[]</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getStatus">
+<a name="apex_System_HttpResponse_getStatus"><!-- --></a>
+<h3 class="helpHead3">getStatus()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the status message returned for the response.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getStatus()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getStatusCode">
+<a name="apex_System_HttpResponse_getStatusCode"><!-- --></a>
+<h3 class="helpHead3">getStatusCode()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the value of the status code returned in the
+response.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getStatusCode()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_getXmlStreamReader">
+<a name="apex_System_HttpResponse_getXmlStreamReader"><!-- --></a>
+<h3 class="helpHead3">getXmlStreamReader()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns an <samp class="codeph apex_code">XmlStreamReader</samp> that parses the body of the callout response.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> XmlStreamReader getXmlStreamReader()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_XmlStream_reader.htm#apex_classes_xml_XmlStream_reader" title="The XmlStreamReader class provides methods for forward, read-only access to XML data. You can pull data from XML or skip unwanted events. You can parse nested XML content that’s up to 50 nodes deep.">System.XmlStreamReader</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Use it as a shortcut for:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> xml = httpResponse.getBody();
+XmlStreamReader xsr = <span class="keyword">new</span> XmlStreamReader(xml);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_setBody">
+<a name="apex_System_HttpResponse_setBody"><!-- --></a>
+<h3 class="helpHead3">setBody(body)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="defn_setbody"><a name="defn_setbody"><!-- --></a>Specifies the body returned in the
+response.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBody(<span class="keyword">String</span> body)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_setBodyAsBlob">
+<a name="apex_System_HttpResponse_setBodyAsBlob"><!-- --></a>
+<h3 class="helpHead3">setBodyAsBlob(body)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="defn_setbodyasblob"><a name="defn_setbodyasblob"><!-- --></a>Specifies the body returned
+in the response using a Blob.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBodyAsBlob(<span class="keyword">Blob</span> body)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_setHeader">
+<a name="apex_System_HttpResponse_setHeader"><!-- --></a>
+<h3 class="helpHead3">setHeader(key, value)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="defn_setheader"><a name="defn_setheader"><!-- --></a>Specifies the contents of the response
+header.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setHeader(<span class="keyword">String</span> key, <span class="keyword">String</span> value)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_setStatus">
+<a name="apex_System_HttpResponse_setStatus"><!-- --></a>
+<h3 class="helpHead3">setStatus(status)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="defn_setstatus"><a name="defn_setstatus"><!-- --></a>Specifies the status message returned
+in the response.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setStatus(<span class="keyword">String</span> status)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">status</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_setStatusCode">
+<a name="apex_System_HttpResponse_setStatusCode"><!-- --></a>
+<h3 class="helpHead3">setStatusCode(statusCode)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="defn_setstatuscode"><a name="defn_setstatuscode"><!-- --></a>Specifies the value of the
+status code returned in the response.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setStatusCode(<span class="keyword">Integer</span> statusCode)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">statusCode</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpResponse_toString">
+<a name="apex_System_HttpResponse_toString"><!-- --></a>
+<h3 class="helpHead3">toString()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the status message and status code returned in
+the response, for example:</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Status=OK, StatusCode=200</pre></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

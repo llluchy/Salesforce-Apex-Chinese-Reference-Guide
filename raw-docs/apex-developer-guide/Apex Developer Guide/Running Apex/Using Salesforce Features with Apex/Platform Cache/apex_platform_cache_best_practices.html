@@ -1,0 +1,230 @@
+<a name="apex_platform_cache_best_practices"><!-- --></a><h1 class="helpHead1">Platform Cache Best Practices</h1><div class="body conbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Platform Cache can greatly improve performance in your applications.
+      However, it’s important to follow these guidelines to get the best cache performance. In
+      general, it’s more efficient to cache a few large items than to cache many small items
+      separately. Also be mindful of cache limits to prevent unexpected cache
+    evictions.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Evaluate the Performance Impact</h2>
+
+      
+      <p class="p">To test whether Platform Cache improves performance in your application, calculate the
+        elapsed time with and without using the cache. Don’t rely on the Apex debug log timestamp
+        for the execution time. Use the <samp class="codeph apex_code">System.currentTimeMillis()</samp> method instead. For example, first call <samp class="codeph apex_code">System.currentTimeMillis()</samp> to get the start time. Perform
+        application logic, fetching the data from either the cache or another data source. Then
+        calculate the elapsed time.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">long startTime = System.currentTimeMillis();
+<span class="onelineComment">// Your code here</span>
+long elapsedTime = System.currentTimeMillis() - startTime;
+System.debug(elapsedTime);</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Handle Cache Misses Gracefully</h2>
+
+      
+      <p class="p">Ensure that your code handles cache misses by testing cache requests that return null. To
+        help with debugging, add logging information for cache operations.</p>
+
+      <p class="p">Alternatively, use the <samp class="codeph apex_code">Cache.CacheBuilder</samp>
+        interface, which checks for cache misses.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CacheManager {
+    <span class="keyword">private</span> <span class="keyword">Boolean</span> cacheEnabled;
+        
+    <span class="keyword">public</span> <span class="keyword">void</span> CacheManager() {
+        cacheEnabled = <span class="keyword">true</span>;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">Boolean</span> toggleEnabled() { <span class="onelineComment">// Use for testing misses</span>
+        cacheEnabled = !cacheEnabled;
+        <span class="statement">return</span> cacheEnabled;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">Object</span> get(<span class="keyword">String</span> key) {
+        <span class="statement">if</span> (!cacheEnabled) <span class="statement">return</span> <span class="keyword">null</span>;
+        <span class="keyword">Object</span> value = Cache.Session.get(key);
+        <span class="statement">if</span> (value != <span class="keyword">null</span>) System.debug(LoggingLevel.DEBUG, <span class="string">'Hit for key '</span> + key);
+        <span class="statement">return</span> value;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> put(<span class="keyword">String</span> key, <span class="keyword">Object</span> value, <span class="keyword">Integer</span> ttl) {
+        <span class="statement">if</span> (!cacheEnabled) <span class="statement">return</span>;
+        Cache.Session.put(key, value, ttl);
+        <span class="onelineComment">// for redundancy, save to DB</span>
+        System.debug(LoggingLevel.DEBUG, <span class="string">'put() for key '</span> + key);
+    }
+
+    <span class="keyword">public</span> <span class="keyword">Boolean</span> remove(<span class="keyword">String</span> key) {
+        <span class="statement">if</span> (!cacheEnabled) <span class="statement">return</span> <span class="keyword">false</span>;
+        <span class="keyword">Boolean</span> removed = Cache.Session.remove(key);
+        <span class="statement">if</span> (removed) { 
+            System.debug(LoggingLevel.DEBUG, <span class="string">'Removed key '</span> + key);
+            <span class="statement">return</span> <span class="keyword">true</span>;
+        } <span class="statement">else</span> <span class="statement">return</span> <span class="keyword">false</span>;
+    }
+
+}</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Group Cache Requests</h2>
+
+      
+      <p class="p">When possible, group cache requests, but be aware of caching limits. To help improve
+        performance, perform cache operations on a list of keys rather than on individual keys. For
+        example, if you know which keys are necessary to invoke a Visualforce page or perform a task
+        in Apex, retrieve all keys at once. To retrieve multiple keys, call <samp class="codeph apex_code">get(keys)</samp> in an initialization method.</p>
+
+      
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Cache Larger Items</h2>
+
+      
+      <p class="p"> It’s more efficient to cache a few large items than to cache many small items separately.
+        Caching many small items decreases performance and increases overhead, including total
+        serialization size, serialization time, cache commit time, and cache capacity usage. </p>
+
+      <p class="p">Don’t add many small items to the Platform Cache within one request. Instead, wrap data in
+        larger items, such as lists. If a list is large, consider breaking it into multiple items.
+        Here’s an example of what to avoid.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Don't do this!</span>
+
+<span class="keyword">public</span> <span class="keyword">class</span> MyController {
+
+    <span class="keyword">public</span> <span class="keyword">void</span> initCache() {
+        List&lt;Account&gt; accts = [SELECT Id, Name, Phone, Industry, Description FROM 
+            Account limit 1000];
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i=0; i&lt;accts.size(); i++) {
+            Cache.Org.put(<span class="string">'acct'</span> + i, accts.get(i));    
+        }
+    }
+}</pre></div>
+
+      <p class="p">Instead, wrap the data in a few reasonably large items without exceeding the limit on the
+        size of single cached items.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Do this instead.</span>
+        
+<span class="keyword">public</span> <span class="keyword">class</span> MyController {
+
+<span class="keyword">public</span> <span class="keyword">void</span> initCache() {
+    List&lt;Account&gt; accts = [SELECT Id, Name, Phone, Industry, Description FROM 
+        Account limit 1000];
+    Cache.Org.put(<span class="string">'accts'</span>, accts);    
+    }
+}</pre></div>
+
+      <p class="p">Another good example of caching larger items is to encapsulate data in an Apex class. For
+        example, you can create a class that wraps session data, and cache an instance of the class
+        rather than the individual data items. Caching the class instance improves overall
+        serialization size and performance.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Be Aware of Cache Limits</h2>
+
+      
+      <p class="p">When you add items to the cache, be aware of the following limits.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Cache Partition Size Limit</strong>: When the cache partition limit is reached, keys are evicted until the cache is reduced
+            to 100% capacity. Platform Cache uses a least recently used (LRU) algorithm to evict
+            keys from the cache.</li>
+
+        <li class="li">
+<strong class="ph b">Local Cache Size Limit</strong>: <p class="p">When you add items to the cache, make sure that you are not exceeding local cache
+              limits within a request. The local cache limit for the session cache is 500 KB and
+              1,000 KB for the org cache. If you exceed the local cache limit, items can be evicted
+              from the local cache before the request has been committed. This eviction can cause
+              unexpected misses and long serialization time and can waste resources.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b">Single Cached Item Size Limit</strong>: The size of individual cached items is limited to 100 KB. If the serialized size of an
+            item exceeds this limit, the <samp class="codeph apex_code">Cache.ItemSizeLimitExceededException</samp> exception is thrown. It’s a good
+            practice to catch this exception and reduce the size of the cached item.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Use the Cache Diagnostics Page (Sparingly)</h2>
+
+      
+      <div class="p">To determine how much of the cache is used, check the Platform Cache Diagnostics page. To
+        reach the Diagnostics page: <ol class="ol enumList">
+          <li class="li">Make sure that Cache Diagnostics is enabled for the user (on the User Detail
+            page).</li>
+
+          <li class="li">On the Platform Cache Partition page, click the partition name.</li>
+
+          <li class="li">Click the link to the Diagnostics page for the partition.</li>
+
+        </ol>
+The Diagnostics page provides valuable information, including the capacity usage, keys,
+        and serialized and compressed sizes of the cached items. The session cache and org cache
+        have separate diagnostics pages. The session cache diagnostics are per session, and they
+        don’t provide insight across all active sessions. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Generating the diagnostics page
+          gathers all partition-related information and is an expensive operation. Use it
+          sparingly.</p>
+</div>
+</div></div></div></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Minimize Expensive Operations</h2>
+
+      
+      <p class="p">Consider the following guidelines to minimize expensive operations.</p>
+
+      <ul class="ul bulletList">
+          <li class="li">Use <samp class="codeph apex_code">Cache.Org.getKeys()</samp> and <samp class="codeph apex_code">Cache.Org.getCapacity()</samp> sparingly. Both methods are
+            expensive, because they traverse all partition-related information looking for or making
+            calculations for a given partition. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><samp class="codeph apex_code">Cache.Session</samp> usage is not expensive.</p>
+</div>
+</div></div></div></div>
+</li>
+
+          <li class="li">Avoid calling the <samp class="codeph apex_code">contains(key)</samp> method
+            followed by the <samp class="codeph apex_code">get(key)</samp> method. If you intend
+            to use the key value, simply call the <samp class="codeph apex_code">get(key)</samp>
+            method and make sure that the value is not equal to null.</li>
+
+          <li class="li">Clear the cache only when necessary. Clearing the cache traverses all
+            partition-related cache space, which is expensive. After clearing the cache, your
+            application will likely regenerate the cache by invoking database queries and
+            computations. This regeneration can be complex and extensive and impact your
+            application’s performance.</li>
+
+        </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_platform_cache_limits.htm" title="These limits apply when using Platform Cache.">Platform Cache Limits</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_cache_CacheBuilder.htm" target="_blank" title="Apex Reference Guide: CacheBuilder Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: CacheBuilder Interface</a></div></li>
+</ul>
+</div>
+</div>

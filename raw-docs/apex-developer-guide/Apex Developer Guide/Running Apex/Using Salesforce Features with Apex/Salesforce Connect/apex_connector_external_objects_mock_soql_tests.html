@@ -1,0 +1,211 @@
+<a name="apex_connector_external_objects_mock_soql_tests"><!-- --></a><h1 class="helpHead1">Mock SOQL Tests for External Objects</h1><div class="body conbody">
+<div class="shortdesc">You can mock SOQL query responses for external objects in Apex testing by using SOQL stub
+        methods and a new test class. Use basic and joined SOQL queries against external objects and
+        return mock records in a testing context.</div>
+
+        <p class="p">Create mock test classes by extending the new <samp class="codeph ">System.SoqlStubProvider</samp> class and overriding the <samp class="codeph ">handleSoqlQuery()</samp> class method. Create external object records using
+            either <samp class="codeph ">Test.createStubQueryRow()</samp> or <samp class="codeph ">Test.createStubQueryRows()</samp>. Register the mock provider in
+            the test using <samp class="codeph ">Test.createSoqlStub()</samp> and execute the
+            test code.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex governor limits apply to the stubbed records.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">The SOQL query must be against an external object, either directly with a FROM clause or
+            via a subquery. These features aren’t allowed within a stub implementation.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">SOQL</li>
+
+            <li class="li">SOSL</li>
+
+            <li class="li">Callouts</li>
+
+            <li class="li">Future methods</li>
+
+            <li class="li">Queueable Jobs</li>
+
+            <li class="li">Batch Jobs</li>
+
+            <li class="li">DML</li>
+
+            <li class="li">Platform events</li>
+
+        </ul>
+
+        <p class="p">This example shows a mock test class for the <var class="keyword varname">GithubIssueTest</var> class
+            with joined and basic queries.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Test class that utilizes the SoqlStubProvider classes.
+ *   Each test sets the appropriate SoqlStubProvider
+ *   and runs validation against the mocked query results.
+ **/</span>
+
+<span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> GithubIssueTest {
+    <span class="keyword">@isTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testGithubIssueQuery() {
+        QueryIssueUtil queryIssueUtil = <span class="keyword">new</span> QueryIssueUtil();
+        SObjectType type = queryIssueUtil.getSObjectTypeForDynamicSoql(<span class="string">'GithubIssues__x'</span>);
+        Test.createSoqlStub(type, <span class="keyword">new</span> IssueStubProvider());
+        Test.startTest();
+        Assert.isTrue(Test.isSoqlStubDefined(type));
+        Assert.isTrue(queryIssueUtil.queryGithubIssuesAndCheckForId());
+        Assert.areEqual(Limits.getQueries(), 1);
+        Assert.areEqual(Limits.getQueryRows(), 1);
+        Assert.areEqual(Limits.getAggregateQueries(), 0);
+        Assert.isTrue(queryIssueUtil.queryGithubIssuesAndVerifyResultSize(1));
+        Assert.areEqual(Limits.getQueries(), 2);
+        Assert.areEqual(Limits.getQueryRows(), 2);
+        Assert.areEqual(Limits.getAggregateQueries(), 0);
+        Test.stopTest();
+    }
+
+    <span class="keyword">@isTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> testIssueToCommentJoinQuery() {
+        QueryIssueUtil queryIssueUtil = <span class="keyword">new</span> QueryIssueUtil();
+        Test.createSoqlStub(GithubIssues__x.SObjectType, <span class="keyword">new</span> IssueCommentJoinStubProvider());
+        Test.startTest();
+        Assert.isTrue(Test.isSoqlStubDefined(GithubIssues__x.SObjectType));
+        Assert.isTrue(queryIssueUtil.queryIssueToCommentJoinAndCheckForCommentId());
+        Assert.areEqual(Limits.getQueries(), 1);
+        Assert.areEqual(Limits.getQueryRows(), 3);
+        Assert.areEqual(Limits.getAggregateQueries(), 1);
+        Assert.isTrue(queryIssueUtil.queryIssueToCommentJoinAndVerifyResultSize(1, 2));
+        Assert.areEqual(Limits.getQueries(), 2);
+        Assert.areEqual(Limits.getQueryRows(), 6);
+        Assert.areEqual(Limits.getAggregateQueries(), 2);
+        Test.stopTest();
+    }
+}
+</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   SoqlStubProvider class that returns a mocked query result
+ *   for joined queries between the Github Issues object and
+ *   the associated Comments object.
+ **/</span>
+
+<span class="keyword">public</span> <span class="keyword">class</span> IssueCommentJoinStubProvider <span class="keyword">extends</span> SoqlStubProvider {
+    <span class="keyword">public</span> <span class="keyword">override</span> List&lt;SObject&gt; handleSoqlQuery(SObjectType sobjectType, <span class="keyword">String</span> rawQuery, Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; binds) {
+        <span class="statement">if</span> (sobjectType.equals(GithubIssues__x.SObjectType)) {
+            Assert.areEqual(binds.size(), 0);
+
+            List&lt;GithubIssues__x&gt; issues = <span class="keyword">new</span> List&lt;GithubIssues__x&gt;();
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; commentMaps = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; comment1 = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; {
+                <span class="string">'Id'</span> =&gt; <span class="string">'x09xx000000brk9AAA'</span>
+            };
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; comment2 = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; {
+                <span class="string">'Id'</span> =&gt; <span class="string">'x09xx000001brk9AAA'</span>
+            };
+
+            commentMaps.add(comment1);
+            commentMaps.add(comment2);
+
+            List&lt;IssueComments__x&gt; comments = (List&lt;IssueComments__x&gt;) Test.createStubQueryRows(IssueComments__x.SObjectType, commentMaps);
+
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; issueMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; {
+                <span class="string">'Id'</span> =&gt; <span class="string">'x08xx000002HNZ6AAO'</span>,
+                <span class="string">'Title__c'</span> =&gt; <span class="string">'Sample Issue 1'</span>,
+                <span class="string">'IssueComments__r'</span> =&gt; comments
+            };
+
+            GithubIssues__x obj = (GithubIssues__x) Test.createStubQueryRow(sobjectType, issueMap);
+
+            issues.add(obj);
+            <span class="statement">return</span> issues;
+        }
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   SoqlStubProvider class that returns a mocked query result
+ *   for queries against the Github Issues object.
+ **/</span>
+
+<span class="keyword">public</span> <span class="keyword">class</span> IssueStubProvider <span class="keyword">extends</span> SoqlStubProvider {
+    <span class="keyword">public</span> <span class="keyword">override</span> List&lt;SObject&gt; handleSoqlQuery(SObjectType sobjectType, <span class="keyword">String</span> rawQuery, Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; binds) {
+        <span class="statement">if</span> (sobjectType.equals(GithubIssues__x.SObjectType)) {
+        Assert.areEqual(binds.size(), 1);
+        Assert.areEqual(binds.get(<span class="string">'tmpVar1'</span>), <span class="string">'x08xx000002HNZ6AAO'</span>);
+
+            List&lt;SObject&gt; objs = <span class="keyword">new</span> List&lt;SObject&gt;();
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; individualMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; {
+                <span class="string">'Id'</span> =&gt; <span class="string">'x08xx000002HNZ6AAO'</span>
+            };
+            GithubIssues__x obj = (GithubIssues__x) Test.createStubQueryRow(sobjectType, individualMap);
+            objs.add(obj);
+            <span class="statement">return</span> objs;
+        }
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Utility class that runs queries to be mocked 
+ *   in the Apex tests.  
+ **/</span>
+
+<span class="keyword">public</span> <span class="keyword">class</span> QueryIssueUtil {
+    <span class="keyword">public</span> boolean queryGithubIssuesAndCheckForId() {
+        <span class="onelineComment">// BINDS WITH USER_MODE DYNAMIC QUERY</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; binds = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;{<span class="string">'tmpVar1'</span> =&gt; <span class="string">'x08xx000002HNZ6AAO'</span>};
+        List&lt;GithubIssues__x&gt; issues = Database.queryWithBinds(<span class="string">'SELECT Id FROM GithubIssues__x WHERE Id  = :tmpVar1'</span>, binds, AccessLevel.USER_MODE);
+
+        <span class="statement">for</span> (GithubIssues__x issue : issues ) {
+            <span class="statement">if</span> (issue.Id.equals(<span class="string">'x08xx000002HNZ6AAO'</span>)) {
+                <span class="statement">return</span> <span class="keyword">true</span>;
+            }
+        }
+        <span class="statement">return</span> <span class="keyword">false</span>;
+    }
+
+    <span class="keyword">public</span> boolean queryGithubIssuesAndVerifyResultSize(<span class="keyword">Integer</span> size) {
+        <span class="onelineComment">// BINDS WITH SYSTEM_MODE STATIC QUERY</span>
+        <span class="keyword">String</span> issueId = <span class="string">'x08xx000002HNZ6AAO'</span>;
+        List&lt;GithubIssues__x&gt; issues = [SELECT Id FROM GithubIssues__x WHERE Id  = :issueId];
+        <span class="statement">if</span>(issues.size() == size) {
+            <span class="statement">return</span> <span class="keyword">true</span>;
+        }
+            <span class="statement">return</span> <span class="keyword">false</span>;
+    }
+
+    <span class="keyword">public</span> boolean queryIssueToCommentJoinAndCheckForCommentId() {
+        <span class="onelineComment">// DYNAMIC QUERY</span>
+        List&lt;GithubIssues__x&gt; issues = Database.query(<span class="string">'SELECT Id, Title__c, (SELECT Id FROM IssueComments__r) FROM GithubIssues__x WHERE Id = \'003000000000000\''</span>);
+
+
+        <span class="statement">for</span> (GithubIssues__x issue : issues) {
+            List&lt;IssueComments__x&gt; comments = issue.IssueComments__r;
+            System.debug(comments);
+            <span class="statement">if</span>(!comments.get(0).Id.equals(<span class="string">'x09xx000000brk9AAA'</span>) &amp;&amp; !comments.get(1).Id.equals(<span class="string">'x09xx000001brk9AAA'</span>))<span class="statement">return</span> <span class="keyword">false</span>;
+        }
+        <span class="statement">return</span> <span class="keyword">true</span>;
+    }
+
+    <span class="keyword">public</span> boolean queryIssueToCommentJoinAndVerifyResultSize(<span class="keyword">Integer</span> parentSize, <span class="keyword">Integer</span> childSize) {
+        <span class="onelineComment">// STATIC QUERY</span>
+        List&lt;GithubIssues__x&gt; issues = [SELECT Id, Title__c, (SELECT Id FROM IssueComments__r) FROM GithubIssues__x WHERE Id = <span class="string">'003000000000000'</span>];
+
+        <span class="statement">if</span>(issues.size() == parentSize &amp;&amp; issues.get(0).IssueComments__r.size() == childSize) {
+            <span class="statement">return</span> <span class="keyword">true</span>;
+        }
+        <span class="statement">return</span> <span class="keyword">false</span>;
+    }
+
+    <span class="keyword">public</span> SObjectType getSObjectTypeForDynamicSoql(<span class="keyword">String</span> name) {
+        Schema.DescribeSObjectResult[] descResult = Schema.describeSobjects(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{name});
+        SObjectType type = descResult.get(0).getSobjectType();
+        <span class="statement">return</span> type;
+    }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,62 @@
+<a name="apex_connector_external_objects_writeable"><!-- --></a><h1 class="helpHead1">Writable External Objects</h1><div class="body conbody">
+<div class="shortdesc">By default, external objects are read only, but you can make them writable. Doing so
+        lets Salesforce users and APIs create, update, and delete data that’s stored outside the org
+        by interacting with external objects within the org. For example, users can see all the
+        orders that reside in an SAP system that are associated with an account in Salesforce. Then,
+        without leaving the Salesforce user interface, they can place a new order or route an
+        existing order. The relevant data is automatically created or updated in the SAP
+        system.</div>
+
+        <p class="p">Access to external data depends on the connections between Salesforce and the external
+            systems that store the data. Network latency and the availability of the external
+            systems can introduce timing issues with Apex write or delete operations on external
+            objects.</p>
+
+        <p class="p">Because of the complexity of these connections, Apex can’t execute standard <samp class="codeph apex_code"><span class="statement">insert</span>()</samp>, <samp class="codeph apex_code"><span class="statement">update</span>()</samp>, or <samp class="codeph apex_code">create()</samp> operations
+            on external objects. Instead, Apex provides a specialized set of database methods and
+            keywords to work around potential issues with write execution. DML insert, update,
+            create, and delete operations on external objects are either asynchronous or executed
+            when specific criteria are met.</p>
+
+        <div class="p">This example uses the <samp class="codeph apex_code">Database.insertAsync()</samp>
+            method to insert a new order into a database table asynchronously. It returns a <samp class="codeph apex_code">SaveResult</samp> object that contains a unique identifier
+            for the insert
+            job.<div class="codeSection apex_code"><pre class="codeblock brush:apex">​public <span class="keyword">void</span> createOrder () {​   
+    SalesOrder__x order = <span class="keyword">new</span> SalesOrder__x ();​   
+    Database.SaveResult sr = Database.insertAsync (order);​   
+    <span class="statement">if</span> (! sr.isSuccess ()) {
+        <span class="keyword">String</span> locator =  Database.getAsyncLocator ( sr );​     
+        completeOrderCreation(locator);
+    }
+​}</pre></div>
+</div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Writes performed on external objects through the Salesforce user interface or the API
+            are synchronous and work the same way as for standard and custom objects.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">You can perform the following DML operations on external objects, either asynchronously
+            or based on criteria: insert records, update records, upsert records, or delete records.
+            Use classes in the <samp class="codeph apex_code">DataSource</samp> namespace to get
+            the unique identifiers for asynchronous jobs, or to retrieve results lists for upsert,
+            delete, or save operations.</p>
+
+        <p class="p">When you initiate an Apex method on an external object, a job is scheduled and placed in
+            the background jobs queue. The BackgroundOperation object lets you view the job status
+            for write operations via the API or SOQL. Monitor job progress and related errors in the
+            org, extract statistics, process batch jobs, or see how many errors occur in a specified
+            time period.</p>
+
+        <p class="p">For usage information and examples, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_namespace_Database.htm" target="_blank">Database Namespace</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_namespace_DataSource.htm" target="_blank">DataSource Namespace</a>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=platform_connect_considerations_writable_external_objects.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Writable External Objects Considerations
+                            for Salesforce Connect—All Adapters</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,161 @@
+<a name="apex_class_Database_DuplicateError"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">DuplicateError Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains information about an error that occurred when an attempt was
+      made to save a duplicate record. Use if your organization has set up duplicate rules, which
+      are part of the Duplicate Management feature.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="p">When you try to save a record that’s identified as a duplicate record by a duplicate rule,
+        you’ll receive a duplicate error. If the duplicate rule contains the Allow action, an
+        attempt will be made to bypass the error.
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Try to save a duplicate account</span>
+Account duplicateAccount = <span class="keyword">new</span> Account(Name=<span class="string">'Acme'</span>,  BillingCity=<span class="string">'San Francisco'</span>);
+Database.SaveResult sr = Database.<span class="statement">insert</span>(duplicateAccount, <span class="keyword">false</span>);
+<span class="statement">if</span> (!sr.isSuccess()) {
+	
+	<span class="onelineComment">// Insertion failed due to duplicate detected</span>
+	<span class="statement">for</span>(Database.Error duplicateError : sr.getErrors()){
+		Datacloud.DuplicateResult duplicateResult = 
+                  ((Database.DuplicateError)duplicateError).getDuplicateResult();
+		System.debug(<span class="string">'Duplicate records have been detected by '</span> + 
+                  duplicateResult.getDuplicateRule());
+		System.debug(duplicateResult.getErrorMessage());
+	}
+
+	<span class="onelineComment">// If the duplicate rule is an alert rule, we can try to bypass it</span>
+	Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions(); 
+	dml.DuplicateRuleHeader.AllowSave = <span class="keyword">true</span>;
+	Database.SaveResult sr2 = Database.<span class="statement">insert</span>(duplicateAccount, dml);
+	<span class="statement">if</span> (sr2.isSuccess()) {
+		System.debug(<span class="string">'Duplicate account has been inserted in Salesforce!'</span>);
+	}
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_Database_DuplicateError_methods">DuplicateError Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_saveresult.htm#apex_methods_system_database_saveresult" title="The result of an insert or update DML operation returned by a Database method.">SaveResult Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records.">DuplicateResult Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_error.htm#apex_methods_system_database_error" title="Represents information about an error that occurred during a DML operation when using a Database method.">Error Class</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_DuplicateError_methods">
+<a name="apex_Database_DuplicateError_methods"><!-- --></a><h2 class="helpHead2">DuplicateError Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DuplicateError</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_Database_DuplicateError_getDuplicateResult">getDuplicateResult()</a></strong><br>
+Returns the details of a duplicate rule and duplicate records found by       the duplicate rule. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_Database_DuplicateError_getFields">getFields()</a></strong><br>
+Returns an array of one or more field names. Identifies which fields       in the object, if any, affected the error condition.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_Database_DuplicateError_getMessage">getMessage()</a></strong><br>
+Returns the error message text.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_Database_DuplicateError_getStatusCode">getStatusCode()</a></strong><br>
+Returns a code that characterizes the error.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DuplicateError_getDuplicateResult">
+<a name="apex_Database_DuplicateError_getDuplicateResult"><!-- --></a><h3 class="helpHead3">getDuplicateResult()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the details of a duplicate rule and duplicate records found by
+      the duplicate rule. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Datacloud.DuplicateResult getDuplicateResult()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records.">Datacloud.DuplicateResult</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">This example shows the code used to get the possible duplicates and related match
+        information after saving a new contact. This code is part of a custom application that
+        implements duplicate management when users add a contact. See <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records.">DuplicateResult Class</a> to check out the entire sample
+        applicaton.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Datacloud.DuplicateResult duplicateResult = 
+                            duplicateError.getDuplicateResult();</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DuplicateError_getFields">
+<a name="apex_Database_DuplicateError_getFields"><!-- --></a><h3 class="helpHead3">getFields()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns an array of one or more field names. Identifies which fields
+      in the object, if any, affected the error condition.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;<span class="keyword">String</span>&gt; getFields()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DuplicateError_getMessage">
+<a name="apex_Database_DuplicateError_getMessage"><!-- --></a><h3 class="helpHead3">getMessage()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the error message text.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getMessage()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DuplicateError_getStatusCode">
+<a name="apex_Database_DuplicateError_getStatusCode"><!-- --></a><h3 class="helpHead3">getStatusCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a code that characterizes the error.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> StatusCode getStatusCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_enums.htm" target="_blank">StatusCode</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

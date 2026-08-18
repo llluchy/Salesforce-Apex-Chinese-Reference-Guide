@@ -1,0 +1,68 @@
+<a name="apex_classes_version_settings_api"><!-- --></a><h1 class="helpHead1">Setting the Salesforce API Version for Classes and
+        Triggers</h1><div class="body">
+        <p class="p">To set the Salesforce API and Apex version for a class or trigger:</p>
+
+        <ol class="ol enumList">
+            <li class="li" id="step_edit_start">
+<a name="step_edit_start"><!-- --></a>Edit either a class or trigger, and click <strong class="ph uicontrol">Version
+                    Settings</strong>.</li>
+
+            <li class="li">Select the <span class="keyword parmname">Version</span> of the Salesforce API. This version is also
+                the version of Apex associated with the class or trigger.</li>
+
+            <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+        </ol>
+
+        <p class="p">If you pass an object as a parameter in a method call from one Apex class, C1, to another
+            class, C2, and C2 has different fields exposed due to the Salesforce API version
+            setting, the fields in the objects are controlled by the version settings of C2. </p>
+
+        <p class="p">In this example, the <span class="keyword parmname">Categories</span> field is set to <samp class="codeph apex_code"><span class="keyword">null</span></samp> after calling the <samp class="codeph apex_code">insertIdea</samp> method in class C2 from a method in the
+            test class C1, because the <span class="keyword parmname">Categories</span> field isn’t available in
+            version 13.0 of the API.</p>
+
+        <p class="p">The first class is saved using Salesforce API version 13.0:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// This class is saved using Salesforce API version 13.0</span>
+<span class="onelineComment">// Version 13.0 does not include the Idea.categories field</span>
+<span class="keyword">global</span> <span class="keyword">class</span> C2
+{
+    <span class="keyword">global</span> Idea insertIdea(Idea a) {
+        <span class="statement">insert</span> a; <span class="onelineComment">// category field set to null on insert</span>
+        
+        <span class="onelineComment">// retrieve the new idea</span>
+        Idea insertedIdea = [SELECT title FROM Idea WHERE Id =:a.Id];
+        
+        <span class="statement">return</span> insertedIdea;
+    }
+}</pre></div>
+
+        <p class="p">The following class is saved using Salesforce API version 16.0:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="onelineComment">// This class is bound to API version 16.0 by Version Settings</span>
+<span class="keyword">private</span> <span class="keyword">class</span> C1
+{  
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testC2Method() {
+        Idea i = <span class="keyword">new</span> Idea();
+        i.CommunityId = <span class="string">'09aD000000004YCIAY'</span>;
+        i.Title = <span class="string">'Testing Version Settings'</span>;
+        i.Body = <span class="string">'Categories field is included in API version 16.0'</span>;
+        i.Categories = <span class="string">'test'</span>;
+
+        C2 c2 = <span class="keyword">new</span> C2();
+        Idea returnedIdea = c2.insertIdea(i);
+        <span class="onelineComment">// retrieve the new idea</span>
+        Idea ideaMoreFields = [SELECT title, categories FROM Idea
+             WHERE Id = :returnedIdea.Id];
+
+        <span class="onelineComment">// assert that the categories field from the object created</span>
+        <span class="onelineComment">// in this class is not null</span>
+        System.assert(i.Categories != <span class="keyword">null</span>);
+        <span class="onelineComment">// assert that the categories field created in C2 is null</span>
+        System.assert(ideaMoreFields.Categories == <span class="keyword">null</span>);
+    }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

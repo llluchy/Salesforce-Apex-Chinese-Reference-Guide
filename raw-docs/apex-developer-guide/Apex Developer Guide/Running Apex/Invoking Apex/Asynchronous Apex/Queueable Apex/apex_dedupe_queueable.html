@@ -1,0 +1,96 @@
+<a name="apex_dedupe_queueable"><!-- --></a><h1 class="helpHead1">Detecting Duplicate Queueable Jobs</h1><div class="body conbody">
+<div class="shortdesc">Reduce resource contention and race conditions by enqueuing only a
+        single instance of your async Queueable job based on its signature. Attempting to add more
+        than one Queueable job to the processing queue with the same signature results in a
+        DuplicateMessageException when you try to enqueue subsequent jobs.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Build a Queueable Signature</h2>
+
+            
+            <p class="p">To create a unique queuable signature, first declare an instance of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_AsyncOptions.htm" target="_blank" title="HTML (New Window)"><samp class="codeph ">AsyncOptions</samp></a> class. Then set the value of the instance’s
+                    <samp class="codeph ">DuplicateSignature</samp> property to a <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_QueueableDuplicateSignature.htm" target="_blank"><samp class="codeph apex_code">QueueableDuplicateSignature</samp></a> object, which is built using
+                the inner <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_QueueableDuplicateSignature_Builder.htm" target="_blank"><samp class="codeph nolang">QueueableDuplicateSignature.Builder</samp></a> class.</p>
+
+            <p class="p">To build the queueable signature, add different strings, IDs, or integers using these
+                methods from <samp class="codeph ">QueueableDuplicateSignature.Builder</samp>. </p>
+
+            <ul class="ul bulletList">
+                <li class="li"><samp class="codeph ">addString(inputString)</samp></li>
+
+                <li class="li"><samp class="codeph ">addId(inputId)</samp></li>
+
+                <li class="li"><samp class="codeph ">addInteger(inputInteger)</samp></li>
+
+            </ul>
+
+            <p class="p">As you build the signature, you can find the size, remaining size, and maximum size
+                of the queueable job signature in bytes using these methods from the <samp class="codeph ">QueueableDuplicateSignature.Builder</samp> class.</p>
+
+            <ul class="ul bulletList">
+                <li class="li"><samp class="codeph ">getSize()</samp></li>
+
+                <li class="li"><samp class="codeph ">getRemainingSize()</samp></li>
+
+                <li class="li"><samp class="codeph ">getMaxSize()</samp></li>
+
+            </ul>
+
+            <p class="p">When the signature has the required components, call the <samp class="codeph ">.build()</samp> method and assign the signature to the <samp class="codeph ">DuplicateSignature</samp> property.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Enqueue a Job with a Queueable Signature</h2>
+
+            
+            <p class="p">After you build a queuable signature, enqueue a new job using the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_system_enqueueJob" target="_blank"><samp class="codeph apex_code">System.enqueueJob(queueable, asyncOptions)</samp></a> method. Set the
+                    <span class="keyword parmname">asyncOptions</span> parameter to the <samp class="codeph ">AsyncOptions</samp> instance with the queueable signature that identifies the
+                unique job. When the new job is enqueued, the system checks for existing enqueued
+                jobs with the same signature. If other enqueued jobs with the same signature are
+                found, then the enqueue operation for the new job fails, and a
+                DuplicateMessageException is thrown.</p>
+
+            <p class="p">However, if other jobs with the same signature are already running when the new job
+                is enqueued, then the enqueue operation for the new job succeeds. Therefore,
+                duplicates of already running jobs can still occur in this case. This behavior
+                occurs because the queuable signature is removed from the job when it’s first
+                dequeued, so a running job no longer has a signature. This removal guarantees that
+                at least one job instance for a given signature runs. </p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Examples</h2>
+
+            
+            <p class="p">This example builds the async job signature using the User Id and the string <samp class="codeph nolang">MyQueueable</samp>.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>AsyncOptions options = new AsyncOptions();
+options.DuplicateSignature = QueueableDuplicateSignature.Builder()
+                                .addId(UserInfo.getUserId())
+                                .addString('MyQueueable')
+                                .build();
+try {
+    System.enqueueJob(new MyQueueable(), options);
+} catch (DuplicateMessageException ex) {
+    //Exception is thrown if there is already an enqueued job with the same 
+    //signature
+    Assert.areEqual('Attempt to enqueue job with duplicate queueable signature',
+        ex.getMessage());
+}</pre></div>
+
+            <p class="p">This example builds the async job signature using the ApexClass Id and the hash value
+                of an sObject.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>AsyncOptions options = new AsyncOptions();
+options.DuplicateSignature = QueueableDuplicateSignature.Builder()
+                                .addInteger(System.hashCode(someAccount))
+                                .addId([SELECT Id FROM ApexClass 
+                                     WHERE Name='MyQueueable'].Id)
+                                .build();
+System.enqueueJob(new MyQueueable(), options);</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

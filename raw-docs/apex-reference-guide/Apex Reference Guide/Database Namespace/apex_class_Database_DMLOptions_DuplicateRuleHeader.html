@@ -1,0 +1,166 @@
+<a name="apex_class_Database_DMLOptions_DuplicateRuleHeader"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">DMLOptions.DuplicateRuleHeader Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Determines options for using duplicate rules to detect duplicate
+      records. Duplicate rules are part of the Duplicate Management feature.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="p">The following example shows how to save an account record that’s been identified as a
+        duplicate. To learn how to iterate through duplicate errors, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_class_Database_DuplicateError" title="Contains information about an error that occurred when an attempt was made to save a duplicate record. Use if your organization has set up duplicate rules, which are part of the Duplicate Management feature.">DuplicateError Class</a><div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions(); 
+dml.DuplicateRuleHeader.allowSave = <span class="keyword">true</span>;
+dml.DuplicateRuleHeader.runAsCurrentUser = <span class="keyword">true</span>;
+Account duplicateAccount = <span class="keyword">new</span> Account(Name=<span class="string">'dupe'</span>);
+Database.SaveResult sr = Database.<span class="statement">insert</span>(duplicateAccount, dml);
+<span class="statement">if</span> (sr.isSuccess()) {
+	System.debug(<span class="string">'Duplicate account has been inserted in Salesforce!'</span>);
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions_DuplicateRuleHeader.htm#apex_Database_DMLOptions_DuplicateRuleHeader_properties">DMLOptions.DuplicateRuleHeader Properties</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_DMLOptions_DuplicateRuleHeader_properties">
+<a name="apex_Database_DMLOptions_DuplicateRuleHeader_properties"><!-- --></a>
+  <h2 class="helpHead2">DMLOptions.DuplicateRuleHeader Properties</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are properties for <samp class="codeph apex_code">DMLOptions.DuplicateRuleHeader</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions_DuplicateRuleHeader.htm#apex_Database_DMLOptions_DuplicateRuleHeader_AllowSave">allowSave</a></strong><br>
+For a duplicate rule, when the Alert option is enabled, bypass alerts       and save duplicate records by setting this property to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. Prevent duplicate records from being saved by setting this property to         <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DMLOptions_DuplicateRuleHeader.htm#apex_Database_DMLOptions_DuplicateRuleHeader_runAsCurrentUser">runAsCurrentUser</a></strong><br>
+Determine whether sharing rules for the current user are enforced       when duplicate rules run (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). If no sharing rules are specified, Apex code runs in       user mode and sharing rules for the current user are enforced.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DMLOptions_DuplicateRuleHeader_AllowSave">
+<a name="apex_Database_DMLOptions_DuplicateRuleHeader_AllowSave"><!-- --></a><h3 class="helpHead3">allowSave</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>For a duplicate rule, when the Alert option is enabled, bypass alerts
+      and save duplicate records by setting this property to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. Prevent duplicate records from being saved by setting this property to
+        <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> allowSave {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="p">This example shows how to save an account record that’s been identified as a duplicate.
+          <samp class="codeph apex_code">dml.DuplicateRuleHeader.allowSave = <span class="keyword">true</span></samp> means the
+        user should be allowed to save the duplicate. To learn how to iterate through duplicate
+        errors, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_class_Database_DuplicateError" title="Contains information about an error that occurred when an attempt was made to save a duplicate record. Use if your organization has set up duplicate rules, which are part of the Duplicate Management feature.">DuplicateError Class</a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions(); 
+dml.DuplicateRuleHeader.allowSave = <span class="keyword">true</span>;
+dml.DuplicateRuleHeader.runAsCurrentUser = <span class="keyword">true</span>;
+Account duplicateAccount = <span class="keyword">new</span> Account(Name=<span class="string">'dupe'</span>);
+Database.SaveResult sr = Database.<span class="statement">insert</span>(duplicateAccount, dml);
+<span class="statement">if</span> (sr.isSuccess()) {
+	System.debug(<span class="string">'Duplicate account has been inserted in Salesforce!'</span>);
+}</pre></div>
+</div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_DMLOptions_DuplicateRuleHeader_runAsCurrentUser">
+<a name="apex_Database_DMLOptions_DuplicateRuleHeader_runAsCurrentUser"><!-- --></a>
+  <h3 class="helpHead3">runAsCurrentUser</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Determine whether sharing rules for the current user are enforced
+      when duplicate rules run (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). If no sharing rules are specified, Apex code runs in
+      user mode and sharing rules for the current user are enforced.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> runAsCurrentUser {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">If specified as <samp class="codeph apex_code"><span class="keyword">true</span></samp>, duplicate rules run for the
+        current user, which ensures users can’t view duplicate records that aren’t available to
+        them.</p>
+
+      <p class="p">Use <samp class="codeph apex_code">runAsCurrentUser = <span class="keyword">true</span></samp> to detect duplicates
+        when converting leads to contacts.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="p">This example shows how to set options so that duplicate rules run for the current user when
+        saving a new
+        account.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Database.DMLOptions dml = <span class="keyword">new</span> Database.DMLOptions(); 
+dml.DuplicateRuleHeader.allowSave = <span class="keyword">true</span>;
+dml.DuplicateRuleHeader.runAsCurrentUser = <span class="keyword">true</span>;
+Account duplicateAccount = <span class="keyword">new</span> Account(Name=<span class="string">'dupe'</span>);
+Database.SaveResult sr = Database.<span class="statement">insert</span>(duplicateAccount, dml);
+<span class="statement">if</span> (sr.isSuccess()) {
+	System.debug(<span class="string">'Duplicate account has been inserted in Salesforce!'</span>);
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

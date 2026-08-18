@@ -1,0 +1,66 @@
+<a name="apex_connector_external_tracking_package_and_test"><!-- --></a><h1 class="helpHead1">External Change Data Capture Packaging and Testing</h1><div class="body conbody">
+<div class="shortdesc">You can distribute External Change Data Capture components in managed packages,
+        including a framework for testing your Apex triggers. Special behaviors and limitations
+        apply to packaging and package installation.</div>
+
+        <ul class="ul bulletList">
+            <li class="li">Include External Change Data Tracking components in a managed package by selecting
+                your test from the Apex Class Component Type list. The trigger, test, external data
+                source, external object, and other related assets are brought into the package for
+                distribution.</li>
+
+            <li class="li">Certificates aren’t packageable. If you package an external data source that
+                specifies a certificate, make sure that the subscriber org has a valid certificate
+                with the same name.</li>
+
+        </ul>
+
+        <p class="p">To help you test your External Change Data Capture–triggered Apex classes, here is a unit
+            test code example of a trigger reacting to a simulated external change.</p>
+
+        <div class="p">
+<strong class="ph b">Example
+            Trigger</strong><div class="codeSection apex_code"><pre class="codeblock brush:apex">​trigger OnExternalProductChangeEventForAudit on Products__ChangeEvent (after <span class="statement">insert</span>) {
+    <span class="statement">if</span> (Trigger.<span class="keyword">new</span>.size() != 1) <span class="statement">return</span>;
+    <span class="statement">for</span> (Products__ChangeEvent event: Trigger.<span class="keyword">new</span>) {
+         Product_Audit__c audit = <span class="keyword">new</span> Product_Audit__c(); 
+         audit.Name = <span class="string">'ProductChangeOn'</span> + event.ExternalId;
+         audit.Change_Type__c = event.ChangeEventHeader.getChangeType();
+         audit.Audit_Price__c = event.Price__c;
+         audit.Product_Name__c = event.Name__c;
+         <span class="statement">insert</span>(audit);
+    }
+}</pre></div>
+</div>
+
+        <div class="p">
+<strong class="ph b">Apex Test</strong><div class="codeSection apex_code"><pre class="codeblock brush:apex">​<span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> testOnExternalProductChangeEventForAudit {
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testExternalProductChangeTrigger() { 
+            <span class="onelineComment">// Create Change Event</span>
+           Products__ChangeEvent event = <span class="keyword">new</span> Products__ChangeEvent();
+            <span class="onelineComment">// Set Change Event Header Fields</span>
+           EventBus.ChangeEventHeader header = <span class="keyword">new</span> EventBus.ChangeEventHeader();
+           header.changeType=<span class="string">'CREATE'</span>;
+           header.entityName=<span class="string">'Products__x'</span>;
+           header.changeOrigin=<span class="string">'here'</span>;
+           header.transactionKey = <span class="string">'some'</span>;
+           header.commitUser = <span class="string">'me'</span>;
+           event.changeEventHeader = header;
+           event.put(<span class="string">'ExternalId'</span>, <span class="string">'ParentExternalId'</span>);
+           event.put(<span class="string">'Price__c'</span>, 5500);
+           event.put(<span class="string">'Name__c'</span>, <span class="string">'Coat'</span>);
+            <span class="onelineComment">// Publish the event to the EventBus</span>
+           EventBus.publish(event);
+           Test.getEventBus().deliver();
+            <span class="onelineComment">// Perform assertion that the trigger was run</span>
+           Product_Audit__c audit = [SELECT name, Audit_Price__c, Product_Name__c FROM Product_Audit__c WHERE name = : <span class="string">'ProductChangeOn'</span>+ event.ExternalId LIMIT 1]; 
+           System.assertEquals(<span class="string">'ProductChangeOn'</span>+ event.ExternalId, audit.Name); 
+           System.assertEquals(5500, audit.Audit_Price__c); 
+           System.assertEquals(<span class="string">'Coat'</span>, audit.Product_Name__c); 
+    }
+}
+</pre></div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

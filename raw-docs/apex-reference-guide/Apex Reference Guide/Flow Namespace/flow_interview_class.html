@@ -1,0 +1,406 @@
+<a name="flow_interview_class"><!-- --></a><div class="nested0">
+   <h1 class="helpHead1">Interview Class</h1>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc">The <samp class="codeph apex_code">Flow.Interview</samp> class provides advanced
+      controller access to flows and the ability to start a flow.</div>
+
+      <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+         
+         <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Flow.htm" title="The Flow namespace provides a class for advanced access to flows from Apex such as from Visualforce controllers and asynchronous Apex.">Flow</a></p>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">SOQL and DML limits apply during flow execution. See <a class="xref" href="https://help.salesforce.com/articleView?id=flow_considerations_limit_transaction.htm&amp;language=en_US" target="_blank">Per-Transaction Flow Limits</a>
+            in Salesforce Help.</p>
+<p class="p">To create an Interview object, you have two
+            options.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>We recommend only using <samp class="codeph apex_code">createInterview()</samp> if you must reuse your method or class. Using <samp class="codeph apex_code">createInterview()</samp> has these drawbacks. <ul class="ul bulletList">
+               <li class="li">If you package a class that uses <samp class="codeph apex_code">createInterview()</samp>, you have to add the associated flow manually.</li>
+
+               <li class="li">If you delete a flow, Salesforce doesn't check if it's referenced with <samp class="codeph apex_code">createInterview()</samp>.</li>
+
+            </ul>
+</p>
+</div>
+</div></div></div></div>
+<ul class="ul bulletList">
+            <li class="li">Create the object directly in your class by using: <ul class="ul bulletList">
+                  <li class="li">No namespace: <samp class="codeph apex_code">Flow.Interview.<var class="keyword varname">flowName</var></samp>
+</li>
+
+                  <li class="li">Namespace: <samp class="codeph apex_code">Flow.Interview.<var class="keyword varname">namespace</var>.<var class="keyword varname">flowName</var></samp>
+</li>
+
+               </ul>
+</li>
+
+            <li class="li">Create the object dynamically by using <samp class="codeph apex_code">createInterview()</samp>
+</li>
+
+         </ul>
+<p class="p">To enforce sharing rules, run the flow or Apex on API version 62.0 or later. The
+            Apex class must be declared using the <samp class="codeph apex_code">with
+               sharing</samp> keyword. The flow runs more securely in the default context when an
+            Apex class that’s declared using the <samp class="codeph apex_code">with
+               sharing</samp> keyword launches an autolaunched flow. The flow enforces the sharing
+            rules of the user that executes the Apex class. Data access is restricted to the sharing
+            rules of the user that executed the Apex class. For example, a query can return fewer
+            rows than it did in system context without sharing. An operation can fail because the
+            user doesn’t have the correct permissions.</p>
+</div>
+
+      <div class="section">
+<h2 class="helpHead2">Examples: Starting Flow Interviews</h2>
+
+         
+         <p class="p">These examples are all sample controllers that start an interview for the flow from the
+               <a class="xref" href="https://trailhead.salesforce.com/projects/flow_calculate" target="_blank">Build a Discount Calculator</a> project on Trailhead. Each shows
+            a different permutation, based on: </p>
+
+         <ul class="ul bulletList">
+            <li class="li">Whether the interview is created statically, with <samp class="codeph apex_code">Flow.Interview.<var class="keyword varname">myFlow</var></samp>, or dynamically, with
+                  <samp class="codeph apex_code">createInterview()</samp>.</li>
+
+            <li class="li">Whether the flow is managed or local.</li>
+
+         </ul>
+
+         <p class="p">Interview Created Statically for a Local Flow</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="example_staticlocal"><a name="example_staticlocal"><!-- --></a>{
+  Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputs = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+  inputs.put(<span class="string">'AccountID'</span>, myAccount);
+  inputs.put(<span class="string">'OpportunityID'</span>, myOppty);
+  
+  Flow.Interview.Calculate_discounts myFlow = 
+    <span class="keyword">new</span> Flow.Interview.Calculate_discounts(inputs);
+  myFlow.start();
+}</pre></div>
+
+         <p class="p">Interview Created Dynamically for a Local Flow</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="example_dynamiclocal"><a name="example_dynamiclocal"><!-- --></a><span class="keyword">public</span> <span class="keyword">void</span> callFlow(<span class="keyword">String</span> flowName, Map &lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputs) {
+  Flow.Interview myFlow = Flow.Interview.createInterview(flowName, inputs);
+  myFlow.start();
+}</pre></div>
+
+         <p class="p">Interview Created Statically for a Managed Flow</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+  Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputs = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+  inputs.put(<span class="string">'AccountID'</span>, myAccount);
+  inputs.put(<span class="string">'OpportunityID'</span>, myOppty);
+  
+  Flow.Interview.myNamespace.Calculate_discounts myFlow = 
+    <span class="keyword">new</span> Flow.Interview.myNamespace.Calculate_discounts(inputs);
+  myFlow.start();
+}</pre></div>
+
+         <p class="p">Interview Created Dynamically for a Managed Flow</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> callFlow(<span class="keyword">String</span> namespace, <span class="keyword">String</span> flowName, Map &lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputs) {
+  Flow.Interview myFlow = Flow.Interview.createInterview(namespace, flowName, inputs);
+  myFlow.start();
+}</pre></div>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Example: Getting Variable Values</h2>
+
+         
+         <div class="p">
+<span class="ph" id="flow_getVariableValue_codesample_intro"><a name="flow_getVariableValue_codesample_intro"><!-- --></a>This sample uses the <samp class="codeph apex_code">getVariableValue</samp> method to obtain breadcrumb
+               (navigation) information from a flow. If that flow contains subflow elements, and
+               each of the referenced flows also contains a <var class="keyword varname">vaBreadCrumb</var>
+               variable, you can provide users with breadcrumbs regardless of which flow the
+               interview is
+            running.</span><div class="codeSection apex_code"><pre class="codeblock brush:apex" id="flow_getVariableValue_codesample"><a name="flow_getVariableValue_codesample"><!-- --></a><span class="keyword">public</span> with sharing <span class="keyword">class</span> SampleController {
+
+   <span class="onelineComment">//Instance of the flow</span>
+   <span class="keyword">public</span> Flow.Interview.Flow_Template_Gallery myFlow {get; set;}
+
+   <span class="keyword">public</span> <span class="keyword">String</span> getBreadCrumb() {
+      <span class="keyword">String</span> aBreadCrumb;
+      <span class="statement">if</span> (myFlow==<span class="keyword">null</span>) { <span class="statement">return</span> <span class="string">'Home'</span>;}
+      <span class="statement">else</span> aBreadCrumb = (<span class="keyword">String</span>) myFlow.getVariableValue(<span class="string">'vaBreadCrumb'</span>);
+
+      <span class="statement">return</span>(aBreadCrumb==<span class="keyword">null</span> ? <span class="string">'Home'</span>: aBreadCrumb);
+
+   }
+}
+</pre></div>
+</div>
+
+      </div>
+
+   </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_tooling.meta/api_tooling/tooling_api_objects_flowtestcoverage.htm" target="_blank" title="Tooling API Objects: FlowTestCoverage - HTML (New Window)"><em class="ph i">Tooling API Objects</em>: FlowTestCoverage</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_qs_test.htm" target="_blank" title="Apex Developer Guide: Add a Test Class - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Add a Test Class</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.flow_distribute_system_apex_invoke_a_flow_from_apex.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Launch a Flow from Apex - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Launch a Flow from Apex</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.flow_distribute_system_apex_invoke_a_flow_from_apex.htm&amp;language=en_US" target="_blank" title="Apex Developer Guide: Launch a Flow from Apex - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Launch a Flow from Apex</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Flow_Interview_methods">
+<a name="apex_Flow_Interview_methods"><!-- --></a>
+ <h2 class="helpHead2">Interview Methods</h2>
+
+ <div class="shortdesc">The following are instance methods for <samp class="codeph apex_code">Interview</samp>.</div>
+
+ 
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Flow_Interview_createInterview">
+<a name="apex_Flow_Interview_createInterview"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createInterview(namespace, flowName, inputVariables)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an interview for a namespaced flow.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Flow.Interview createInterview(<span class="keyword">String</span>
+          namespace, <span class="keyword">String</span> flowName, Map&lt;<span class="keyword">String</span>,ANY&gt; inputVariables)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">namespace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The flow’s namespace.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">flowName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The flow’s API name.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">inputVariables</var></strong>:<p class="p">Type: Map&lt;String,Object&gt;</p>
+<p class="p">Initial values for the flow’s input variables.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Flow.Interview</p>
+
+    </div>
+
+    <div class="section" id="usage">
+<a name="usage"><!-- --></a><h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method to dynamically create a Flow.Interview object for the <samp class="codeph apex_code">start()</samp> method.</p>
+
+      <p class="p">How you get output variable values from an interview depends on the type of the Apex
+        variable where you're storing the interview.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">If the variable is cast to a specific flow, you can use <em class="ph i">myFlow.myVar</em> to access a
+          variable, where <em class="ph i">myVar</em> is the name of the variable.
+          <div class="codeSection apex_code"><pre class="codeblock brush:apex">system.debug(<span class="string">'My Output Variable: '</span> + myFlow.varName);</pre></div>
+</li>
+
+        <li class="li">If the variable is of type Flow.Interview but not cast to a specific flow, you must use
+          getVariableValue() to access the flow's variables.
+          <div class="codeSection apex_code"><pre class="codeblock brush:apex">system.debug(<span class="string">'My Output Variable: '</span> + myFlow.getVariableValue(<span class="string">'varName'</span>));</pre></div>
+</li>
+
+      </ul>
+
+      <p class="p">If the flow doesn't exist in the current org, a TypeException is thrown.</p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Flow_Interview_createInterview_2">
+<a name="apex_Flow_Interview_createInterview_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">createInterview(flowName, inputVariables)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an interview for a flow.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Flow.Interview createInterview(<span class="keyword">String</span>
+          flowName, Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputVariables)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">flowName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The flow’s API name.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">inputVariables</var></strong>:<p class="p">Type: Map&lt;String,Object&gt;</p>
+<p class="p">Initial values for the flow’s input variables.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Flow.Interview</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method to dynamically create a Flow.Interview object for the <samp class="codeph apex_code">start()</samp> method.</p>
+
+      <p class="p">How you get output variable values from an interview depends on the type of the Apex
+        variable where you're storing the interview.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">If the variable is cast to a specific flow, you can use <em class="ph i">myFlow.myVar</em> to access a
+          variable, where <em class="ph i">myVar</em> is the name of the variable.
+          <div class="codeSection apex_code"><pre class="codeblock brush:apex">system.debug(<span class="string">'My Output Variable: '</span> + myFlow.varName);</pre></div>
+</li>
+
+        <li class="li">If the variable is of type Flow.Interview but not cast to a specific flow, you must use
+          getVariableValue() to access the flow's variables.
+          <div class="codeSection apex_code"><pre class="codeblock brush:apex">system.debug(<span class="string">'My Output Variable: '</span> + myFlow.getVariableValue(<span class="string">'varName'</span>));</pre></div>
+</li>
+
+      </ul>
+
+      <p class="p">If the flow doesn't exist in the current org, a TypeException is thrown.</p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Flow_Interview_getVariableValue">
+<a name="apex_Flow_Interview_getVariableValue"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getVariableValue(variableName)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the value of the specified flow variable. The flow
+variable can be in the flow embedded in the Visualforce page, or in a separate flow that is called by a subflow element.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> getVariableValue(<span class="keyword">String</span> variableName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">variableName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Specifies the unique name of the flow variable.</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Object</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">The returned variable value comes from whichever flow the interview is running. If the specified
+                variable can't be found in that flow, the method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+<p class="p">This method
+checks for the existence of the variable at run time only, not at
+compile time.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Flow_Interview_start">
+<a name="apex_Flow_Interview_start"><!-- --></a>
+    <h3 class="helpHead3"><span class="titlecodeph">start()</span></h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Starts an instance (interview) for an autolaunched or user
+            provisioning flow.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void
+                start()</samp></p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: Void</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">This method can be used only with flows that have one
+            of these types. <ul class="ul bulletList">
+                <li class="li">Autolaunched Flow</li>
+
+                <li class="li">User Provisioning Flow</li>
+
+            </ul>
+For details, see “<a class="xref" href="https://help.salesforce.com/articleView?id=flow_concepts_type.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Flow Types</a>” in
+            Salesforce Help.<p class="p">When a flow user invokes an autolaunched flow, the active flow
+                version runs. If there’s no active version, the latest version runs. When a flow
+                admin invokes a flow, the latest version always runs.</p>
+</div>
+</div>
+
+    </div>
+
+</div>
+</div>
+</div>

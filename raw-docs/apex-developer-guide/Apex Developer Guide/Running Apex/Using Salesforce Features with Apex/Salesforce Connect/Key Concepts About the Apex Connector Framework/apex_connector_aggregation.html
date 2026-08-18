@@ -1,0 +1,52 @@
+<a name="apex_connector_aggregation"><!-- --></a><h1 class="helpHead1">Aggregation for Salesforce Connect Custom Adapters</h1><div class="body conbody">
+<div class="shortdesc">If you receive a <samp class="codeph nolang">COUNT()</samp> query, the selected
+        column has the value <samp class="codeph apex_code">QueryAggregation.COUNT</samp> in its
+            <samp class="codeph apex_code">aggregation</samp> property. The selected column is
+        provided in the <samp class="codeph apex_code">columnsSelected</samp> property on the
+            <samp class="codeph apex_code">tableSelection</samp> for the <samp class="codeph apex_code">DataSource.QueryContext</samp>.</div>
+
+        <p class="p">The following example illustrates how to apply the value of the <samp class="codeph apex_code">aggregation</samp> property to handle <samp class="codeph nolang">COUNT()</samp> queries.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Handle COUNT() queries</span>
+<span class="statement">if</span> (context.tableSelection.columnsSelected.size() == 1 &amp;&amp;      
+    context.tableSelection.columnsSelected.get(0).aggregation == 
+        QueryAggregation.COUNT) {
+    List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; countResponse = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+    Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; countRow = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+    countRow.put(context.tableSelection.columnsSelected.get(0).columnName, 
+    response.size());
+    countResponse.add(countRow);
+    <span class="statement">return</span> countResponse;
+}</pre></div>
+
+        <p class="p">An aggregate query can still have filters, so your query method can be implemented like
+            the following example to support basic <samp class="codeph nolang">aggregation</samp>
+            queries, with or without filters.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(DataSource.QueryContext context) {
+    List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = retrieveData(context);
+    List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; response = postFilterRecords(
+            context.tableSelection.filter, rows);
+    <span class="statement">if</span> (context.tableSelection.columnsSelected.size() == 1 &amp;&amp;        
+        context.tableSelection.columnsSelected.get(0).aggregation ==   
+                DataSource.QueryAggregation.COUNT) {
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; countResponse = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, 
+                <span class="keyword">Object</span>&gt;&gt;();
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; countRow = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+        countRow.put(context.tableSelection.columnsSelected.get(0).columnName, 
+                response.size());
+        countResponse.add(countRow);
+        <span class="statement">return</span> DataSource.TableResult.get(context, countResponse);
+    }
+    <span class="statement">return</span> DataSource.TableResult.get(context, response);
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_QueryContext.htm" target="_blank" title="Apex Reference Guide: QueryContext Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: QueryContext Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_start_connection_class.htm" title="First, create a DataSource.Connection class to enable Salesforce to obtain the external system’s schema and to handle queries and searches of the external data.">Create a Sample DataSource.Connection Class</a></div></li>
+</ul>
+</div>
+</div>

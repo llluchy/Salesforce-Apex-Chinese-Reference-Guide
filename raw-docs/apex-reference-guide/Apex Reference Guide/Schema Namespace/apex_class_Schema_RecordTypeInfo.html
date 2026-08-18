@@ -1,0 +1,237 @@
+<a name="apex_class_Schema_RecordTypeInfo"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">RecordTypeInfo Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Contains methods for accessing record type information
+for an sObject with associated record types.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Schema.htm" title="The Schema namespace provides classes and methods for schema metadata information.">Schema</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">A RecordTypeInfo object is returned
+from the sObject describe result using the <samp class="codeph apex_code">getRecordTypeInfos</samp> method. For example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeSObjectResult R = Account.SObjectType.getDescribe();
+List&lt;Schema.RecordTypeInfo&gt; RT = R.getRecordTypeInfos();</pre></div>
+<p class="p">In addition to the <samp class="codeph apex_code">getRecordTypeInfos</samp> method, you can use the <samp class="codeph apex_code">getRecordTypeInfosById</samp> and the <samp class="codeph apex_code">getRecordTypeInfosByName</samp> methods. These methods return maps that associate RecordTypeInfo
+with record IDs and record labels, respectively. </p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">The following example assumes at
+least one record type has been created for the Account object:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">RecordType rt = [SELECT Id,Name FROM RecordType WHERE SobjectType=<span class="string">'Account'</span> WITH USER_MODE LIMIT 1];
+Schema.DescribeSObjectResult d = Schema.SObjectType.Account; 
+Map&lt;Id,Schema.RecordTypeInfo&gt; rtMapById = d.getRecordTypeInfosById();
+Schema.RecordTypeInfo rtById =  rtMapById.get(rt.id);
+Map&lt;<span class="keyword">String</span>,Schema.RecordTypeInfo&gt; rtMapByName = d.getRecordTypeInfosByName();
+Schema.RecordTypeInfo rtByName =  rtMapByName.get(rt.name);
+Assert.areEqual(rtById,rtByName);
+</pre></div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_methods">
+<a name="apex_Schema_RecordTypeInfo_methods"><!-- --></a>
+<h2 class="helpHead2">RecordTypeInfo Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">RecordTypeInfo</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_getDeveloperName">getDeveloperName()</a></strong><br>
+Returns the developer name for this record type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_getName">getName()</a></strong><br>
+Returns the UI label of this record type. The label can be translated into any language   that Salesforce supports.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_getRecordTypeId">getRecordTypeId()</a></strong><br>
+Returns the ID of this record type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_isActive">isActive()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this record       type is active, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_isAvailable">isAvailable()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this record type is available to the current user, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise. Use this method to display a list of available record types to the user when he or she is creating a new record.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_isDefaultRecordTypeMapping">isDefaultRecordTypeMapping()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this is the default record type   for the user, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_RecordTypeInfo.htm#apex_Schema_RecordTypeInfo_isMaster">isMaster()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if       this is the master record type and <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.       The master record type is the default record type that’s used when a record has no custom       record type associated with it.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_getDeveloperName">
+<a name="apex_Schema_RecordTypeInfo_getDeveloperName"><!-- --></a><h3 class="helpHead3">getDeveloperName()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the developer name for this record type.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDeveloperName()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_getName">
+<a name="apex_Schema_RecordTypeInfo_getName"><!-- --></a>
+<h3 class="helpHead3">getName()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the UI label of this record type. The label can be translated into any language
+  that Salesforce supports.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getName()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_getRecordTypeId">
+<a name="apex_Schema_RecordTypeInfo_getRecordTypeId"><!-- --></a>
+<h3 class="helpHead3">getRecordTypeId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID of this record type.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getRecordTypeId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_isActive">
+<a name="apex_Schema_RecordTypeInfo_isActive"><!-- --></a><h3 class="helpHead3">isActive()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this record
+      type is active, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isActive()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_isAvailable">
+<a name="apex_Schema_RecordTypeInfo_isAvailable"><!-- --></a>
+<h3 class="helpHead3">isAvailable()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if
+this record type is available to the current user, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise. Use this method
+to display a list of available record types to the user when he or
+she is creating a new record.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isAvailable()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_isDefaultRecordTypeMapping">
+<a name="apex_Schema_RecordTypeInfo_isDefaultRecordTypeMapping"><!-- --></a>
+<h3 class="helpHead3">isDefaultRecordTypeMapping()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this is the default record type
+  for the user, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isDefaultRecordTypeMapping()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_RecordTypeInfo_isMaster">
+<a name="apex_Schema_RecordTypeInfo_isMaster"><!-- --></a>
+ <h3 class="helpHead3">isMaster()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="isMaster_shortdesc"><a name="isMaster_shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if
+      this is the master record type and <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.
+      The master record type is the default record type that’s used when a record has no custom
+      record type associated with it.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isMaster()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+</div>

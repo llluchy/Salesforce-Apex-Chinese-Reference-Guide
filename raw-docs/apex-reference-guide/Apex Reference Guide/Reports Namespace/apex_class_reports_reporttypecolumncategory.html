@@ -1,0 +1,119 @@
+<a name="apex_class_reports_reporttypecolumncategory"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ReportTypeColumnCategory Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Information about categories of fields in a report type.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Reports.htm" title="The Reports namespace provides classes for accessing the same data as is available in the Salesforce Reports and Dashboards REST API.">Reports</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">A report type column category is a set of fields that the report type grants access to. For
+        example, an opportunity report has categories like <em class="ph i">Opportunity Information</em> and
+          <em class="ph i">Primary Contact</em>. The Opportunity Information category has fields like
+        <em class="ph i">Amount</em>, <em class="ph i">Probability</em>, and <em class="ph i">Close Date</em>.</p>
+
+      <p class="p">Get category information about a report by first getting the report metadata:</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">// Get the report ID
+List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where DeveloperName = 'Q1_Opportunities2'];
+
+String reportId = (String)reportList.get(0).get('Id');
+
+// Describe the report
+Reports.ReportDescribeResult describeResults = Reports.ReportManager.describeReport(reportId);
+
+// Get report type metadata
+Reports.ReportTypeMetadata reportTypeMetadata = describeResults.getReportTypeMetadata();
+
+// Get report type column categories
+List&lt;Reports.ReportTypeColumnCategory&gt; reportTypeColumnCategories = reportTypeMetadata.getCategories();
+
+System.debug('reportTypeColumnCategories: ' + reportTypeColumnCategories);</pre></div>
+
+    </div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Reports_ReportTypeColumnCategory_methods">
+<a name="apex_Reports_ReportTypeColumnCategory_methods"><!-- --></a>
+<h2 class="helpHead2">ReportTypeColumnCategory Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">ReportTypeColumnCategory</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttypecolumncategory.htm#apex_Reports_ReportTypeColumnCategory_getColumns">getColumns()</a></strong><br>
+Returns information for all fields in the report type. The information is organized by each section’s unique API name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttypecolumncategory.htm#apex_Reports_ReportTypeColumnCategory_getLabel">getLabel()</a></strong><br>
+Returns the localized display name of a section in the report type under which fields are organized. For example, in an Accounts with Contacts custom report type, <samp class="codeph apex_code">Account General</samp> is the display name of the section that contains fields on general account information.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Reports_ReportTypeColumnCategory_getColumns">
+<a name="apex_Reports_ReportTypeColumnCategory_getColumns"><!-- --></a>
+<h3 class="helpHead3">getColumns()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns information for all fields in the report type.
+The information is organized by each section’s unique API name.</div>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> MAP&lt;<span class="keyword">String</span>,Reports.ReportTypeColumn&gt; getColumns()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_reports_reporttypecolumn.htm#apex_class_reports_reporttypecolumn" title="Contains detailed report type metadata about a field, including data type, display name, and filter values.">Reports.ReportTypeColumn</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Reports_ReportTypeColumnCategory_getLabel">
+<a name="apex_Reports_ReportTypeColumnCategory_getLabel"><!-- --></a>
+<h3 class="helpHead3">getLabel()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the localized display name of a section in the
+report type under which fields are organized. For example, in an Accounts
+with Contacts custom report type, <samp class="codeph apex_code">Account
+General</samp> is the display name of the section that contains
+fields on general account information.</div>
+
+<div class="section">
+<h4 class="helpHead4">Syntax</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLabel()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

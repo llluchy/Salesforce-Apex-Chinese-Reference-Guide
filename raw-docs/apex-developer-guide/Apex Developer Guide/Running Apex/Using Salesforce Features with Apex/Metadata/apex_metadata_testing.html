@@ -1,0 +1,28 @@
+<a name="apex_metadata_testing"><!-- --></a><h1 class="helpHead1">Testing Metadata Deployments</h1><div class="body conbody">
+<div class="shortdesc">Apex code that accesses metadata must be properly tested.</div>
+
+  <p class="p">To provide Apex test coverage for metadata deployments, write tests that verify both the set up
+      of the deployment request and handling of the deployment results.</p>
+
+  <p class="p">Tests for deployment request code verify the metadata components and component values that get
+      created and assert that the <samp class="codeph nolang">DeployContainer</samp> contains
+      exactly what needs to be deployed.</p>
+
+  <p class="p">Tests for deployment result code verify that your <samp class="codeph nolang">DeployCallback</samp> handles expected and unexpected results. Your <samp class="codeph nolang">DeployCallback</samp> is normally called by Salesforce as part of the
+      asynchronous deployment process. Therefore, to test your callback outside of the deployment
+      process, create tests that use your callback class directly. You also must create test <samp class="codeph nolang">DeployResults</samp> and <samp class="codeph nolang">DeployCallbackContext</samp> instances to test your <samp class="codeph nolang">DeployCallback.handleResults()</samp> method.</p>
+
+  <p class="p">When creating a test instance of <samp class="codeph nolang">DeployCallbackContext</samp>,
+      subclass <samp class="codeph nolang">DeployCallbackContext</samp> and provide your own
+      implementation of <samp class="codeph nolang">getCallbackJobId()</samp>.</p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// DeployCallbackContext subclass for testing that returns myJobId</span>
+<span class="keyword">public</span> <span class="keyword">class</span> TestingDeployCallbackContext <span class="keyword">extends</span> Metadata.DeployCallbackContext {
+  <span class="keyword">private</span> Id myJobId = <span class="string">'000000000000000000'</span>; <span class="onelineComment">// replace value with a job ID that you can use for testing</span>
+  <span class="keyword">public</span> <span class="keyword">override</span> Id getCallbackJobId() {
+    <span class="statement">return</span> myJobId;
+  }
+}
+</pre></div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

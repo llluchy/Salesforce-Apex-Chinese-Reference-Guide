@@ -1,0 +1,271 @@
+<a name="apex_pages_ideastandardsetcontroller"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">IdeaStandardSetController Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">
+<samp class="codeph apex_code">IdeaStandardSetController</samp> objects offer Ideas-specific functionality in addition to what is
+provided by the <samp class="codeph apex_code">StandardSetController</samp>.</div>
+
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_ApexPages.htm" title="The ApexPages namespace provides classes used in Visualforce controllers.">ApexPages</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code">IdeaStandardSetController</samp> and <samp class="codeph apex_code">IdeaStandardController</samp> classes are currently
+                available through a limited release program. For information on enabling these
+                classes for your organization, contact your Salesforce representative.</p>
+</div>
+</div></div></div></div>
+<div class="p">In addition to the method listed above,
+the <samp class="codeph apex_code">IdeaStandardSetController</samp> class inherits the methods associated with the <samp class="codeph apex_code">StandardSetController</samp>. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The methods
+inherited from the <samp class="codeph apex_code">StandardSetController</samp> cannot be used to affect the list of ideas returned by the <samp class="codeph apex_code">getIdeaList</samp> method.</p>
+</div>
+</div></div></div></div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+<div class="p">
+<p class="p">An IdeaStandardSetController
+object cannot be instantiated. An instance can be obtained through
+a constructor of a custom extension controller when using the standard
+list controller for ideas.</p>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example: Displaying a Profile Page</h2>
+<div class="p">The following
+example shows how an IdeaStandardSetController object can be used
+in the constructor for a custom list controller:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyIdeaProfileExtension {
+    <span class="keyword">private</span> <span class="keyword">final</span> ApexPages.IdeaStandardSetController ideaSetController;
+    
+    <span class="keyword">public</span> MyIdeaProfileExtension(ApexPages.IdeaStandardSetController controller) {
+        ideaSetController = (ApexPages.IdeaStandardSetController)controller;
+    }
+    
+    <span class="keyword">public</span> List&lt;Idea&gt; getModifiedIdeas() {
+        Idea[] ideas = ideaSetController.getIdeaList();
+        <span class="onelineComment">// modify ideas here</span>
+        <span class="statement">return</span> ideas;
+    }
+    
+}</pre></div>
+</div>
+<div class="p">The following Visualforce markup shows how the IdeaStandardSetController example shown
+above and the <samp class="codeph apex_page"><span class="tag">&lt;ideas:profileListOutputLink</span>&gt;</samp> component can display a profile page that lists the recent replies,
+submitted ideas, and votes associated with a user. Because this example
+does not identify a specific user ID, the page automatically shows
+the profile page for the current logged in user. This page must be
+named <kbd class="ph userinput">profilePage</kbd> in order for this example
+to work:<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="multilineComment">&lt;!-- page named profilePage --&gt;</span>
+<span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span><span class="attribute"> extensions=</span><span class="string">"MyIdeaProfileExtension"</span><span class="attribute"> recordSetVar=</span><span class="string">"ideaSetVar"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span> &gt;
+        <span class="tag">&lt;ideas:profileListOutputLink</span><span class="attribute"> sort=</span><span class="string">"recentReplies"</span><span class="attribute"> page=</span><span class="string">"profilePage"</span>&gt;
+          Recent Replies<span class="tag">&lt;/ideas:profileListOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:profileListOutputLink</span><span class="attribute"> sort=</span><span class="string">"ideas"</span><span class="attribute"> page=</span><span class="string">"profilePage"</span>&gt;Ideas Submitted
+        <span class="tag">&lt;/ideas:profileListOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:profileListOutputLink</span><span class="attribute"> sort=</span><span class="string">"votes"</span><span class="attribute"> page=</span><span class="string">"profilePage"</span>&gt;Ideas Voted
+        <span class="tag">&lt;/ideas:profileListOutputLink</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span> &gt;
+        <span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!modifiedIdeas}"</span><span class="attribute"> var=</span><span class="string">"ideadata"</span>&gt;
+            <span class="tag">&lt;ideas:detailoutputlink</span><span class="attribute"> ideaId=</span><span class="string">"{!ideadata.id}"</span><span class="attribute"> page=</span><span class="string">"viewPage"</span>&gt;
+             <span class="formula">{!ideadata.title}</span><span class="tag">&lt;/ideas:detailoutputlink</span>&gt;
+        <span class="tag">&lt;/apex:dataList</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;    
+<span class="tag">&lt;/apex:page</span>&gt;
+  
+</pre></div>
+</div>
+<div class="p">In the previous example, the <samp class="codeph apex_page"><span class="tag">&lt;ideas:detailoutputlink</span>&gt;</samp> component
+links to the following Visualforce markup that displays the detail page for a specific idea. This
+page must be named <kbd class="ph userinput">viewPage</kbd> in order for this
+example to work:<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="multilineComment">&lt;!-- page named viewPage --&gt;</span>
+<span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Idea Section"</span>&gt;
+        <span class="tag">&lt;ideas:detailOutputLink</span><span class="attribute"> page=</span><span class="string">"viewPage"</span><span class="attribute"> ideaId=</span><span class="string">"{!idea.id}"</span>&gt;<span class="formula">{!idea.title}</span>
+        <span class="tag">&lt;/ideas:detailOutputLink</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;<span class="tag">&lt;br/</span>&gt;
+        <span class="tag">&lt;apex:outputText</span>&gt;<span class="formula">{!idea.body}</span><span class="tag">&lt;/apex:outputText</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example: Displaying a List of Top, Recent, and Most
+Popular Ideas and Comments</h2>
+<div class="p">The following example shows how
+an IdeaStandardSetController object can be used in the constructor
+for a custom list controller:<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You must have created at least
+one idea for this example to return any ideas.</p>
+</div>
+</div></div></div></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyIdeaListExtension {
+    <span class="keyword">private</span> <span class="keyword">final</span> ApexPages.IdeaStandardSetController ideaSetController; 
+
+    <span class="keyword">public</span> MyIdeaListExtension (ApexPages.IdeaStandardSetController controller) {
+        ideaSetController = (ApexPages.IdeaStandardSetController)controller;
+    }
+
+    <span class="keyword">public</span> List&lt;Idea&gt; getModifiedIdeas() {
+        Idea[] ideas = ideaSetController.getIdeaList();
+        <span class="onelineComment">// modify ideas here</span>
+        <span class="statement">return</span> ideas;
+    }
+}
+</pre></div>
+</div>
+<div class="p">The following Visualforce markup shows how the IdeaStandardSetController example shown
+above can be used with the <samp class="codeph apex_page"><span class="tag">&lt;ideas:listOutputLink</span>&gt;</samp> component to display a list of recent, top, and most popular ideas
+and comments. This page must be named <kbd class="ph userinput">listPage</kbd> in order for this example to work:<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="multilineComment">&lt;!-- page named listPage --&gt;</span>
+<span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span><span class="attribute"> extensions=</span><span class="string">"MyIdeaListExtension"</span><span class="attribute"> recordSetVar=</span><span class="string">"ideaSetVar"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span> &gt;
+        <span class="tag">&lt;ideas:listOutputLink</span><span class="attribute"> sort=</span><span class="string">"recent"</span><span class="attribute"> page=</span><span class="string">"listPage"</span>&gt;Recent Ideas
+        <span class="tag">&lt;/ideas:listOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:listOutputLink</span><span class="attribute"> sort=</span><span class="string">"top"</span><span class="attribute"> page=</span><span class="string">"listPage"</span>&gt;Top Ideas
+        <span class="tag">&lt;/ideas:listOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:listOutputLink</span><span class="attribute"> sort=</span><span class="string">"popular"</span><span class="attribute"> page=</span><span class="string">"listPage"</span>&gt;Popular Ideas
+        <span class="tag">&lt;/ideas:listOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:listOutputLink</span><span class="attribute"> sort=</span><span class="string">"comments"</span><span class="attribute"> page=</span><span class="string">"listPage"</span>&gt;Recent Comments
+        <span class="tag">&lt;/ideas:listOutputLink</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span> &gt;
+        <span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!modifiedIdeas}"</span><span class="attribute"> var=</span><span class="string">"ideadata"</span>&gt;
+            <span class="tag">&lt;ideas:detailoutputlink</span><span class="attribute"> ideaId=</span><span class="string">"{!ideadata.id}"</span><span class="attribute"> page=</span><span class="string">"viewPage"</span>&gt;
+             <span class="formula">{!ideadata.title}</span><span class="tag">&lt;/ideas:detailoutputlink</span>&gt;
+        <span class="tag">&lt;/apex:dataList</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+</div>
+<div class="p">In the previous example, the <samp class="codeph apex_page"><span class="tag">&lt;ideas:detailoutputlink</span>&gt;</samp> component
+links to the following Visualforce markup that displays the detail page for a specific idea. This
+page must be named <kbd class="ph userinput">viewPage</kbd>.<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="multilineComment">&lt;!-- page named viewPage --&gt;</span>
+<span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Idea Section"</span>&gt;
+        <span class="tag">&lt;ideas:detailOutputLink</span><span class="attribute"> page=</span><span class="string">"viewPage"</span><span class="attribute"> ideaId=</span><span class="string">"{!idea.id}"</span>&gt;<span class="formula">{!idea.title}</span>
+        <span class="tag">&lt;/ideas:detailOutputLink</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;<span class="tag">&lt;br/</span>&gt;
+        <span class="tag">&lt;apex:outputText</span>&gt;<span class="formula">{!idea.body}</span><span class="tag">&lt;/apex:outputText</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_pages_standardsetcontroller.htm#apex_pages_standardsetcontroller" title="StandardSetController objects allow you to create list controllers similar to, or as extensions of, the pre-built Visualforce list controllers provided by Salesforce.">StandardSetController Class</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_IdeaStandardSetController_methods">
+<a name="apex_ApexPages_IdeaStandardSetController_methods"><!-- --></a>
+<h2 class="helpHead2">IdeaStandardSetController Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are instance methods for <samp class="codeph apex_code">IdeaStandardSetController</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_ideastandardsetcontroller.htm#apex_ApexPages_IdeaStandardSetController_getIdeaList">getIdeaList()</a></strong><br>
+Returns the list of read-only ideas in the current page set.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_IdeaStandardSetController_getIdeaList">
+<a name="apex_ApexPages_IdeaStandardSetController_getIdeaList"><!-- --></a>
+<h3 class="helpHead3">getIdeaList()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the list of read-only ideas in the current page
+set.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Idea[] getIdeaList()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Idea[]</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">You can use the <samp class="codeph apex_page"><span class="tag">&lt;ideas:listOutputLink</span>&gt;</samp>, <samp class="codeph apex_page"><span class="tag">&lt;ideas:profileListOutputLink</span>&gt;</samp>,
+and <samp class="codeph apex_page"><span class="tag">&lt;ideas:detailOutputLink</span>&gt;</samp> components to display profile pages as well as idea list and detail
+pages (see the examples below). The following is a list of properties
+returned by this method: </p>
+<ul class="ul bulletList">
+<li class="li"><samp class="codeph apex_code">Body</samp></li>
+
+<li class="li"><samp class="codeph apex_code">Categories</samp></li>
+
+<li class="li"><samp class="codeph apex_code">Category</samp></li>
+
+<li class="li"><samp class="codeph apex_code">CreatedBy.CommunityNickname</samp></li>
+
+<li class="li"><samp class="codeph apex_code">CreatedBy.Id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">CreatedDate</samp></li>
+
+<li class="li"><samp class="codeph apex_code">Id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">LastCommentDate</samp></li>
+
+<li class="li"><samp class="codeph apex_code">LastComment.Id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">LastComment.CommentBody</samp></li>
+
+<li class="li"><samp class="codeph apex_code">LastComment.CreatedBy.CommunityNickname</samp></li>
+
+<li class="li"><samp class="codeph apex_code">LastComment.CreatedBy.Id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">NumComments</samp></li>
+
+<li class="li"><samp class="codeph apex_code">Status</samp></li>
+
+<li class="li"><samp class="codeph apex_code">Title</samp></li>
+
+<li class="li"><samp class="codeph apex_code">VoteTotal</samp></li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,598 @@
+<a name="apex_class_commercepayments_SaleRequest"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SaleRequest Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores information about a sales request.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">This class holds all the required details about a sale request. Gateway adapters read the
+                fields of this class object while constructing a sale JSON request thatis sent to
+                the payment gateway. The object of this class is made available through <samp class="codeph apex_code">commercepayments.paymentGatewayContext</samp> by
+                calling <samp class="codeph apex_code">getPaymentRequest()</samp>.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+     <span class="multilineComment">/**
+     * Responsibilities:
+     * - Set merchant and reference details
+     * - Convert amount into minor units (e.g., cents)
+     * - Map payment method types (card, ACH, SEPA, etc.)
+     * - Include stored payment method token for recurring payments
+     * - Optionally include enhanced Level 2/3 data
+     *
+     * @param saleRequest Input request containing payment and shopper details
+     * @return JSON string payload for the payment gateway
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> buildSaleRequest(commercepayments.SaleRequest saleRequest) {
+
+        <span class="onelineComment">// Resolve currency (fallback to user's default if missing)</span>
+        <span class="keyword">String</span> currencyIso = saleRequest.currencyIsoCode;
+        <span class="statement">if</span> (currencyIso == <span class="keyword">null</span>) {
+            currencyIso = UserInfo.getDefaultCurrency();
+        }
+
+        <span class="onelineComment">// Extract payment method</span>
+        commercepayments.SaleApiPaymentMethodRequest paymentMethod = saleRequest.paymentMethod;
+
+        <span class="onelineComment">// Initialize JSON generator</span>
+        JSONGenerator jsonGeneratorInstance = JSON.createGenerator(<span class="keyword">true</span>);
+        jsonGeneratorInstance.writeStartObject();
+
+        <span class="onelineComment">// Merchant configuration (from Named Credential)</span>
+        jsonGeneratorInstance.writeStringField(<span class="string">'merchantAccount'</span>, <span class="string">'{!$Credential.Username}'</span>);
+
+        <span class="onelineComment">// Unique reference using timestamp + random suffix</span>
+        jsonGeneratorInstance.writeStringField(
+            <span class="string">'reference'</span>,
+            <span class="keyword">String</span>.valueOf(<span class="keyword">Datetime</span>.now().getTime()) +
+            <span class="keyword">String</span>.valueOf(Math.random()).substring(2, 8)
+        );
+
+        <span class="onelineComment">// Amount block</span>
+        jsonGeneratorInstance.writeFieldName(<span class="string">'amount'</span>);
+        jsonGeneratorInstance.writeStartObject();
+        jsonGeneratorInstance.writeStringField(
+            <span class="string">'value'</span>,
+            <span class="keyword">String</span>.valueOf((saleRequest.amount * 100.0).intValue()) <span class="onelineComment">// convert to minor units</span>
+        );
+        jsonGeneratorInstance.writeStringField(<span class="string">'currency'</span>, currencyIso);
+        jsonGeneratorInstance.writeEndObject();
+
+        <span class="onelineComment">// Payment method block</span>
+        jsonGeneratorInstance.writeFieldName(<span class="string">'paymentMethod'</span>);
+        jsonGeneratorInstance.writeStartObject();
+
+        <span class="keyword">String</span> shopperReference;
+        <span class="keyword">String</span> type = <span class="string">'scheme'</span>; <span class="onelineComment">// default = card</span>
+
+        <span class="onelineComment">// Handle stored payment method data (tokenized payments)</span>
+        <span class="statement">if</span> (saleRequest.paymentMethodData != <span class="keyword">null</span>) {
+
+            <span class="keyword">String</span> token = saleRequest.paymentMethodData.get(<span class="string">'gatewayToken'</span>);
+            <span class="keyword">String</span> paymentMethodType = saleRequest.paymentMethodData.get(<span class="string">'paymentMethodType'</span>);
+            shopperReference = saleRequest.paymentMethodData.get(<span class="string">'gatewayReference'</span>);
+
+            <span class="onelineComment">// Map payment method types to gateway-specific values</span>
+            <span class="statement">if</span> (<span class="string">'us_bank_account'</span>.equals(paymentMethodType)) {
+                type = <span class="string">'ach'</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (<span class="string">'sepa_debit'</span>.equals(paymentMethodType)) {
+                type = <span class="string">'sepadirectdebit'</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (<span class="string">'au_becs_debit'</span>.equals(paymentMethodType)) {
+                type = <span class="string">'directdebit_AU'</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (<span class="string">'bacs_debit'</span>.equals(paymentMethodType)) {
+                type = <span class="string">'directdebit_GB'</span>;
+            }
+
+            jsonGeneratorInstance.writeStringField(<span class="string">'type'</span>, type);
+            jsonGeneratorInstance.writeStringField(<span class="string">'storedPaymentMethodId'</span>, token);
+        }
+
+        <span class="onelineComment">// Add enhanced scheme data ONLY for card payments</span>
+        <span class="onelineComment">// Note: Gateway might have validations on L2/L3 data so do test them out before using L2/L3 else transactions might fail</span>
+        <span class="statement">if</span> (enhancedPaymentData != <span class="keyword">null</span> &amp;&amp; <span class="string">'scheme'</span>.equals(type)) {
+            jsonGeneratorInstance.writeFieldName(<span class="string">'additionalData'</span>);
+            jsonGeneratorInstance.writeStartObject();
+            populateEnhancedSchemeData(jsonGeneratorInstance, enhancedPaymentData);
+            jsonGeneratorInstance.writeEndObject(); <span class="onelineComment">// additionalData</span>
+        }
+
+        jsonGeneratorInstance.writeEndObject(); <span class="onelineComment">// paymentMethod</span>
+
+        <span class="onelineComment">// Recurring / shopper configuration</span>
+        jsonGeneratorInstance.writeStringField(<span class="string">'shopperInteraction'</span>, <span class="string">'ContAuth'</span>);
+        jsonGeneratorInstance.writeStringField(<span class="string">'recurringProcessingModel'</span>, <span class="string">'UnscheduledCardOnFile'</span>);
+        jsonGeneratorInstance.writeStringField(<span class="string">'shopperReference'</span>, shopperReference);
+
+        <span class="onelineComment">// Immediate capture</span>
+        jsonGeneratorInstance.writeNumberField(<span class="string">'captureDelayHours'</span>, 0);
+
+        jsonGeneratorInstance.writeEndObject(); <span class="onelineComment">// root</span>
+
+        <span class="statement">return</span> jsonGeneratorInstance.getAsString();
+    }
+
+    <span class="multilineComment">/**
+     * Populates Level 2 and Level 3 enhanced scheme data.
+     *
+     * @param jsonGeneratorInstance JSON generator
+     * @param enhancedPaymentData Enhanced payment data input
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">void</span> populateEnhancedSchemeData(JSONGenerator jsonGeneratorInstance,
+                                            commercepayments.EnhancedPaymentDataInput enhancedPaymentData) {
+
+        <span class="onelineComment">// -------- Level 2 fields --------</span>
+
+        <span class="statement">if</span> (enhancedPaymentData.totalTaxAmount != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.totalTaxAmount'</span>,
+                toMinorUnits(enhancedPaymentData.totalTaxAmount)
+            );
+        }
+
+        <span class="statement">if</span> (enhancedPaymentData.shippingAmount != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.freightAmount'</span>,
+                toMinorUnits(enhancedPaymentData.shippingAmount)
+            );
+        }
+
+        <span class="statement">if</span> (enhancedPaymentData.discountAmount != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.discountAmount'</span>,
+                toMinorUnits(enhancedPaymentData.discountAmount)
+            );
+        }
+
+        <span class="statement">if</span> (enhancedPaymentData.invoiceNumber != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.customerReference'</span>,
+                enhancedPaymentData.invoiceNumber
+            );
+        }
+
+        <span class="onelineComment">// -------- Level 3 fields (line items) --------</span>
+
+        <span class="statement">if</span> (enhancedPaymentData.lineItems != <span class="keyword">null</span>) {
+            <span class="keyword">Integer</span> index = 1;
+
+            <span class="statement">for</span> (commercepayments.LineItemInput <span class="statement">item</span> : enhancedPaymentData.lineItems) {
+                populateLineItemData(
+                    jsonGeneratorInstance,
+                    <span class="statement">item</span>,
+                    <span class="string">'enhancedSchemeData.itemDetailLine'</span> + index + <span class="string">'.'</span>
+                );
+                index++;
+            }
+        }
+
+        <span class="onelineComment">// Shipping / destination info</span>
+        <span class="statement">if</span> (enhancedPaymentData.shipFromZip != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.shipFromPostalCode'</span>,
+                enhancedPaymentData.shipFromZip
+            );
+        }
+
+        <span class="statement">if</span> (enhancedPaymentData.shipToZip != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.destinationPostalCode'</span>,
+                enhancedPaymentData.shipToZip
+            );
+        }
+
+        <span class="statement">if</span> (enhancedPaymentData.shipToCountry != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                <span class="string">'enhancedSchemeData.destinationCountryCode'</span>,
+                enhancedPaymentData.shipToCountry
+            );
+        }
+    }
+
+    <span class="multilineComment">/**
+     * Populates Level 3 line item data.
+     *
+     * @param jsonGeneratorInstance JSON generator
+     * @param item Line item input
+     * @param prefix Field prefix for indexed items
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">void</span> populateLineItemData(JSONGenerator jsonGeneratorInstance,
+                                      commercepayments.LineItemInput <span class="statement">item</span>,
+                                      <span class="keyword">String</span> prefix) {
+
+        <span class="statement">if</span> (<span class="statement">item</span>.sku != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(prefix + <span class="string">'productCode'</span>, <span class="statement">item</span>.sku);
+        }
+
+        <span class="statement">if</span> (<span class="statement">item</span>.name != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(prefix + <span class="string">'description'</span>, <span class="statement">item</span>.name);
+        }
+
+        <span class="statement">if</span> (<span class="statement">item</span>.quantity != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(prefix + <span class="string">'quantity'</span>, <span class="keyword">String</span>.valueOf(<span class="statement">item</span>.quantity));
+        }
+
+        <span class="onelineComment">// Unit price is always written</span>
+        jsonGeneratorInstance.writeStringField(
+            prefix + <span class="string">'unitPrice'</span>,
+            toMinorUnits(<span class="statement">item</span>.unitPrice)
+        );
+
+        <span class="statement">if</span> (<span class="statement">item</span>.taxAmount != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                prefix + <span class="string">'taxAmount'</span>,
+                toMinorUnits(<span class="statement">item</span>.taxAmount)
+            );
+        }
+
+        <span class="statement">if</span> (<span class="statement">item</span>.discount != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(
+                prefix + <span class="string">'discountAmount'</span>,
+                toMinorUnits(<span class="statement">item</span>.discount)
+            );
+        }
+
+        <span class="statement">if</span> (<span class="statement">item</span>.commodityCode != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(prefix + <span class="string">'commodityCode'</span>, <span class="statement">item</span>.commodityCode);
+        }
+
+        <span class="statement">if</span> (<span class="statement">item</span>.uom != <span class="keyword">null</span>) {
+            jsonGeneratorInstance.writeStringField(prefix + <span class="string">'unitOfMeasure'</span>, <span class="statement">item</span>.uom);
+        }
+    }
+
+    <span class="multilineComment">/**
+     * Converts amount to minor units (e.g., dollars → cents).
+     *
+     * @param amount Decimal amount
+     * @return String representation of minor units
+     */</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">String</span> toMinorUnits(<span class="keyword">Decimal</span> amount) {
+        <span class="statement">if</span> (amount == <span class="keyword">null</span>) <span class="statement">return</span> <span class="keyword">null</span>;
+
+        <span class="keyword">Decimal</span> value = (amount * 100)
+            .setScale(0, System.RoundingMode.HALF_UP);
+
+        <span class="statement">return</span> <span class="keyword">String</span>.valueOf(value.intValue());
+    }</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_constructors">SaleRequest Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_properties">SaleRequest Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_methods">SaleRequest Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_constructors">
+<a name="apex_commercepayments_SaleRequest_constructors"><!-- --></a><h2 class="helpHead2">SaleRequest Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">SaleRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_ctor">SaleRequest(amount)</a></strong><br>
+Constructor for defining an amount for the sale request. This       constructor is intended for test usage and throws an exception if used outside of the Apex       test context.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_ctor">
+<a name="apex_commercepayments_SaleRequest_ctor"><!-- --></a><h3 class="helpHead3">SaleRequest(amount)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Constructor for defining an amount for the sale request. This
+      constructor is intended for test usage and throws an exception if used outside of the Apex
+      test context.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> SaleRequest(<span class="keyword">Double</span> amount)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">amount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Amount of the sale request.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_properties">
+<a name="apex_commercepayments_SaleRequest_properties"><!-- --></a><h2 class="helpHead2">SaleRequest Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">SaleRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_accountId">accountId</a></strong><br>
+Customer account       ID       for the sale request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_amount">amount</a></strong><br>
+Amount of the       sale request. Can       be positive only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_comments">comments</a></strong><br>
+Additional information about the sale request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_currencyIsoCode">currencyIsoCode</a></strong><br>
+Currency code for the sale request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_enhancedPaymentData">enhancedPaymentData</a></strong><br>
+Represents enhanced payment data, including Level 2 and Level 3       fields.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_paymentInitiationSourceId">paymentInitiationSourceId</a></strong><br>
+ID of the source that initiated the payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_paymentMethod">paymentMethod</a></strong><br>
+Payment method used in the sale request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_paymentMethodData">paymentMethodData</a></strong><br>
+Payment method data used in the sale request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_submittedByMerchant">submittedByMerchant</a></strong><br>
+Indicates whether the sale request is submitted by the marchant (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_accountId">
+<a name="apex_commercepayments_SaleRequest_accountId"><!-- --></a><h3 class="helpHead3">accountId</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Customer account
+      ID
+      for the sale request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> accountId {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_amount">
+<a name="apex_commercepayments_SaleRequest_amount"><!-- --></a><h3 class="helpHead3">amount</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Amount of the
+      sale request. Can
+      be positive only.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Double</span> amount {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_comments">
+<a name="apex_commercepayments_SaleRequest_comments"><!-- --></a><h3 class="helpHead3">comments</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Additional information about the sale request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> comments {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_currencyIsoCode">
+<a name="apex_commercepayments_SaleRequest_currencyIsoCode"><!-- --></a><h3 class="helpHead3">currencyIsoCode</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Currency code for the sale request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> currencyIsoCode {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_enhancedPaymentData">
+<a name="apex_commercepayments_SaleRequest_enhancedPaymentData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">enhancedPaymentData</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="ShortDesc"><a name="ShortDesc"><!-- --></a>Represents enhanced payment data, including Level 2 and Level 3
+      fields.</span></div>
+
+    <div class="section">
+      <p class="p">Supported only for third-party payment gateways; not supported for native payments.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.EnhancedPaymentDataInput enhancedPaymentData {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_EnhancedPaymentDataInput.htm#apex_class_commercepayments_EnhancedPaymentDataInput" title="Sends enhanced payment data, including Level 2 and Level 3 fields, to the gateway adapter as part of the service call.">EnhancedPaymentDataInput</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_paymentInitiationSourceId">
+<a name="apex_commercepayments_SaleRequest_paymentInitiationSourceId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">paymentInitiationSourceId</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="ShortDesc"><a name="ShortDesc"><!-- --></a>ID of the source that initiated the payment.</span></div>
+
+    <div class="section">
+      <p class="p">Supported only for third-party payment gateways; not supported for native payments. See
+          <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_paymentinitiationsource.htm" target="_blank" title="HTML (New Window)">PaymentInitiationSource</a> object documentation for more information.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String paymentInitiationSourceId {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_paymentMethod">
+<a name="apex_commercepayments_SaleRequest_paymentMethod"><!-- --></a><h3 class="helpHead3">paymentMethod</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Payment method used in the sale request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> commercepayments.SaleApiPaymentMethodRequest paymentMethod
+          {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleApiPaymentMethodRequest.htm#apex_class_commercepayments_SaleApiPaymentMethodRequest" title="Sends data related to a card payment method to a gateway adapter during a sale service call.">SaleApiPaymentMethodRequest</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_paymentMethodData">
+<a name="apex_commercepayments_SaleRequest_paymentMethodData"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">paymentMethodData</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Payment method data used in the sale request.</span></div>
+
+    <div class="section">
+      <p class="p">This field is populated when <samp class="codeph apex_code">SaleInput</samp> specifies a
+        saved payment method. Accessible using <samp class="codeph apex_code">paymentMethodData</samp> on <samp class="codeph apex_code">SaleRequest</samp>. The
+        map contains these fields from <samp class="codeph apex_code">SavedPaymentMethod</samp>:
+          <samp class="codeph apex_code">GatewayToken</samp>, <samp class="codeph apex_code">Type</samp>, <samp class="codeph apex_code">GatewayReference</samp>, and <samp class="codeph apex_code">StandardEntryCode</samp> for direct gateway interaction without
+        querying the database.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Map&lt;String,String&gt; paymentMethodData {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: Map&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_submittedByMerchant">
+<a name="apex_commercepayments_SaleRequest_submittedByMerchant"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">submittedByMerchant</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the sale request is submitted by the marchant (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean submittedByMerchant {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_methods">
+<a name="apex_commercepayments_SaleRequest_methods"><!-- --></a><h2 class="helpHead2">SaleRequest Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SaleRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_equals">equals(obj)</a></strong><br>
+Compares this object with the specified object and returns         <samp class="codeph nolang">true</samp> if both objects are equal; otherwise, returns       <samp class="codeph nolang">false</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_hashCode">hashCode()</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">SaleRequest</samp> by determining the uniqueness of the external       object records in a list.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleRequest.htm#apex_commercepayments_SaleRequest_toString">toString()</a></strong><br>
+Converts a date to a string.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_equals">
+<a name="apex_commercepayments_SaleRequest_equals"><!-- --></a>
+  <h3 class="helpHead3">equals(obj)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Compares this object with the specified object and returns
+        <samp class="codeph nolang">true</samp> if both objects are equal; otherwise, returns
+      <samp class="codeph nolang">false</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Boolean</span>
+          equals(<span class="keyword">Object</span>
+      obj)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">obj</var></strong>:<p class="p">Type: Object</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_hashCode">
+<a name="apex_commercepayments_SaleRequest_hashCode"><!-- --></a><h3 class="helpHead3">hashCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">SaleRequest</samp> by determining the uniqueness of the external
+      object records in a list.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Integer</span> hashCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleRequest_toString">
+<a name="apex_commercepayments_SaleRequest_toString"><!-- --></a><h3 class="helpHead3">toString()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Converts a date to a string.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

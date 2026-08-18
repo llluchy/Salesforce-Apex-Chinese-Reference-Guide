@@ -1,0 +1,78 @@
+<a name="langCon_apex_dml_examples"><!-- --></a><h1 class="helpHead1">How DML Works</h1><div class="body conbody">
+        <div class="section">
+<h2 class="helpHead2">Single vs. Bulk DML Operations</h2>
+
+            
+            <p class="p" id="Bulk_DML"><a name="Bulk_DML"><!-- --></a>You can perform DML operations either on a single sObject, or in bulk
+                on a list of sObjects. Performing bulk DML operations is the recommended way because
+                it helps avoid hitting governor limits, such as the DML limit of 150 statements per
+                Apex transaction. This limit is in place to ensure fair access to shared resources
+                in the Lightning Platform. Performing a DML operation on a list of sObjects counts
+                as one DML statement, not as one statement for each sObject.</p>
+
+            <p class="p">This example performs DML calls on single sObjects, which isn’t efficient.</p>
+
+            <p class="p">The <samp class="codeph apex_code"><span class="statement">for</span></samp> loop iterates over contacts. For each
+                contact, if the department field matches a certain value, it sets a new value for
+                the Description field. If the list contains more than items, the 151st update
+                returns an exception that can't be caught.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Contact&gt; conList = [Select Department , Description from Contact];
+<span class="statement">for</span>(Contact badCon : conList) {
+    <span class="statement">if</span> (badCon.Department == <span class="string">'Finance'</span>) {
+        badCon.Description = <span class="string">'New description'</span>;
+    }
+    <span class="onelineComment">// Not a good practice since governor limits might be hit.</span>
+    <span class="statement">update</span> badCon;
+}</pre></div>
+
+            <p class="p">This example is a modified version of the previous example that doesn't hit the
+                governor limit. The DML operation is performed in bulk by calling <samp class="codeph apex_code"><span class="statement">update</span></samp> on a list of contacts. This code counts
+                as one DML statement, which is far below the limit of 150.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// List to hold the new contacts to update.</span>
+List&lt;Contact&gt; updatedList = <span class="keyword">new</span> List&lt;Contact&gt;();
+List&lt;Contact&gt; conList = [Select Department , Description from Contact];
+<span class="statement">for</span>(Contact con : conList) {
+    <span class="statement">if</span> (con.Department == <span class="string">'Finance'</span>) {
+        con.Description = <span class="string">'New description'</span>;
+        <span class="onelineComment">// Add updated contact sObject to the list.</span>
+        <strong class="ph b">updatedList.add(con);</strong>
+    }
+}
+
+<span class="onelineComment">// Call update on the list of contacts.</span>
+<span class="onelineComment">// This results in one DML call for the entire list.</span>
+<strong class="ph b">update updatedList;</strong>
+</pre></div>
+
+            <p class="p">Another DML governor limit is the total number of rows that can be processed by DML
+                operations in a single transaction, which is 10,000. All rows processed by all DML
+                calls in the same transaction count incrementally toward this limit. For example, if
+                you insert 100 contacts and update 50 contacts in the same transaction, your total
+                DML processed rows are 150. You still have 9,850 rows left (10,000 - 150).</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="sharing_rules_section"><a name="sharing_rules_section"><!-- --></a>System Context and Sharing Rules</span></h2>
+
+            
+            <p class="p">Most DML operations execute in user context, which means that the current user's
+                permissions, field-level security, organization-wide defaults, position in the role
+                hierarchy, and sharing rules are enforced. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_security_sharing_chapter.htm" title="The Apex security model includes record-level, field-level, and object-level security mechanisms. You can control record-level security modes by using the with sharing, without sharing, and inherited sharing keywords on classes. Apex runs in user mode by default, which means that user permissions on objects and field-level security are respected. A user cannot run code that tries to access fields or objects that are hidden from the user. Other security mechanisms include the Security.stripInaccessible() method, and Field and SObject describe methods.">Apex Security and Sharing Model</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Best Practices</h2>
+
+            
+            <p class="p">With DML on SObjects, it’s best to construct new instances and only update the fields
+                you wish to modify without querying other fields. If you query fields other than the
+                fields you wish to update, you may revert queried field values that could have
+                changed between the query and the DML.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

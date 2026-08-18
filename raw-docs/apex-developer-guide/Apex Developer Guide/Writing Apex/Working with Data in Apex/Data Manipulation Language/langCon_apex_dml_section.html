@@ -1,0 +1,62 @@
+<a name="langCon_apex_dml_section"><!-- --></a><h1 class="helpHead1">Adding and Retrieving Data With DML</h1><div class="body conbody">
+<div class="shortdesc">Apex is tightly integrated with the Lightning Platform persistence layer. Records in
+        the database can be inserted and manipulated through Apex directly using simple statements.
+        The language in Apex that allows you to add and manage records in the database is the Data
+        Manipulation Language (DML). In contrast to the SOQL language, which is used for read
+        operations (querying records), DML is used for write operations.</div>
+
+        <p class="p">Before inserting or manipulating records, record data is created in memory as sObjects.
+            The sObject data type is a generic data type and corresponds to the data type of the
+            variable that will hold the record data. There are specific data types, subtyped from
+            the sObject data type, which correspond to data types of standard object records, such
+            as Account or Contact, and custom objects, such as Invoice_Statement__c. Typically, you
+            will work with these specific sObject data types. But sometimes, when you don’t
+            know the type of the sObject in advance, you can work with the generic sObject data
+            type. This is an example of how you can create a new specific Account sObject and assign
+            it to a variable.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Account Example'</span>);</pre></div>
+
+        <p class="p">In the previous example, the account referenced by the variable <samp class="codeph apex_code">a</samp> exists in memory with the required <samp class="codeph apex_code">Name</samp> field. However, it is not persisted yet to the
+            Lightning Platform persistence layer. You need to call DML statements to persist
+            sObjects to the database. Here is an example of creating and persisting this account
+            using the <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name=<span class="string">'Account Example'</span>);
+<span class="statement">insert</span> a;</pre></div>
+
+        <p class="p">Also, you can use DML to modify records that have already been inserted. Among the
+            operations you can perform are record updates, deletions, restoring records from the
+            Recycle Bin, merging records, or converting leads. After querying for records, you get
+            sObject instances that you can modify and then persist the changes of. This is an
+            example of querying for an existing record that has been previously persisted, updating
+            a couple of fields on the sObject representation of this record in memory, and then
+            persisting this change to the database.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Query existing account.</span>
+Account a = [SELECT Name,Industry 
+               FROM Account 
+               WHERE Name=<span class="string">'Account Example'</span> LIMIT 1];
+
+<span class="onelineComment">// Write the old values the debug log before updating them.</span>
+System.debug(<span class="string">'Account Name before update: '</span> + a.Name); <span class="onelineComment">// Name is Account Example</span>
+System.debug(<span class="string">'Account Industry before update: '</span> + a.Industry);<span class="onelineComment">// Industry is not set</span>
+
+<span class="onelineComment">// Modify the two fields on the sObject.</span>
+a.Name = <span class="string">'Account of the Day'</span>;
+a.Industry = <span class="string">'Technology'</span>;
+
+<span class="onelineComment">// Persist the changes.</span>
+<span class="statement">update</span> a;
+
+<span class="onelineComment">// Get a new copy of the account from the database with the two fields.</span>
+Account a = [SELECT Name,Industry 
+             FROM Account 
+             WHERE Name=<span class="string">'Account of the Day'</span> LIMIT 1];
+
+<span class="onelineComment">// Verify that updated field values were persisted.</span>
+System.assertEquals(<span class="string">'Account of the Day'</span>, a.Name);
+System.assertEquals(<span class="string">'Technology'</span>, a.Industry);
+</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,280 @@
+<a name="apex_methods_system_timezone"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">TimeZone Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Represents a time zone. Contains methods for creating a
+new time zone and obtaining time zone properties, such as the time
+zone ID, offset, and display name.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">You can use the methods in this class
+to get properties of a time zone, such as the properties of the time
+zone returned by <samp class="codeph apex_code">UserInfo.getTimeZone</samp>, or the time zone returned by <samp class="codeph apex_code">getTimeZone</samp> of this class.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example shows how to get properties of the current user’s time zone and
+                display them to the debug log. The output of the sample varies based on the user's
+                time zone.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">TimeZone tz = UserInfo.getTimeZone();
+System.debug(<span class="string">'Display name: '</span> + tz.getDisplayName());
+System.debug(<span class="string">'ID: '</span> + tz.getID());
+<span class="onelineComment">// During daylight saving time for the America/Los_Angeles time zone</span>
+System.debug(<span class="string">'Offset: '</span> + tz.getOffset(DateTime.newInstance(2012,10,23,12,0,0)));
+<span class="onelineComment">// Not during daylight saving time for the America/Los_Angeles time zone</span>
+System.debug(<span class="string">'Offset: '</span> + tz.getOffset(DateTime.newInstance(2012,11,23,12,0,0)));
+System.debug(<span class="string">'String format: '</span> + tz.toString());
+</pre></div>
+
+            <p class="p">This second example shows how to create a time zone for the New York time zone and
+                get the offset of this time zone to the GMT time zone. The example uses two dates to
+                get the offset from. One date is before DST (Daylight Saving Time), and one is after
+                DST. In 2000, DST ended on Sunday, October 29 for the New York time zone. Because
+                the date occurs after DST ends, the offset on the first date is –5 hours to
+                GMT. In 2012, DST ended on Sunday, November 4. Because the date is within DST, the
+                offset on the second date is –4 hours.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the New York time zone</span>
+Timezone tz = Timezone.getTimeZone(<span class="string">'America/New_York'</span>);
+
+<span class="onelineComment">// Create a date before the 2007 shift of DST into November</span>
+DateTime dtpre = DateTime.newInstanceGMT(2000, 11, 1, 0, 0, 0);
+system.debug(tz.getOffset(dtpre));   <span class="onelineComment">//-18000000 (= -5 hours = EST)</span>
+
+<span class="onelineComment">// Create a date after the 2007 shift of DST into November</span>
+DateTime dtpost = DateTime.newInstanceGMT(2012, 11, 1, 0, 0, 0);
+system.debug(tz.getOffset(dtpost));   <span class="onelineComment">//-14400000 (= -4 hours = EDT)</span></pre></div>
+
+            <p class="p">This next example is similar to the previous one except that it gets the offset
+                around the boundary of DST. In 2014, DST ended on Sunday, November 2 at 2:00 AM
+                local time for the New York time zone. The first offset is obtained right before DST
+                ends, and the second offset is obtained right after DST ends. The dates are created
+                by using the <samp class="codeph apex_code">DateTime.newInstanceGMT</samp> method.
+                This method expects the passed-in date values to be based on the GMT time zone.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the New York time zone</span>
+Timezone tz = Timezone.getTimeZone(<span class="string">'America/New_York'</span>);
+
+<span class="onelineComment">// Before DST ends</span>
+DateTime dtpre = DateTime.newInstanceGMT(2014, 11, 2, 5, 59, 59);  <span class="onelineComment">//1:59:59AM local EDT</span>
+system.debug(tz.getOffset(dtpre));   <span class="onelineComment">//-14400000 (= -4 hours = still on DST)</span>
+
+<span class="onelineComment">// After DST ends</span>
+DateTime dtpost = DateTime.newInstanceGMT(2014, 11, 2, 6, 0, 0); <span class="onelineComment">//1:00:00AM local EST</span>
+system.debug(tz.getOffset(dtpost));  <span class="onelineComment">//-18000000 (= -5 hours = back one hour)</span></pre></div>
+
+        </div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_TimeZone_methods">
+<a name="apex_System_TimeZone_methods"><!-- --></a>
+<h2 class="helpHead2">TimeZone Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">TimeZone</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_getDisplayName">getDisplayName()</a></strong><br>
+Returns this time zone’s display name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_getID">getID()</a></strong><br>
+Returns this time zone’s ID.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_getOffset">getOffset(date)</a></strong><br>
+Returns the time zone offset, in milliseconds, of the specified date to the GMT time zone.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_getTimeZone">getTimeZone(timeZoneIdString)</a></strong><br>
+Returns the time zone corresponding to the specified time zone ID.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_toString">toString()</a></strong><br>
+Returns the string representation of this time zone.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_TimeZone_getDisplayName">
+<a name="apex_System_TimeZone_getDisplayName"><!-- --></a>
+<h3 class="helpHead3">getDisplayName()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns this time zone’s display name.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDisplayName()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Versioned Behavior Changes</h4>
+
+   
+   <p class="p">In API version 45.0 and later, getDisplayName displays Daylight Savings Time appropriately
+    when daylight savings are in effect. For example, British Summer Time is displayed for
+    Europe/London and Pacific Daylight Time for America/Los_Angeles. </p>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_TimeZone_getID">
+<a name="apex_System_TimeZone_getID"><!-- --></a>
+<h3 class="helpHead3">getID()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns this time zone’s ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getID()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_TimeZone_getOffset">
+<a name="apex_System_TimeZone_getOffset"><!-- --></a>
+<h3 class="helpHead3">getOffset(date)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the time zone offset, in milliseconds, of the specified
+date to the GMT time zone.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> getOffset(<span class="keyword">Datetime</span> date)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">date</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a> The <var class="keyword varname">date</var> argument is the date and time to evaluate.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The returned offset
+is adjusted for daylight saving time if the <var class="keyword varname">date</var> argument falls within daylight saving time for this time zone.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_TimeZone_getTimeZone">
+<a name="apex_System_TimeZone_getTimeZone"><!-- --></a>
+<h3 class="helpHead3">getTimeZone(timeZoneIdString)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the time zone corresponding to the specified time
+zone ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> TimeZone getTimeZone(<span class="keyword">String</span>
+          timeZoneIdString)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">timeZoneIdString</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The time zone values you can use for the <var class="keyword varname">Id</var> argument are any valid time zone values that the <a class="xref" href="http://docs.oracle.com/javase/6/docs/api/java/util/TimeZone.html" target="_blank" title="HTML (New Window)">Java TimeZone class</a> supports.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_timezone" title="Represents a time zone. Contains methods for creating a new time zone and obtaining time zone properties, such as the time zone ID, offset, and display name.">TimeZone</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">TimeZone tz = TimeZone.getTimeZone(<span class="string">'America/Los_Angeles'</span>);
+<span class="keyword">String</span> tzName = tz.getDisplayName();
+System.assert(tzName.equals(<span class="string">'(GMT-08:00) Pacific Standard Time (America/Los_Angeles)'</span>) ||
+              tzName.equals(<span class="string">'(GMT-07:00) Pacific Daylight Time (America/Los_Angeles)'</span>));</pre></div>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_TimeZone_toString">
+<a name="apex_System_TimeZone_toString"><!-- --></a>
+<h3 class="helpHead3">toString()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the string representation of this time zone.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

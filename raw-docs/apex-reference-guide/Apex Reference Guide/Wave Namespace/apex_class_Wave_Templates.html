@@ -1,0 +1,275 @@
+<a name="apex_class_Wave_Templates"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">Templates Class</h1>
+
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The Templates class provides methods for retrieving CRM Analytics
+      template collections, individual templates, and template configurations.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_wave.htm" title="The classes in the Wave namespace are part of the CRM Analytics Analytics SDK, designed to facilitate querying CRM Analytics data from Apex code.">Wave</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Use Templates and its associated class <samp class="codeph apex_code">Wave.TemplatesSearchOptions</samp> to get CRM Analytics template information. </p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Examples</h2>
+
+      
+      <p class="p">This code sample declares a method that returns a list of the template names.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">@AuraEnabled(cacheable=<span class="keyword">true</span>)
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> List&lt;<span class="keyword">String</span>&gt; getTemplateNames() {
+  Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; o = Wave.Templates.getTemplates(<span class="keyword">new</span> Wave.TemplatesSearchOptions());
+  List&lt;<span class="keyword">Object</span>&gt; templates = (List&lt;<span class="keyword">Object</span>&gt;) o.get(<span class="string">'templates'</span>);
+  List&lt;<span class="keyword">String</span>&gt; names = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+  <span class="statement">for</span> (<span class="keyword">Object</span> templateObj : templates) {
+    names.add((<span class="keyword">String</span>) ((Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) templateObj.get(<span class="string">'name'</span>));
+  }
+  <span class="statement">return</span> names;
+}</pre></div>
+
+      <p class="p">Adding the <samp class="codeph apex_code">@AuraEnabled</samp> annotation allows Lightning Web
+        Components to access Templates methods directly.</p>
+
+      <p class="p">For example, in the lwc.js file:</p>
+
+      <div class="codeSection javascript"><pre class="codeblock brush:js"><span class="keyword">import</span> getTemplates from <span class="string">'@salesforce/apex/Wave.Templates.getTemplates'</span>;
+<span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> Templates <span class="keyword">extends</span> LightningElement {
+  @wire(getTemplates, {
+    <span class="onelineComment">// specifying 'options' is optional</span>
+    options: {
+      <span class="onelineComment">// values in TemplatesSearchOptions go here; all optional</span>
+      type: <span class="string">'app'</span>
+    }
+  })
+  onTemplates({ data, error }) {
+    <span class="keyword">if</span> (data) {
+      console.log(<span class="string">'template names='</span> + data.templates.map(l =&gt; l.name).join(<span class="string">', '</span>));
+    }
+  }
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_Templates.htm#apex_Wave_Templates_methods">Templates Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Wave_Templates_methods">
+<a name="apex_Wave_Templates_methods"><!-- --></a>
+  <h2 class="helpHead2">Templates Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Templates</samp>.</p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_Templates.htm#apex_Wave_Templates_getTemplate_2">getTemplate(templateIdOrApiName)</a></strong><br>
+Gets a CRM Analytics template by the specified ID or API name. The       returned template is a map of the template JSON attributes as name/value     pairs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_Templates.htm#apex_Wave_Templates_getTemplateConfig_2">getTemplateConfig(templateIdOrApiName)</a></strong><br>
+Gets the CRM Analytics template configuration by the specified ID or       API name. The returned template configuration is a map of the JSON attributes as name/value       pairs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_Templates.htm#apex_Wave_Templates_getTemplates">getTemplates(options)</a></strong><br>
+Get a filtered collection of CRM Analytics templates using search       options.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_Templates.htm#apex_Wave_Templates_getTemplates_2">getTemplates()</a></strong><br>
+Gets all CRM Analytics templates.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Wave_Templates_getTemplate_2">
+<a name="apex_Wave_Templates_getTemplate_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getTemplate(templateIdOrApiName)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gets a CRM Analytics template by the specified ID or API name. The
+      returned template is a map of the template JSON attributes as name/value
+    pairs.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; getTemplate(<span class="keyword">String</span>
+          templateIdOrApiName)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">templateIdOrApiName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The template ID or API name of the template to retrieve.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_collections_maps.htm" target="_blank">Map</a>&lt;String,Object&gt;</p>
+<p class="p">A map of the template JSON attribute name/value pairs, where the name is a string with an object
+        value. For attributes details, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_resources_templates_id.htm" target="_blank">TemplateRepresentation</a>.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> templateName = (<span class="keyword">String</span>) Wave.Templates.getTemplate(<var class="keyword varname">templateId</var>).get(<span class="string">'name'</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Wave_Templates_getTemplateConfig_2">
+<a name="apex_Wave_Templates_getTemplateConfig_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getTemplateConfig(templateIdOrApiName)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gets the CRM Analytics template configuration by the specified ID or
+      API name. The returned template configuration is a map of the JSON attributes as name/value
+      pairs.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; getTemplateConfig(<span class="keyword">String</span>
+          templateIdOrApiName)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">templateIdOrApiName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The template ID or developer name to retrieve the template configuration for.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dev_guide.htm" target="_blank">Map</a>&lt;String,Object&gt;</p>
+<p class="p">A map of template configuration JSON attribute names and the object values. For attribute
+        details, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_resources_templates_configuration.htm" target="_blank">TemplateConfigurationRepresentation</a>.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; templateVariables = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) Wave.Templates.getTemplateConfig(<var class="keyword varname">templateId</var>).get(<span class="string">'variables'</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Wave_Templates_getTemplates">
+<a name="apex_Wave_Templates_getTemplates"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getTemplates(options)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get a filtered collection of CRM Analytics templates using search
+      options.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;
+          getTemplates(Wave.TemplatesSearchOptions options)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">options</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Wave_TemplatesSearchOptions.htm#apex_class_Wave_TemplatesSearchOptions" title="The TemplatesSearchOptions class provides optional properties to filter the template collection.">Wave.TemplatesSearchOptions</a></p>
+<p class="p">The search options to use for filtering the template collection.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      <p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dev_guide.htm" target="_blank">Map</a>&lt;String,Object&gt;</p>
+
+      <p class="p">A map of template names and the template object values. For template collection details,
+        see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_resources_templates.htm" target="_blank">TemplateCollectionRepresentation</a>.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; templatesMap = Wave.Templates.getTemplates(<span class="keyword">new</span> Wave.TemplatesSearchOptions());</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Wave_Templates_getTemplates_2">
+<a name="apex_Wave_Templates_getTemplates_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getTemplates()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Gets all CRM Analytics templates.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; getTemplates()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dev_guide.htm" target="_blank">Map</a>&lt;String,Object&gt;</p>
+<p class="p">A map of template names and the template object values. For template collection details, see
+          <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.bi_dev_guide_rest.meta/bi_dev_guide_rest/bi_resources_templates.htm" target="_blank">TemplateCollectionRepresentation</a>.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; templatesMap = Wave.Templates.getTemplates();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

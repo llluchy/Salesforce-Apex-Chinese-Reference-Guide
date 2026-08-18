@@ -1,0 +1,61 @@
+<a name="apex_connectapi_differences"><!-- --></a><h1 class="helpHead1">Differences Between <span class="titlecodeph">ConnectApi</span> Classes and Other Apex
+    Classes</h1><div class="body conbody">
+<div class="shortdesc">Note these additional differences between <samp class="codeph apex_code">ConnectApi</samp> classes and other Apex classes.</div>
+
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b">User mode</strong>: <span class="ph" id="cia_systemMode"><a name="cia_systemMode"><!-- --></a>Connect in Apex methods run in the context of the current user
+              (also called the <em class="ph i">context user</em>). The methods have access to whatever the context
+              user has access to. Connect in Apex doesn’t support the <samp class="codeph apex_code">runAs</samp> system method.</span> When a method takes a <span class="ph" id="subjectId_context_user"><a name="subjectId_context_user"><!-- --></a><var class="keyword varname">subjectId</var> argument, often that subject
+              must be the context user. In these cases, you can use the string <samp class="codeph apex_code">me</samp> to specify the context user instead of an
+              ID.</span> Connect in Apex isn’t available to Automated Process users by default. Connect in Apex
+            is available to these users:<ul class="ul bulletList">
+              <li class="li">Chatter-only users</li>
+
+              <li class="li">Guest users</li>
+
+              <li class="li">Portal users</li>
+
+              <li class="li">Standard users</li>
+
+            </ul>
+</li>
+
+<li class="li">
+<strong class="ph b"><samp class="codeph apex_code">with sharing</samp> and <samp class="codeph apex_code">without sharing</samp></strong>: <span class="ph" id="cia_withSharing"><a name="cia_withSharing"><!-- --></a>Connect in Apex ignores the <samp class="codeph apex_code">with
+                sharing</samp> and <samp class="codeph apex_code">without sharing</samp>
+              keywords. Instead, the context user controls all security, field level sharing, and
+              visibility. For example, if the context user is a member of a private group, <samp class="codeph apex_code">ConnectApi</samp> classes can post to that group. If the
+              context user is not a member of a private group, the code can’t see the feed items for
+              that group and can’t post to the group.</span>
+</li>
+
+<li class="li">
+<strong class="ph b">Asynchronous operations</strong>: <span class="ph" id="cia_async"><a name="cia_async"><!-- --></a>Some Connect in Apex operations are asynchronous, that is, they don’t
+              occur immediately. For example, if your code adds a feed item for a user, it isn’t
+              immediately available in the news feed. Another example: when you add a photo, it’s
+              not available immediately. For testing, if you add a photo, you can’t retrieve
+              it immediately.</span>
+</li>
+
+<li class="li">
+<strong class="ph b">No XML support in Apex
+      REST</strong>: <span class="ph" id="noApexRESTXMLSupport"><a name="noApexRESTXMLSupport"><!-- --></a>Apex REST doesn’t support XML serialization and deserialization of
+              Connect in Apex objects. Apex REST does support JSON serialization and deserialization
+              of Connect in Apex objects.</span>
+</li>
+
+<li class="li">
+<strong class="ph b">Empty log entries</strong>: <span class="ph" id="cia_variableAssignment"><a name="cia_variableAssignment"><!-- --></a>Information about Connect in Apex objects doesn’t appear in
+                <samp class="codeph apex_code">VARIABLE_ASSIGNMENT</samp> log events.</span>
+</li>
+
+<li class="li">
+<strong class="ph b">No Apex SOAP web services
+      support</strong>: <span class="ph" id="cia_webservice"><a name="cia_webservice"><!-- --></a>Connect in Apex objects can’t be used in Apex SOAP web services
+              indicated with the keyword <samp class="codeph apex_code">webservice</samp>.</span>
+</li>
+
+</ul>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

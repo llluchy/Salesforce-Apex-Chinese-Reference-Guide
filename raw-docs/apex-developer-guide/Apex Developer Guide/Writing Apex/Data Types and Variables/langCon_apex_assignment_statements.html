@@ -1,0 +1,80 @@
+<a name="langCon_apex_assignment_statements"><!-- --></a><h1 class="helpHead1">Assignment Statements</h1><div class="body">
+<div class="shortdesc">An assignment statement is any statement that places a value into a
+        variable.</div>
+
+        <div class="p">An assignment statement generally takes one of two
+            forms:<div class="codeSection apex_code"><pre class="codeblock brush:apex">[LValue] = [new_value_expression];
+[LValue] = [[inline_soql_query]];</pre></div>
+
+        </div>
+
+        <div class="p">In the forms above, <samp class="codeph apex_code">[LValue]</samp> stands for any
+            expression that can be placed on the left side of an assignment operator. These include:<ul class="ul bulletList">
+                <li class="li">A simple variable. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i = 1;
+Account a = <span class="keyword">new</span> Account();
+Account[] accts = [SELECT Id FROM Account];</pre></div>
+</li>
+
+                <li class="li">A de-referenced list element. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">ints[0] = 1;
+accts[0].Name = <span class="string">'Acme'</span>;</pre></div>
+</li>
+
+                <li class="li">An sObject field reference that the context user has permission to edit. For
+                    example:
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Acme'</span>, BillingCity = <span class="string">'San Francisco'</span>); 
+
+<span class="onelineComment">// IDs cannot be set prior to an insert call</span>
+<span class="onelineComment">// a.Id = '00300000003T2PGAA0';   </span>
+
+<span class="onelineComment">// Instead, insert the record. The system automatically assigns it an ID.</span>
+<span class="statement">insert</span> a;
+
+<span class="onelineComment">// Fields also must be writable for the context user</span>
+<span class="onelineComment">// a.CreatedDate = System.today();  This code is invalid because</span>
+<span class="onelineComment">//                                  createdDate is read-only! </span>
+
+<span class="onelineComment">// Since the account a has been inserted, it is now possible to</span>
+<span class="onelineComment">// create a new contact that is related to it</span>
+Contact c = <span class="keyword">new</span> Contact(LastName = <span class="string">'Roth'</span>, Account = a);
+
+<span class="onelineComment">// Notice that you can write to the account name directly through the contact </span>
+c.Account.Name = <span class="string">'salesforce.com'</span>;</pre></div>
+</li>
+
+            </ul>
+</div>
+
+        <div class="p">Assignment is always done by reference. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account();
+Account b;
+Account[] c = <span class="keyword">new</span> Account[]{};
+a.Name = <span class="string">'Acme'</span>;
+b = a;         
+c.add(a);      
+
+<span class="onelineComment">// These asserts should now be true. You can reference the data</span>
+<span class="onelineComment">// originally allocated to account a through account b and account list c.</span>
+System.assertEquals(b.Name, <span class="string">'Acme'</span>);          
+System.assertEquals(c[0].Name, <span class="string">'Acme'</span>);   </pre></div>
+</div>
+
+        <div class="p">Similarly, two lists can point at the same value in memory. For
+            example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] a = <span class="keyword">new</span> Account[]{<span class="keyword">new</span> Account()};
+Account[] b = a;
+a[0].Name = <span class="string">'Acme'</span>;
+System.assert(b[0].Name == <span class="string">'Acme'</span>);  </pre></div>
+</div>
+
+        <p class="p">In addition to <samp class="codeph apex_code">=</samp>, other valid assignment
+            operators include <samp class="codeph apex_code">+=</samp>, <samp class="codeph apex_code">*=</samp>, <samp class="codeph apex_code">/=</samp>,
+                <samp class="codeph apex_code">|=</samp>, <samp class="codeph apex_code">&amp;=</samp>, <samp class="codeph apex_code">++</samp>, and <samp class="codeph apex_code">--</samp>. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_expressions_operators_understanding.htm" title="Expressions can be joined to one another with operators to create compound expressions.">Expression
+                Operators</a>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_expressions.htm" title="Expressions and Operators">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_rules_of_conversion.htm" title="Rules of Conversion">Next →</a></li>
+</ul></div>
+</div>

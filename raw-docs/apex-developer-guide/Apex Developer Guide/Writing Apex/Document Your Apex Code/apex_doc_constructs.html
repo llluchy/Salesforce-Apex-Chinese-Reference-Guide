@@ -1,0 +1,293 @@
+<a name="apex_doc_constructs"><!-- --></a><h1 class="helpHead1">Document Apex Constructs and Features</h1><div class="body conbody">
+<div class="shortdesc">Apex has unique constructs and platform-specific features that require particular
+  attention in documentation. Use these guidelines to document these elements with
+  ApexDoc.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Classes</h2>
+<p class="p">When you document an <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_understanding.htm" title="As in Java, you can create classes in Apex. A class is a template or blueprint from which objects are created. An object is an instance of a class.">Apex class</a>,
+    provide a comprehensive overview of the class’s purpose, responsibilities, and key
+    characteristics.</p>
+<p class="p">In the summary sentence, describe the class’s ‌overall purpose. After the
+    summary sentence, explain the rationale for the class’s <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">sharing
+     model</a> if it’s not obvious. For example, explain why the class uses <samp class="codeph apex_code">without sharing</samp> for a specific privileged operation. We also
+    recommend using tags such as <samp class="codeph apex_code">@author</samp>, <samp class="codeph apex_code">@version</samp>, <samp class="codeph apex_code">@since</samp>,
+     <samp class="codeph apex_code">@see,</samp> and <samp class="codeph apex_code">@group</samp>, which all provide valuable metadata.</p>
+<p class="p">Here’s an example ApexDoc comment
+    for the <samp class="codeph apex_code">DataAggregationService</samp>
+   class.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * This service class handles critical data aggregation tasks.
+ * It operates using 'without sharing' to ensure access to all necessary
+ * records for calculation, irrespective of the running user's sharing rules.
+ * Care must be taken when calling methods from this class.
+ * @author Jane Doe
+ * @since 0.1.0
+ */</span>
+<span class="keyword">public</span> without sharing <span class="keyword">class</span> DataAggregationService {
+    <span class="onelineComment">//...</span>
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Interfaces</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_interfaces.htm" title="An interface is like a class in which none of the methods have been implemented—the method signatures are there, but the body of each method is empty. To use an interface, another class must implement it by providing a body for all of the methods contained in the interface.">Apex interfaces</a> define a contract for what other classes can
+    do without specifying how they do it. Focus your ApexDoc comments on this contract. In the main
+    description, document the interface’s overall purpose and the contract that it defines. Standard
+    metadata tags such as <samp class="codeph apex_code">@author</samp>, <samp class="codeph apex_code">@version</samp>, <samp class="codeph apex_code">@since</samp>, and
+     <samp class="codeph apex_code">@see</samp> are also applicable.</p>
+<p class="p">Document each method
+    declaration in the interface as a standard method. Clearly explain the method’s expected
+    behavior, parameters, and return values. This documentation sets expectations for any class that
+    implements the interface.</p>
+<p class="p">For an example of an interface with an ApexDoc comment, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_examples.htm" title="See practical examples of ApexDoc comments applied to various Apex constructs.">ApexDoc Examples</a>.</p>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Enums</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm" title="An enum is an abstract data type with values that each take on exactly one of a finite set of identifiers that you specify. Enums are typically used to define a set of possible values that don’t otherwise have a numerical order. Typical examples include the suit of a card, or a particular season of the year.">Enums </a> in Apex define an abstract data type with a finite
+    set of named constant values. In the main description, document the enum’s purpose and the set
+    of concepts that it represents. You can also use standard tags such as <samp class="codeph apex_code">@author</samp>, <samp class="codeph apex_code">@version</samp>,
+     <samp class="codeph apex_code">@since</samp>, and <samp class="codeph apex_code">@see</samp>.</p>
+<p class="p">Clarify individual enum constants if their names aren’t self-explanatory.
+    Either describe a constant’s definition in the enum type’s ApexDoc main description, or use
+    standard block comments that directly precede the line for the constant.</p>
+<p class="p">Apex enums implicitly include methods such as <samp class="codeph apex_code">values()</samp>,
+     <samp class="codeph apex_code">valueOf(<span class="keyword">String</span>)</samp>, <samp class="codeph apex_code">name()</samp>, and <samp class="codeph apex_code">ordinal()</samp>. These standard methods
+    generally don’t require explicit documentation within each specific enum’s ApexDoc comment.</p>
+<p class="p">Here’s an example ApexDoc comment for the <samp class="codeph apex_code">Season</samp> enum.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Potential seasons of the year
+ */</span>
+<span class="keyword">public</span> <span class="keyword">enum</span> Season {
+  WINTER,
+  SPRING,
+  SUMMER,
+  FALL
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Methods and Constructors</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_defining_methods.htm" title="Learn how to define Apex methods. Understand the differences between passing method arguments by value and passing method arguments by reference.">Method</a> and <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_constructors.htm">constructor</a> documentation is critical for
+    understanding how to use an Apex class.</p>
+
+   <p class="p">When you document method and constructor parameters, use the <samp class="codeph apex_code">@param</samp> block tag. Each parameter must have a corresponding <samp class="codeph apex_code">@param</samp> tag. In the parameter description, describe the
+    parameter’s name, its purpose, and any expectations regarding its type or content. Descriptions
+    can include statements such as ‌“Cannot be null” or “A valid 18-character ID”.</p>
+
+   <p class="p">For methods that return values, use the <samp class="codeph apex_code">@<span class="statement">return</span></samp> block
+    tag. In the description, specify what is returned, including conditions for null values or
+    specific data structures. Descriptions can include statements such as “A List of Account
+    sObjects matching the filter criteria; an empty list if no matches are found.”</p>
+
+   <p class="p">Use the <samp class="codeph apex_code">@throws</samp> block tag to list all significant
+    checked and unchecked exceptions that the method can explicitly throw, along with the conditions
+    causing them. This documentation is crucial for identifying gaps in error handling.</p>
+
+   <p class="p">For examples of methods and constructors with ApexDoc comments, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_examples.htm" title="See practical examples of ApexDoc comments applied to various Apex constructs.">ApexDoc Examples</a>.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Properties and Variables</h2>
+<p class="p">Document public or global properties and class
+    member variables that form part of a class’s public API.</p>
+<p class="p">In the ApexDoc comment’s main
+    description section, explain the property’s purpose, its data type if it’s unclear from the
+    method declaration, and any important usage notes. For example, include whether the property is
+    read-only after initialization, or its default value. Block tags such as <samp class="codeph apex_code">@see</samp>, <samp class="codeph apex_code">@since</samp>, and
+     <samp class="codeph apex_code"><span class="keyword">@deprecated</span></samp> can also be applicable.</p>
+<p class="p">Here’s an example ApexDoc comment for the public <samp class="codeph apex_code">maxRetries</samp> variable.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Stores the maximum number of retry attempts for an operation.
+ * Defaults to 3 if not explicitly set.
+ * @since 0.1.1
+ */</span>
+<span class="keyword">public</span> <span class="keyword">Integer</span> maxRetries {
+  get {
+    <span class="statement">return</span> maxRetries ?? 3;
+  }
+  set { maxRetries = value; }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Triggers</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers.htm" title="Apex can be invoked by using triggers. Apex triggers enable you to perform custom actions before or after changes to Salesforce records, such as insertions, updates, or deletions.">Apex triggers</a> are event-driven pieces of code that execute in response to
+    specific database operations. Apex trigger definitions provide significant context, so we
+    strongly recommend that you delegate all business logic to a separate handler class or a trigger
+    framework. Therefore, ApexDoc doesn’t have any trigger-specific comment specifications.
+    </p>
+<p class="p">However, you can still include standard ApexDoc tags such as <samp class="codeph apex_code">@since</samp> and <samp class="codeph apex_code">@see</samp>. For
+    example, here’s a ApexDoc comment for the <samp class="codeph apex_code">Opportunity</samp>
+    trigger.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * @since 1.3.2
+ */</span>
+<span class="keyword">trigger</span> OpportunityTrigger on Opportunity (
+  before <span class="statement">insert</span>,
+  after <span class="statement">insert</span>,
+  before <span class="statement">update</span>,
+  after <span class="statement">update</span>,
+  before <span class="statement">delete</span>,
+  after <span class="statement">delete</span>,
+  after <span class="statement">undelete</span>
+) {
+  <span class="keyword">new</span> OpportunityTriggerHandler().run();
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Annotations</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm" title="An Apex annotation modifies the way that a method or class is used, similar to annotations in Java. Annotations are defined with an initial @ symbol, followed by the appropriate keyword.">Apex annotations</a>, such as <samp class="codeph apex_code">@AuraEnabled</samp> and <samp class="codeph apex_code"><span class="keyword">@Future</span></samp>, modify the way a class or method is used by the platform and other code. For
+    an element that has an annotation, document the implications of that annotation for the
+    element’s behavior or usage. </p>
+
+   <p class="p">Refer to this table as you write ApexDoc comments for elements with Apex annotations.</p>
+
+   
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1.  Document Common Apex Annotations</span></caption>
+     
+     
+     <thead class="thead sorted" align="left">
+      <tr>
+       <th class="featureTableHeader  " id="d90233e311">Apex Annotation</th>
+
+       <th class="featureTableHeader  " id="d90233e314">Guidance for the ApexDoc Comment of the Annotated Element</th>
+
+      </tr>
+
+     </thead>
+
+     <tbody class="tbody">
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm"><samp class="codeph nolang">@AuraEnabled</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">If the element is exposed to Lightning components for client-side access, document
+        whether <samp class="codeph apex_code">(cacheable=<span class="keyword">true</span>)</samp>. Describe the implications
+        of this cache setting.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableMethod.htm" title="Use the InvocableMethod annotation to identify methods that can be run as invocable actions."><samp class="codeph nolang">@InvocableMethod</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">If the element is callable from Flow Builder, explain the element’s function as an
+        invocable action. Mention <samp class="codeph apex_code">label</samp> and <samp class="codeph apex_code">description</samp> attributes from the annotation if they provide
+        important context. Use <samp class="codeph nolang">@param</samp> and <samp class="codeph nolang">@return</samp> for the element’s specific input and output
+        structure.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="To identify variables used by invocable methods in custom classes, use the InvocableVariable annotation."><samp class="codeph nolang">@InvocableVariable</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Clarify the variable’s specific role, data type, and any constraints or expectations
+        for the action.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_rest_resource.htm"><samp class="codeph nolang">@RestResource(urlMapping=...)</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Describe the overall resource. Also document the annotated Apex REST methods (<samp class="codeph nolang">@HttpDelete</samp>, <samp class="codeph nolang">@HttpGet</samp>,
+         <samp class="codeph nolang">@HttpPatch,</samp>
+        <samp class="codeph nolang">@HttpPost</samp>, or <samp class="codeph nolang">@HttpPut</samp>) with their specific roles.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_deprecated.htm"><samp class="codeph nolang">@Deprecated</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Include the <samp class="codeph nolang">@deprecated</samp> tag. Explain the reason
+        for the deprecation and specify the recommended alternative.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_future.htm" title="Use the Future annotation to identify methods that run asynchronously. A future method runs when Salesforce has available resources."><samp class="codeph nolang">@Future</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Describe the implications of running the method asynchronously. For example, you can
+        specify whether the method runs in a separate transaction, describe governor limit
+        considerations, and explain callout behavior.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="Use the @IsTest annotation to define classes and methods that only contain code used for testing your app."><samp class="codeph nolang">@IsTest</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">
+        <p class="p">Briefly describe the scenario or functionality being tested. Test documentation is often
+         excluded from public API docs. If <samp class="codeph nolang">seeAllData</samp> is
+          <samp class="codeph nolang">true</samp>, explain why this setting is necessary. If
+          <samp class="codeph nolang">onInstall</samp> is <samp class="codeph nolang">true</samp>, explain why this setting is necessary.</p>
+
+       </td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_ReadOnly.htm"><samp class="codeph nolang">@ReadOnly</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Explain if the element is used for performance with large query sets or specific
+        APIs.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_testsetup.htm" title="Methods defined with the @TestSetup annotation are used for creating common test records that are available for all test methods in the class."><samp class="codeph nolang">@TestSetup</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Describe the common test data being created.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_testvisible.htm"><samp class="codeph nolang">@TestVisible</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Describe the rationale for the element’s annotation. For example, on private or
+        protected member methods or variables, document “Visibility modified for testing
+        purposes.”</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_SuppressWarnings.htm" title="This annotation does nothing in Apex but can be used to provide information to third-party tools."><samp class="codeph nolang">@SuppressWarnings</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Specify the warning that the third-party tool suppresses and briefly explain the
+        rationale for the suppression if it’s not self-evident.</td>
+
+      </tr>
+
+      <tr>
+       <td class="entry" headers="d90233e311" data-title="Apex Annotation"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm"><samp class="codeph nolang">@NamespaceAccessible</samp></a></td>
+
+       <td class="entry" headers="d90233e314" data-title="Guidance for the ApexDoc Comment of the Annotated Element">Clarify if this annotation restricts exposure compared to global access or why this
+        level of access is appropriate.</td>
+
+      </tr>
+
+     </tbody>
+
+    </table></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_format.htm" title="To promote consistency and parsability, ApexDoc comments have a defined structure and syntax. Each ApexDoc comment consists of a main description and a set of block and inline tags that provide information about the documented code element.">ApexDoc Comment Structure and Tags</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_examples.htm" title="See practical examples of ApexDoc comments applied to various Apex constructs.">ApexDoc Examples</a></div></li>
+</ul>
+</div>
+</div>

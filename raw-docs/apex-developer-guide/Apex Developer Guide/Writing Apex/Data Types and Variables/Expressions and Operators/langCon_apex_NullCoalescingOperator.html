@@ -1,0 +1,101 @@
+<a name="langCon_apex_NullCoalescingOperator"><!-- --></a><h1 class="helpHead1">Null Coalescing Operator</h1><div class="body conbody">
+<div class="shortdesc">The <samp class="codeph ">??</samp> operator returns its right-hand side
+        operand when its left-hand side operand is null. Similar to the safe navigation operator
+            (<samp class="codeph ">?.</samp>), the null coalescing operator (<samp class="codeph ">??</samp>) replaces verbose and explicit checks for null references
+        in code. </div>
+
+        <div class="section">
+<p class="p">The null coalescing operator is a binary operator in the form <samp class="codeph ">a ?? b</samp> that returns <samp class="codeph ">a</samp> if <var class="keyword varname">a</var> isn’t null, and otherwise returns
+                    <var class="keyword varname">b</var>. The operator is left-associative. The left-hand operand is
+                evaluated only one time. The right-hand operand is only evaluated if the left-hand
+                operand is null.</p>
+<p class="p">You must ensure type compatibility between the operands. For
+                example, in the expression: <samp class="codeph nolang">objectZ result = objectA ??
+                    objectB</samp>, both <var class="keyword varname">objectA</var> and <var class="keyword varname">objectB</var>
+                must be instances of objectZ to avoid a compile-time error.</p>
+<p class="p">Here’s a
+                comparison that illustrates the operator usage. Before the Null Coalescing Operator,
+                you
+                used:</p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Integer notNullReturnValue = (anInteger != null) ? anInteger : 100;</pre></div>
+<p class="p">With
+                the Null Coalescing Operator,
+                use:</p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Integer notNullReturnValue = anInteger ?? 100;</pre></div>
+<p class="p">While
+                using the null coalescing operator, always keep operator precedence in mind. In some
+                cases, using parentheses is necessary to obtain the desired results. For example,
+                the expression <samp class="codeph nolang">top ?? 100 - bottom ?? 0</samp>
+                evaluates to <samp class="codeph ">top ?? (100 - bottom ?? 0)</samp> and not
+                to <samp class="codeph ">(top ?? 100) - (bottom ?? 0)</samp>.</p>
+<p class="p">Apex
+                supports assignment of a single resultant record from a SOQL query, but throws an
+                exception if there are no rows returned by the query. The null coalescing operator
+                can be used to gracefully deal with the case where the query doesn’t return any
+                rows. If a SOQL query is used as the left-hand operand of the operator and rows are
+                returned, then the null coalescing operator returns the query results. If no rows
+                are returned, the null coalescing operator returns the right-hand operand. </p>
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Salesforce recommends against using multiple SOQL queries in a single
+                statement that also uses the null coalescing operator.</p>
+</div>
+</div></div></div></div>
+<p class="p">These examples work
+                with Account
+            objects.</p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Account defaultAccount = new Account(name = 'Acme');
+// Left operand SOQL is empty, return defaultAccount from right operand:
+Account a = [SELECT Id FROM Account 
+   WHERE Id = '001000000FAKEID'] ?? defaultAccount;
+Assert.areEqual(defaultAccount, a);
+
+</pre></div>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>
+// If there isn't a matching Account or the Billing City is null, replace the value
+string city = [Select BillingCity 
+    From Account 
+    Where Id = '001xx000000001oAAA']?.BillingCity;
+System.debug('Matches count: ' + city?.countMatches('San Francisco') ?? 0 );</pre></div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">There are some restrictions on using the null coalescing operator.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">You can’t use the null coalescing operator as the left side of an assignment
+                    operator in an assignment.<ul class="ul bulletList">
+                        <li class="li"><samp class="codeph apex_code">foo??bar = 42;<span class="onelineComment">// This is not a valid</span>
+                                assignment</samp></li>
+
+                        <li class="li"><samp class="codeph apex_code">foo??bar++; <span class="onelineComment">// This is not a valid</span>
+                                assignment</samp></li>
+
+                    </ul>
+</li>
+
+                <li class="li">SOQL bind expressions don’t support the null coalescing
+                    operator.<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>class X { public String query = 'xyz';} 
+X x = new X(); 
+List&lt;Account&gt; accounts = [SELECT Name FROM Account WHERE Name = :X??query]
+List&lt;List&lt;SObject&gt;&gt; moreAccounts = [FIND :X??query IN ALL FIELDS 
+    RETURNING Account(Name)];</pre></div>
+</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_expressions_operators_precedence.htm" title="Operators are interpreted in order, according to rules.">Operator Precedence</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_single_row.htm" title="SOQL queries can be used to assign a single sObject value when the result list contains only one element.">Using SOQL Queries That Return One Record</a></div></li>
+</ul>
+</div>
+</div>

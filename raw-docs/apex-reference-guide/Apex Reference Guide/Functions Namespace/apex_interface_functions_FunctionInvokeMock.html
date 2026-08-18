@@ -1,0 +1,167 @@
+<a name="apex_interface_functions_FunctionInvokeMock"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FunctionInvokeMock Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use the <samp class="codeph ">FunctionInvokeMock</samp>
+      interface to mock Salesforce Functions responses during testing.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_functions.htm" title="The Functions namespace provides classes and methods used to invoke and manage Salesforce Functions.">functions</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      <p class="p">To mock Salesforce Functions testing, implement an appropriate mock response in the <samp class="codeph ">respond(functionName,payload)</samp> method of the <samp class="codeph ">FunctionInvokeMock</samp> interface. During mock testing of a
+        Salesforce Functions, Apex runtime sends the response specified in the <samp class="codeph ">respond()</samp> method, rather than invoking the function itself.
+        Appropriate success and error messages can be configured with the <samp class="codeph ">createSuccessResponse(invocationId,message)</samp> and <samp class="codeph ">createErrorResponse(invocationId,functionsErrorType,errorMsg)</samp> methods in <samp class="codeph ">Functions.MockFunctionInvocationFactory</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvokeMock.htm#apex_functions_FunctionInvokeMock_methods">FunctionInvokeMock Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvokeMock.htm#apex_interface_functions_FunctionInvokeMock_Example">FunctionInvokeMock Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_functions_FunctionInvokeMock_methods">
+<a name="apex_functions_FunctionInvokeMock_methods"><!-- --></a><h2 class="helpHead2">FunctionInvokeMock Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">FunctionInvokeMock</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvokeMock.htm#apex_functions_FunctionInvokeMock_respond">respond(functionName, payload)</a></strong><br>
+The mock response implemented in the <samp class="codeph ">Functions.FunctionInvokeMock</samp> interface. The response is sent by Apex runtime when       the <samp class="codeph ">Test.setMock()</samp> method is called.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_FunctionInvokeMock_respond">
+<a name="apex_functions_FunctionInvokeMock_respond"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">respond(functionName, payload)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The mock response implemented in the <samp class="codeph ">Functions.FunctionInvokeMock</samp> interface. The response is sent by Apex runtime when
+      the <samp class="codeph ">Test.setMock()</samp> method is called.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> functions.FunctionInvocation respond(<span class="keyword">String</span> functionName,
+          <span class="keyword">String</span> payload)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">functionName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The name of the Salesforce Function and the Functions Project that the Function is
+            part of. The format of the parameter string is “<var class="keyword varname">project
+              name</var>.<var class="keyword varname">function name</var>”.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">payload</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The JSON-format payload data that is passed to the Function.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocation.htm#apex_interface_functions_FunctionInvocation" title="Use FunctionInvocation to get the status and results of a synchronous or asynchronous Function invocation.">FunctionInvocation Interface</a></p>
+<p class="p">The result of the mock call to Salesforce Functions. Appropriate responses can be generated by
+        using the  <samp class="codeph ">createSuccessResponse()</samp> and <samp class="codeph ">createErrorResponse()</samp> methods in the <samp class="codeph ">Functions.MockFunctionInvocationFactory</samp> class.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_functions_FunctionInvokeMock_Example">
+<a name="apex_interface_functions_FunctionInvokeMock_Example"><!-- --></a><h2 class="helpHead2">FunctionInvokeMock Example Implementation</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">This is sample implementation of the <samp class="codeph apex_code">functions.FunctionInvokeMock</samp> interface.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@isTest
+public class FunctionsInvokeMockImpl implements functions.FunctionInvokeMock {
+    public functions.FunctionInvocation respond(String functionName, String payload) {
+       // return mock success response
+       String invocationId = '000000000000000';
+       String response = 'mockResponse';
+       return functions.MockFunctionInvocationFactory.createSuccessResponse(invocationId, response);       
+    }
+}
+</pre></div>
+
+      <p class="p">This example shows the minimal setup required for testing synchronous and asynchronous functions
+        and is simplified to include both function invocations and the <samp class="codeph ">FunctionCallback</samp> class.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@isTest
+public class FunctionTest {
+    @isTest 
+    static void testSyncFunctionCall() {
+            // Set mock class to respond to function invocations
+        	Test.setMock( functions.FunctionInvokeMock.class, new FunctionsInvokeMockInner());
+    
+            functions.Function mockedFunction = functions.Function.get('example.function');
+            
+            Test.startTest();
+            // Synchronous function call
+            functions.FunctionInvocation invokeResult = mockedFunction.invoke('{}');
+            Test.stopTest();
+    
+            // Verify that the received response contains expected mock values
+            System.assertEquals(functions.FunctionInvocationStatus.SUCCESS, invokeResult.getStatus());
+            System.assertEquals('mockResponse', invokeResult.getResponse());
+            System.assertEquals('000000000000000', invokeResult.getInvocationId());
+    
+    
+        }
+    
+        @isTest 
+        static void testAsyncFunctionCall() {
+            // Set mock class to respond to function invocations
+            Test.setMock( functions.FunctionInvokeMock.class, new FunctionsInvokeMockInner());
+            
+            functions.Function mockedFunction = functions.Function.get('example.function2');
+            
+            Test.startTest();
+            //Asynchronous function invocation with callback
+            mockedFunction.invoke('{}', new DemoCallback());
+            Test.stopTest();
+            // Include assertions here about the expected callback processing        
+        }
+        
+         public class DemoCallback implements functions.FunctionCallback {
+            public void handleResponse(functions.FunctionInvocation invokeResult) {
+                // Handle result of function invocation
+                // The callback is included in the example here for convenience
+                // It would normally be defined in the classes being tested
+    
+                // Verify that the received response contains expected mock values
+                System.assertEquals(invokeResult.getStatus(), functions.FunctionInvocationStatus.ERROR);
+                functions.FunctionInvocationError resultError = invokeResult.getError();
+            	System.assertEquals('bang', invokeResult.getError().getMessage());
+            	System.assertEquals('000000000000000', invokeResult.getInvocationId());
+    
+            }
+        }
+    
+        public class FunctionsInvokeMockInner implements functions.FunctionInvokeMock {
+            public functions.FunctionInvocation respond(String functionName, String payload) {
+                // return mock success response
+                String invocationId = '000000000000000'; 
+                
+                if(functionName == 'example.function2') {
+                    return functions.MockFunctionInvocationFactory.createErrorResponse(
+                        invocationId,
+                        functions.FunctionErrorType.FUNCTION_EXCEPTION,
+                        'bang');
+                }
+                
+                String response = 'mockResponse';
+                return functions.MockFunctionInvocationFactory.createSuccessResponse(invocationId, response);       
+            }
+        }
+    
+    
+    }</pre></div>
+</div>
+</div>
+</div>
+</div>

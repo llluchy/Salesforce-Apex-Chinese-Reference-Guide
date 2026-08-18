@@ -1,0 +1,61 @@
+<a name="apex_canvas_EnvironmentContext_getEntityFields"><!-- --></a><h1 class="helpHead1">getEntityFields()</h1><div class="body refbody">
+<div class="shortdesc">Retrieves the list of object fields that are returned in the signed request Record
+        object when the component appears on a Visualforce page that’s placed on an
+        object.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;<span class="keyword">String</span>&gt; getEntityFields()</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+            
+            <p class="p">Type: LIST&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p"><span class="ph" id="canvas_object_association_description"><a name="canvas_object_association_description"><!-- --></a>When you use the <samp class="codeph apex_page"><span class="tag">&lt;apex:canvasApp</span>&gt;</samp> component to display a
+                    canvas app on a Visualforce page, and that page is associated with an object
+                    (placed on the page layout, for example), you can specify fields to be returned
+                    from the related object. See the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/" target="_blank" title="HTML (New Window)">Canvas
+                            Developer Guide</a></cite> for more information on the Record
+                    object.</span></p>
+
+            <p class="p">Use getEntityFields() to retrieve the list of object fields that are returned in the
+                signed request Record object. By default the list of fields includes ID. The list of
+                fields can be configured by using the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_canvas_EnvironmentContext_addEntityField.htm" title="Adds a field to the list of object fields that are returned in the signed request Record object when the component appears on a Visualforce page that’s placed on an object.">Canvas.EnvironmentContext.<samp class="codeph apex_code">addEntityField(fieldName)</samp></a> or <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_canvas_EnvironmentContext_addEntityFields.htm" title="Adds a set of fields to the list of object fields that are returned in the signed request Record object when the component appears on a Visualforce page that’s placed on an object.">Canvas.EnvironmentContext.<samp class="codeph apex_code">addEntityFields(fieldNames)</samp></a> methods.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example gets the current list of object fields and retrieves each item in the
+                list, printing each field name to the debug log.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Canvas.EnvironmentContext env = renderContext.getEnvironmentContext();
+
+List&lt;<span class="keyword">String</span>&gt; entityFields = env.getEntityFields();
+<span class="statement">for</span> (<span class="keyword">String</span> fieldVal : entityFields) {
+    System.debug(<span class="string">'Environment Context entityField: '</span> + fieldVal);
+}</pre></div>
+
+            <div class="p">If the canvas app that’s using this lifecycle code was run from the detail
+                page of an Account, the debug log output might look
+                like:<div class="codeSection nolang"><pre class="codeblock brush:plain">Environment Context entityField: Id</pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

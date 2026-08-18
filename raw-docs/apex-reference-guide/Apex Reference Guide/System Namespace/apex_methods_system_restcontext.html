@@ -1,0 +1,136 @@
+<a name="apex_methods_system_restcontext"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">RestContext Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="RestContextClassDesc"><a name="RestContextClassDesc"><!-- --></a>Contains the <samp class="codeph apex_code">RestRequest</samp> and <samp class="codeph apex_code">RestResponse</samp>
+            objects.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Use the <samp class="codeph apex_code">System.RestContext</samp> class to access
+                the <samp class="codeph apex_code">RestRequest</samp> and <samp class="codeph apex_code">RestResponse</samp> objects in your Apex REST
+                methods.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Sample</h2>
+
+            
+            <p class="p">The following example shows how to use <samp class="codeph apex_code">RestContext</samp> to access the <samp class="codeph apex_code">RestRequest</samp> and <samp class="codeph apex_code">RestResponse</samp>
+                objects in an Apex REST method.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ApexRESTExampleContext"><a name="ApexRESTExampleContext"><!-- --></a><span class="keyword">@RestResource(urlMapping='/MyRestContextExample/*')</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> MyRestContextExample {
+
+    <span class="keyword">@HttpGet</span>
+    <span class="keyword">global</span> <span class="keyword">static</span> Account doGet() {
+        RestRequest req = RestContext.request;
+        RestResponse res = RestContext.response;
+        <span class="keyword">String</span> accountId = req.requestURI.substring(req.requestURI.lastIndexOf(<span class="string">'/'</span>)+1);
+        Account result = [SELECT Id, Name, Phone, Website FROM Account WHERE Id = :accountId WITH USER_MODE];
+        <span class="statement">return</span> result;
+    }
+  
+}</pre></div>
+
+        </div>
+
+    </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_RestContext_Properties">
+<a name="apex_System_RestContext_Properties"><!-- --></a>
+<h2 class="helpHead2">RestContext Properties</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">RestContext</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restcontext.htm#apex_System_RestContext_request">request</a></strong><br>
+Returns the <samp class="codeph apex_code">RestRequest</samp> for your Apex REST   method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restcontext.htm#apex_System_RestContext_response">response</a></strong><br>
+Returns the <samp class="codeph apex_code">RestResponse</samp> for your Apex REST   method.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestContext_request">
+<a name="apex_System_RestContext_request"><!-- --></a>
+ <h3 class="helpHead3">request</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the <samp class="codeph apex_code">RestRequest</samp> for your Apex REST
+  method.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> RestRequest request {get; set;}</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restrequest.htm#apex_methods_system_restrequest" title="Use the System.RestRequest class to access and pass request data in a RESTful Apex method.">System.RestRequest</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_RestContext_response">
+<a name="apex_System_RestContext_response"><!-- --></a>
+ <h3 class="helpHead3">response</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the <samp class="codeph apex_code">RestResponse</samp> for your Apex REST
+  method.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> RestResponse response {get; set;}</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_restresponse.htm#apex_methods_system_restresponse" title="Represents an object used to pass data from an Apex RESTful Web service method to an HTTP response.">System.RestResponse</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+</div>

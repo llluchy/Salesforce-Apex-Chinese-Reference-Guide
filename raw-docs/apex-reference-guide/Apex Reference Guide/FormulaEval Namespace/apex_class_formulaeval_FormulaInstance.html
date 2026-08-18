@@ -1,0 +1,152 @@
+<a name="apex_class_formulaeval_FormulaInstance"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FormulaInstance Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains a method to evaluate the formula instance.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_formulaeval.htm" title="The FormulaEval namespace provides classes and methods to evaluate dynamic formulas for SObjects and Apex objects. Use the methods to avoid unnecessary DML statements to recalculate formula field values or evaluate dynamic formula expressions.">FormulaEval</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>global class MotorYacht {
+   global Integer lengthInYards;
+   global Integer numOfGuestCabins;
+   global String name;
+   global Account owner;
+}</pre></div>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>
+MotorYacht aBoat = new MotorYacht();
+aBoat.lengthInYards = 52; 
+aBoat.numOfGuestCabins = 4;
+aBoat.name = 'RV Foo';
+FormulaEval.FormulaInstance isItSuper = Formula.builder()
+                            .withReturnType(FormulaEval.FormulaReturnType.STRING)
+                            .withType(MotorYacht.class)
+                            .withFormula('IF(lengthInYards &lt; 100, "Not Super", "Super")')
+                            .build();
+isItSuper.evaluate(aBoat); //=&gt; "Not Super"
+
+aBoat.owner = new Account(Name='Acme Watercraft', Site='New York');
+FormulaEval.FormulaInstance ownerDetails = Formula.builder()
+                            .withReturnType(FormulaEval.FormulaReturnType.STRING)
+                            .withType(MotorYacht.class)
+                            .withFormula('owner.Name &amp; " (" &amp; owner.Site &amp; ")"')
+                            .build();
+ownerDetails.evaluate(aBoat); //=&gt; "Acme Watercraft (New York)"
+</pre></div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p"> The context type in the <samp class="codeph ">withType</samp> method must be a global,
+        user-defined Apex class. Any fields or properties that the formula references must also be
+        global.</p>
+</div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaInstance.htm#apex_formulaeval_FormulaInstance_methods">FormulaInstance Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_formulaeval_FormulaInstance_methods">
+<a name="apex_formulaeval_FormulaInstance_methods"><!-- --></a><h2 class="helpHead2">FormulaInstance Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">FormulaInstance</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaInstance.htm#apex_formulaeval_FormulaInstance_evaluate">evaluate(contextObject)</a></strong><br>
+Calculates the formula expression and returns the formula output.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_formulaeval_FormulaInstance.htm#apex_formulaeval_FormulaInstance_getReferencedFields">getReferencedFields()</a></strong><br>
+Returns a set of strings that denote the field names referenced in a formula.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_formulaeval_FormulaInstance_evaluate">
+<a name="apex_formulaeval_FormulaInstance_evaluate"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">evaluate(contextObject)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Calculates the formula expression and returns the formula output.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object evaluate(Object contextObject)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">contextObject</var></strong>: Type: Object An instance of the Apex class as generated with the <samp class="codeph apex_code">FormulaBuilder.builder()</samp> method.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: </p>
+<p class="p">Object Apex type that corresponds to the Apex class as configured by the <samp class="codeph apex_code">withType()</samp> method in the <samp class="codeph apex_code">FormulaBuilder</samp>
+        class.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_formulaeval_FormulaInstance_getReferencedFields">
+<a name="apex_formulaeval_FormulaInstance_getReferencedFields"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getReferencedFields()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a set of strings that denote the field names referenced in a formula.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public Set&lt;String&gt; getReferencedFields()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">A formula is built and evaluated in the context of the current namespace of the subscriber
+        org. If you package a formula that references fields, the fields must be fully qualified
+        with the namespace name.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>FormulaEval.FormulaInstance ff = Formula.builder()
+                                 .withType(Schema.Account.class)
+                                 .withReturnType(FormulaEval.FormulaReturnType.STRING)
+                                 .withFormula('name &amp; website')
+                                 .build();
+		 
+// Returns the field names 'name', and 'website' required to process the formula
+Set&lt;String&gt; fieldNames = ff.getReferencedFields(); 
+		 
+// Use the list of field names to generate dynamic soql
+String queryStr = 'select ' + string.join(fieldNames, ', ') + ' from Account limit 1'; 
+List&lt;sObject&gt; accounts = Database.query(queryStr);
+string formulaOutput = (string)ff.evaluate(accounts[0]);
+System.debug(formulaOutput);</pre></div>
+</div>
+
+  </div>
+</div>
+</div>
+</div>

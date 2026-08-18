@@ -1,0 +1,262 @@
+<a name="apex_chattermessage_triggers"><!-- --></a><h1 class="helpHead1">Moderate Chatter Private Messages with Triggers</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Write a trigger for ChatterMessage to automate the moderation of
+      private messages in an org or Experience Cloud site. Use triggers to ensure that messages
+      conform to your company’s messaging policies and don’t contain blocklisted
+    words.</span></div>
+
+  <div class="section">
+      
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+          <tbody class="tbody">
+            <tr>
+<td class="subHead">Available in: Salesforce Classic</td>
+</tr>
+
+            <tr>
+              <td class="subHead">Available in: <span class="ph" id="Chatter_message_trigger_editions_text"><a name="Chatter_message_trigger_editions_text"><!-- --></a><strong class="ph b">Enterprise</strong>,
+                    <strong class="ph b">Performance</strong>, <strong class="ph b">Unlimited</strong>, and <strong class="ph b">Developer</strong> Editions</span>
+</td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+<br>
+</div>
+
+      
+<div class="data colSort"><table class="permTable sort_table" border="0" summary="Permissions needed for the documented functionality" width="100%">
+          
+          
+          <tbody class="tbody">
+            <tr>
+              <td class="permRowLeft">User permissions needed to save Apex triggers for ChatterMessage:</td>
+
+              <td class="permRowRight">Author Apex <p class="p">AND</p>
+<p class="p">Manage Chatter Messages and
+                  Direct Messages</p>
+</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p" id="write_trigger"><a name="write_trigger"><!-- --></a>Write an Apex <em class="ph i">before insert</em> trigger to review the private message
+        body and information about the sender. You can add validation messages to the record or the
+        Body field, which causes the message to fail and an error to be returned to the user.</p>
+
+      <p class="p" id="trigger_after_limitation"><a name="trigger_after_limitation"><!-- --></a>Although you can create an <em class="ph i">after insert</em> trigger,
+        ChatterMessage is not updatable, and consequently any <em class="ph i">after insert</em> trigger that
+        modifies ChatterMessage will fail at run time with an appropriate error message.</p>
+
+      <p class="p"><span class="ph" id="chattermessage_trigger_create"><a name="chattermessage_trigger_create"><!-- --></a>To create a trigger for private messages from Setup, enter <kbd class="ph userinput">ChatterMessage Triggers</kbd> in the <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">ChatterMessage Triggers</strong>. Alternatively, you can create a trigger from the Developer Console by
+          clicking <span class="ph menucascade"><strong class="ph uicontrol">File</strong> | <strong class="ph uicontrol">New</strong> | <strong class="ph uicontrol">Apex Trigger</strong></span> and selecting ChatterMessage from the <strong class="ph uicontrol">sObject</strong>
+          drop-down list.</span></p>
+
+      <p class="p" id="chattermessage_fields"><a name="chattermessage_fields"><!-- --></a>This table lists the fields that are exposed on
+        ChatterMessage.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Available Fields in ChatterMessage</span></caption>
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d100770e164">Field</th>
+
+              <th class="featureTableHeader  " id="d100770e167">Apex Data Type</th>
+
+              <th class="featureTableHeader  " id="d100770e170">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d100770e164" data-title="Field">Id</td>
+
+              <td class="entry" headers="d100770e167" data-title="Apex Data Type">ID</td>
+
+              <td class="entry" headers="d100770e170" data-title="Description">Unique identifier for the Chatter message</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d100770e164" data-title="Field">Body</td>
+
+              <td class="entry" headers="d100770e167" data-title="Apex Data Type">String</td>
+
+              <td class="entry" headers="d100770e170" data-title="Description">Body of the Chatter message as posted by the sender</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d100770e164" data-title="Field">SenderId</td>
+
+              <td class="entry" headers="d100770e167" data-title="Apex Data Type">ID</td>
+
+              <td class="entry" headers="d100770e170" data-title="Description">User ID of the sender</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d100770e164" data-title="Field">SentDate</td>
+
+              <td class="entry" headers="d100770e167" data-title="Apex Data Type">DateTime</td>
+
+              <td class="entry" headers="d100770e170" data-title="Description">Date and time that the message was sent</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d100770e164" data-title="Field">SendingNetworkId</td>
+
+              <td class="entry" headers="d100770e167" data-title="Apex Data Type">ID</td>
+
+              <td class="entry" headers="d100770e170" data-title="Description">Network (site) in which the message was sent. <p class="p">This field is visible only if
+                  digital experiences is enabled and Private Messages is enabled in at least one
+                  site. </p>
+</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p">This example shows a <em class="ph i">before insert</em> trigger on ChatterMessage that is used to review
+        each new message. This trigger calls a class method, <samp class="codeph apex_code">moderator.review()</samp>, to review each new message before it is inserted.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> PrivateMessageModerationTrigger on ChatterMessage (before <span class="statement">insert</span>) {
+    ChatterMessage[] messages = Trigger.<span class="keyword">new</span>;
+    
+    <span class="onelineComment">// Instantiate the Message Moderator using the factory method</span>
+    MessageModerator moderator = MessageModerator.getInstance();
+    
+    <span class="statement">for</span> (ChatterMessage currentMessage : messages) {
+        moderator.review(currentMessage);    
+    }
+}</pre></div>
+
+      <p class="p">If a message violates your policy, for example when the message body contains blocklisted
+        words, you can prevent the message from being sent by calling the Apex <samp class="codeph apex_code">addError</samp> method. You can call <samp class="codeph apex_code">addError</samp> to add a custom error message on a field or on
+        the entire message. The following snippet shows a portion of the <samp class="codeph apex_code">reviewContent</samp> method that adds an error to the message
+          <span class="keyword parmname">Body</span> field.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">          <span class="statement">if</span> (proposedMsg.contains(nextBlockListedWord)) {
+             theMessage.Body.addError(
+                 <span class="string">'This message does not conform to the acceptable use policy'</span>);
+             System.debug(<span class="string">'moderation flagged message with word: '</span> 
+                 + nextBlockListedWord);
+             problemsFound=<span class="keyword">true</span>;
+             <span class="statement">break</span>;
+          }</pre></div>
+
+      <p class="p">The following is the full <samp class="codeph apex_code">MessageModerator</samp> class,
+        which contains methods for reviewing the sender and the content of messages. Part of the
+        code in this class has been deleted for brevity.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MessageModerator {
+   <span class="keyword">private</span> Static List&lt;<span class="keyword">String</span>&gt; blocklistedWords=<span class="keyword">null</span>;
+   <span class="keyword">private</span> Static MessageModerator instance=<span class="keyword">null</span>;
+   
+   <span class="multilineComment">/**
+     Overall review includes checking the content of the message,
+     and validating that the sender is allowed to send messages.
+   **/</span>
+   <span class="keyword">public</span> <span class="keyword">void</span> review(ChatterMessage theMessage) {
+    reviewContent(theMessage);
+    reviewSender(theMessage);
+   }
+   
+   <span class="multilineComment">/**
+     This method is used to review the content of the message. If the content
+     is unacceptable, field level error(s) are added.
+   **/</span>
+   <span class="keyword">public</span> <span class="keyword">void</span> reviewContent(ChatterMessage theMessage) {
+      <span class="onelineComment">// Forcing to lower case for matching</span>
+      <span class="keyword">String</span> proposedMsg=theMessage.Body.toLowerCase();  
+      boolean problemsFound=<span class="keyword">false</span>; <span class="onelineComment">// Assume it's acceptable</span>
+      <span class="onelineComment">// Iterate through the blocklist looking for matches</span>
+      <span class="statement">for</span> (<span class="keyword">String</span> nextBlockListedWord : blocklistedWords) {
+          <span class="statement">if</span> (proposedMsg.contains(nextBlockListedWord)) {
+             theMessage.Body.addError(
+                 <span class="string">'This message does not conform to the acceptable use policy'</span>);
+             System.debug(<span class="string">'moderation flagged message with word: '</span> 
+                 + nextBlockListedWord);
+             problemsFound=<span class="keyword">true</span>;
+             <span class="statement">break</span>;
+          }
+         }
+         
+       <span class="onelineComment">// For demo purposes, we're going to add a "seal of approval" to the </span>
+       <span class="onelineComment">// message body which is visible.</span>
+       <span class="statement">if</span> (!problemsFound) {
+         theMessage.Body = theMessage.Body + 
+             <span class="string">' *** approved, meets conduct guidelines'</span>;
+       }
+         
+    }
+   
+   <span class="multilineComment">/**
+     Is the sender allowed to send messages in this context?
+     -- Moderators -- always allowed to send
+     -- Internal Members -- always allowed to send
+     -- Site Members -- in general only allowed to send if they have 
+           a sufficient Reputation
+     -- Site Members -- with insufficient reputation may message the 
+           moderator(s)
+   **/</span>
+   <span class="keyword">public</span> <span class="keyword">void</span> reviewSender(ChatterMessage theMessage) {
+      <span class="onelineComment">// Are we in a Site Context?</span>
+      boolean isSiteContext = (theMessage.SendingNetworkId != <span class="keyword">null</span>);
+ 
+      <span class="onelineComment">// Get the User</span>
+      User sendingUser = [SELECT Id, Name, UserType, IsPortalEnabled 
+                          FROM User where Id = :theMessage.SenderId ];  
+      <span class="onelineComment">// ...          </span>
+   }   
+   
+   <span class="multilineComment">/**
+     Enforce a singleton pattern to improve performance
+   **/</span>
+   <span class="keyword">public</span> <span class="keyword">static</span> MessageModerator getInstance() {
+     <span class="statement">if</span> (instance==<span class="keyword">null</span>) {
+        instance = <span class="keyword">new</span> MessageModerator();
+     }
+     <span class="statement">return</span> instance;
+   }
+   
+
+   <span class="multilineComment">/**
+     Default contructor is private to prevent others from instantiating this class 
+     without using the factory.
+     Initializes the static members.
+   **/</span>
+   <span class="keyword">private</span> MessageModerator() {
+      initializeBlockList();
+   }
+   <span class="multilineComment">/** 
+     Helper method that does the "heavy lifting" to load up the dictionaries 
+     from the database.  
+     Should only run once to initialize the static member which is used for 
+     subsequent validations.
+   **/</span>
+   <span class="keyword">private</span> <span class="keyword">void</span> initializeBlockList() {
+      <span class="statement">if</span> (blocklistedWords==<span class="keyword">null</span>) {
+          <span class="onelineComment">// Fill list of blocklisted words</span>
+          <span class="onelineComment">// ...</span>
+      }
+   }
+}</pre></div>
+
+    </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

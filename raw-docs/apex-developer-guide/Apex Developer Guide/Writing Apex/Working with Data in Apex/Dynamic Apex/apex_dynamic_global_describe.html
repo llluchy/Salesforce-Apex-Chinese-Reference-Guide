@@ -1,0 +1,49 @@
+<a name="apex_dynamic_global_describe"><!-- --></a><h1 class="helpHead1">Accessing All sObjects</h1><div class="body conbody">
+<p class="p">Use the Schema <samp class="codeph apex_code">getGlobalDescribe</samp> method to return a map that represents the relationship between
+all sObject names (keys) to sObject tokens (values). For example:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, Schema.SObjectType&gt; gd = Schema.getGlobalDescribe(); </pre></div>
+
+<p class="p">The map has the following characteristics:</p>
+
+<ul class="ul bulletList">
+<li class="li">It is dynamic, that is, it is generated at runtime on the sObjects
+currently available for the organization, based on permissions.</li>
+
+<li class="li">The sObject names are case insensitive.</li>
+
+<li class="li">The keys are prefixed with the namespace, if any.<sup class="ph sup">*</sup>
+</li>
+
+<li class="li">The keys reflect whether the sObject is a custom object.</li>
+
+</ul>
+
+<p class="p"><sup class="ph sup">*</sup> Starting with Apex saved using Salesforce API version 28.0, the keys in the map that
+<samp class="codeph apex_code">getGlobalDescribe</samp> returns are always prefixed with the
+namespace, if any, of the code in which it is running. For example, if the code block that makes the
+<samp class="codeph apex_code">getGlobalDescribe</samp> call is in namespace NS1, and a custom
+object named MyObject__c is in the same namespace, the key returned is <samp class="codeph apex_code">NS1__MyObject__c</samp>. For Apex saved using earlier API versions, the
+key contains the namespace only if the namespace of the code block and the namespace of the sObject
+are different. For example, if the code block that generates the map is in namespace N1, and an
+sObject is also in N1, the key in the map is represented as <samp class="codeph apex_code">MyObject__c</samp>. However, if the code block is in namespace N1, and the sObject is in
+namespace N2, the key is <samp class="codeph apex_code">N2__MyObject__c</samp>. </p>
+
+<p class="p">Standard sObjects have no namespace prefix.</p>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If the <samp class="codeph apex_code">getGlobalDescribe</samp> method is called from an installed managed package, it returns sObject
+names and tokens for Chatter sObjects, such as NewsFeed and UserProfileFeed,
+even if Chatter is not enabled in the installing organization. This
+is not true if the <samp class="codeph apex_code">getGlobalDescribe</samp> method is called from a class not within an installed managed package.</p>
+</div>
+</div></div></div></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_describeTabs.htm" title="Describing Tabs Using Schema Methods">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_data_categories.htm" title="Accessing All Data Categories Associated with an sObject">Next →</a></li>
+</ul></div>
+</div>

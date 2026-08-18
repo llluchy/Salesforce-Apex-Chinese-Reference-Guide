@@ -1,0 +1,79 @@
+<a name="apex_classes_keywords_instanceof"><!-- --></a><h1 class="helpHead1">Using the  instanceof Keyword</h1><div class="body">
+        <p class="p">If you need to verify at run time whether an object is actually an instance of a
+            particular class, use the <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> keyword.
+            The <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> keyword can only be used to
+            verify if the target type in the expression on the right of the keyword is a viable
+            alternative for the declared type of the expression on the left. </p>
+
+        <div class="p">You could add the following check to the <samp class="codeph apex_code">Report</samp>
+            class in the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_casting.htm" title="In general, all type information is available at run time. This means that Apex enables casting, that is, a data type of one class can be assigned to a data type of another class, but only if one class is a subclass of the other class. Use casting when you want to convert an object from one data type to another.">classes and
+                casting example</a> before you cast the item back into a <samp class="codeph apex_code">CustomReport</samp>
+            object.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (Reports.get(0) <span class="statement">instanceof</span> CustomReport) {
+    <span class="onelineComment">// Can safely cast it back to a custom report object</span>
+   CustomReport c = (CustomReport) Reports.get(0);
+   } <span class="statement">else</span> {
+   <span class="onelineComment">// Do something with the non-custom-report.</span>
+}</pre></div>
+</div>
+
+        <div class="section" id="section_ifq_pb5_lcc">
+<a name="section_ifq_pb5_lcc"><!-- --></a><h2 class="helpHead2">Implementation Considerations</h2>
+
+            
+            <p class="p">Keep these considerations in mind while using the <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> keyword. </p>
+
+            <a name="ul_l4x_rb5_lcc"><!-- --></a><ul class="ul bulletList" id="ul_l4x_rb5_lcc">
+                <li class="li">If the declared type on the left of the expression using the <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> keyword is always an instance of
+                    the target type, compilation fails. An example expression that’s always true and
+                    therefore causes a compilation
+                    error.<div class="codeSection nolang"><pre class="codeblock brush:plain">Account acc = new Account();
+if(acc instanceOf Account) {
+     //condition is always true since an instance of Account is always an instance of Account
+}
+</pre></div>
+</li>
+
+                <li class="li">When you perform <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> checks,
+                    implicit type casting from String to ID can result in unexpected behavior if the
+                    String meets the requirements to be cast to an ID.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section" id="section_nvn_j15_lcc">
+<a name="section_nvn_j15_lcc"><!-- --></a><h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 60.0 and later, if a <samp class="codeph ">List</samp> data type
+                implements the <samp class="codeph ">Iterable</samp> data type, compilation
+                fails. An example <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> expression
+                that causes a compilation error.</p>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">public class BaseClass {}
+public class SubClass extends BaseClass {}
+
+List&lt;SubClass&gt; subClasses = new List&lt;SubClass&gt;();
+if(subClasses instanceof Iterable&lt;BaseClass&gt;) {
+    //condition is always true since an instance of SubClass is always an instance of BaseClass
+}
+</pre></div>
+
+            <p class="p">In API version 32.0 and later, <samp class="codeph apex_code"><span class="statement">instanceof</span></samp>
+                returns <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the left operand is a null
+                object. In API version 31.0 and earlier, <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> returns true in this case. For example, the code sample
+                returns <samp class="codeph apex_code"><span class="keyword">false</span></samp> in API version 32.0 and
+                later.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_dkf_v15_lcc"><a name="codeblock_dkf_v15_lcc"><!-- --></a><span class="keyword">Object</span> o = <span class="keyword">null</span>;
+<span class="keyword">Boolean</span> result = o <span class="statement">instanceof</span> Account;
+System.assertEquals(<span class="keyword">false</span>, result);</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_final.htm" title="Using the final Keyword">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_super.htm" title="Using the super Keyword">Next →</a></li>
+</ul></div>
+</div>

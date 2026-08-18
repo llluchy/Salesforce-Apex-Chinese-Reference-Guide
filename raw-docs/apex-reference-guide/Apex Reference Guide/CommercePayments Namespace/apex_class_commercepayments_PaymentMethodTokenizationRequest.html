@@ -1,0 +1,311 @@
+<a name="apex_class_commercepayments_PaymentMethodTokenizationRequest"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">PaymentMethodTokenizationRequest Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores data about a request to tokenize a card payment method. The
+            tokenization process occurs in the payment gateway. This process replaces sensitive
+            customer data, such as a card number or CVV, with unique identification symbols. The
+            symbols are used while the data is handled by Salesforce, the payment gateway, and the
+            customer bank, allowing Salesforce to store the token without storing sensitive customer
+            data.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">
+<p class="p">The constructor of this class takes no arguments. For
+                example:</p>
+<samp class="codeph apex_code">CommercePayments.PaymentMethodTokenizationRequest pmtr = <span class="keyword">new</span>
+                CommercePayments.PaymentMethodTokenizationRequest();</samp><p class="p">This class holds all
+                the required details about the tokenize request. Gateway adapters read the
+                information in this class while constructing a tokenization JSON request, which is
+                sent to the payment gateway.</p>
+</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following code is used within your payment gateway adapter Apex class.</p>
+
+            <div class="p">Use the <samp class="codeph nolang">GatewayResponse</samp> class's
+                    <samp class="codeph apex_code">processRequest</samp> method to build responses based on the request
+                type that it receives from an instance of <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentGatewayContext.htm#apex_class_commerce_payments_PaymentGatewayContext" title="Wraps the information related to a payment request.">PaymentGatewayContext</a></samp>. If the request type is Tokenize,
+                        <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_commercepayments_GatewayResponse.htm#apex_interface_commerce_payments_GatewayResponse" title="Generic payment gateway response interface. This class extends the CaptureResponse, AbstractTransactionResponse, and AbstractResponse classes and inherits all their properties. It has no unique methods or parameters.">GatewayResponse</a></samp> calls the
+                    <samp class="codeph apex_code">createTokenizeResponse</samp> method and passes an instance of the
+                    <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> class. The passed
+                    <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> object contains the address
+                and cardPaymentMethod information that the payment gateway needs to manage the
+                tokenization process. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+         commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+         commercepayments.GatewayResponse response;
+         <span class="statement">try</span>
+         {
+             <span class="statement">if</span> (requestType == commercepayments.RequestType.Tokenize) {
+                     response = createTokenizeResponse((commercepayments.PaymentMethodTokenizationRequest)gatewayContext.getPaymentRequest());
+             }
+             <span class="onelineComment">//Add other else if statements for different request types as needed.</span>
+             <span class="statement">return</span> response;
+         }
+         <span class="statement">catch</span>(SalesforceValidationException e)
+         {
+              commercepayments.GatewayErrorResponse error = <span class="keyword">new</span> commercepayments.GatewayErrorResponse(<span class="string">'400'</span>, e.getMessage());
+              <span class="statement">return</span> error;
+         }
+     }
+ </pre></div>
+</div>
+
+            <p class="p">Configure the <samp class="codeph apex_code">createTokenizeResponse</samp> method to accept an instance of
+                    <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp>. Then, build an instance of
+                    <samp class="codeph apex_code">PaymentMethodTokenizationResponse</samp> based on the values received
+                from the payment gateway.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">     <span class="keyword">public</span> commercepayments.GatewayResponse createTokenizeResponse(commercepayments.PaymentMethodTokenizationRequest tokenizeRequest) {
+         commercepayments.PaymentMethodTokenizationResponse tokenizeResponse = <span class="keyword">new</span> commercepayments.PaymentMethodTokenizationResponse();
+         tokenizeResponse.setGatewayTokenEncrypted(encryptedValue);
+         tokenizeResponse.setGatewayTokenDetails(tokenDetails);
+         tokenizeResponse.setGatewayAvsCode(avsCode);
+         tokenizeResponse.setGatewayMessage(gatewayMessage);
+         tokenizeResponse.setGatewayResultCode(resultcode);
+         tokenizeResponse.setGatewayResultCodeDescription(resultCodeDescription);
+         tokenizeResponse.setSalesforceResultCodeInfo(resultCodeInfo);
+         tokenizeResponse.setGatewayDate(system.now());
+         <span class="statement">return</span> tokenizeResponse;
+     }</pre></div>
+
+            <p class="p">The <samp class="codeph apex_code">tokenizeResponse</samp> contains the results of the gateway's
+                tokenization process, and if successful, the tokenized value.</p>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_constructors">PaymentMethodTokenizationRequest Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_properties">PaymentMethodTokenizationRequest Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_methods">PaymentMethodTokenizationRequest Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_constructors">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_constructors"><!-- --></a><h2 class="helpHead2">PaymentMethodTokenizationRequest Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_ctor">PaymentMethodTokenizationRequest(paymentGatewayId)</a></strong><br>
+Payment gateway ID constructor used with <samp class="codeph apex_code">paymentMethodTokenizationRequest</samp>. This constructor is       intended for test usage and throws an exception if used outside of the Apex test     context.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_ctor_2">PaymentMethodTokenizationRequest()</a></strong><br>
+The       following are constructors for <samp class="codeph nolang">PaymentMethodTokenizationRequest</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_ctor">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_ctor"><!-- --></a><h3 class="helpHead3">PaymentMethodTokenizationRequest(paymentGatewayId)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Payment gateway ID constructor used with <samp class="codeph apex_code">paymentMethodTokenizationRequest</samp>. This constructor is
+      intended for test usage and throws an exception if used outside of the Apex test
+    context.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> PaymentMethodTokenizationRequest(<span class="keyword">String</span>
+          paymentGatewayId)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">paymentGatewayId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The payment method’s payment gateway ID that will be tokenized.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_ctor_2">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_ctor_2"><!-- --></a><h3 class="helpHead3">PaymentMethodTokenizationRequest()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The
+      following are constructors for <samp class="codeph nolang">PaymentMethodTokenizationRequest</samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> PaymentMethodTokenizationRequest()</samp></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_properties">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_properties"><!-- --></a><h2 class="helpHead2">PaymentMethodTokenizationRequest Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_address">address</a></strong><br>
+The card payment method address to be tokenized.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_bankPaymentMethod">bankPaymentMethod</a></strong><br>
+The bank payment method containing data to be     tokenized.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_cardPaymentMethod">cardPaymentMethod</a></strong><br>
+The card payment method containing data to be     tokenized.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_savedByMerchant">savedByMerchant</a></strong><br>
+Indicates whether the payment method to be tokenized is saved by the marchant         (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_address">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_address"><!-- --></a><h3 class="helpHead3">address</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The card payment method address to be tokenized.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> commercepayments.AddressRequest address {get;
+          set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AddressRequest.htm#apex_class_commercepayments_AddressRequest" title="Contains address request data that is sent to a gateway adapter during a service call.">AddressRequest</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_bankPaymentMethod">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_bankPaymentMethod"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">bankPaymentMethod</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The bank payment method containing data to be
+    tokenized.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public commercepayments.BankPaymentMethodRequest bankPaymentMethod {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_BankPaymentMethodRequest.htm#apex_class_commercepayments_BankPaymentMethodRequest" title="Sends data related to a bank payment method to a gateway adapter during a service call.">BankPaymentMethodRequest</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_cardPaymentMethod">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_cardPaymentMethod"><!-- --></a><h3 class="helpHead3">cardPaymentMethod</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The card payment method containing data to be
+    tokenized.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> commercepayments.CardPaymentMethodRequest cardPaymentMethod
+          {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CardPaymentMethodRequest.htm#apex_class_commercepayments_CardPaymentMethodRequest" title="Sends data related to a card payment method to a gateway adapter during a service call.">CardPaymentMethodRequest</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_savedByMerchant">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_savedByMerchant"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">savedByMerchant</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the payment method to be tokenized is saved by the marchant
+        (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean savedByMerchant {get; set;}</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_methods">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_methods"><!-- --></a><h2 class="helpHead2">PaymentMethodTokenizationRequest Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_equals">equals(obj)</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> by determining the equality       of external objects in a list. This method is dynamic and is based on the equals method in       Java.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_hashCode">hashCode()</a></strong><br>
+Maintains the integrity of lists of type <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> by determining the       uniquness of the external object records in a list.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_PaymentMethodTokenizationRequest.htm#apex_commercepayments_PaymentMethodTokenizationRequest_toString">toString()</a></strong><br>
+Converts a date to a string.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_equals">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_equals"><!-- --></a><h3 class="helpHead3">equals(obj)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> by determining the equality
+      of external objects in a list. This method is dynamic and is based on the equals method in
+      Java.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Boolean</span> equals(<span class="keyword">Object</span> obj)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">obj</var></strong>:<p class="p">Type: </p>
+<p class="p">Object External object whose key is to be validated.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_hashCode">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_hashCode"><!-- --></a><h3 class="helpHead3">hashCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Maintains the integrity of lists of type <samp class="codeph apex_code">PaymentMethodTokenizationRequest</samp> by determining the
+      uniquness of the external object records in a list.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">Integer</span> hashCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_PaymentMethodTokenizationRequest_toString">
+<a name="apex_commercepayments_PaymentMethodTokenizationRequest_toString"><!-- --></a><h3 class="helpHead3">toString()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Converts a date to a string.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

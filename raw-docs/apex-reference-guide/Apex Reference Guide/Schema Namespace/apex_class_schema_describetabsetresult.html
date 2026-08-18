@@ -1,0 +1,269 @@
+<a name="apex_class_schema_describetabsetresult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">DescribeTabSetResult Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Contains metadata information about a Salesforce Classic standard or
+            custom app available in the Salesforce user interface.</span></div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Schema.htm" title="The Schema namespace provides classes and methods for schema metadata information.">Schema</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">The <samp class="codeph apex_code">Schema.describeTabs</samp> method returns a list of <samp class="codeph apex_code">Schema.DescribeTabSetResult</samp> objects that
+                describe Salesforce Classic standard and custom apps.</p>
+<p class="p">The methods in the <samp class="codeph apex_code">Schema.DescribeTabSetResult</samp> class
+can be called using their property counterparts. For each method starting
+with <samp class="codeph nolang">get</samp>, you can omit the <samp class="codeph nolang">get</samp> prefix and the ending parentheses <samp class="codeph nolang">()</samp> to call the property counterpart.
+For example, <samp class="codeph apex_code">tabSetResultObj.label</samp> is equivalent to <samp class="codeph apex_code">tabSetResultObj.getLabel()</samp>. Similarly, for each method starting with <samp class="codeph nolang">is</samp>, omit the <samp class="codeph nolang">is</samp> prefix
+and the ending parentheses <samp class="codeph nolang">()</samp>. For example, <samp class="codeph apex_code">tabSetResultObj.isSelected</samp> is equivalent to <samp class="codeph apex_code">tabSetResultObj.selected</samp>.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">This example shows how to call the <samp class="codeph apex_code">Schema.describeTabs</samp>
+                method to get describe information for all available Salesforce Classic apps. This
+                example iterates through each describe result and gets more metadata information for
+                the Sales app.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// App we're interested to get more info about</span>
+<span class="keyword">String</span> appName = <span class="string">'Sales'</span>;
+
+<span class="onelineComment">// Get tab set describes for each app</span>
+List&lt;Schema.DescribeTabSetResult&gt; tabSetDesc = Schema.describeTabs();
+
+<span class="onelineComment">// Iterate through each tab set describe for each app and display the info</span>
+<span class="statement">for</span>(Schema.DescribeTabSetResult tsr : tabSetDesc) {
+    <span class="onelineComment">// Get more information for the Sales app            </span>
+    <span class="statement">if</span> (tsr.getLabel() == appName) {
+        <span class="onelineComment">// Find out if the app is selected</span>
+        <span class="statement">if</span> (tsr.isSelected()) {
+            System.debug(<span class="string">'The '</span> + appName + <span class="string">' app is selected. '</span>);
+        }
+        <span class="onelineComment">// Get the app's Logo URL and namespace</span>
+        <span class="keyword">String</span> logo = tsr.getLogoUrl();
+        System.debug(<span class="string">'Logo URL: '</span> + logo);
+        <span class="keyword">String</span> ns = tsr.getNamespace();
+        <span class="statement">if</span> (ns == <span class="string">''</span>) {
+            System.debug(<span class="string">'The '</span> + appName + <span class="string">' app has no namespace defined.'</span>);
+        }
+        <span class="statement">else</span> {
+            System.debug(<span class="string">'Namespace: '</span> + ns);
+        }
+        <span class="onelineComment">// Get the number of tabs</span>
+        System.debug(<span class="string">'The '</span> + appName + <span class="string">' app has '</span> + tsr.getTabs().size() + <span class="string">' tabs.'</span>);
+    }            
+}
+
+<span class="onelineComment">// Example debug statement output</span>
+<span class="onelineComment">// DEBUG|The Sales app is selected.</span>
+<span class="onelineComment">// DEBUG|Logo URL: https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/img/seasonLogos/2014_winter_aloha.png
+<span class="onelineComment">// DEBUG|The Sales app has no namespace defined.</span>
+<span class="onelineComment">// DEBUG|The Sales app has 14 tabs.</span></pre></div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_methods">
+<a name="apex_Schema_DescribeTabSetResult_methods"><!-- --></a>
+<h2 class="helpHead2">DescribeTabSetResult Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DescribeTabSetResult</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_getDescription">getDescription()</a></strong><br>
+Returns the display description for the standard or custom   app.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_getLabel">getLabel()</a></strong><br>
+Returns the display label for the standard or custom app.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_getLogoUrl">getLogoUrl()</a></strong><br>
+Returns a fully qualified URL to the logo image associated with the standard or custom app.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_getNamespace">getNamespace()</a></strong><br>
+Returns the developer namespace prefix of a Salesforce AppExchange managed package.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_getTabs">getTabs()</a></strong><br>
+Returns metadata information about the standard or custom app’s displayed tabs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabsetresult.htm#apex_Schema_DescribeTabSetResult_isSelected">isSelected()</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this standard or custom app is   the user’s currently selected app in Salesforce Classic. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_getDescription">
+<a name="apex_Schema_DescribeTabSetResult_getDescription"><!-- --></a>
+ <h3 class="helpHead3">getDescription()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the display description for the standard or custom
+  app.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDescription()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_getLabel">
+<a name="apex_Schema_DescribeTabSetResult_getLabel"><!-- --></a>
+<h3 class="helpHead3">getLabel()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the display label for the standard or custom app.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLabel()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">The display label changes when tabs
+are renamed in the Salesforce user interface. See the Salesforce online help for more information.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_getLogoUrl">
+<a name="apex_Schema_DescribeTabSetResult_getLogoUrl"><!-- --></a>
+<h3 class="helpHead3">getLogoUrl()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a fully qualified URL to the logo image associated
+with the standard or custom app.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLogoUrl()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_getNamespace">
+<a name="apex_Schema_DescribeTabSetResult_getNamespace"><!-- --></a>
+<h3 class="helpHead3">getNamespace()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the developer namespace prefix of a Salesforce AppExchange managed
+package.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getNamespace()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This namespace prefix corresponds
+to the namespace prefix of the Developer Edition organization that
+was enabled to allow publishing a managed package. This method applies
+to a custom app containing a set of tabs and installed as part of
+a managed package.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_getTabs">
+<a name="apex_Schema_DescribeTabSetResult_getTabs"><!-- --></a>
+<h3 class="helpHead3">getTabs()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns metadata information about the standard or custom
+app’s displayed tabs.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;Schema.DescribeTabResult&gt; getTabs()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describetabresult.htm#apex_class_schema_describetabresult" title="Contains tab metadata information for a tab in a standard or custom app available in the Salesforce user interface.">Schema.DescribeTabResult</a>&gt;</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeTabSetResult_isSelected">
+<a name="apex_Schema_DescribeTabSetResult_isSelected"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">isSelected()</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this standard or custom app is
+  the user’s currently selected app in Salesforce Classic. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isSelected()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

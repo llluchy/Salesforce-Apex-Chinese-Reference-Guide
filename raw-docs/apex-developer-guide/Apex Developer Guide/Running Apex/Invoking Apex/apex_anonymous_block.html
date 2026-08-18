@@ -1,0 +1,174 @@
+<a name="apex_anonymous_block"><!-- --></a><h1 class="helpHead1">Anonymous Blocks</h1><div class="body conbody">
+<div class="shortdesc">An anonymous block is Apex code that doesn’t get stored in the metadata, but that you
+        can compile and execute.</div>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry">User permissions needed to execute anonymous Apex:<p class="p">(Anonymous Apex
+                                execution through the API allows restricted access without the
+                                “Author Apex” permission.)</p>
+</td>
+
+                        <td class="entry">“API Enabled” and “Author Apex”</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry">User permissions needed if an anonymous Apex callout references a
+                            named credential as the endpoint:</td>
+
+                        <td class="entry">Customize Application</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">Compile and execute anonymous blocks by using one of these Salesforce development tools. </p>
+
+        <ul class="ul bulletList">
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/platform/webconsole/overview" target="_blank">Web Console (Beta)</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/platform/sfvscode-extensions/overview" target="_blank">Salesforce Extensions for Visual Studio
+                    Code</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/platform/code-builder/overview" target="_blank">Agentforce Vibes IDE</a></li>
+
+            <li class="li">Developer Console</li>
+
+        </ul>
+
+        <p class="p">You can also execute anonymous blocks by using the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_calls_executeanonymous.htm" target="_blank"><samp class="codeph apex_code">executeAnonymous()</samp></a> SOAP API call.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">ExecuteAnonymousResult executeAnonymous(<span class="keyword">String</span> code)</pre></div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Every time you run an anonymous block, the code and its references
+            are compiled. For repetitive calls, we strongly recommend that you use compiled classes,
+            such as Apex REST endpoints.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">Note the following about the content of an anonymous block.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">The anonymous block can include user-defined methods and exceptions.</li>
+
+            <li class="li">User-defined methods can’t include the keyword <samp class="codeph apex_code"><span class="keyword">static</span></samp>.</li>
+
+            <li class="li">You don’t have to commit any database changes manually .</li>
+
+            <li class="li">If an Apex trigger within an anonymous block completes successfully, the changes are
+                committed to the database only after all operations in the block finish executing
+                successfully. If your Apex trigger doesn’t complete successfully, any changes made
+                to the database in the anonymous block are rolled back.</li>
+
+            <li class="li">Anonymous blocks run as the current user and can fail to compile if the code
+                violates the user’s object- and field-level permissions.</li>
+
+            <li class="li">The content in the anonymous block has a local scope. For example, although it’s
+                legal to use the <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier, it
+                has no meaning. The scope of the method is limited to the anonymous block. </li>
+
+            <li class="li">When you define a class or interface (a custom type) in an anonymous block, it’s
+                considered virtual by default when the anonymous block executes. This fact is true
+                even if your custom type isn’t defined with the <samp class="codeph apex_code"><span class="keyword">virtual</span></samp> modifier.</li>
+
+            <li class="li">Classes and interfaces defined in an anonymous block aren’t saved to your org.</li>
+
+        </ul>
+
+        <p class="p">Even though a user-defined method can refer to itself or later methods without the need
+            for forward declarations, variables can’t be referenced before their actual declaration.
+            In this example, the Integer <samp class="codeph apex_code">int</samp> must be
+            declared while <samp class="codeph apex_code">myProcedure1</samp> doesn’t:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> int1 = 0;
+
+<span class="keyword">void</span> myProcedure1() {
+    myProcedure2();
+}
+
+<span class="keyword">void</span> myProcedure2() {
+    int1++;
+}
+
+myProcedure1();</pre></div>
+
+        <p class="p">The returned result for anonymous blocks includes:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">Status information for the compile and execute phases of the call, including any
+                errors that occur</li>
+
+            <li class="li">The debug log content, including the output of any calls to the <samp class="codeph apex_code">System.debug</samp> method (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_debugging_debug_log.htm">Debug Log</a>)</li>
+
+            <li class="li">The Apex stack trace of any uncaught code execution exceptions, including the class,
+                method, and line number for each call stack element</li>
+
+        </ul>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+            <p class="p">Salesforce blocks anonymous Apex code invoked from managed packages. Managed packages
+                can’t use <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_userinfo.htm#apex_System_UserInfo_getSessionId" target="_blank"><samp class="codeph apex_code">UserInfo.getSessionId()</samp></a> to obtain a session ID and then use
+                the session ID to execute anonymous Apex.</p>
+
+            <p class="p">This restriction applies to new managed packages with namespaces created in Summer
+                ’26 and later. For existing managed packages with namespaces created in Spring ’26
+                and earlier, this restriction is enforced as a release update. The release update
+                available to package subscribers starting in Summer ’26 and is enforced in Summer
+                ’27. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_block_exec_anon_ru.htm&amp;type=5&amp;language=en_US" target="_blank">Block Execute Anonymous from Managed Packages (Release Update)</a>.</p>
+
+        </p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Executing Anonymous Apex Through the API and the Author Apex Permission</h2>
+
+            
+            <p class="p">To run any Apex code with the <samp class="codeph apex_code">executeAnonymous()</samp> API call, including Apex methods saved in the org,
+                users must have the Author Apex permission. For users who don’t have the Author Apex
+                permission, the API allows restricted execution of anonymous Apex. This exception
+                applies only when users execute anonymous Apex through the API or through a
+                developer tool that uses the API. Such users are allowed to run the following in an
+                anonymous block.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Code that they write in the anonymous block</li>
+
+                <li class="li">Web service methods (methods declared with the <samp class="codeph apex_code">webservice</samp> keyword) that are saved in the org</li>
+
+                <li class="li">Any built-in Apex methods that are part of the Apex language</li>
+
+            </ul>
+
+            <p class="p">Running any other Apex code is blocked if the user doesn’t have the Author Apex
+                permission. For example, calling methods of custom Apex classes that are saved in
+                the org isn’t allowed nor is using custom classes as arguments to built-in
+                methods.</p>
+
+            <p class="p">When users without the Author Apex permission run DML statements in an anonymous
+                block, triggers can get fired as a result.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers.htm" title="Triggers">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" title="A named credential specifies the URL of a callout endpoint and its required authentication parameters in one definition. Salesforce manages all authentication for Apex callouts that specify a named credential as the callout endpoint so that your code doesn’t have to. You can also skip remote site settings, which are otherwise required for callouts to external sites, for the site defined in the named credential.">Named Credentials as Callout Endpoints</a></div></li></ul>
+</div>
+</div>

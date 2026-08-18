@@ -1,0 +1,85 @@
+<a name="apex_process_plugin_using"><!-- --></a><h1 class="helpHead1">Passing Data to a Flow Using the <span class="titlecodeph">Process.Plugin</span>
+    Interface</h1><div class="body refbody">
+<div class="shortdesc">
+<samp class="codeph apex_code">Process.Plugin</samp>
+  <span class="ph" id="apex_process_plugin_defn"><a name="apex_process_plugin_defn"><!-- --></a>is a built-in interface that lets you process data within
+   your org and pass it to a specified flow</span>. The interface exposes Apex as a service, which accepts
+  input values and returns output back to the flow.</div>
+
+  <div class="section">
+    <div class="box message confirm" id="recommendation_invocablemethod">
+<a name="recommendation_invocablemethod"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>We recommend using the <samp class="codeph apex_code">@InvocableMethod</samp> annotation instead of the <samp class="codeph apex_code">Process.Plugin</samp> interface.<ul class="ul bulletList">
+          <li class="li">The interface doesn’t support Blob, Collection, and sObject, data types, and it
+            doesn’t support bulk operations. After you implement the interface on a class, the class
+            can be referenced only from flows.</li>
+
+          <li class="li"> The annotation supports all data types and bulk operations. After you implement the
+            annotation on a class, the class can be referenced from flows, processes, and the Custom
+            Invocable Actions REST API endpoint.</li>
+
+          <li class="li">Legacy Apex actions aren’t supported in auto-layout in Flow Builder. Legacy Apex
+            actions are only available to be added in free-form in Flow Builder. Existing actions
+            can be edited in both auto-layout and free-form mode.</li>
+
+          <li class="li">You can customize how invocable actions created with <samp class="codeph apex_code">@InvocableMethod</samp> appear in Flow Builder by using the
+            InvocableActionExtension metadata file. Control parameter order, add picklists, create
+            custom headers, and build partial custom property editors.</li>
+
+        </ul>
+</p>
+</div>
+</div></div></div>
+</div>
+
+      <p class="p">When you define an Apex class that implements the <samp class="codeph apex_code">Process.Plugin</samp> interface in your org, it's available in Flow Builder as a legacy
+        Apex action.</p>
+
+      <p class="p"><samp class="codeph apex_code">Process.Plugin</samp> has these top-level classes.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginRequest.htm" target="_blank"><samp class="codeph apex_code">Process.PluginRequest</samp></a>
+          passes input parameters from the class that implements the interface to the flow.</li>
+
+        <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginResult.htm" target="_blank"><samp class="codeph apex_code">Process.PluginResult</samp></a>
+          returns output parameters from the class that implements the interface to the flow.</li>
+
+        <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Process_PluginDescribeResult.htm" target="_blank"><samp class="codeph apex_code">Process.PluginDescribeResult</samp></a> passes input parameters from a flow to the
+          class that implements the interface. This class determines the input parameters and output
+          parameters needed by the <samp class="codeph apex_code">Process.PluginResult</samp>
+          plug-in.</li>
+
+      </ul>
+
+      <p class="p">When you write Apex unit tests, instantiate a class and pass it into the interface <samp class="codeph apex_code">invoke</samp> method. To pass in the parameters that the system
+        needs, create a map and use it in the constructor. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_request.htm" title="The Process.PluginRequest class passes input parameters from the class that implements the interface to the flow.">Using the Process.PluginRequest Class</a>.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_process_plugin.htm">Implementing the Process.Plugin Interface</a></strong><br>
+<samp class="codeph apex_code">Process.Plugin</samp> is a built-in interface that         allows you to pass data between your organization and a specified flow.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_request.htm">Using the Process.PluginRequest Class</a></strong><br>
+The <samp class="codeph apex_code">Process.PluginRequest</samp> class passes input         parameters from the class that implements the interface to the flow.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_result.htm">Using the Process.PluginResult Class</a></strong><br>
+The <samp class="codeph apex_code">Process.PluginResult</samp> class returns                 output parameters from the class that implements the interface to the                 flow.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_describe_result.htm">Using the Process.PluginDescribeResult Class</a></strong><br>
+Use the <samp class="codeph apex_code">Process.Plugin</samp> interface <samp class="codeph apex_code">describe</samp> method to dynamically provide both input and         output parameters for the flow. This method returns the <samp class="codeph apex_code">Process.PluginDescribeResult</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_datatype_conversions.htm">Process.Plugin Data Type Conversions</a></strong><br>
+Understand how data types are converted between Apex and the values returned to the    <samp class="codeph apex_code">Process.Plugin</samp>. For example, text data in a flow converts   to string data in Apex.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_process_plugin_example_lead_convert.htm">Sample Process.Plugin Implementation for Lead Conversion</a></strong><br>
+In this example, an Apex class implements         the <samp class="codeph apex_code">Process.Plugin</samp> interface and converts a lead         into an account, contact, and optionally, an opportunity. Test methods for the plug-in are         also included. This implementation can be called from a flow via a legacy Apex action.</li>
+</ul>
+</div>

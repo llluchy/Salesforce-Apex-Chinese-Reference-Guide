@@ -1,0 +1,106 @@
+<a name="apex_class_System_FormulaRecalcResult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FormulaRecalcResult Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The return type of the <samp class="codeph nolang">Formula.recalculateFormulas</samp> method.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Indicates the result and status of recalculating formulas on a single sObject. Holds a
+        reference to the sObject and a list of all the fields that were recalculated.</p>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This example assumes that you have a formula field called <samp class="codeph nolang">divide__c with formula “1 / LEN(Name)</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accounts = [SELECT Name FROM Account WHERE Name=<span class="string">'Acme'</span>];
+accounts[0].Name = <span class="string">''</span>;
+List&lt;FormulaRecalcResult&gt; results = Formula.recalculateFormulas(accounts);
+FormulaRecalcResult result0 = results[0];
+FormulaRecalcFieldError fieldError = result0.getErrors()[0];
+System.debug(fieldError.getFieldName()); <span class="onelineComment">// 'divide'</span>
+System.debug(fieldError.getFieldError()); <span class="onelineComment">// 'Division by zero'</span></pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcResult.htm#apex_System_FormulaRecalcResult_methods">FormulaRecalcResult Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_FormulaRecalcResult_methods">
+<a name="apex_System_FormulaRecalcResult_methods"><!-- --></a><h2 class="helpHead2">FormulaRecalcResult Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">FormulaRecalcResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcResult.htm#apex_System_FormulaRecalcResult_getErrors">getErrors()</a></strong><br>
+If an error occurs during formula recalculation, an array of one or       more database error objects, along with error codes and descriptions, is     returned.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcResult.htm#apex_System_FormulaRecalcResult_getSObject">getSObject()</a></strong><br>
+Returns the sObject with formulas recalculated.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcResult.htm#apex_System_FormulaRecalcResult_isSuccess">isSuccess()</a></strong><br>
+Returns a Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the formula recalculation process completed successfully; otherwise, it is       set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FormulaRecalcResult_getErrors">
+<a name="apex_System_FormulaRecalcResult_getErrors"><!-- --></a><h3 class="helpHead3">getErrors()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>If an error occurs during formula recalculation, an array of one or
+      more database error objects, along with error codes and descriptions, is
+    returned.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;System.FormulaRecalcFieldError&gt; getErrors()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_FormulaRecalcFieldError.htm#apex_class_System_FormulaRecalcFieldError" title="The return type of the FormulaRecalcResult.getErrors method.">FormulaRecalcFieldError Class</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FormulaRecalcResult_getSObject">
+<a name="apex_System_FormulaRecalcResult_getSObject"><!-- --></a><h3 class="helpHead3">getSObject()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the sObject with formulas recalculated.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> SObject getSObject()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_FormulaRecalcResult_isSuccess">
+<a name="apex_System_FormulaRecalcResult_isSuccess"><!-- --></a><h3 class="helpHead3">isSuccess()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the formula recalculation process completed successfully; otherwise, it is
+      set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isSuccess()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

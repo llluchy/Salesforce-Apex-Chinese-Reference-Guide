@@ -1,0 +1,96 @@
+<a name="apex_interface_TxnSecurity_AsyncCondition"><!-- --></a><div class="nested0">
+	<h1 class="helpHead1">AsyncCondition Interface</h1>
+
+	
+	
+	<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Allows an implementing class to make asynchronous Apex calls. This
+			interface is used only for transaction security Apex policies created in Real-Time Event
+			Monitoring.</span></div>
+
+		<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_TxnSecurity.htm" title="The TxnSecurity namespace provides an interface used for transaction security.">TxnSecurity</a></p>
+</div>
+
+		<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+			<p class="p">If you make an <a class="xref" href="https://trailhead.salesforce.com/en/content/learn/modules/asynchronous_apex" target="_blank" title="HTML (New Window)">Asynchronous Apex</a>
+				call in the class that implements your transaction security policy condition, the
+				class must implement the <samp class="codeph apex_code">TxnSecurity.AsyncCondition</samp> interface in addition to <samp class="codeph apex_code">TxnSecurity.EventCondition</samp>. Use Asynchronous
+				Apex instead of Apex callouts and DML statements, neither of which is allowed in
+				transaction security Apex policies. </p>
+
+			<p class="p">Apex offers multiple ways to run your Apex code asynchronously and all are supported in the
+					<samp class="codeph apex_code">TxnSecurity.AsyncCondition</samp> interface. </p>
+
+			 <p class="p">This interface has no methods.</p>
+
+		</div>
+
+	</div>
+
+ <div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_TxnSecurity_AsyncCondition_interface.htm#apex_interface_TxnSecurity_AsyncCondition_Example">AsyncCondition Example Implementation</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_async_overview.htm" target="_blank" title="Apex Developer Guide:Asynchronous Apex  - HTML (New Window)"><em class="ph i">Apex Developer Guide:</em>Asynchronous Apex </a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_TxnSecurity_AsyncCondition_Example">
+<a name="apex_interface_TxnSecurity_AsyncCondition_Example"><!-- --></a>
+ <h2 class="helpHead2">AsyncCondition Example Implementation</h2>
+
+ 
+ <div class="body refbody">
+	<div class="section">
+            <p class="p">Here’s an example implementation of the <samp class="codeph apex_code">TxnSecurity.AsyncCondition</samp> interface. The transaction security policy
+                triggers when a user logs in. In the example, ExternalValidation__c is a custom
+                object that contains information from an external validation system. The result of
+                the SOQL query on ExternalValidation__c determines whether to block the user from
+                logging in. The policy then queues the <samp class="codeph apex_code">CalloutToExternalValidator</samp> class for asynchronous execution. When it
+                executes, the <samp class="codeph apex_code">CalloutToExternalValidator</samp>
+                class makes an external call to the validation system to update it with information
+                about this log in event. Because <samp class="codeph apex_code">CalloutToExternalValidator</samp> is triggered by Asynchronous Apex, you must
+                implement the <samp class="codeph apex_code">TxnSecurity.AsyncCondition</samp>
+                interface in the <samp class="codeph apex_code">ExternallyValidatedLoginCondition</samp> Apex class along with the usual
+                    <samp class="codeph apex_code">TxnSecurity.EventCondition</samp> interface. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ExternallyValidatedLoginCondition <span class="keyword">implements</span> TxnSecurity.EventCondition, TxnSecurity.AsyncCondition {
+    <span class="keyword">public</span> boolean evaluate(SObject event) {
+        LoginEvent loginEvent = (LoginEvent) event;
+        <span class="keyword">Boolean</span> userBlocked = [select blocked from ExternalValidation__c where loginId = loginEvent.UserId][0].Blocked;
+ 
+        System.enqueueJob(<span class="keyword">new</span> CalloutToExternalValidator(loginEvent.SourceIp, loginEvent.LoginUrl));
+        <span class="statement">return</span> userBlocked;
+    }
+}
+ 
+<span class="keyword">public</span> <span class="keyword">class</span> CalloutToExternalValidator <span class="keyword">implements</span> Queueable {
+    <span class="keyword">private</span> <span class="keyword">String</span> sourceIp;
+    <span class="keyword">private</span> <span class="keyword">String</span> loginUrl;
+ 
+    <span class="keyword">public</span> CalloutToExternalValidator(<span class="keyword">String</span> sourceIp, <span class="keyword">String</span> loginUrl) {
+        <span class="statement">this</span>.sourceIp = sourceIp;
+        <span class="statement">this</span>.loginUrl = loginUrl;
+    }
+ 
+    <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext context) {
+        <span class="onelineComment">// callout to external validation service</span>
+        <span class="onelineComment">// pass sourceIp, loginUrl</span>
+                
+        <span class="onelineComment">// update ExternalValidation__c</span>
+    }
+}</pre></div>
+
+        </div>
+
+ </div>
+
+ </div>
+</div>

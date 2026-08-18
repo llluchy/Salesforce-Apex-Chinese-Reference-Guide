@@ -1,0 +1,182 @@
+<a name="apex_classes_restful_http_testing_static"><!-- --></a><h1 class="helpHead1">Testing HTTP Callouts Using Static Resources</h1><div class="body refbody">
+<div class="section">
+<p class="p">You can test HTTP callouts by specifying the body of the
+response you’d like to receive in a static resource and using
+one of two built-in classes—<a class="xref" href="#StaticMockSection"><samp class="codeph apex_code">StaticResourceCalloutMock</samp></a> or <a class="xref" href="#MultiStaticSection"><samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp></a>.</p>
+</div>
+
+<div class="section" id="StaticMockSection">
+<a name="StaticMockSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="StaticMockSectionTitle"><a name="StaticMockSectionTitle"><!-- --></a>Testing HTTP Callouts Using <span class="titlecodeph">StaticResourceCalloutMock</span></span></h2>
+<p class="p">Apex provides the built-in <samp class="codeph apex_code">StaticResourceCalloutMock</samp>
+                class that you can use to test callouts by specifying the response body in a static
+                resource. When using this class, you don’t have to provide your own
+                implementation of the <samp class="codeph apex_code">HttpCalloutMock</samp>
+                interface. Instead, just create an instance of <samp class="codeph apex_code">StaticResourceCalloutMock</samp> and set the static resource to use for the
+                response body, along with other response properties, like the status code and
+                content type.</p>
+<div class="p">First, you must create a static resource from a text file to contain
+the response body:<ol class="ol enumList">
+<li class="li">Create a text file that contains the response body to return.
+The response body can be an arbitrary string, but it must match the
+content type, if specified. For example, if your response has no content
+type specified, the file can include the arbitrary string <kbd class="ph userinput">abc</kbd>. If you specify a content type of application/json
+for the response, the file content should be a JSON string, such as
+{"hah":"fooled you"}.</li>
+
+<li class="li">Create a static resource for the text file:<ol class="ol enumList" type="a">
+                            <li class="li">From Setup, enter <kbd class="ph userinput">Static Resources</kbd> in the
+                                    <span class="keyword parmname">Quick Find</span> box, then select
+                                    <strong class="ph uicontrol">Static Resources</strong>.</li>
+
+                            <li class="li">Click <strong class="ph uicontrol">New</strong>.</li>
+
+                            <li class="li">Name your static resource.</li>
+
+                            <li class="li">Choose the file to upload.</li>
+
+                            <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+                        </ol>
+</li>
+
+</ol>
+</div>
+<p class="p">To learn more about static resources, see “Defining Static Resources” in the
+                Salesforce online help.</p>
+<p class="p">Next, create an instance of <samp class="codeph apex_code">StaticResourceCalloutMock</samp> and set the static resource, and
+any other properties.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">StaticResourceCalloutMock mock = <span class="keyword">new</span> StaticResourceCalloutMock();
+mock.setStaticResource(<span class="string">'myStaticResourceName'</span>);
+mock.setStatusCode(200);
+mock.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);</pre></div>
+<p class="p">In your test method, call <samp class="codeph apex_code">Test.setMock</samp> to set the mock callout mode and pass it <samp class="codeph apex_code">HttpCalloutMock.<span class="keyword">class</span></samp> as the first
+argument, and the variable name that you created for <samp class="codeph apex_code">StaticResourceCalloutMock</samp> as the second
+argument.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <var class="keyword varname">mock</var>);</pre></div>
+<p class="p">After this point, if your test method performs a callout, the callout is not made and the Apex
+                runtime sends the mock response you specified in your instance of <samp class="codeph apex_code">StaticResourceCalloutMock</samp>. </p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To mock a callout if the code that performs the callout is in
+                a managed package, call <samp class="codeph apex_code">Test.setMock</samp> from a
+                test method in the same package with the same namespace.</p>
+</div>
+</div></div></div></div>
+<p class="p">This is a full example containing the test method (<samp class="codeph apex_code">testCalloutWithStaticResources</samp>) and
+the method it is testing (<samp class="codeph apex_code">getInfoFromExternalService</samp>) that performs the callout. Before running this example, create
+a static resource named <kbd class="ph userinput">mockResponse</kbd> based
+on a text file with the content <kbd class="ph userinput">{"hah":"fooled you"}</kbd>. Save each class separately and run the test in <samp class="codeph apex_code">CalloutStaticClassTest</samp>.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CalloutStaticClass {
+    <span class="keyword">public</span> <span class="keyword">static</span> HttpResponse getInfoFromExternalService(<span class="keyword">String</span> endpoint) {
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod(<span class="string">'GET'</span>);
+        Http h = <span class="keyword">new</span> Http();
+        HttpResponse res = h.send(req);
+        <span class="statement">return</span> res;
+    }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> CalloutStaticClassTest {
+    <span class="keyword">@isTest</span> <span class="keyword">static</span> <span class="keyword">void</span> testCalloutWithStaticResources() {
+        <span class="onelineComment">// Use StaticResourceCalloutMock built-in class to</span>
+        <span class="onelineComment">// specify fake response and include response body </span>
+        <span class="onelineComment">// in a static resource.</span>
+        StaticResourceCalloutMock mock = <span class="keyword">new</span> StaticResourceCalloutMock();
+        mock.setStaticResource(<span class="string">'mockResponse'</span>);
+        mock.setStatusCode(200);
+        mock.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+        
+        <span class="onelineComment">// Set the mock callout mode</span>
+        Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, mock);
+        
+        <span class="onelineComment">// Call the method that performs the callout</span>
+        HTTPResponse res = CalloutStaticClass.getInfoFromExternalService(
+            <span class="string">'https://example.com/example/test'</span>);
+        
+        <span class="onelineComment">// Verify response received contains values returned by</span>
+        <span class="onelineComment">// the mock response.</span>
+        <span class="onelineComment">// This is the content of the static resource.</span>
+        System.assertEquals(<span class="string">'{"hah":"fooled you"}'</span>, res.getBody());
+        System.assertEquals(200,res.getStatusCode());
+        System.assertEquals(<span class="string">'application/json'</span>, res.getHeader(<span class="string">'Content-Type'</span>));   
+    }
+}</pre></div>
+</div>
+
+<div class="section" id="MultiStaticSection">
+<a name="MultiStaticSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="MultiStaticSectionTitle"><a name="MultiStaticSectionTitle"><!-- --></a>Testing HTTP Callouts Using <span class="titlecodeph">MultiStaticResourceCalloutMock</span></span></h2>
+<p class="p">Apex provides the built-in <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp>
+                class that you can use to test callouts by specifying the response body in a static
+                resource for each endpoint. This class is similar to <samp class="codeph apex_code">StaticResourceCalloutMock</samp> except that it allows you to specify
+                multiple response bodies. When using this class, you don’t have to provide
+                your own implementation of the <samp class="codeph apex_code">HttpCalloutMock</samp> interface. Instead, just create an instance of <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp> and set the
+                static resource to use per endpoint. You can also set other response properties like
+                the status code and content type.</p>
+<p class="p">First, you must create a static resource from a text file to contain the response body. See the
+                procedure outlined in <a class="xref" href="#StaticMockSection">Testing HTTP Callouts Using
+                        <samp class="codeph apex_code">StaticResourceCalloutMock</samp></a>.</p>
+<p class="p">Next, create an instance of <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp> and
+set the static resource, and any other properties.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">MultiStaticResourceCalloutMock multimock = <span class="keyword">new</span> MultiStaticResourceCalloutMock();
+multimock.setStaticResource(<span class="string">'https://example.com/example/test'</span>, <span class="string">'mockResponse'</span>);
+multimock.setStaticResource(<span class="string">'https://example.com/example/sfdc'</span>, <span class="string">'mockResponse2'</span>);
+multimock.setStatusCode(200);
+multimock.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);</pre></div>
+<p class="p">In your test method, call <samp class="codeph apex_code">Test.setMock</samp> to set the mock callout mode and pass it <samp class="codeph apex_code">HttpCalloutMock.<span class="keyword">class</span></samp> as the first
+argument, and the variable name that you created for <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp> as
+the second argument.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <var class="keyword varname">multimock</var>);</pre></div>
+<p class="p">After this point, if your test method performs an HTTP callout to one of the endpoints
+                    <span class="ph filepath">https://example.com/example/test</span> or
+                    <span class="ph filepath">https://example.com/example/sfdc</span>, the callout is not made
+                and the Apex runtime sends the corresponding mock response you specified in your
+                instance of <samp class="codeph apex_code">MultiStaticResourceCalloutMock</samp>.</p>
+<p class="p">This is a full example containing the test method (<samp class="codeph apex_code">testCalloutWithMultipleStaticResources</samp>) and the method it is testing (<samp class="codeph apex_code">getInfoFromExternalService</samp>) that performs the callout. Before running this example, create
+a static resource named <kbd class="ph userinput">mockResponse</kbd> based
+on a text file with the content <kbd class="ph userinput">{"hah":"fooled you"}</kbd> and another named <kbd class="ph userinput">mockResponse2</kbd> based on
+a text file with the content <kbd class="ph userinput">{"hah":"fooled you twice"}</kbd>. Save each class separately and run the test in <samp class="codeph apex_code">CalloutMultiStaticClassTest</samp>.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CalloutMultiStaticClass {
+    <span class="keyword">public</span> <span class="keyword">static</span> HttpResponse getInfoFromExternalService(<span class="keyword">String</span> endpoint) {
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(endpoint);
+        req.setMethod(<span class="string">'GET'</span>);
+        Http h = <span class="keyword">new</span> Http();
+        HttpResponse res = h.send(req);
+        <span class="statement">return</span> res;
+    }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> CalloutMultiStaticClassTest {
+    <span class="keyword">@isTest</span> <span class="keyword">static</span> <span class="keyword">void</span> testCalloutWithMultipleStaticResources() {
+        <span class="onelineComment">// Use MultiStaticResourceCalloutMock to</span>
+        <span class="onelineComment">// specify fake response for a certain endpoint and </span>
+        <span class="onelineComment">// include response body in a static resource.    </span>
+        MultiStaticResourceCalloutMock multimock = <span class="keyword">new</span> MultiStaticResourceCalloutMock();
+        multimock.setStaticResource(
+            <span class="string">'https://example.com/example/test'</span>, <span class="string">'mockResponse'</span>);
+        multimock.setStaticResource(
+            <span class="string">'https://example.com/example/sfdc'</span>, <span class="string">'mockResponse2'</span>);
+        multimock.setStatusCode(200);
+        multimock.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+        
+        <span class="onelineComment">// Set the mock callout mode</span>
+        Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, multimock);
+        
+        <span class="onelineComment">// Call the method for the first endpoint</span>
+        HTTPResponse res = CalloutMultiStaticClass.getInfoFromExternalService(
+            <span class="string">'https://example.com/example/test'</span>);
+        <span class="onelineComment">// Verify response received </span>
+        System.assertEquals(<span class="string">'{"hah":"fooled you"}'</span>, res.getBody());
+        
+        <span class="onelineComment">// Call the method for the second endpoint</span>
+        HTTPResponse res2 = CalloutMultiStaticClass.getInfoFromExternalService(
+            <span class="string">'https://example.com/example/sfdc'</span>);
+        <span class="onelineComment">// Verify response received </span>
+        System.assertEquals(<span class="string">'{"hah":"fooled you twice"}'</span>, res2.getBody());
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

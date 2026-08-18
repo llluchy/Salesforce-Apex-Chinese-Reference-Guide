@@ -1,0 +1,26 @@
+<a name="connectapi_examples_get_an_authentication_url"><!-- --></a><h1 class="helpHead1">Get an Authentication URL</h1><div class="body refbody">
+<div class="shortdesc">Call a method to get an authentication URL.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm#apex_ConnectAPI_NamedCredentials_getOAuthCredentialAuthUrl_1" target="_blank"><samp class="codeph apex_code">getOAuthCredentialAuthUrl(requestBody)</samp></a> to retrieve the URL that a user
+      must visit to begin an authentication flow, ultimately returning authentication tokens to
+      Salesforce. Accepts input parameters representing a specific external credential and,
+      optionally, a named principal. Use this method as part of building a customized or branded
+      user interface to help users initiate authentication.
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.OAuthCredentialAuthUrlInput input = <span class="keyword">new</span> ConnectApi.OAuthCredentialAuthUrlInput();
+
+input.externalCredential = <span class="string">'MyExternalCredentialDeveloperName'</span>;
+input.principalType = ConnectApi.CredentialPrincipalType.PerUserPrincipal;
+input.principalName = <span class="string">'MyPrincipal'</span>; <span class="onelineComment">// Only required when principalType = NamedPrincipal</span>
+
+ConnectApi.OAuthCredentialAuthUrl output = ConnectApi.NamedCredentials.getOAuthCredentialAuthUrl(input);
+
+<span class="keyword">String</span> authenticationUrl = output.authenticationUrl; <span class="onelineComment">// Redirect users to this URL to authenticate in the browser</span>
+</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_NamedCredentials_static_methods.htm" target="_blank" title="Apex Reference Guide: NamedCredentials Methods - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: NamedCredentials Methods</a></div></li></ul>
+</div>
+</div>

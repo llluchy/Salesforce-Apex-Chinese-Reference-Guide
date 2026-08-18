@@ -1,0 +1,601 @@
+<a name="connectapi_features_feeds_feed_elements"><!-- --></a><h1 class="helpHead1">Working with Feeds and Feed Elements</h1><div class="body conbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The Chatter feed is a container of feed elements. The abstract
+         class <samp class="codeph apex_code">ConnectApi.FeedElement</samp> is a parent class to
+         the <samp class="codeph apex_code">ConnectApi.FeedItem</samp> class, representing feed
+         posts, and the <samp class="codeph apex_code">ConnectApi.GenericFeedElement</samp> class,
+         representing bundles and recommendations in the feed.</span></div>
+
+      <div class="section">
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce Help refers to feed items as posts and bundles as bundled posts.</p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+      <div class="section" id="capabilities">
+<a name="capabilities"><!-- --></a><h2 class="helpHead2">Capabilities</h2>
+
+         
+         <p class="p">As part of the effort to diversify the feed, pieces of functionality found in feed
+            elements have been broken out into capabilities. Capabilities provide a consistent way
+            to interact with the feed. Don’t inspect the feed element type to determine which
+            functionality is available for a feed element. Inspect the capability, which tells you
+            explicitly what’s available. Check for the presence of a capability to determine what a
+            client can do to a feed element.</p>
+
+         <p class="p">The <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_feed_element.htm" target="_blank"><samp class="codeph apex_code">ConnectApi.FeedElement.capabilities</samp></a> property holds a set of
+            capabilities.</p>
+
+         <p class="p">A capability includes both an indication that a feature is possible and data associated
+            with that feature. If a capability property exists on a feed element, that capability is
+            available, even if there isn’t any data associated with the capability yet. For example,
+            if the <samp class="codeph apex_code">chatterLikes</samp> capability property exists
+            on a feed element, the context user can like that feed element. If the capability
+            property doesn’t exist on a feed element, it isn’t possible to like that feed element. </p>
+
+         <p class="p">When posting a feed element, specify its characteristics in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_feed_element.htm" target="_blank"><samp class="codeph apex_code">ConnectApi.FeedElementInput.capabilities</samp></a> property.</p>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">How the Salesforce UI Displays Feed Items</h2>
+<p class="p">A client can use the
+               <samp class="codeph apex_code">ConnectApi.FeedElement.capabilities</samp> property
+            to determine what it can do with a feed element and how to render the feed element. For
+            all feed element subclasses other than <samp class="codeph apex_code">ConnectApi.FeedItem</samp>, the client doesn’t have to know the subclass type.
+            Instead, the client can look at the capabilities. Feed items do have capabilities, but
+            they also have a few properties, such as <samp class="codeph apex_code">actor</samp>,
+            that aren’t exposed as capabilities. For this reason, clients must handle feed items a
+            bit differently than other feed elements.</p>
+<p class="p">The Salesforce UI uses one layout to
+            display every feed item. This single layout gives customers a consistent view of feed
+            items and gives developers an easy way to create UI. The layout always contains the same
+            pieces and the pieces are always in the same position. Only the content of the layout
+            pieces changes.</p>
+<div class="fig fignone">
+            <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Ffeeditem_content.png&folder=apexcode" width="400" alt="Feed item with highlighted layout elements"></span></div>
+         </div>
+<p class="p">The feed item (<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output_Feed_Item.htm" target="_blank"><samp class="codeph apex_code">ConnectApi.FeedItem</samp></a>) layout elements are:</p>
+<ol class="ol enumList">
+            <li class="li">Actor (<samp class="codeph apex_code">ConnectApi.FeedItem.actor</samp>)—A
+               photo or icon of the creator of the feed item. (You can override the creator at the
+               feed item type level. For example, the dashboard snapshot feed item type shows the
+               dashboard as the creator.)</li>
+
+            <li class="li">Header (<samp class="codeph apex_code">ConnectApi.FeedElement.header</samp>)—Context for the feed item. The same
+               feed item can have a different header depending on who posted it and where it was
+               posted. For example, Ted posted this feed item to a group.<p class="p">Timestamp (<samp class="codeph apex_code">ConnectApi.FeedElement.relativeCreatedDate</samp>)—The date and time
+                  when the feed item was posted. If the feed item is less than two days old, the
+                  date and time are formatted as a relative, localized string, such as “17m
+                  ago”. Otherwise, the date and time are formatted as an absolute, localized
+                  string.</p>
+</li>
+
+            <li class="li">Body (<samp class="codeph apex_code">ConnectApi.FeedElement.body</samp>)—All feed items have a body. The body
+               can be <samp class="codeph apex_code"><span class="keyword">null</span></samp>, which is the case when the user
+               doesn’t provide text for the feed item. Because the body can be <samp class="codeph apex_code"><span class="keyword">null</span></samp>, you can’t use it as the default case
+               for rendering text. Instead, use the <samp class="codeph apex_code">ConnectApi.FeedElement.header.text</samp> property, which always contains a
+               value.</li>
+
+            <li class="li">Auxiliary Body (<samp class="codeph apex_code">ConnectApi.FeedElement.capabilities</samp>)—The visualization of the
+               capabilities. See <a class="xref" href="#capabilities">Capabilities</a>.</li>
+
+         </ol>
+</div>
+
+      <div class="section">
+<h2 class="helpHead2">How the Salesforce Displays Feed Elements Other Than Feed Items</h2>
+<p class="p">A
+            client can use the <samp class="codeph apex_code">ConnectApi.FeedElement.capabilities</samp> property to determine what it can do
+            with a feed element and how to render the feed element. This section uses bundles as an
+            example of how to render a feed element, but these properties are available for every
+            feed element. Capabilities allow you to handle all content in the feed
+            consistently.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Bundled posts contain feed-tracked changes and are in record
+            feeds only.</p>
+</div>
+</div></div></div></div>
+<p class="p">To give customers a clean, organized feed, Salesforce aggregates
+            feed-tracked changes into a bundle. To see individual feed elements, click the
+            bundle.</p>
+<div class="fig fignone">
+            <img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fcollab_feed_clump.png&folder=apexcode" width="300" alt="A bundle of feed-tracked changes">
+         </div>
+<p class="p">A bundle is a <samp class="codeph apex_code">ConnectApi.GenericFeedElement</samp> object (which
+            is a concrete subclass of <samp class="codeph apex_code">ConnectApi.FeedElement</samp>) with a <samp class="codeph apex_code">ConnectApi.BundleCapability</samp>. The bundle layout elements are:</p>
+<ul class="ul bulletList">
+            <li class="li">Header (<samp class="codeph apex_code">ConnectApi.FeedElement.header</samp>)—For feed-tracked change bundles, this
+               text is “<var class="keyword varname">User Name</var> updated this record.” </li>
+
+            <li class="li">Timestamp (<samp class="codeph apex_code">ConnectApi.FeedElement.relativeCreatedDate</samp>)—The date and time
+               when the feed item was posted. If the feed item is less than two days old, the date
+               and time are formatted as a relative, localized string, such as “17m
+               ago”. Otherwise, the date and time are formatted as an absolute, localized
+               string.</li>
+
+            <li class="li">Auxiliary Body (<samp class="codeph apex_code">ConnectApi.FeedElement.capabilities.bundle.changes</samp>)—The bundle
+               displays the <samp class="codeph apex_code">fieldName</samp> and the <samp class="codeph apex_code">oldValue</samp> and <samp class="codeph apex_code">newValue</samp> properties for the first two feed-tracked changes in the
+               bundle. If there are more than two feed-tracked changes, the bundle displays a
+               “Show All Updates” link.</li>
+
+         </ul>
+</div>
+
+      <div class="section">
+<h2 class="helpHead2">Feed Element Visibility</h2>
+
+         
+         <p class="p">The feed elements a user sees depend on how the administrator has configured feed
+            tracking, sharing rules, and field-level security. For example, if a user doesn’t
+            have access to a record, they don’t see updates for that record. If a user can
+            see the parent of the feed element, the user can see the feed element. Typically, a user
+            sees feed updates for:</p>
+
+         <ul class="ul bulletList">
+            <li class="li">Feed elements that @mention the user (if the user can access the feed
+               element’s parent)</li>
+
+            <li class="li">Feed elements that @mention groups the user is a member of</li>
+
+            <li class="li">Record field changes on records whose parent is a record the user can see, including
+               User, Group, and File records</li>
+
+            <li class="li">Feed elements posted to the user</li>
+
+            <li class="li">Feed elements posted to groups that the user owns or is a member of</li>
+
+            <li class="li">Feed elements for standard and custom records, for example, tasks, events, leads,
+               accounts, files</li>
+
+         </ul>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Feed Types</h2>
+
+         
+         <p class="p">There are many types of feeds. Each feed type defines a collection of feed elements. </p>
+
+         <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>The collection of feed elements can change between releases.</p>
+</div>
+</div></div></div></div>
+
+         <div class="p">All feed types except Favorites are exposed in the <samp class="codeph apex_code">ConnectApi.FeedType</samp> enum and passed to one of the <samp class="codeph apex_code">ConnectApi.ChatterFeeds.getFeedElementsFromFeed</samp>
+            methods. This example gets the feed elements from the context user’s news feed
+            and topics
+            feed.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedElementPage newsFeedElementPage = 
+   ConnectApi.ChatterFeeds.getFeedElementsFromFeed(<span class="keyword">null</span>, 
+      ConnectApi.FeedType.News, <span class="string">'me'</span>);
+
+ConnectApi.FeedElementPage topicsFeedElementPage = 
+   ConnectApi.ChatterFeeds.getFeedElementsFromFeed(<span class="keyword">null</span>, 
+      ConnectApi.FeedType.Topics, <span class="string">'0TOD00000000cld'</span>);
+</pre></div>
+</div>
+
+         <p class="p">To get a filter feed, call one of the <samp class="codeph apex_code">ConnectApi.ChatterFeeds.getFeedElementsFromFilterFeed</samp> methods. To get a
+            favorites feed, call one of the <samp class="codeph apex_code">ConnectApi.ChatterFavorites.getFeedElements</samp> methods.</p>
+
+         <p class="p">The feed types and their descriptions are:</p>
+
+         <ul class="ul bulletList">
+            <li class="li">
+<samp class="codeph apex_code">Bookmarks</samp>—<span class="ph" id="connectapi_feedtype_bookmarks"><a name="connectapi_feedtype_bookmarks"><!-- --></a>Contains all feed items saved as bookmarks by
+                  the context user.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Company</samp>—<span class="ph" id="connectapi_feedtype_company"><a name="connectapi_feedtype_company"><!-- --></a>Contains all feed items except feed items of type
+                     <samp class="codeph apex_code">TrackedChange</samp>. To see the feed item,
+                  the user must have sharing access to its parent.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">DirectMessageModeration</samp>—<span class="ph" id="DMModerationFeedDesc"><a name="DMModerationFeedDesc"><!-- --></a>Contains all direct messages that are flagged for
+                  moderation. The Direct Message Moderation feed is available only to users with
+                  Moderate Experiences Chatter Messages permissions.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">DirectMessages</samp>—<span class="ph" id="connectapi_feedtype_directMessages"><a name="connectapi_feedtype_directMessages"><!-- --></a>Contains all feed items of the context
+                  user’s direct messages.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Draft</samp>—Contains all the feed items
+               that the context user drafted.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Files</samp>—<span class="ph" id="connectapi_feedtype_files"><a name="connectapi_feedtype_files"><!-- --></a>Contains all feed items that contain files posted
+                  by people or groups that the context user follows.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Filter</samp>—Contains the news feed
+               filtered to contain feed items whose parent is a specified object type.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Groups</samp>—<span class="ph" id="connectapi_feedtype_groups"><a name="connectapi_feedtype_groups"><!-- --></a>Contains all feed items from all groups the
+                  context user either owns or is a member of.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Home</samp>—Contains all feed items
+               associated with any managed topic in an Experience Cloud site.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Landing</samp>—<span class="ph" id="landingFeed"><a name="landingFeed"><!-- --></a>Contains
+                  all feed items that best drive user engagement when the feed is requested. Allows
+                  clients to avoid an empty feed when there aren’t many personalized feed
+                  items.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Moderation</samp>—<span class="ph" id="moderationFeedDefn"><a name="moderationFeedDefn"><!-- --></a>Contains all feed items that are flagged for moderation,
+                  except direct messages. The moderation feed is available only to users with
+                  Moderate Experiences Feeds permissions.</span>
+</li>
+
+            <li class="li" id="muteFeedEnum">
+<a name="muteFeedEnum"><!-- --></a><samp class="codeph apex_code">Mute</samp>—Contains all
+               feed items that the context user muted.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">News</samp>—<span class="ph" id="connectapi_feedtype_news"><a name="connectapi_feedtype_news"><!-- --></a>Contains all updates for people the context user
+                  follows, groups the user is a member of, and files and records the user is
+                  following. Contains all updates for records whose parent is the context
+               user.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">PendingReview</samp>—<span class="ph" id="connectapi_feedtype_pendingReview"><a name="connectapi_feedtype_pendingReview"><!-- --></a>Contains all feed items and comments that
+                  are pending review.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">People</samp>—<span class="ph" id="connectapi_feedtype_people"><a name="connectapi_feedtype_people"><!-- --></a>Contains all feed items posted by all people the
+                  context user follows.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Record</samp>—<span class="ph" id="connectapi_feedtype_record"><a name="connectapi_feedtype_record"><!-- --></a>Contains all feed items whose parent is a
+                  specified record, which could be a group, user, object, file, or any other
+                  standard or custom object. When the record is a group, the feed also contains feed
+                  items that mention the group. When the record is a user, the feed contains only
+                  feed items on that user. You can get another user’s record feed.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Streams</samp>—<span class="ph" id="connectapi_feedtype_streams"><a name="connectapi_feedtype_streams"><!-- --></a>Contains all feed items for any combination of up to 25 feed-enabled entities
+                  that the context user subscribes to in a stream. Examples of feed-enabled entities
+                  include people, groups, and records,</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">To</samp>—<span class="ph" id="connectapi_feedtype_to"><a name="connectapi_feedtype_to"><!-- --></a>Contains all feed items with mentions of the context user. Contains feed items
+                  the context user commented on and feed items created by the context user that are
+                  commented on.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Topics</samp>—<span class="ph" id="connectapi_feedtype_topics"><a name="connectapi_feedtype_topics"><!-- --></a>Contains all feed items that include the specified
+                  topic.</span>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">UserProfile</samp>—Contains feed items
+               created when a user changes records that can be tracked in a feed. Contains feed
+               items whose parent is the user and feed items that @mention the user. This feed is
+               different than the news feed, which returns more feed items, including group updates.
+               You can get another user’s user profile feed.</li>
+
+         </ul>
+
+         <ul class="ul bulletList">
+            <li class="li">
+<samp class="codeph apex_code">Favorites</samp>—Contains favorites saved by
+               the context user. Favorites are feed searches, list views, and topics.</li>
+
+         </ul>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Post a Feed Item Using <span class="titlecodeph">postFeedElement</span>
+</h2>
+
+         
+         <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>The <samp class="codeph apex_code">postFeedElement</samp> methods are
+            the simplest, most efficient way to post feed items because, unlike the <samp class="codeph apex_code">postFeedItem</samp> methods, they don’t require you
+            to pass a feed type. Feed items are the only feed element type you can post.</p>
+</div>
+</div></div></div></div>
+
+         <p class="p">Use these methods to post feed items.</p>
+
+         <ul class="ul bulletList">
+            <li class="li">
+<strong class="ph b"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_1" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId, subjectId, feedElementType,
+                     text)</samp></a></strong>: Post a plain-text feed element.</li>
+
+            <li class="li">
+<strong class="ph b"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_2" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId, feedElement,
+                     feedElementFileUpload)</samp></a> (version 35.0 and earlier)</strong>: Post a rich-text feed element. Include mentions and hashtag topics, attach a file
+                  to a feed element, and associate action link groups with a feed element. You can
+                  also use this method to share a feed element and add a comment.</li>
+
+            <li class="li">
+<strong class="ph b"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId, feedElement)</samp></a> (version 36.0 and
+                  later)</strong>: Post a rich-text feed element. Include mentions and hashtag topics, attach
+                  already uploaded files to a feed element, and associate action link groups with a
+                  feed element. You can also use this method to share a feed element and add a
+                  comment.</li>
+
+         </ul>
+
+         <p class="p">When you post a feed item, you create a child of a standard or custom object. Specify
+            the parent object in the <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> parameter or in the <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> property of the <samp class="codeph apex_code">ConnectApi.FeedElementInput</samp> object you pass in the
+               <samp class="codeph apex_code"><var class="keyword varname">feedElement</var></samp> parameter. The
+            value of the <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp>
+            parameter determines the feeds in which the feed item is displayed. The <samp class="codeph apex_code">parent</samp> property in the returned <samp class="codeph apex_code">ConnectApi.FeedItem</samp> object contains information about
+            the parent object.</p>
+
+         <p class="p">Use these methods to complete these tasks.</p>
+
+         <ul class="ul bulletList">
+            <li class="li">
+<strong class="ph b">Post to yourself</strong>: This code posts a feed item to the context user. The <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> specifies <samp class="codeph apex_code">me</samp>, which is an alias for the context
+                  user’s ID. It could also specify the context user’s
+                  ID.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(<span class="keyword">null</span>, <span class="string">'me'</span>, ConnectApi.FeedElementType.FeedItem, <span class="string">'Working from home today.'</span>);</pre></div>
+ The <samp class="codeph apex_code">parent</samp> property of the newly posted
+                  feed item contains the <samp class="codeph apex_code">ConnectApi.UserSummary</samp> of the context user.</li>
+
+            <li class="li">
+<strong class="ph b">Post to another user</strong>: This code posts a feed item to a user other than the context user. The <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> specifies the user
+                  ID of the target
+                  user.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(<span class="keyword">null</span>, <span class="string">'005D00000016Qxp'</span>, ConnectApi.FeedElementType.FeedItem, <span class="string">'Kevin, do you have information about the new categories?'</span>);</pre></div>
+ The <samp class="codeph apex_code">parent</samp> property of the newly posted
+                  feed item contains the <samp class="codeph apex_code">ConnectApi.UserSummary</samp> of the target user.</li>
+
+            <li class="li">
+<strong class="ph b">Post to a group</strong>: This code posts a feed item to a group. The <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> specifies the group
+                  ID.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="postFeedElement3Ex"><a name="postFeedElement3Ex"><!-- --></a>ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.MentionSegmentInput mentionSegmentInput = <span class="keyword">new</span> ConnectApi.MentionSegmentInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+mentionSegmentInput.id = <span class="string">'005RR000000Dme9'</span>;
+messageBodyInput.messageSegments.add(mentionSegmentInput);
+
+textSegmentInput.text = <span class="string">'Could you take a look?'</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+feedItemInput.body = messageBodyInput;
+feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
+feedItemInput.subjectId = <span class="string">'0F9RR0000004CPw'</span>;
+
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+ The <samp class="codeph apex_code">parent</samp> property of the newly posted
+                  feed item contains the <samp class="codeph apex_code">ConnectApi.ChatterGroupSummary</samp> of the specified group.</li>
+
+            <li class="li">
+<strong class="ph b">Post to a record (such as a file or an account)</strong>: This code posts a feed item to a record and mentions a group. The <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp> specifies the
+                  record
+                  ID.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.MentionSegmentInput mentionSegmentInput = <span class="keyword">new</span> ConnectApi.MentionSegmentInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+textSegmentInput.text = <span class="string">'Does anyone know anyone with contacts here?'</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+<span class="onelineComment">// Mention a group.</span>
+mentionSegmentInput.id = <span class="string">'0F9D00000000oOT'</span>;
+messageBodyInput.messageSegments.add(mentionSegmentInput);
+
+feedItemInput.body = messageBodyInput;
+feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
+
+<span class="onelineComment">// Use a record ID for the subject ID.</span>
+feedItemInput.subjectId = <span class="string">'001D000000JVwL9'</span>;
+
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(<span class="keyword">null</span>, feedItemInput);</pre></div>
+ The <samp class="codeph apex_code">parent</samp> property of the new feed item
+                  depends on the record type specified in <samp class="codeph apex_code"><var class="keyword varname">subjectId</var></samp>. If the record type is File, the
+                  parent is <samp class="codeph apex_code">ConnectApi.FileSummary</samp>. If the
+                  record type is Group, the parent is <samp class="codeph apex_code">ConnectApi.ChatterGroupSummary</samp>. If the record type is User, the
+                  parent is <samp class="codeph apex_code">ConnectApi.UserSummary</samp>. For all
+                  other record types, as in this example that uses an Account, the parent is <samp class="codeph apex_code">ConnectApi.RecordSummary</samp>.</li>
+
+         </ul>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Get Feed Elements from a Feed</h2>
+
+         
+         <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>To return a feed that includes feed elements, call these methods. Feed
+            element types include feed item, bundle, and recommendation.</p>
+</div>
+</div></div></div></div>
+
+         <p class="p">Getting feed items from a feed is similar, but not identical, for each feed type.</p>
+
+         <ul class="ul bulletList">
+            <li class="li">
+<strong class="ph b">Get feed elements from the <samp class="codeph apex_code">Company</samp>,
+                     <samp class="codeph apex_code">DirectMessageModeration</samp>, <samp class="codeph apex_code">DirectMessages</samp>, <samp class="codeph apex_code">Home</samp>, <samp class="codeph apex_code">Moderation</samp>, and <samp class="codeph apex_code">PendingReview</samp>
+                  feeds</strong>: To get the feed elements from these feeds, use these methods that don’t require a
+                        <var class="keyword varname"><samp class="codeph apex_code">subjectId</samp></var>.<ul class="ul bulletList">
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, pageParam, pageSize, sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, recentCommentCount, density, pageParam, pageSize,
+                           sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, recentCommentCount, density, pageParam, pageSize, sortParam,
+                           filter)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, recentCommentCount, density, pageParam, pageSize, sortParam,
+                           filter, threadedCommentsCollapsed)</samp></li>
+
+                  </ul>
+</li>
+
+            <li class="li">
+<strong class="ph b">Get feed elements from the <samp class="codeph apex_code">Favorites</samp>
+                  feed</strong>: To get the feed elements from the favorites feed, specify a <var class="keyword varname"><samp class="codeph apex_code">favoriteId</samp></var>. For these feeds, the
+                        <var class="keyword varname"><samp class="codeph apex_code">subjectId</samp></var> must be
+                  the ID of the context user or the alias <samp class="codeph apex_code">me</samp>.<ul class="ul bulletList">
+                     <li class="li"><samp class="codeph apex_code">getFeedElements(communityId, subjectId,
+                           favoriteId)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElements(communityId, subjectId,
+                           favoriteId, pageParam, pageSize, sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElements(communityId, subjectId,
+                           favoriteId, recentCommentCount, elementsPerBundle, pageParam, pageSize,
+                           sortParam)</samp></li>
+
+                  </ul>
+</li>
+
+            <li class="li">
+<strong class="ph b">Get feed elements from the <samp class="codeph apex_code">Filter</samp>
+                  feed</strong>: To get the feed elements from the filters feed, specify a <var class="keyword varname"><samp class="codeph apex_code">keyPrefix</samp></var>. The <var class="keyword varname"><samp class="codeph apex_code">keyPrefix</samp></var> indicates the object
+                  type and is the first three characters of the object ID. The <var class="keyword varname"><samp class="codeph apex_code">subjectId</samp></var> must be the ID of the
+                  context user or the alias <samp class="codeph apex_code">me</samp>.<ul class="ul bulletList">
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFilterFeed(communityId,
+                           subjectId, keyPrefix)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFilterFeed(communityId,
+                           subjectId, keyPrefix, pageParam, pageSize, sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFilterFeed(communityId,
+                           subjectId, keyPrefix, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam)</samp></li>
+
+                  </ul>
+</li>
+
+            <li class="li">
+<strong class="ph b">Get feed elements from the <samp class="codeph apex_code">Bookmarks</samp>,
+                     <samp class="codeph apex_code">Files</samp>, <samp class="codeph apex_code">Groups</samp>, <samp class="codeph apex_code">Mute</samp>, <samp class="codeph apex_code">News</samp>, <samp class="codeph apex_code">People</samp>, <samp class="codeph apex_code">Record</samp>, <samp class="codeph apex_code">Streams</samp>, <samp class="codeph apex_code">To</samp>, <samp class="codeph apex_code">Topics</samp>, and <samp class="codeph apex_code">UserProfile</samp> feeds</strong>: To get the feed elements from these feed types, specify a subject ID. If
+                     <var class="keyword varname">feedType</var> is <samp class="codeph apex_code">Record</samp>,
+                     <var class="keyword varname">subjectId</var> can be any record ID, including a group ID. If
+                     <var class="keyword varname">feedType</var> is <samp class="codeph apex_code">Streams</samp>,
+                     <var class="keyword varname">subjectId</var> must be a stream ID. If
+                     <var class="keyword varname">feedType</var> is <samp class="codeph apex_code">Topics</samp>,
+                     <var class="keyword varname">subjectId</var> must be a topic ID. If <var class="keyword varname">feedType</var>
+                  is <samp class="codeph apex_code">UserProfile</samp>,
+                     <var class="keyword varname">subjectId</var> can be any user ID. If the
+                     <var class="keyword varname">feedType</var> is any other value, <var class="keyword varname">subjectId</var>
+                  must be the ID of the context user or the alias <samp class="codeph apex_code">me</samp>.<ul class="ul bulletList">
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, pageParam, pageSize, sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, density, pageParam, pageSize,
+                           sortParam)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, density, pageParam, pageSize,
+                           sortParam, filter)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, density, pageParam, pageSize,
+                           sortParam, filter, threadedCommentsCollapsed)</samp></li>
+
+                  </ul>
+</li>
+
+            <li class="li">
+<strong class="ph b">Get feed elements from a <samp class="codeph apex_code">Record</samp> feed</strong>: For <var class="keyword varname"><samp class="codeph apex_code">subjectId</samp></var>, specify
+                  a record ID. <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>The record can be a record of any type that supports feeds,
+                     including group. The feed on the group page in the Salesforce UI is a record
+                     feed.</p>
+</div>
+</div></div></div></div>
+ <ul class="ul bulletList">
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, density, pageParam, pageSize,
+                           sortParam, showInternalOnly)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, density, pageParam, pageSize,
+                           sortParam, customFilter)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam, showInternalOnly)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam, showInternalOnly, filter)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam, showInternalOnly,
+                        customFilter)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam, showInternalOnly, filter,
+                           threadedCommentsCollapsed)</samp></li>
+
+                     <li class="li"><samp class="codeph apex_code">getFeedElementsFromFeed(communityId,
+                           feedType, subjectId, recentCommentCount, elementsPerBundle, density,
+                           pageParam, pageSize, sortParam, showInternalOnly, customFilter,
+                           threadedCommentsCollapsed)</samp></li>
+
+                  </ul>
+</li>
+
+         </ul>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFavorites_static_methods.htm" target="_blank" title="Apex Reference Guide: ChatterFavorites Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ChatterFavorites Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm" target="_blank" title="Apex Reference Guide: ChatterFeeds Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ChatterFeeds Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_output.htm" target="_blank" title="Apex Reference Guide: ConnectApi Output Classes - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ConnectApi Output Classes</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input.htm" target="_blank" title="Apex Reference Guide: ConnectApi Input Classes - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ConnectApi Input Classes</a></div></li>
+</ul>
+</div>
+</div>

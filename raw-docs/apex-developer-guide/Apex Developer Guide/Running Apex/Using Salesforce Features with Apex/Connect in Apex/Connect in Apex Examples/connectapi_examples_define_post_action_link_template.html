@@ -1,0 +1,227 @@
+<a name="connectapi_examples_define_post_action_link_template"><!-- --></a><h1 class="helpHead1">Define an Action Link in a Template and Post with a Feed Element</h1><div class="body refbody">
+<div class="shortdesc">Create an action link and action link group and instantiate the action link group from
+    a template.</div>
+
+    <div class="section"><div class="p">This example creates the same action link and action link group as the example <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/connectapi_examples_define_post_action_link.htm#connectapi_examples_define_post_action_link" title="Create one action link in an action link group, associate the action link group with a feed item, and post the feed item.">Define an Action Link and Post with a Feed Element</a>, but this example
+      instantiates the action link group from a template.</div></div>
+
+    <div class="section">
+<h2 class="helpHead2">Step 1: Create the Action Link Templates</h2>
+
+      
+      <ol class="ol enumList">
+        <li class="li">From Setup, enter <kbd class="ph userinput">Action Link Templates</kbd> in the <span class="keyword parmname">Quick
+            Find</span> box, then select <strong class="ph uicontrol">Action Link Templates</strong>.</li>
+
+        <li class="li">Use these values in a new Action Link Group Template:
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+              
+              
+              <thead class="thead sorted" align="left">
+                <tr>
+                  <th class="featureTableHeader  " id="d44723e68">Field</th>
+
+                  <th class="featureTableHeader  " id="d44723e71">Value</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="tbody">
+                <tr>
+                  <td class="entry" headers="d44723e68" data-title="Field">Name</td>
+
+                  <td class="entry" headers="d44723e71" data-title="Value">Doc Example</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e68" data-title="Field">Developer Name</td>
+
+                  <td class="entry" headers="d44723e71" data-title="Value">Doc_Example</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e68" data-title="Field">Category</td>
+
+                  <td class="entry" headers="d44723e71" data-title="Value">Primary action</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e68" data-title="Field">Executions Allowed</td>
+
+                  <td class="entry" headers="d44723e71" data-title="Value">Once per User</td>
+
+                </tr>
+
+              </tbody>
+
+            </table></div>
+</li>
+
+        <li class="li">Use these values in a new Action Link Template:
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+              
+              
+              <thead class="thead sorted" align="left">
+                <tr>
+                  <th class="featureTableHeader  " id="d44723e131">Field</th>
+
+                  <th class="featureTableHeader  " id="d44723e134">Value</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="tbody">
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">Action Link Group Template</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">Doc Example</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">Action Type</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">Api</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">Action URL</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">/services/data/{!Bindings.ApiVersion}/chatter/feed-elements</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">User Visibility</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">Everyone can see</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">HTTP Request Body</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">{ "subjectId":"{!Bindings.SubjectId}", "feedElementType":"FeedItem",
+                    "body":{ "messageSegments":[ { "type":"Text", "text":"{!Bindings.Text}" } ] }
+                    }</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">HTTP Headers</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">Content-Type: application/json</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">Position</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">0</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">Label Key</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">Post</td>
+
+                </tr>
+
+                <tr>
+                  <td class="entry" headers="d44723e131" data-title="Field">HTTP Method</td>
+
+                  <td class="entry" headers="d44723e134" data-title="Value">POST</td>
+
+                </tr>
+
+              </tbody>
+
+            </table></div>
+</li>
+
+        <li class="li">Go back to the Action Link Group Template and select <span class="keyword parmname">Published</span>.
+          Click <strong class="ph uicontrol">Save</strong>.</li>
+
+      </ol>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Step 2: Instantiate the Action Link Group, Associate it with a Feed Item, and Post
+        it</h2>
+
+      
+      <p class="p">This example calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1" target="_blank"><samp class="codeph apex_code">ConnectApi.ActionLinks.createActionLinkGroupDefinition​(communityId,
+            actionLinkGroup)</samp></a> to create an action link group definition.</p>
+
+      <p class="p">It calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">ConnectApi.ChatterFeeds.postFeedElement(communityId, feedElement)</samp></a> to
+        associate the action link group with a feed item and post it.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the action link group template Id.</span>
+ActionLinkGroupTemplate template = [SELECT Id FROM ActionLinkGroupTemplate WHERE DeveloperName=<span class="string">'Doc_Example'</span>];
+
+<span class="onelineComment">// Add binding name-value pairs to a map.</span>
+<span class="onelineComment">// The names are defined in the action link template(s) associated with the action link group template.</span>
+<span class="onelineComment">// Get them from Setup UI or SOQL.</span>
+Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; bindingMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+bindingMap.put(<span class="string">'ApiVersion'</span>, <span class="string">'v33.0'</span>);
+bindingMap.put(<span class="string">'Text'</span>, <span class="string">'This post was created by an API action link.'</span>);
+bindingMap.put(<span class="string">'SubjectId'</span>, <span class="string">'me'</span>);
+
+<span class="onelineComment">// Create ActionLinkTemplateBindingInput objects from the map elements.</span>
+List&lt;ConnectApi.ActionLinkTemplateBindingInput&gt; bindingInputs = <span class="keyword">new</span> List&lt;ConnectApi.ActionLinkTemplateBindingInput&gt;();
+
+<span class="statement">for</span> (<span class="keyword">String</span> key : bindingMap.keySet()) {
+    ConnectApi.ActionLinkTemplateBindingInput bindingInput = <span class="keyword">new</span> ConnectApi.ActionLinkTemplateBindingInput();
+    bindingInput.key = key;
+    bindingInput.value = bindingMap.get(key);
+    bindingInputs.add(bindingInput);
+}
+
+<span class="onelineComment">// Set the template Id and template binding values in the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinitionInput actionLinkGroupDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkGroupDefinitionInput();
+actionLinkGroupDefinitionInput.templateId = template.id;
+actionLinkGroupDefinitionInput.templateBindings = bindingInputs;
+
+<span class="onelineComment">// Instantiate the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinition actionLinkGroupDefinition =
+ ConnectApi.ActionLinks.createActionLinkGroupDefinition(Network.getNetworkId(), actionLinkGroupDefinitionInput);
+
+ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+ConnectApi.AssociatedActionsCapabilityInput associatedActionsCapabilityInput = <span class="keyword">new</span> ConnectApi.AssociatedActionsCapabilityInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+<span class="onelineComment">// Define the FeedItemInput object to pass to postFeedElement</span>
+feedItemInput.body = messageBodyInput;
+feedItemInput.capabilities = feedElementCapabilitiesInput;
+feedItemInput.subjectId = <span class="string">'me'</span>;
+
+<span class="onelineComment">// The MessageBodyInput object holds the text in the post</span>
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+textSegmentInput.text = <span class="string">'Click to post a feed item.'</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+
+<span class="onelineComment">// The FeedElementCapabilitiesInput object holds the capabilities of the feed item.</span>
+<span class="onelineComment">// For this feed item, we define an associated actions capability to hold the action link group.</span>
+<span class="onelineComment">// The action link group ID is returned from the call to create the action link group definition. </span>
+feedElementCapabilitiesInput.associatedActions = associatedActionsCapabilityInput;
+associatedActionsCapabilityInput.actionLinkGroupIds = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+associatedActionsCapabilityInput.actionLinkGroupIds.add(actionLinkGroupDefinition.id);
+
+<span class="onelineComment">// Post the feed item. </span>
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

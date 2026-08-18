@@ -1,0 +1,60 @@
+<a name="apex_analytics_report_metadata"><!-- --></a><h1 class="helpHead1">Get Report Metadata</h1><div class="body conbody">
+<div class="shortdesc">You can retrieve report metadata to get information about
+a report and its report type.</div>
+
+<div class="p">Metadata includes information about fields that are used in the
+report for filters, groupings, detailed data, and summaries. You can
+use the metadata to do several things:<ul class="ul bulletList">
+<li class="li">Find out what fields and values you can filter on in the report
+type.</li>
+
+<li class="li">Build custom chart visualizations by using the metadata information
+on fields, groupings, detailed data, and summaries.</li>
+
+<li class="li">Change filters in the report metadata when you run a report.</li>
+
+</ul>
+</div>
+
+<p class="p">Use the <samp class="codeph apex_code">ReportResults.getReportMetadata</samp> method to retrieve report metadata. You can then use the “get”
+methods on the <samp class="codeph apex_code">ReportMetadata</samp> class to access metadata values.</p>
+
+<div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+<p class="p">The following example retrieves metadata for a report.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the report ID</span>
+List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where 
+    DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+<span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+
+<span class="onelineComment">// Run a report</span>
+Reports.ReportResults results = Reports.ReportManager.runReport(reportId);
+
+<span class="onelineComment">// Get the report metadata</span>
+Reports.ReportMetadata rm = results.getReportMetadata();
+System.debug(<span class="string">'Name: '</span> + rm.getName());
+System.debug(<span class="string">'ID: '</span> + rm.getId());
+System.debug(<span class="string">'Currency code: '</span> + rm.getCurrencyCode());
+System.debug(<span class="string">'Developer name: '</span> + rm.getDeveloperName());
+
+<span class="onelineComment">// Get grouping info for first grouping</span>
+Reports.GroupingInfo gInfo = rm.getGroupingsDown()[0];
+System.debug(<span class="string">'Grouping name: '</span> + gInfo.getName());
+System.debug(<span class="string">'Grouping sort order: '</span> + gInfo.getSortOrder());
+System.debug(<span class="string">'Grouping date granularity: '</span> + gInfo.getDateGranularity());
+
+<span class="onelineComment">// Get aggregates</span>
+System.debug(<span class="string">'First aggregate: '</span> + rm.getAggregates()[0]);
+System.debug(<span class="string">'Second aggregate: '</span> + rm.getAggregates()[1]);
+
+<span class="onelineComment">// Get detail columns</span>
+System.debug(<span class="string">'Detail columns: '</span> + rm.getDetailColumns());
+
+<span class="onelineComment">// Get report format</span>
+System.debug(<span class="string">'Report format: '</span> + rm.getReportFormat());
+</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,296 @@
+<a name="apex_dynamic_data_categories"><!-- --></a><h1 class="helpHead1">Accessing All Data Categories Associated
+with an sObject</h1><div class="body conbody">
+
+<p class="p">Use the <samp class="codeph apex_code">describeDataCategoryGroups</samp> and <samp class="codeph apex_code">describeDataCategoryGroupStructures</samp> methods to return the categories associated with a specific object:</p>
+
+<ol class="ol enumList">
+<li class="li">Return all the category groups associated with the objects of your choice (see <samp class="codeph apex_code">describeDataCategoryGroups(sObjectNames)</samp>).</li>
+
+<li class="li">From the returned map, get the category group name and sObject name you want to further
+            interrogate (see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Schema_DescribeDataCategoryGroupResult.htm" target="_blank">DescribeDataCategoryGroupResult Class</a>).</li>
+
+<li class="li">Specify the category group and associated object, then retrieve
+the categories available to this object (see <samp class="codeph apex_code">describeDataCategoryGroupStructures</samp>).</li>
+
+</ol>
+
+<p class="p">The <samp class="codeph apex_code">describeDataCategoryGroupStructures</samp> method returns
+         the categories available for the object in the category group you specified. For additional
+         information about data categories, see “Work with Data Categories” in the Salesforce online
+         help.</p>
+
+<p class="p">In the following example, the <samp class="codeph apex_code">describeDataCategoryGroupSample</samp> method returns all the category groups
+         associated with the Article and Question objects. The <samp class="codeph apex_code">describeDataCategoryGroupStructures</samp> method returns all the categories
+         available for articles and questions in the Regions category group. For additional
+         information about articles and questions, see “Work with Articles and Translations” in the
+         Salesforce online help. </p>
+
+<p class="p">To use the following example, you must:</p>
+
+<ul class="ul bulletList">
+<li class="li">Enable Salesforce Knowledge.</li>
+
+<li class="li">Enable the answers feature.</li>
+
+<li class="li">Create a data category group called Regions.</li>
+
+<li class="li">Assign Regions as the data category group to be used by Answers.</li>
+
+<li class="li">Make sure the Regions data category group is assigned to Salesforce Knowledge.</li>
+
+</ul>
+
+<p class="p">For more information on creating data category groups, see “Create and Modify Category Groups” in
+         the Salesforce  online help. For more information on answers, see “Answers Overview” in the
+         Salesforce online help.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">public</span> <span class="keyword">class</span> DescribeDataCategoryGroupSample {
+   <span class="keyword">public</span> <span class="keyword">static</span> List&lt;DescribeDataCategoryGroupResult&gt; describeDataCategoryGroupSample(){
+      List&lt;DescribeDataCategoryGroupResult&gt; describeCategoryResult;
+      <span class="statement">try</span> {
+         <span class="onelineComment">//Creating the list of sobjects to use for the describe</span>
+         <span class="onelineComment">//call</span>
+         List&lt;<span class="keyword">String</span>&gt; objType = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+
+         objType.add(<span class="string">'KnowledgeArticleVersion'</span>);
+         objType.add(<span class="string">'Question'</span>);
+
+         <span class="onelineComment">//Describe Call</span>
+         describeCategoryResult = Schema.describeDataCategoryGroups(objType);
+   
+         <span class="onelineComment">//Using the results and retrieving the information</span>
+         <span class="statement">for</span>(DescribeDataCategoryGroupResult singleResult : describeCategoryResult){
+            <span class="onelineComment">//Getting the name of the category</span>
+            singleResult.getName();
+
+            <span class="onelineComment">//Getting the name of label</span>
+            singleResult.getLabel();
+
+            <span class="onelineComment">//Getting description</span>
+            singleResult.getDescription();
+
+            <span class="onelineComment">//Getting the sobject</span>
+            singleResult.getSobject();
+         }         
+      } <span class="statement">catch</span>(Exception e){
+      }
+      
+      <span class="statement">return</span> describeCategoryResult;
+   }
+}
+
+</pre></div>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">public</span> <span class="keyword">class</span> DescribeDataCategoryGroupStructures {
+   <span class="keyword">public</span> <span class="keyword">static</span> List&lt;DescribeDataCategoryGroupStructureResult&gt; 
+   getDescribeDataCategoryGroupStructureResults(){
+      List&lt;DescribeDataCategoryGroupResult&gt; describeCategoryResult;
+      List&lt;DescribeDataCategoryGroupStructureResult&gt; describeCategoryStructureResult;
+      <span class="statement">try</span> {
+         <span class="onelineComment">//Making the call to the describeDataCategoryGroups to</span>
+         <span class="onelineComment">//get the list of category groups associated</span>
+         List&lt;<span class="keyword">String</span>&gt; objType = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+         objType.add(<span class="string">'KnowledgeArticleVersion'</span>);
+         objType.add(<span class="string">'Question'</span>);
+         describeCategoryResult = Schema.describeDataCategoryGroups(objType);
+         
+         <span class="onelineComment">//Creating a list of pair objects to use as a parameter</span>
+         <span class="onelineComment">//for the describe call</span>
+         List&lt;DataCategoryGroupSobjectTypePair&gt; pairs = 
+            <span class="keyword">new</span> List&lt;DataCategoryGroupSobjectTypePair&gt;();
+         
+         <span class="onelineComment">//Looping throught the first describe result to create</span>
+         <span class="onelineComment">//the list of pairs for the second describe call</span>
+         <span class="statement">for</span>(DescribeDataCategoryGroupResult singleResult : 
+         describeCategoryResult){
+            DataCategoryGroupSobjectTypePair p =
+               <span class="keyword">new</span> DataCategoryGroupSobjectTypePair();
+            p.setSobject(singleResult.getSobject());
+            p.setDataCategoryGroupName(singleResult.getName());
+            pairs.add(p);
+         }
+         
+         <span class="onelineComment">//describeDataCategoryGroupStructures()</span>
+         describeCategoryStructureResult = 
+            Schema.describeDataCategoryGroupStructures(pairs, <span class="keyword">false</span>);
+
+         <span class="onelineComment">//Getting data from the result</span>
+         <span class="statement">for</span>(DescribeDataCategoryGroupStructureResult singleResult : describeCategoryStructureResult){
+            <span class="onelineComment">//Get name of the associated Sobject</span>
+            singleResult.getSobject();
+
+            <span class="onelineComment">//Get the name of the data category group</span>
+            singleResult.getName();
+
+            <span class="onelineComment">//Get the name of the data category group</span>
+            singleResult.getLabel();
+
+            <span class="onelineComment">//Get the description of the data category group</span>
+            singleResult.getDescription();
+
+            <span class="onelineComment">//Get the top level categories</span>
+            DataCategory [] toplevelCategories = 
+               singleResult.getTopCategories();
+            
+            <span class="onelineComment">//Recursively get all the categories</span>
+            List&lt;DataCategory&gt; allCategories = 
+               getAllCategories(toplevelCategories);
+
+            <span class="statement">for</span>(DataCategory category : allCategories) {
+               <span class="onelineComment">//Get the name of the category</span>
+               category.getName();
+
+               <span class="onelineComment">//Get the label of the category</span>
+               category.getLabel();
+
+               <span class="onelineComment">//Get the list of sub categories in the category</span>
+               DataCategory [] childCategories = 
+                  category.getChildCategories();
+            }
+         }
+      } <span class="statement">catch</span> (Exception e){
+      }
+      <span class="statement">return</span> describeCategoryStructureResult;
+    }
+    
+   <span class="keyword">private</span> <span class="keyword">static</span> DataCategory[] getAllCategories(DataCategory [] categories){
+      <span class="statement">if</span>(categories.isEmpty()){
+         <span class="statement">return</span> <span class="keyword">new</span> DataCategory[]{};
+      } <span class="statement">else</span> {
+         DataCategory [] categoriesClone = categories.clone();
+         DataCategory category = categoriesClone[0];
+         DataCategory[] allCategories = <span class="keyword">new</span> DataCategory[]{category};
+         categoriesClone.remove(0);
+         categoriesClone.addAll(category.getChildCategories());
+         allCategories.addAll(getAllCategories(categoriesClone));
+         <span class="statement">return</span> allCategories;
+      }
+   }
+}
+
+</pre></div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="testing_apex_describe_category"><a name="testing_apex_describe_category"><!-- --></a>Testing Access
+to All Data Categories Associated with an sObject </span></h2>
+<p class="p">The following example tests the <samp class="codeph apex_code">describeDataCategoryGroupSample</samp> method shown earlier. It ensures that the returned category group
+and associated objects are correct.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> DescribeDataCategoryGroupSampleTest {
+   <span class="keyword">public</span> <span class="keyword">static</span> testMethod <span class="keyword">void</span> describeDataCategoryGroupSampleTest(){
+      List&lt;DescribeDataCategoryGroupResult&gt;describeResult =
+                 DescribeDataCategoryGroupSample.describeDataCategoryGroupSample();
+      
+      <span class="onelineComment">//Assuming that you have KnowledgeArticleVersion and Questions</span>
+      <span class="onelineComment">//associated with only one category group 'Regions'.</span>
+      System.assert(describeResult.size() == 2,
+           <span class="string">'The results should only contain two results: '</span> + describeResult.size());
+      
+      <span class="statement">for</span>(DescribeDataCategoryGroupResult result : describeResult) {
+         <span class="onelineComment">//Storing the results</span>
+         <span class="keyword">String</span> name = result.getName();
+         <span class="keyword">String</span> label = result.getLabel();
+         <span class="keyword">String</span> description = result.getDescription();
+         <span class="keyword">String</span> objectNames = result.getSobject();
+         
+         <span class="onelineComment">//asserting the values to make sure</span>
+         System.assert(name == <span class="string">'Regions'</span>,
+         <span class="string">'Incorrect name was returned: '</span> + name);
+         System.assert(label == <span class="string">'Regions of the World'</span>,
+         <span class="string">'Incorrect label was returned: '</span> + label);
+         System.assert(description == <span class="string">'This is the category group for all the regions'</span>,
+         <span class="string">'Incorrect description was returned: '</span> + description);
+         System.assert(objectNames.contains(<span class="string">'KnowledgeArticleVersion'</span>) 
+                       || objectNames.contains(<span class="string">'Question'</span>),
+                       <span class="string">'Incorrect sObject was returned: '</span> + objectNames);
+      }
+   }
+}</pre></div>
+<p class="p">This example tests the <samp class="codeph apex_code">describeDataCategoryGroupStructures</samp> method. It ensures that
+the returned category group, categories and associated objects are
+correct.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> DescribeDataCategoryGroupStructuresTest {
+   <span class="keyword">public</span> <span class="keyword">static</span> testMethod <span class="keyword">void</span> getDescribeDataCategoryGroupStructureResultsTest(){
+      List&lt;Schema.DescribeDataCategoryGroupStructureResult&gt; describeResult =
+         DescribeDataCategoryGroupStructures.getDescribeDataCategoryGroupStructureResults();
+      
+      System.assert(describeResult.size() == 2,
+            <span class="string">'The results should only contain 2 results: '</span> + describeResult.size());
+            
+      <span class="onelineComment">//Creating category info</span>
+      CategoryInfo world = <span class="keyword">new</span> CategoryInfo(<span class="string">'World'</span>, <span class="string">'World'</span>);
+      CategoryInfo asia = <span class="keyword">new</span> CategoryInfo(<span class="string">'Asia'</span>, <span class="string">'Asia'</span>);
+      CategoryInfo northAmerica = <span class="keyword">new</span> CategoryInfo(<span class="string">'NorthAmerica'</span>,
+                                                  <span class="string">'North America'</span>);
+      CategoryInfo southAmerica = <span class="keyword">new</span> CategoryInfo(<span class="string">'SouthAmerica'</span>,
+                                                  <span class="string">'South America'</span>);
+      CategoryInfo europe = <span class="keyword">new</span> CategoryInfo(<span class="string">'Europe'</span>, <span class="string">'Europe'</span>);
+      
+      List&lt;CategoryInfo&gt; info = <span class="keyword">new</span> CategoryInfo[] {
+        asia, northAmerica, southAmerica, europe
+     };
+      
+      <span class="statement">for</span> (Schema.DescribeDataCategoryGroupStructureResult result : describeResult) {
+         <span class="keyword">String</span> name = result.getName();
+         <span class="keyword">String</span> label = result.getLabel();
+         <span class="keyword">String</span> description = result.getDescription();
+         <span class="keyword">String</span> objectNames = result.getSobject();
+         
+         <span class="onelineComment">//asserting the values to make sure</span>
+         System.assert(name == <span class="string">'Regions'</span>, 
+         <span class="string">'Incorrect name was returned: '</span> + name);
+         System.assert(label == <span class="string">'Regions of the World'</span>,
+         <span class="string">'Incorrect label was returned: '</span> + label);
+         System.assert(description == <span class="string">'This is the category group for all the regions'</span>,
+         <span class="string">'Incorrect description was returned: '</span> + description);
+         System.assert(objectNames.contains(<span class="string">'KnowledgeArticleVersion'</span>) 
+                    || objectNames.contains(<span class="string">'Question'</span>),
+                       <span class="string">'Incorrect sObject was returned: '</span> + objectNames);
+         
+         DataCategory [] topLevelCategories = result.getTopCategories();
+         System.assert(topLevelCategories.size() == 1,
+         <span class="string">'Incorrect number of top level categories returned: '</span> + topLevelCategories.size());
+         System.assert(topLevelCategories[0].getLabel() == world.getLabel() &amp;&amp;
+                       topLevelCategories[0].getName() == world.getName());
+         
+         <span class="onelineComment">//checking if the correct children are returned</span>
+         DataCategory [] children = topLevelCategories[0].getChildCategories();
+         System.assert(children.size() == 4,
+         <span class="string">'Incorrect number of children returned: '</span> + children.size());
+         <span class="statement">for</span>(<span class="keyword">Integer</span> i=0; i &lt; children.size(); i++){
+            System.assert(children[i].getLabel() == info[i].getLabel() &amp;&amp;
+                          children[i].getName() == info[i].getName());
+         }
+      }
+      
+   }
+   
+   <span class="keyword">private</span> <span class="keyword">class</span> CategoryInfo {      
+      <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> name;
+      <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> label;
+            
+      <span class="keyword">private</span> CategoryInfo(<span class="keyword">String</span> n, <span class="keyword">String</span> l){
+         <span class="statement">this</span>.name = n;
+         <span class="statement">this</span>.label = l;
+      }
+      
+      <span class="keyword">public</span> <span class="keyword">String</span> getName(){
+         <span class="statement">return</span> <span class="statement">this</span>.name;
+      }
+      
+      <span class="keyword">public</span> <span class="keyword">String</span> getLabel(){
+         <span class="statement">return</span> <span class="statement">this</span>.label;
+      }
+   }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_global_describe.htm" title="Accessing All sObjects">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm" title="Dynamic SOQL">Next →</a></li>
+</ul></div>
+</div>

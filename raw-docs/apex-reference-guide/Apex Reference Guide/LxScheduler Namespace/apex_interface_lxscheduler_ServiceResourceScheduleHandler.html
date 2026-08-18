@@ -1,0 +1,169 @@
+<a name="apex_interface_lxscheduler_ServiceResourceScheduleHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ServiceResourceScheduleHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Allows an implementing class to check external calendar events to find
+      already booked time slots for the requested service resources. This interface is part of
+      Salesforce Scheduler.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_lxscheduler.htm" title="The LxScheduler namespace provides an interface and classes for integrating Salesforce Scheduler with external calendars.">LxScheduler</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">The <samp class="codeph apex_code">lxscheduler.ServiceResourceScheduleHandler</samp>
+        interface is called by Salesforce Scheduler APIs.</p>
+
+      <p class="p">To implement this interface, you must first declare a class with the <samp class="codeph apex_code"><span class="keyword">implements</span></samp> keyword as follows:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> ServiceResourceScheduleHandlerImpl <span class="keyword">implements</span> LxScheduler.ServiceResourceScheduleHandler{}</pre></div>
+
+      <p class="p">Next, your class must provide an implementation for the following method:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;LxScheduler.ServiceResourceSchedule&gt; getUnavailableTimeslots(LxScheduler.ServiceAppointmentRequestInfo requestInfo){
+      <span class="onelineComment">//Your code here</span>
+}</pre></div>
+
+      <p class="p">The implemented method must be declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+        or <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_lxscheduler_ServiceResourceScheduleHandler.htm#apex_lxscheduler_ServiceResourceScheduleHandler_methods">ServiceResourceScheduleHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_lxscheduler_ServiceResourceScheduleHandler.htm#apex_interface_lxscheduler_ServiceResourceScheduleHandler_Example">ServiceResourceScheduleHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_lxscheduler_ServiceResourceScheduleHandler_methods">
+<a name="apex_lxscheduler_ServiceResourceScheduleHandler_methods"><!-- --></a><h2 class="helpHead2">ServiceResourceScheduleHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">ServiceResourceScheduleHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_lxscheduler_ServiceResourceScheduleHandler.htm#apex_lxscheduler_ServiceResourceScheduleHandler_getUnavailableTimeslots">getUnavailableTimeslots(var1)</a></strong><br>
+Passes the required information to get unavailable time slots from an       external system. The implementation of this method returns the <samp class="codeph apex_code">lxscheduler.ServiceResourceSchedule</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_lxscheduler_ServiceResourceScheduleHandler_getUnavailableTimeslots">
+<a name="apex_lxscheduler_ServiceResourceScheduleHandler_getUnavailableTimeslots"><!-- --></a><h3 class="helpHead3">getUnavailableTimeslots(var1)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Passes the required information to get unavailable time slots from an
+      external system. The implementation of this method returns the <samp class="codeph apex_code">lxscheduler.ServiceResourceSchedule</samp> class.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;lxscheduler.ServiceResourceSchedule&gt;
+          getUnavailableTimeslots(lxscheduler.ServiceAppointmentRequestInfo var1)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">var1</var></strong>:<p class="p">Type: lxscheduler.ServiceAppointmentRequestInfo</p>
+<p class="p">Represents the list of parameters that are passed to the ServiceResourceScheduleHandler
+            interface.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;lxscheduler.ServiceResourceSchedule&gt;</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_lxscheduler_ServiceResourceScheduleHandler_Example">
+<a name="apex_interface_lxscheduler_ServiceResourceScheduleHandler_Example"><!-- --></a><h2 class="helpHead2">ServiceResourceScheduleHandler Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+            <p class="p">This is an example implementation of the <samp class="codeph apex_code">lxscheduler.ServiceResourceScheduleHandler</samp> interface.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Implement interface lxscheduler.ServiceResourceScheduleHandler
+ * This class is called when fetching service resources and time slots through Salesforce Scheduler API.*/</span>
+   Public <span class="keyword">class</span> ServiceResourceScheduleHandlerImpl <span class="keyword">implements</span> lxscheduler.ServiceResourceScheduleHandler{
+    
+    <span class="onelineComment">// The main interface method.</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;lxscheduler.ServiceResourceSchedule&gt; getUnavailableTimeslots(lxscheduler.ServiceAppointmentRequestInfo requestInfo){
+        <span class="onelineComment">//Request info values.</span>
+        List&lt;lxscheduler.ServiceResourceInfo&gt; serviceResources=requestInfo.getServiceResources();
+        DateTime startDate=requestInfo.getStartDate();
+        DateTime endDate=requestInfo.getEndDate();
+      
+       
+        List&lt;lxscheduler.ServiceResourceSchedule&gt; resourceUnavailability = <span class="keyword">new</span> List&lt;lxscheduler.ServiceResourceSchedule&gt;();
+        Set&lt;lxscheduler.UnavailableTimeslot&gt; unavailabilityIntervals = <span class="keyword">new</span> Set&lt;lxscheduler.UnavailableTimeslot&gt;();
+        
+        <span class="onelineComment">//This is a dummy response. Implement your own business logic to connect to your internal or external systems.</span>
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; 5; i++) {
+             <span class="onelineComment">//Set the unavailability intervals of a service resource.</span>
+            unavailabilityIntervals.add(<span class="keyword">new</span> lxscheduler.UnavailableTimeslot(startDate.addMinutes(15*i),startDate.addMinutes(15*(i+1))));
+        }
+       
+       <span class="statement">for</span> (lxscheduler.ServiceResourceInfo ServiceResource:serviceResources) {
+            <span class="onelineComment">//Set the unavailability of Service resource.</span>
+        resourceUnavailability.add(<span class="keyword">new</span> lxscheduler.ServiceResourceSchedule(serviceResource.getServiceResourceId(),unavailabilityIntervals));
+
+       }
+        
+        <span class="statement">return</span> resourceUnavailability;
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+            <p class="p">This example shows how to set a sample test mock using the <samp class="codeph apex_code">lxscheduler.ServiceResourceScheduleHandler</samp>
+                interface.</p>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">
+@isTest
+private class ServiceResourceScheduleHandlerImplTest {
+   static testMethod void getUnavailableTimeslotsTest() {
+   
+      //Initializing the test execution with mock values. Change it according to the implementation.
+      //In case of non-test execution, the lxscheduler.ServiceAppointmentRequestInfo instance will automatically initialize.
+      
+      //Mock values for lxscheduler.ServiceResourceInfo
+      String userId = '005D2000000I1N6IAK';
+      String userName = 'someuser@example.com';
+      String email = 'someuser@example.com';
+      String serviceResourceId = '0HnD20000004C9bKAE';
+      List&lt;String&gt; territoryIds = new List&lt;String&gt;();
+      String resourceType = 'T';
+      lxscheduler.ServiceResourceInfo serviceResInfo = new lxscheduler.ServiceResourceInfo(userId, userName, email, 
+                                                       serviceResourceId, territoryIds, resourceType);
+      
+      //Mock values for lxscheduler.ServiceAppointmentRequestInfo 
+      DateTime startDate = System.now();
+      DateTime endDate = System.now();
+      List&lt;lxscheduler.ServiceResourceInfo&gt; serviceResources = new List&lt;lxscheduler.ServiceResourceInfo&gt;();
+      serviceResources.add(serviceResInfo);
+      String schedulingPolicyId = '0VrD20000004C9S';
+      String workTypeGroupId = '0VSD20000004C93OAE';
+      String accountId = '001D2000002pkXwIAI';
+      String primaryResourceId = '0HnD20000004C9bKAE';
+      String workTypeId = '08qD20000004C9XIAU';
+      String correlationId = 'SOME_ID';
+      
+      lxscheduler.ServiceAppointmentRequestInfo mockRequestInfo = new lxscheduler.ServiceAppointmentRequestInfo(startDate, endDate, serviceResources, 
+                                                                  schedulingPolicyId, workTypeGroupId, accountId, 
+                                                                  primaryResourceId, workTypeId, correlationId);
+      
+      ServiceResourceScheduleHandlerImpl.getUnavailableTimeslots(mockRequestInfo);
+   }
+}</pre></div>
+
+        </div>
+</div>
+</div>
+</div>

@@ -1,0 +1,100 @@
+<a name="apex_manpkgs_behavior_testing"><!-- --></a><h1 class="helpHead1">Testing Versioned Behavior in Apex Code</h1><div class="body conbody">
+<div class="shortdesc">When you change the behavior in an Apex class or trigger for different package
+        versions, it’s important to test that your code runs as expected in the different package
+        versions. <span class="ph" id="using_runas_pv"><a name="using_runas_pv"><!-- --></a>You can write test methods that change the package version
+            context to a different package version by using the <samp class="codeph apex_code">System.runAs</samp> method.</span> You can only use <samp class="codeph apex_code">System.runAs</samp> in a test method.</div>
+
+        <p class="p">This sample shows a trigger with different behavior for different package versions. For
+            more information about defining different behavior for package versions, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_behavior.htm" title="Package developers can use conditional logic in Apex classes and triggers to exhibit different behavior for different versions. With this conditional logic, you can support existing behavior in classes and triggers in previous package versions while evolving the code.">Version Apex
+                Behavior</a>.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> oppValidation on Opportunity (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+
+    <span class="statement">for</span> (Opportunity opp : Trigger.<span class="keyword">new</span>){
+    
+        <span class="onelineComment">// Add a new validation to the package</span>
+        <span class="onelineComment">// Applies to versions of the managed package greater than 1.0</span>
+        <span class="statement">if</span> (System.requestVersion().compareTo(<span class="keyword">new</span> Version(1,0)) &gt; 0) {
+            <span class="statement">if</span> (opp.Probability &gt;= 50 &amp;&amp; opp.Description == <span class="keyword">null</span>) {
+                opp.addError(<span class="string">'All deals over 50% require a description'</span>);
+            }
+        }
+
+        <span class="onelineComment">// Validation applies to all versions of the managed package.</span>
+        <span class="statement">if</span> (opp.IsWon == <span class="keyword">true</span> &amp;&amp; opp.LeadSource == <span class="keyword">null</span>) {
+            opp.addError(<span class="string">'A lead source must be provided for all Closed Won deals'</span>);
+        }
+    }
+}</pre></div>
+
+        <p class="p">The following test class uses the <samp class="codeph apex_code">runAs</samp> method
+            to verify the trigger’s behavior with and without a specific version:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> OppTriggerTests{
+
+   <span class="keyword">static</span> testMethod <span class="keyword">void</span> testOppValidation(){
+   
+      <span class="onelineComment">// Set up 50% opportunity with no description</span>
+      Opportunity opp = <span class="keyword">new</span> Opportunity();
+      opp.Name = <span class="string">'Test Job'</span>;
+      opp.Probability = 50;
+      opp.StageName = <span class="string">'Prospect'</span>;
+      opp.CloseDate = System.today();
+      
+      <span class="onelineComment">// Test running as latest package version</span>
+      <span class="statement">try</span>{
+          <span class="statement">insert</span> opp;
+      }
+      <span class="statement">catch</span>(DMLException e){
+          Assert.isTrue(
+              e.getMessage().contains(
+                <span class="string">'All deals over 50% require a description'</span>),
+                  e.getMessage());
+      }
+      
+      <span class="onelineComment">// Run test as managed package version 1.0</span>
+      System.runAs(<span class="keyword">new</span> Version(1,0)){
+          <span class="statement">try</span>{
+              <span class="statement">insert</span> opp;
+          }
+          <span class="statement">catch</span>(DMLException e){
+              Assert.isFalse(<span class="keyword">false</span>, e.getMessage());
+          }
+      }
+
+      <span class="onelineComment">// Set up a closed won opportunity with no lead source</span>
+      opp = <span class="keyword">new</span> Opportunity();
+      opp.Name = <span class="string">'Test Job'</span>;
+      opp.Probability = 50;
+      opp.StageName = <span class="string">'Prospect'</span>;
+      opp.CloseDate = System.today();
+      opp.StageName = <span class="string">'Closed Won'</span>;
+      
+      <span class="onelineComment">// Test running as latest package version</span>
+      <span class="statement">try</span>{
+          <span class="statement">insert</span> opp;
+      }
+      <span class="statement">catch</span>(DMLException e){
+          Assert.isTrue(
+            e.getMessage().contains(
+              <span class="string">'A lead source must be provided for all Closed Won deals'</span>),
+                e.getMessage());
+      }
+
+      <span class="onelineComment">// Run test as managed package version 1.0</span>
+      System.runAs(<span class="keyword">new</span> Version(1,0)){
+          <span class="statement">try</span>{
+              <span class="statement">insert</span> opp;
+          }
+          <span class="statement">catch</span>(DMLException e){
+              Assert.isTrue(
+                  e.getMessage().contains(
+                    <span class="string">'A lead source must be provided for all Closed Won deals'</span>),
+                        e.getMessage());
+          }
+      }
+   }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

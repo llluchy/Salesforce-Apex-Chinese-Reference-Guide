@@ -1,0 +1,360 @@
+<a name="apex_class_functions_Function"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Function Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use the Function class to access deployed Salesforce Functions, and
+      invoke them synchronously or asynchronously.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_functions.htm" title="The Functions namespace provides classes and methods used to invoke and manage Salesforce Functions.">functions</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">The Function class represents an instance of a deployed Function you can invoke from your
+        org. You can invoke Functions synchronously, or asynchronously using asynchronous Apex.</p>
+
+      <p class="p">If your Function takes longer than 2 minutes to return, the request times out. To avoid
+        timing out, consider using asynchronous invocation. Invoking a Function asynchronously
+        doesn’t count against asynchronous Apex limits, such as Apex Queueable limits.</p>
+
+      <p class="p">Before synchronously invoking a Function, commit any pending data operations in Apex,
+        otherwise you get a CalloutException. For asynchronous invocations, the queued invocation
+        doesn’t happen if the Apex transaction isn’t committed. Any data operations that happen in
+        the Function itself aren’t considered part of the Apex transaction.</p>
+
+      <p class="p">Functions can’t be invoked in an Apex test. A “Function invocations from Apex tests are not
+        supported” CalloutException is thrown if Apex determines that a Function is being invoked
+        during a test. If you must run tests against code that invokes Functions, mock your Function
+        invocations during the tests. See <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocation.htm#apex_interface_functions_FunctionInvocation_Example">FunctionInvocation Example Implementation</a> for an example of a
+        mocked FunctionInvocation that you can use in testing.</p>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">The following example synchronously invokes a deployed “accountfunction” Function:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">functions.Function accountFunction = functions.Function.get(<span class="string">'MyProject.accountfunction'</span>);
+functions.FunctionInvocation invocation = accountFunction.invoke(<span class="string">'{ "accountName" : "Acct", "contactName" : "MyContact", "opportunityName" : "Oppty" }'</span>);
+<span class="keyword">String</span> jsonResponse = invocation.getResponse();</pre></div>
+
+      <p class="p">The following example asynchronously invokes a deployed “AccountFunction” Function, using
+        the provided callback:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">functions.Function accountFunction = functions.Function.get(<span class="string">'MyProject.accountfunction'</span>);
+accountFunction.invoke(<span class="string">'{ "accountName" : "Acct", "contactName" : "MyContact", "opportunityName" : "Oppty" }'</span>, <span class="keyword">new</span> MyCallback());
+
+<span class="keyword">public</span> <span class="keyword">class</span> MyCallback
+  <span class="keyword">implements</span> functions.FunctionCallback {
+    <span class="keyword">public</span> <span class="keyword">void</span> handleResponse(functions.FunctionInvocation result) {
+      <span class="onelineComment">// Handle result of function invocation</span>
+      <span class="onelineComment">// ...</span>
+    }
+}</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_functions_Function.htm#apex_functions_Function_methods">Function Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_functions_Function_methods">
+<a name="apex_functions_Function_methods"><!-- --></a><h2 class="helpHead2">Function Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Function</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_functions_Function.htm#apex_functions_Function_get">get(functionName)</a></strong><br>
+Returns the Function instance for the named Function and Project. The       Function must be properly deployed and have appropriate permissions to work with the org       running your Apex code.   </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_functions_Function.htm#apex_functions_Function_get_2">get(namespace, functionName)</a></strong><br>
+Returns the Function instance for the named Function, Project, and Namespace. The Function must be properly deployed and have appropriate permissions to work with the org running your Apex code.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_functions_Function.htm#apex_functions_Function_invoke">invoke(payload, callback)</a></strong><br>
+Invokes the Function asynchronously.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_functions_Function.htm#apex_functions_Function_invoke_2">invoke(payload)</a></strong><br>
+Invokes the Function synchronously.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_Function_get">
+<a name="apex_functions_Function_get"><!-- --></a><h3 class="helpHead3">get(functionName)</h3>
+<div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the Function instance for the named Function and Project. The
+      Function must be properly deployed and have appropriate permissions to work with the org
+      running your Apex code.</span>
+  </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> functions.Function get(<span class="keyword">String</span>
+          functionName)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">functionName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The name of the Salesforce Function and the Functions Project that the Function is
+            part of. The format of the parameter string is “<var class="keyword varname">project
+              name</var>.<var class="keyword varname">function name</var>”. For example, to retrieve the <samp class="codeph nolang">generatepdf</samp> Function in the <samp class="codeph nolang">Onboarding</samp> Function Project, use <samp class="codeph nolang">Onboarding.generatepdf</samp>. The Function and Project must be deployed to a
+            compute environment connected to the org.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_functions_Function" title="Use the Function class to access deployed Salesforce Functions, and invoke them synchronously or asynchronously.">functions.Function</a></p>
+
+      <p class="p">Returns a Function instance that you can invoke.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The <samp class="codeph nolang">Function.get()</samp>
+      method can throw the following exceptions:<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph nolang">InvalidParameterValueException</samp> — The
+            <var class="keyword varname">functionName</var> parameter doesn’t have the correct <var class="keyword varname">project
+            name</var>.<var class="keyword varname">function name</var> format.</li>
+
+        <li class="li">
+<samp class="codeph nolang">NoDataFoundException</samp> — The project or
+          Function name provided in the <var class="keyword varname">functionName</var> parameter couldn’t be found.
+          Make sure the project and Function name are spelled correctly and that the project and
+          Function have been properly deployed.</li>
+
+      </ul>
+</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_Function_get_2">
+<a name="apex_functions_Function_get_2"><!-- --></a><h3 class="helpHead3">get(namespace, functionName)</h3>
+
+
+    
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the Function instance for the named Function, Project, and Namespace. The Function must be properly deployed and have appropriate permissions to work with the org running your Apex code.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> functions.Function get(<span class="keyword">String</span> namespace, <span class="keyword">String</span> functionName)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+	<li class="li">
+<strong class="ph b"><var class="keyword varname">namespace</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The name of the Namespace that both the Salesforce Function and the Functions Project are
+            part of. The org the Function is in must be <samp class="codeph ">global</samp> to
+            access across namespaces. Default value is the same org where the method is being
+            called.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">functionName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The name of the Salesforce Function and the Functions Project that the Function is
+            part of. The format of the parameter string is “<var class="keyword varname">project
+              name</var>.<var class="keyword varname">function name</var>”. For example, to retrieve the <samp class="codeph nolang">generatepdf</samp> Function in the <samp class="codeph nolang">Onboarding</samp> Function Project, use <samp class="codeph nolang">Onboarding.generatepdf</samp>. The Function and Project must be deployed to a
+            compute environment connected to the org.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_functions_Function" title="Use the Function class to access deployed Salesforce Functions, and invoke them synchronously or asynchronously.">functions.Function</a></p>
+
+      <p class="p">Returns a Function instance that you can invoke.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The <samp class="codeph nolang">Function.get()</samp>
+      method can throw the following exceptions:<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph nolang">InvalidParameterValueException</samp> — The
+            <var class="keyword varname">functionName</var> parameter doesn’t have the correct <var class="keyword varname">project
+            name</var>.<var class="keyword varname">function name</var> format.</li>
+
+        <li class="li">
+<samp class="codeph nolang">NoDataFoundException</samp> — The project or
+          Function name provided in the <var class="keyword varname">functionName</var> parameter couldn’t be found.
+          Make sure the project and Function name are spelled correctly and that the project and
+          Function have been properly deployed.</li>
+
+	<li class="li">
+<samp class="codeph ">RuntimeException</samp> — The function is <samp class="codeph ">public</samp> yet references a function across namespaces. Make sure to retrieve references across namespaces only in a <samp class="codeph ">global</samp> org.</li>
+
+      </ul>
+</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_Function_invoke">
+<a name="apex_functions_Function_invoke"><!-- --></a><h3 class="helpHead3">invoke(payload, callback)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invokes the Function asynchronously.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> functions.FunctionInvocation invoke(<span class="keyword">String</span> payload, functions.FunctionCallback callback)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">payload</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The payload data that gets passed to the Function. Specify your payload data in a JSON-format
+            string.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">callback</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionCallback.htm#apex_interface_functions_FunctionCallback" title="Represents the callback Salesforce calls when an asynchronous, queued Function invocation has completed.">functions.FunctionCallback</a> A FunctionCallback implementation that gets called when your Function is invoked
+            asynchronously.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocation.htm#apex_interface_functions_FunctionInvocation" title="Use FunctionInvocation to get the status and results of a synchronous or asynchronous Function invocation.">functions.FunctionInvocation</a></p>
+<p class="p">Returns a FunctionInvocation that contains information about the results of the invocation, such
+        as the Function response, or error results.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The <samp class="codeph nolang">Function.invoke(payload,
+        callback)</samp> method can throw the following exceptions:<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph nolang">CalloutException</samp> — One of the following
+          conditions causes this exception to be thrown:<ul class="ul bulletList">
+            
+            <li class="li">Salesforce Functions isn’t enabled on the current org. For more details on enabling
+              Functions, see <a class="xref" href="https://developer.salesforce.com/docs/platform/functions/guide/config-org#enable-functions-on-dev-hub-orgs" target="_blank">Configure Orgs for Functions</a> in the Functions
+              Developer Guide.</li>
+
+            <li class="li">The Function is being invoked in an Apex test. Functions can’t be invoked in
+              tests.</li>
+
+            <li class="li">The “Functions” permission set is missing or has incorrect permissions for <samp class="codeph nolang">FunctionInvocationRequest</samp>. For more details on the
+              correct permissions for <samp class="codeph nolang">FunctionInvocationRequest</samp>
+              see <a class="xref" href="https://developer.salesforce.com/docs/platform/functions/guide/permissions" target="_blank">Function Permissions</a> in the Functions
+              Developer Guide.</li>
+
+            <li class="li">The provided payload isn’t valid JSON.</li>
+
+            <li class="li">The Function hasn’t completed deployment to a compute environment or invocation
+              request returns a 404 HTTP error.</li>
+
+          </ul>
+</li>
+
+        <li class="li">
+<samp class="codeph nolang">InvalidParameterValueException</samp> — The
+            <var class="keyword varname">callback</var> parameter is null or references a class that doesn’t
+          implement <samp class="codeph nolang">functions.FunctionCallback</samp>.</li>
+
+        <li class="li">
+<samp class="codeph nolang">NoDataFoundException</samp> — A reference for the
+          Function couldn’t be found in the current org. Make sure the project and Function have
+          been properly deployed.</li>
+
+      </ul>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_Function_invoke_2">
+<a name="apex_functions_Function_invoke_2"><!-- --></a><h3 class="helpHead3">invoke(payload)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Invokes the Function synchronously.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> functions.FunctionInvocation invoke(<span class="keyword">String</span> payload)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">payload</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The payload data that gets passed to the Function. Specify your payload data in a JSON-format
+            string.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocation.htm#apex_interface_functions_FunctionInvocation" title="Use FunctionInvocation to get the status and results of a synchronous or asynchronous Function invocation.">functions.FunctionInvocation</a></p>
+<p class="p">Returns a FunctionInvocation that contains information about the results of the invocation, such
+        as the Function response, or error results.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The <samp class="codeph nolang">Function.invoke(payload)</samp> method can throw the following exceptions:<ul class="ul bulletList">
+        <li class="li">
+<samp class="codeph nolang">CalloutException</samp> — One of the following
+          conditions causes this exception to be thrown:<ul class="ul bulletList">
+            
+            <li class="li">Salesforce Functions isn’t enabled on the current org. For more details on enabling
+              Functions, see <a class="xref" href="https://developer.salesforce.com/docs/platform/functions/guide/config-org#enable-functions-on-dev-hub-orgs" target="_blank">Configure Orgs for Functions</a> in the Functions
+              Developer Guide.</li>
+
+            <li class="li">The Function is being invoked in an Apex test. Functions can’t be invoked in
+              tests.</li>
+
+            <li class="li">The provided payload isn’t valid JSON.</li>
+
+            <li class="li">There are pending DML operations.</li>
+
+            <li class="li">The Function is being synchronously invoked from an Apex trigger.</li>
+
+            <li class="li">The Function hasn’t completed deployment to a compute environment or invocation
+              request returns a 404 HTTP error.</li>
+
+            <li class="li">The Function request returns a 5xx HTTP error.</li>
+
+            <li class="li">The Function invocation has exceeded the time limit for synchronous invocations. For
+              details on the time limit and work-arounds, see <a class="xref" href="https://developer.salesforce.com/docs/platform/functions/guide/limits#apex-limits-and-functions" target="_blank">Limits</a> in the Functions Developer Guide.</li>
+
+          </ul>
+</li>
+
+        <li class="li">
+<samp class="codeph nolang">NoDataFoundException</samp> — A reference for the
+          Function couldn’t be found in the current org. Make sure the project and Function have
+          been properly deployed.</li>
+
+      </ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>

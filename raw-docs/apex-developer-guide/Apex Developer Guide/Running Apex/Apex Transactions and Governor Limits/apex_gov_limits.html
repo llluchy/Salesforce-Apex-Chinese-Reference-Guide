@@ -1,0 +1,1192 @@
+<a name="apex_gov_limits"><!-- --></a><h1 class="helpHead1">Execution Governors and Limits</h1><div class="body" id="GovLimitsBody">
+<a name="GovLimitsBody"><!-- --></a><div class="shortdesc">
+<span class="ph" id="GovLimitText"><a name="GovLimitText"><!-- --></a>Because
+      Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so
+      that runaway Apex code or processes don’t monopolize shared resources.</span> If some Apex code
+    exceeds a limit, the associated governor issues a runtime exception that can’t be
+    handled.</div>
+
+    <div class="p">The Apex limits, or <dfn class="term">governors</dfn>, track, and enforce the statistics outlined in the
+      following tables and sections.<ul class="ul bulletList">
+        <li class="li"><a class="xref" href="#in_topic_per_transaction_section">Per-Transaction Apex Limits</a></li>
+
+        <li class="li"><a class="xref" href="#in_topic_per_transaction_cert_pkg_limits_section">Per-Transaction Certified Managed
+            Package Limits</a></li>
+
+        <li class="li"><a class="xref" href="#in_topic_non_transactional_gov_limits_section">Salesforce Platform Apex
+          Limits</a></li>
+
+        <li class="li"><a class="xref" href="#in_topic_static_gov_limits_section">Static Apex Limits</a></li>
+
+        <li class="li"><a class="xref" href="#in_topic_size_gov_limits_section">Size-Specific Apex Limits</a></li>
+
+        <li class="li"><a class="xref" href="#in_topic_misc_limits_section">Miscellaneous Apex Limits</a></li>
+
+      </ul>
+</div>
+
+    <p class="p">In addition to the core Apex governor limits, <a class="xref" href="#in_topic_email_limits_section">email limits</a> and <a class="xref" href="#in_topic_push_notification_section">push notification limits</a> are also included later in this
+      topic for your convenience.</p>
+
+    <div class="section" id="in_topic_per_transaction_section">
+<a name="in_topic_per_transaction_section"><!-- --></a><h2 class="helpHead2">Per-Transaction Apex Limits</h2>
+
+      
+      <p class="p" id="d1727e77-d1740e39"><a name="d1727e77-d1740e39"><!-- --></a>These limits count for each Apex transaction. For Batch Apex, these
+        limits are reset for each execution of a batch of records in the <samp class="codeph apex_code">execute</samp> method.</p>
+
+      <p class="p" id="d1727e77-d1740e45"><a name="d1727e77-d1740e45"><!-- --></a>This table lists limits for synchronous Apex and
+        asynchronous Apex (Batch Apex and future methods) when they’re different. Otherwise,
+        this table lists only one limit that applies to both synchronous and asynchronous Apex.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+        <ul class="ul bulletList">
+          <li class="li">Although scheduled Apex is an asynchronous feature, synchronous limits apply to
+            scheduled Apex jobs.</li>
+
+          <li class="li">For Bulk API and Bulk API 2.0 transactions, the effective limit is the higher of the
+            synchronous and asynchronous limits. For example, the maximum number of Bulk Apex jobs
+            added to the queue with <samp class="codeph apex_code">System.enqueueJob</samp> is the
+            synchronous limit (50), which is higher than the asynchronous limit (1). </li>
+
+        </ul>
+
+      </p>
+</div>
+</div></div></div></div>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d161530e128">Description</th>
+
+              <th class="featureTableHeader vertical-align-top text-center" id="d161530e131">Synchronous Limit</th>
+
+              <th class="featureTableHeader vertical-align-top text-center" id="d161530e134">Asynchronous Limit</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of SOQL queries issued<sup class="ph sup">1</sup>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">100</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">200</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of records retrieved by SOQL queries</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e110"><a name="d1727e77-d1740e110"><!-- --></a>50,000</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">50,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of records retrieved by <samp class="codeph apex_code">Database.getQueryLocator</samp>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e125"><a name="d1727e77-d1740e125"><!-- --></a>10,000</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">10,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of SOSL queries issued</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">20</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">20</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of records retrieved by a single SOSL query</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e150"><a name="d1727e77-d1740e150"><!-- --></a>2,000</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">2,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of DML statements issued<sup class="ph sup">2</sup>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">150</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">150</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of records processed as a result of DML statements, <samp class="codeph apex_code">Approval.process</samp>, or <samp class="codeph apex_code">database.emptyRecycleBin</samp>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">10,000</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">10,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total stack depth for any Apex invocation that recursively fires triggers due
+                to <samp class="codeph apex_code"><span class="statement">insert</span></samp>, <samp class="codeph apex_code"><span class="statement">update</span></samp>, or <samp class="codeph apex_code"><span class="statement">delete</span></samp>
+                  statements<sup class="ph sup">3</sup>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">16</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">16</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of callouts (HTTP requests or web services calls) in a
+                transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">100</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">100</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum cumulative timeout for all callouts (HTTP requests or Web services
+                calls) in a transaction </td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">120 seconds</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">120 seconds</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of methods with the <samp class="codeph apex_code">future</samp> annotation allowed per Apex invocation</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">50</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">0 in batch and future contexts; 50 in queueable context</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of Apex jobs added to the queue with <samp class="codeph apex_code">System.enqueueJob</samp>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">50</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">1</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total number of <samp class="codeph apex_code">sendEmail</samp> methods
+                allowed</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">10</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">10</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Total heap size<sup class="ph sup">4</sup>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">6 MB</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">12 MB</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum CPU time on the Salesforce servers<sup class="ph sup">5</sup>
+</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">10,000 milliseconds</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">60,000 milliseconds</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum execution time for each Apex transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e315"><a name="d1727e77-d1740e315"><!-- --></a>10 minutes</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">10 minutes</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of push notification method calls allowed per Apex
+                transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">10</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">10</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of push notifications that can be sent in each push notification
+                method call</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">2,000</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">2,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of <samp class="codeph apex_code">EventBus.publish</samp>
+                calls for platform events configured to publish immediately</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">150</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">150</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of rows across all Apex cursors per transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e368"><a name="d1727e77-d1740e368"><!-- --></a>50 million</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">50 million</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description"></td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit"></td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of <samp class="codeph ">Cursor.fetch</samp> calls per transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e393"><a name="d1727e77-d1740e393"><!-- --></a>100</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">100</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description"></td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit"></td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of rows across all Apex pagination cursors per
+                transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e416"><a name="d1727e77-d1740e416"><!-- --></a>100,000</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">100,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of Apex pagination cursor instances per transaction</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit">50</td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">50</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description"></td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit"></td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e128" data-title="Description">Maximum number of rows retrieved per page from an Apex pagination
+                cursor</td>
+
+              <td class=" text-center" headers="d161530e131" data-title="Synchronous Limit"><span class="ph" id="d1727e77-d1740e450"><a name="d1727e77-d1740e450"><!-- --></a>2000</span></td>
+
+              <td class=" text-center" headers="d161530e134" data-title="Asynchronous Limit">2000</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="p" id="d1727e77-d1740e461">
+<a name="d1727e77-d1740e461"><!-- --></a><sup class="ph sup">1</sup> In a SOQL query with parent-child relationship subqueries, each
+        parent-child relationship counts as an extra query. These types of queries have a limit of
+        three times the number for top-level queries. The limit for subqueries corresponds to the
+        value that <samp class="codeph apex_code">Limits.getLimitAggregateQueries()</samp>
+        returns. The row counts from these relationship queries contribute to the row counts of the
+        overall code execution. This limit doesn’t apply to custom metadata types. In a single Apex
+        transaction, custom metadata records can have unlimited SOQL queries. In addition to static
+        SOQL statements, calls to the following methods count against the number of SOQL statements
+        issued in a request.<ul class="ul bulletList">
+          <li class="li">
+<samp class="codeph apex_code">Database.countQuery</samp>, <samp class="codeph apex_code">Database.countQueryWithBinds</samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code">Database.getQueryLocator</samp>, <samp class="codeph apex_code">Database.getQueryLocatorWithBinds</samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code">Database.query</samp>, <samp class="codeph apex_code">Database.queryWithBinds</samp>
+</li>
+
+        </ul>
+</div>
+
+      <div class="p" id="d1727e77-d1740e492">
+<a name="d1727e77-d1740e492"><!-- --></a><sup class="ph sup">2</sup> Calls to the following methods count against the number of DML
+        statements issued in a request.<ul class="ul bulletList">
+          <li class="li"><samp class="codeph apex_code">Approval.process</samp></li>
+
+          <li class="li"><samp class="codeph apex_code">Database.convertLead</samp></li>
+
+          <li class="li"><samp class="codeph apex_code">Database.emptyRecycleBin</samp></li>
+
+          <li class="li"><samp class="codeph apex_code">Database.rollback</samp></li>
+
+          <li class="li"><samp class="codeph apex_code">Database.setSavePoint</samp></li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">delete</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">delete</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">insert</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">insert</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">merge</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">merge</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">undelete</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">undelete</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">update</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">update</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code"><span class="statement">upsert</span></samp> and <samp class="codeph apex_code">Database.<span class="statement">upsert</span></samp>
+</li>
+
+          <li class="li">
+<samp class="codeph apex_code">EventBus.publish</samp> for platform events
+            configured to publish after commit</li>
+
+          <li class="li"><samp class="codeph apex_code">System.runAs</samp></li>
+
+        </ul>
+</div>
+
+      <p class="p" id="d1727e77-d1740e572"><a name="d1727e77-d1740e572"><!-- --></a><sup class="ph sup">3</sup> Recursive Apex that doesn’t fire any triggers with <samp class="codeph apex_code"><span class="statement">insert</span></samp>, <samp class="codeph apex_code"><span class="statement">update</span></samp>,
+        or <samp class="codeph apex_code"><span class="statement">delete</span></samp> statements, exists in a single
+        invocation, with a single stack. Conversely, recursive Apex that fires a trigger spawns the
+        trigger in a new Apex invocation. The new invocation is separate from the invocation of the
+        code that caused it to fire. Spawning a new invocation of Apex is a more expensive operation
+        than a recursive call in a single invocation. Therefore, there are tighter restrictions on
+        the stack depth of these types of recursive calls.</p>
+
+      <p class="p" id="d1727e77-d1740e586"><a name="d1727e77-d1740e586"><!-- --></a><sup class="ph sup">4</sup> Email services heap size is 50 MB.</p>
+
+      <p class="p" id="d1727e77-d1740e591"><a name="d1727e77-d1740e591"><!-- --></a><sup class="ph sup">5</sup> CPU time is calculated for all executions on the Salesforce
+        application servers occurring in one Apex transaction. CPU time is calculated for the
+        executing Apex code, and for any processes that are called from this code, such as package
+        code and workflows. CPU time is private for a transaction and is isolated from other
+        transactions. Application server CPU time spent in DML operations is counted towards the
+        Apex CPU limit. Operations that don't consume application server CPU time aren't counted
+        toward CPU time. For example, the portion of execution time spent in the database for DML,
+        SOQL, and SOSL isn't counted, nor is waiting time for Apex callouts. Bulk API and Bulk API
+        2.0 consume a unique governor limit for CPU time on Salesforce Servers, with a maximum value
+        of <span class="ph" id="d1727e77-d1740e595"><a name="d1727e77-d1740e595"><!-- --></a>60,000</span> milliseconds.</p>
+
+      <div class="box message info" id="d1727e77-d1740e599">
+<a name="d1727e77-d1740e599"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+        <ul class="ul bulletList">
+          <li class="li">Limits apply individually to each <samp class="codeph apex_code">testMethod</samp>.</li>
+
+          <li class="li">To determine the code execution limits for your code while it’s running, use the
+            Limits methods. For example, you can use the <samp class="codeph apex_code">getDMLStatements</samp> method to determine the number of DML statements that have
+            already been called by your program. Or, you can use the <samp class="codeph apex_code">getLimitDMLStatements</samp> method to determine the total number of DML statements
+            available to your code.</li>
+
+        </ul>
+
+      </p>
+</div>
+</div></div></div>
+</div>
+
+    </div>
+
+    <div class="section" id="in_topic_per_transaction_cert_pkg_limits_section">
+<a name="in_topic_per_transaction_cert_pkg_limits_section"><!-- --></a><h2 class="helpHead2">Per-Transaction Certified Managed Package Limits</h2>
+
+      
+      <p class="p" id="d1727e79-d1740e626"><a name="d1727e79-d1740e626"><!-- --></a>Certified managed packages—managed packages that have passed the
+        security review for AppExchange—get their own set of limits for most per-transaction limits.
+        Salesforce ISV Partners develop certified managed packages, which are installed in your org
+        from AppExchange and have unique namespaces.</p>
+
+      <p class="p" id="d1727e79-d1740e629"><a name="d1727e79-d1740e629"><!-- --></a>Here’s an example that illustrates the separate certified managed
+        package limits for DML statements. If you install a certified managed package, all the Apex
+        code in that package gets its own 150 DML statements. These DML statements are in addition
+        to the 150 DML statements your org’s native code can execute. This limit increase means that
+        more than 150 DML statements can execute during a single transaction if code from the
+        managed package and your native org both executes. Similarly, the certified managed package
+        gets its own 100-SOQL-query limit for synchronous Apex, in addition to the org’s native code
+        limit of 100 SOQL queries.</p>
+
+      <p class="p" id="d1727e79-d1740e632"><a name="d1727e79-d1740e632"><!-- --></a>There’s no limit on the number of certified namespaces that can be
+        invoked in a single transaction. However, the number of operations that can be performed in
+        each namespace must not exceed the per-transaction limits. There’s also a limit on the
+        cumulative number of operations that can be made across namespaces in a transaction. This
+        cumulative limit is 11 times the per-namespace limit. For example, if the per-namespace
+        limit for SOQL queries is 100, a single transaction can perform up to 1,100 SOQL queries. In
+        this case, the cumulative limit is 11 times the per-namespace limit of 100. These queries
+        can be performed across an unlimited number of namespaces, as long as any one namespace
+        doesn't have more than 100 queries. The cumulative limit doesn’t affect limits that are
+        shared across all namespaces, such as the limit on maximum CPU time.</p>
+
+      <div class="box message info" id="d1727e79-d1740e635">
+<a name="d1727e79-d1740e635"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+        <ul class="ul bulletList">
+          <li class="li">These cross-namespace limits apply only to namespaces in certified managed
+            packages.</li>
+
+          <li class="li">Namespaces in non-certified packages don’t have their own separate governor limits.
+            The resources that they use continue to count against the same governor limits used by
+            the org's custom code.</li>
+
+        </ul>
+
+      </p>
+</div>
+</div></div></div>
+</div>
+
+      <p class="p" id="d1727e79-d1740e648"><a name="d1727e79-d1740e648"><!-- --></a>This table lists the cumulative cross-namespace
+        limits.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d161530e714">Description</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d161530e717">Cumulative Cross-Namespace Limit</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of SOQL queries issued</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">1,100</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of records retrieved by <samp class="codeph apex_code">Database.getQueryLocator</samp>
+</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">110,000</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of SOSL queries issued</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">220</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of DML statements issued</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">1,650</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of callouts (HTTP requests or web services calls) in a
+                transaction</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">1,100</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e714" data-title="Description">Total number of <samp class="codeph apex_code">sendEmail</samp> methods
+                allowed</td>
+
+              <td class="entry" headers="d161530e717" data-title="Cumulative Cross-Namespace Limit">110</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="p">All per-transaction limits count separately for certified managed packages except for:<ul class="ul bulletList">
+          <li class="li">The total heap size</li>
+
+          <li class="li">The maximum CPU time</li>
+
+          <li class="li">The maximum transaction execution time</li>
+
+          <li class="li">The maximum number of unique namespaces</li>
+
+        </ul>
+</div>
+
+      <p class="p">These limits count for the entire transaction, regardless of how many certified managed
+        packages are running in the same transaction.</p>
+
+      <p class="p">The code from a package from AppExchange, not created by a Salesforce ISV Partner and not
+        certified, doesn’t have its own separate governor limits. Any resources used by the package
+        count against the total org governor limits. Cumulative resource messages and warning emails
+        are also generated based on managed package namespaces.</p>
+
+      <p class="p">For more information on Salesforce ISV Partner packages, see <a class="xref" href="http://sites.force.com/partners/PP2Page?p=P_PartnerPrograms" target="_blank" title="HTML (New Window)">Salesforce Partner Programs</a>.</p>
+
+    </div>
+
+    <div class="section" id="in_topic_non_transactional_gov_limits_section">
+<a name="in_topic_non_transactional_gov_limits_section"><!-- --></a><h2 class="helpHead2">Salesforce Platform Apex Limits</h2>
+
+      
+      <p class="p" id="d1727e81-d1740e777"><a name="d1727e81-d1740e777"><!-- --></a>The limits in this table aren't specific to
+        an Apex transaction; the Salesforce Platform enforces these limits.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d161530e844">Description</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d161530e847">Limit</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">The maximum number of asynchronous Apex method executions (batch Apex, future
+                methods, Queueable Apex, and scheduled Apex) per a 24-hour period. This licensed
+                daily limit is the <samp class="codeph nolang">DailyAsyncApexExecutions</samp> org
+                  limit.<sup class="ph sup">1</sup><sup class="ph sup">,</sup><sup class="ph sup">6</sup><sup class="ph sup">,</sup><sup class="ph sup">7</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">
+<span class="ph" id="d1727e81-d1740e821"><a name="d1727e81-d1740e821"><!-- --></a>250,000</span> or the number of applicable user
+                licenses in your org multiplied by 200, whichever is greater</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">The total number of Queueable Apex and future method executions that can be
+                enqueued during a 24-hour period, including elastic executions processed at a
+                throttled rate (beta). This limit is the <samp class="codeph nolang">DailyAsyncApexElasticExecutions</samp> org limit.<sup class="ph sup">6</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">The org’s daily asynchronous Apex method executions limit plus either the org’s
+                licensed daily asynchronous Apex method executions limit or <span class="ph" id="d1727e81-d1740e838"><a name="d1727e81-d1740e838"><!-- --></a>10 million</span> executions,
+                whichever is less.<p class="p">In other words, the extra elastic executions added to the daily
+                  asynchronous Apex method executions limit is capped at a maximum of 10 million
+                  additional executions.</p>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of Apex cursors per day</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit"><span class="ph" id="d1727e81-d1740e851"><a name="d1727e81-d1740e851"><!-- --></a>10,000</span></td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum cumulative number of new cursor rows and pagination cursor rows per
+                24-hour period</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">100 million</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of Apex pagination cursor instances per 24-hour period</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit"><span class="ph" id="d1727e81-d1740e870"><a name="d1727e81-d1740e870"><!-- --></a>200,000</span></td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Number of synchronous concurrent transactions for long-running transactions
+                that last longer than 5 seconds for each org.<sup class="ph sup">2</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">Based on the number of applicable licenses<sup class="ph sup">8</sup> in an org, the limit is
+                calculated as a ratio of 100 licenses to one concurrent long-running Apex
+                  transaction<sup class="ph sup">9</sup>.<a name="d1727e81-d1740e890"><!-- --></a><ul class="ul bulletList" id="d1727e81-d1740e890">
+                  <li class="li">Minimum limit is 10 </li>
+
+                  <li class="li">Maximum limit is 50</li>
+
+                </ul>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of Apex classes scheduled concurrently</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">100. In Developer Edition orgs, the limit is 5.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of batch Apex jobs in the Apex flex queue that are in <samp class="codeph apex_code">Holding</samp> status</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">100</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of batch Apex jobs queued or active
+                concurrently<sup class="ph sup">3</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">5</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of batch Apex job <samp class="codeph apex_code">start</samp>
+                method concurrent executions<sup class="ph sup">4</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">1</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of batch jobs that can be submitted in a running test</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">5</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of test classes that can be queued per 24-hour period
+                (production orgs other than Developer
+                Edition)<sup class="ph sup">5</sup><sup class="ph sup">,</sup><sup class="ph sup">6</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">The greater of 500 or 10 multiplied by the number of test classes in the
+                org</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e844" data-title="Description">Maximum number of test classes that can be queued per 24-hour period (sandbox
+                and Developer Edition orgs)<sup class="ph sup">5</sup><sup class="ph sup">,</sup><sup class="ph sup">6</sup>
+</td>
+
+              <td class="entry" headers="d161530e847" data-title="Limit">The greater of 500 or 20 multiplied by the number of test classes in the
+                org</td>
+
+            </tr>
+
+            
+          </tbody>
+
+        </table></div>
+
+      <p class="p" id="d1727e81-d1740e991"><a name="d1727e81-d1740e991"><!-- --></a><sup class="ph sup">1</sup> For Batch Apex, method executions include executions of the
+          <samp class="codeph apex_code">start</samp>, <samp class="codeph apex_code">execute</samp>, and <samp class="codeph apex_code">finish</samp> methods. This limit
+        is for your entire org and is shared with all asynchronous Apex: Batch Apex, Queueable Apex,
+        scheduled Apex, and future methods. The license types that count toward this limit include
+        full Salesforce and Salesforce Platform user licenses, App Subscription user licenses,
+        Chatter Only users, Identity users, and Company Communities users.</p>
+
+      <p class="p" id="d1727e81-d1740e1005"><a name="d1727e81-d1740e1005"><!-- --></a><sup class="ph sup">2</sup> If more transactions are started while the  default number of
+        long-running transactions are still running, they’re denied. HTTP callout processing time
+        isn’t included when calculating this limit.</p>
+
+      <p class="p" id="d1727e81-d1740e1011"><a name="d1727e81-d1740e1011"><!-- --></a><sup class="ph sup">3</sup> When batch jobs are submitted, they’re held in the flex queue
+        before the system queues them for processing.</p>
+
+      <p class="p" id="d1727e81-d1740e1016"><a name="d1727e81-d1740e1016"><!-- --></a><sup class="ph sup">4</sup> Batch jobs that haven’t started yet remain in the queue until
+        they’re started. If more than one job is running, this limit doesn’t cause any batch job to
+          fail.<samp class="codeph apex_code">execute</samp> methods of batch Apex jobs still run
+        in parallel.</p>
+
+      <p class="p" id="d1727e81-d1740e1024"><a name="d1727e81-d1740e1024"><!-- --></a><sup class="ph sup">5</sup> This limit applies to tests running asynchronously. This group of
+        tests includes tests started through the Salesforce user interface including the Developer
+          Console<span class="ph"> or by inserting <samp class="codeph apex_code">ApexTestQueueItem</samp> objects using SOAP API</span>.</p>
+
+      <p class="p" id="d1727e81-d1740e1035"><a name="d1727e81-d1740e1035"><!-- --></a><sup class="ph sup">6</sup> To check how many asynchronous Apex executions are available,
+        make a request to REST API <samp class="codeph nolang">limits</samp> resource or use Apex
+        methods <samp class="codeph ">OrgLimits.getAll()</samp> or <samp class="codeph ">OrgLimits.getMap()</samp>. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/dome_limits.htm" target="_blank" title="HTML (New Window)">List
+          Organization Limits</a> in the <cite class="cite">REST API Developer Guide</cite> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_OrgLimits.htm" target="_blank">OrgLimits Class</a> in the
+          <cite class="cite">Apex Reference Guide</cite>. </p>
+
+      <p class="p" id="d1727e81-d1740e1062"><a name="d1727e81-d1740e1062"><!-- --></a><sup class="ph sup">7</sup> If the number of asynchronous Apex executions needed by a job
+        exceeds the available number that’s calculated using the 24-hour rolling limit, an exception
+        is thrown. Batch Apex preemptively checks the required asynchronous job capacity when
+          <samp class="codeph apex_code">Database.executeBatch</samp> is called and the <samp class="codeph apex_code">start</samp> method has returned the workload. The batch won’t
+        start unless there is sufficient capacity for the entire job available. For example, if the
+        batch requires 10,000 executions and the remaining asynchronous limit is 9,500 executions,
+        an <samp class="ph systemoutput">AsyncApexExecutions Limit exceeded</samp> exception is thrown, and
+        the remaining executions are left unchanged.</p>
+
+      <p class="p"><sup class="ph sup">8</sup> The license types that count toward this limit include full Salesforce and
+        Salesforce Platform user licenses, App Subscription user licenses, Chatter Only users,
+        Identity users, and Company Communities users.</p>
+
+      <p class="p"><sup class="ph sup">9</sup> For example, if your org has 4,000 licenses, the concurrent long-running Apex
+        requests limit is set at 40. If your org has 5,000 or more licenses, the concurrent
+        long-running Apex requests limit is set at 50, which is the maximum capped limit. If your
+        org has 1,000 or fewer licenses, the concurrent long-running Apex requests limit is set at
+        10, which is the minimum floor limit.</p>
+
+    </div>
+
+    <div class="section" id="in_topic_static_gov_limits_section">
+<a name="in_topic_static_gov_limits_section"><!-- --></a><h2 class="helpHead2">Static Apex Limits</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d161530e1158">Description</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d161530e1161">Limit</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Default timeout of callouts (HTTP requests or Web services calls) in a
+                transaction</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">10 seconds</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Maximum size of callout request or response (HTTP request or Web services
+                  call)<sup class="ph sup">1</sup>
+</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">6 MB for synchronous Apex or 12 MB for asynchronous Apex</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Maximum SOQL query run time before Salesforce cancels the transaction</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">120 seconds</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Maximum number of class and trigger code units in a deployment of Apex</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">7500</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Apex trigger batch size<sup class="ph sup">2</sup>
+</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">200</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">For loop list batch size</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">200</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1158" data-title="Description">Maximum number of records returned for a Batch Apex query in <samp class="codeph apex_code">Database.QueryLocator</samp>
+</td>
+
+              <td class="entry" headers="d161530e1161" data-title="Limit">50 million</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p" id="d1727e84-d1740e1188"><a name="d1727e84-d1740e1188"><!-- --></a><sup class="ph sup">1</sup> The HTTP request and response sizes count towards the total heap
+        size.</p>
+
+      <p class="p" id="d1727e84-d1740e1193"><a name="d1727e84-d1740e1193"><!-- --></a><sup class="ph sup">2</sup> The Apex trigger batch size for platform events and Change Data
+        Capture events is 2,000. The trigger batch size doesn’t apply when using <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.admin_transfer.htm&amp;type=5&amp;language=en_US" target="_blank">Mass Transfer Records</a>.</p>
+
+    </div>
+
+    <div class="section" id="in_topic_size_gov_limits_section">
+<a name="in_topic_size_gov_limits_section"><!-- --></a><h2 class="helpHead2">Size-Specific Apex Limits</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d161530e1273">Description</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d161530e1276">Limit</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d161530e1273" data-title="Description">Maximum number of characters for a class</td>
+
+              <td class="entry" headers="d161530e1276" data-title="Limit">1 million</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1273" data-title="Description">Maximum number of characters for a trigger</td>
+
+              <td class="entry" headers="d161530e1276" data-title="Limit">1 million</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1273" data-title="Description">Maximum amount of code used by all Apex code in an org<sup class="ph sup">1</sup><sup class="ph sup">
+                  ,3</sup><sup class="ph sup"> ,4</sup>
+</td>
+
+              <td class="entry" headers="d161530e1276" data-title="Limit">6 MB</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d161530e1273" data-title="Description">Method size limit<sup class="ph sup">2</sup>
+</td>
+
+              <td class="entry" headers="d161530e1276" data-title="Limit">65,535 bytecode instructions in compiled form</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p" id="d1727e86-d1740e1276"><a name="d1727e86-d1740e1276"><!-- --></a><sup class="ph sup">1</sup> This limit doesn’t apply to Apex code in first generation(1GP) or
+        second generation(2GP) managed packages. The code in those types of packages belongs to a
+        namespace unique from the code in your org. This limit also doesn’t apply to any code
+        included in a class defined with the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="Use the @IsTest annotation to define classes and methods that only contain code used for testing your app."><samp class="codeph apex_code"><span class="keyword">@isTest</span></samp> annotation</a>. </p>
+
+      <p class="p" id="d1727e86-d1740e1286"><a name="d1727e86-d1740e1286"><!-- --></a><sup class="ph sup">2</sup> Large methods that exceed the allowed limit cause an exception to
+        be thrown during the execution of your code.</p>
+
+      <p class="p" id="d1727e86-d1740e1291"><a name="d1727e86-d1740e1291"><!-- --></a><sup class="ph sup">3</sup> The default 6 MB limit can be increased by opening a <a class="xref" href="https://help.salesforce.com/s/" target="_blank">support case</a> for your org. Before you apply for a limit increase, ensure that
+        you’re following best practices outlined in <a class="xref" href="https://help.salesforce.com/s/articleView?id=000382172&amp;type=1&amp;language=en_US" target="_blank">Increase Apex Code Character Limit</a>.</p>
+
+      <p class="p" id="d1727e86-d1740e1303"><a name="d1727e86-d1740e1303"><!-- --></a><sup class="ph sup">4</sup> For scratch orgs, the limit is 10MB. The limit can be increased
+        by opening a <a class="xref" href="https://help.salesforce.com/s/" target="_blank">support case</a> for your org. Before you apply for a limit
+        increase, ensure that you’re following the <a class="xref" href="https://help.salesforce.com/s/articleView?id=000382172&amp;type=1&amp;language=en_US" target="_blank">best practices</a>.</p>
+
+    </div>
+
+    <div class="section" id="in_topic_misc_limits_section">
+<a name="in_topic_misc_limits_section"><!-- --></a><h2 class="helpHead2">Miscellaneous Apex Limits</h2>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm">Connect in Apex</dt>
+
+          <dd class="dd">
+            <p class="p" id="d1727e88-d1740e1330"><a name="d1727e88-d1740e1330"><!-- --></a>For classes in the <samp class="codeph apex_code">ConnectApi</samp> namespace, every write operation costs one DML statement
+              against the Apex governor limit. <samp class="codeph apex_code">ConnectApi</samp>
+              method calls are also subject to rate limits. Most <samp class="codeph apex_code">ConnectApi</samp> method calls count toward the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm" target="_blank">Salesforce Platform total API request
+                allocations</a>, which are per org and span a 24-hour period. Only <samp class="codeph apex_code">ConnectApi</samp> method calls that require Chatter are
+              subject to a per user, per namespace, per hour rate limit. The documentation for every
+                <samp class="codeph apex_code">ConnectApi</samp> method indicates whether Chatter
+              is required. When you exceed the rate limit, a <samp class="codeph apex_code">ConnectApi.RateLimitException</samp> is thrown. Your Apex code must catch and
+              handle this exception.</p>
+
+          </dd>
+
+        
+        
+          <dt class="dt dlterm">Data.com Clean</dt>
+
+          <dd class="dd">If you use the Data.com Clean product and its automated jobs, consider how you use
+            Apex triggers. If you have Apex triggers on account, contact, or lead records that run
+            SOQL queries, the SOQL queries can interfere with Clean jobs for those objects. Your
+            Apex triggers (combined) must not exceed 200 SOQL queries per batch. If they do, your
+            Clean job for that object fails. In addition, if your triggers call <samp class="codeph apex_code">future</samp> methods, they’re subject to a limit of 10
+              <samp class="codeph apex_code">future</samp> calls per batch.</dd>
+
+        
+        
+          <dt class="dt dlterm">Event Reports</dt>
+
+          <dd class="dd">The maximum number of records that an event report returns for a user who isn’t a
+            system administrator is 20,000; for system administrators, 100,000.</dd>
+
+        
+        
+          <dt class="dt dlterm">MAX_DML_ROWS limit in Apex testing</dt>
+
+          <dd class="dd">The maximum number of rows that can be inserted, updated, or deleted, in a single,
+            synchronous Apex test execution context, is limited to 450,000. For example, an Apex
+            class can have 45 methods that insert 10,000 rows each. If the limit is reached, you see
+            this error: <samp class="codeph apex_code">Your runallTests <span class="statement">is</span> consuming too many DB
+              resources</samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm">SOQL Query Performance</dt>
+
+          <dd class="dd">For best performance, use selective SOQL queries. This is especially important for
+            queries inside triggers. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_SOQL_VLSQ.htm" target="_blank">More Efficient SOQL Queries</a>.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section" id="in_topic_email_limits_section">
+<a name="in_topic_email_limits_section"><!-- --></a><h2 class="helpHead2">Email Limits</h2>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm">Inbound Email Limits</dt>
+
+          <dd class="dd">
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <tbody class="tbody">
+                  <tr>
+                    <td class="entry">Email Services: Maximum Number of Email Messages Processed <p class="p">(Includes
+                        limit for On-Demand Email-to-Case)</p>
+</td>
+
+                    <td class="entry">Number of user licenses multiplied by 1,000; maximum 1,000,000</td>
+
+                  </tr>
+
+                  <tr>
+                    <td class="entry">Email Services: Maximum Size of Email Message (Body and
+                      Attachments)</td>
+
+                    <td class="entry">25 MB<sup class="ph sup">1</sup>
+</td>
+
+                  </tr>
+
+                  <tr>
+                    <td class="entry">On-Demand Email-to-Case: Maximum Email Attachment Size</td>
+
+                    <td class="entry">25 MB</td>
+
+                  </tr>
+
+                  <tr>
+                    <td class="entry">On-Demand Email-to-Case: Maximum Number of Email Messages
+                        Processed<p class="p">(Counts toward limit for Email Services)</p>
+</td>
+
+                    <td class="entry">Number of user licenses multiplied by 1,000; maximum 1,000,000</td>
+
+                  </tr>
+
+                </tbody>
+
+              </table></div>
+<sup class="ph sup">1</sup> The maximum size of email messages for Email Services varies
+            depending on the character set and transfer encoding of the body parts. The size of an
+            email message includes the email headers, body, attachments, and encoding. As a result,
+            an email with a 35-MB attachment likely exceeds the 25-MB size limit for an email
+            message after accounting for the headers, body, and encoding.<div class="p" id="d1727e90-d1740e1477">
+<a name="d1727e90-d1740e1477"><!-- --></a>When defining email services, note the following:<ul class="ul bulletList">
+                <li class="li">An email service only processes messages it receives at one of its
+                  addresses.</li>
+
+                <li class="li">Salesforce limits the total number of messages that all email services combined,
+                  including On-Demand Email-to-Case, can process daily. Messages that exceed this
+                  limit are bounced, discarded, or queued for processing the next day, depending on
+                  how you configure the failure response settings for each email service. Salesforce
+                  calculates the limit by multiplying the number of user licenses by 1,000; maximum
+                  1,000,000. For example, if you have 10 licenses, your org can process up to 10,000
+                  email messages a day.</li>
+
+                <li class="li">Email service addresses that you create in your sandbox can’t be copied to your
+                  production org.</li>
+
+                <li class="li">For each email service, you can tell Salesforce to send error email messages to
+                  a specified address instead of the sender's email address.</li>
+
+                <li class="li">Email services reject email messages and notify the sender if the email
+                  (combined body text, body HTML, and attachments) exceeds approximately 25 MB
+                  (varies depending on language and character set).</li>
+
+              </ul>
+</div>
+</dd>
+
+        
+        
+          <dt class="dt dlterm">Outbound Email: Limits for Single and Mass Email Sent Using Apex</dt>
+
+          <dd class="dd">
+            <p class="p">Each licensed org can send single emails to a maximum of 5,000 external email
+              addresses per day based on Greenwich Mean Time (GMT). For orgs created before Spring
+              ’19, the daily limit is enforced only for emails sent via Apex and Salesforce APIs
+              except for REST API. For orgs created in Spring ’19 and later, the daily limit is also
+              enforced for email alerts, simple email actions, Send Email actions in flows, and REST
+              API. If one of the newly counted emails can’t be sent because your org has reached the
+              limit, we notify you by email and add an entry to the debug logs. Single emails sent
+              using the email author or composer in Salesforce don't count toward this limit.
+              There’s no limit on sending single emails to contacts, leads, person accounts, and
+              users in your org directly from account, contact, lead, opportunity, case, campaign,
+              or custom object pages. In Developer Edition orgs and orgs evaluating Salesforce
+              during a trial period, you can send to a maximum of 50 recipients per day, and each
+              single email can have up to 15 recipients. </p>
+
+            <p class="p">Keep these considerations in mind when sending emails:</p>
+
+            <ul class="ul bulletList">
+              <li class="li">When sending single emails, you can specify up to 150 recipients across the
+                  <span class="keyword parmname">To</span>, <span class="keyword parmname">CC</span>, and <span class="keyword parmname">BCC</span>
+                fields in each <span class="keyword parmname">SingleEmailMessage</span>. Each field is also limited
+                to 4,000 bytes.</li>
+
+              <li class="li">If you use <span class="keyword parmname">SingleEmailMessage</span> to email your org’s internal
+                users, specifying the user’s ID in <span class="keyword parmname">setTargetObjectId</span> means the
+                email doesn’t count toward the daily limit. However, specifying internal users’
+                email addresses in <span class="keyword parmname">setToAddresses</span> means the email does count
+                toward the limit.</li>
+
+            </ul>
+
+            <ul class="ul bulletList">
+              <li class="li">You can send mass email and list email to a maximum of 5,000 external email
+                addresses per day per licensed Salesforce org. A day is calculated based on
+                Greenwich Mean Time (GMT). </li>
+
+              <li class="li">The single email, mass email, and list email limits count duplicate email
+                addresses. For example, if you have <span class="ph filepath">johndoe@example.com</span> in your
+                email 10 times that counts as 10 against the limit.</li>
+
+              <li class="li">API or Apex single emails can be sent to a maximum of 5,000 external email
+                addresses per day.</li>
+
+              <li class="li">You can send an unlimited amount of email through the UI to your org’s
+                internal users, which include portal users. </li>
+
+              <li class="li">You can send mass emails and list emails only to contacts, person accounts, leads,
+                and your org’s internal users.</li>
+
+              <li class="li">In Developer Edition orgs and orgs evaluating Salesforce during a trial period,
+                you can send to no more than 10 external email recipients per org per day using mass
+                email and list email. </li>
+
+              <li class="li">You can’t send mass email using a Visualforce email template.</li>
+
+            </ul>
+
+          </dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section" id="in_topic_push_notification_section">
+<a name="in_topic_push_notification_section"><!-- --></a><h2 class="helpHead2">Push Notification Limits</h2>
+<div class="p">An org can send
+      up to 20,000 iOS and 10,000 Android push notifications per hour (for example, 4:00 to 4:59
+        UTC).<p class="p">Only <em class="ph i">deliverable</em> notifications count toward this limit. For example, a
+        notification is sent to 1,000 employees in your company, but 100 employees haven’t installed
+        the mobile app yet. Only the notifications sent to the 900 employees who have installed the
+        mobile app count toward this limit.</p>
+<p class="p">Each test push notification that is generated
+        through the Test Push Notification page is limited to a single recipient. Test push
+        notifications count toward an org’s hourly push notification limit.</p>
+<p class="p">When an org's
+        hourly push notification limit is met, any additional notifications are still created for
+        in-app display and retrieval via REST API.</p>
+</div>
+</div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_limits.htm" title="When a continuation is executing, the continuation-specific limits apply. When the continuation returns and the request resumes, a new Apex transaction starts. All Apex and Visualforce limits apply and are reset in the new transaction, including the Apex callout limits.">Asynchronous Callout Limits</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_intro.htm" target="_blank" title="Platform Events Developer Guide - HTML (New Window)"><em class="ph i">Platform Events Developer Guide</em></a></div></li>
+</ul>
+</div>
+</div>

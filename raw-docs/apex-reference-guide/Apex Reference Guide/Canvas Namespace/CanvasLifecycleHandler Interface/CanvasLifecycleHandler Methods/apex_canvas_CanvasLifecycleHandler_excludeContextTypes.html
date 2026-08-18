@@ -1,0 +1,76 @@
+<a name="apex_canvas_CanvasLifecycleHandler_excludeContextTypes"><!-- --></a><h1 class="helpHead1">excludeContextTypes()</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Lets the implementation exclude parts of the CanvasRequest
+            context, if the application does not need it.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Set&lt;Canvas.ContextTypeEnum&gt;
+                    excludeContextTypes()</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+            
+            <p class="p">Type: SET&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_canvas_ContextTypeEnum.htm" title="Describes context data that can be excluded from canvas app context data. You specify which context types to exclude in the excludeContextTypes() method in your CanvasLifecycleHandler implementation.">Canvas.ContextTypeEnum</a>&gt;</p>
+
+            <div class="p">This method must return <samp class="codeph apex_code"><span class="keyword">null</span></samp> or a set of zero
+                or more ContextTypeEnum values. Returning <samp class="codeph apex_code"><span class="keyword">null</span></samp> enables all attributes by default. ContextTypeEnum values that
+                can be set are:<ul class="ul bulletList">
+                    <li class="li">Canvas.ContextTypeEnum.ORGANIZATION</li>
+
+                    <li class="li">Canvas.ContextTypeEnum.RECORD_DETAIL</li>
+
+                    <li class="li">Canvas.ContextTypeEnum.USER</li>
+
+                </ul>
+See <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_canvas_ContextTypeEnum.htm" title="Describes context data that can be excluded from canvas app context data. You specify which context types to exclude in the excludeContextTypes() method in your CanvasLifecycleHandler implementation.">ContextTypeEnum</a> for more details on these values.</div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Implement this method to specify which attributes to disable in the context of the
+                canvas app. A disabled attribute will set the associated canvas context information
+                to null.</p>
+
+            <p class="p">Disabling attributes can help improve performance by reducing the size of the signed
+                request and canvas context. Also, disabled attributes do not need to be retrieved by
+                Salesforce, which further improves performance.</p>
+
+            <p class="p">See the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/" target="_blank" title="HTML (New Window)">Canvas Developer
+                        Guide</a></cite> for more information on context information in the
+                Context object that’s provided in the CanvasRequest.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example implementation specifies that the organization information will be
+                disabled in the canvas context.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> Set&lt;Canvas.ContextTypeEnum&gt; excludeContextTypes() {
+    Set&lt;Canvas.ContextTypeEnum&gt; excluded = <span class="keyword">new</span> Set&lt;Canvas.ContextTypeEnum&gt;();
+    excluded.add(Canvas.ContextTypeEnum.ORGANIZATION);
+    <span class="statement">return</span> excluded;
+}
+</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/canvas_filtering_context_data.htm" target="_blank" title="Canvas Developer Guide: Filtering CanvasRequest Context
+       Data - HTML (New Window)"><em class="ph i">Canvas Developer Guide</em>: Filtering CanvasRequest Context
+       Data</a></div></li></ul>
+</div>
+</div>

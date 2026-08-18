@@ -1,0 +1,444 @@
+<a name="apex_interface_Auth_LoginDiscoveryHandler"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">LoginDiscoveryHandler Interface</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Salesforce gives you the ability to log in users based on other verification methods
+    than username and password. For example, it can prompt users to log in with their email, phone
+    number, or another identifier like a Federation ID or device identifier. Login Discovery is
+    available to these licenses: Customer Community, Customer Community Plus, External Identity,
+    Partner Community, and Partner Community Plus.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Implement a <samp class="codeph apex_code">Auth.LoginDiscoveryHandler</samp> for an
+        interview-based log in. The handler looks up a user from the identifier entered, and can
+        call <samp class="codeph apex_code">Site.passwordlessLogin</samp> to determine which
+        credential to use, such as email or SMS. Or the handler can redirect a user to a third-party
+        identity provider for login. With this handler, the login page doesn't show a password
+        field. However, you can use <samp class="codeph apex_code">Site.passwordlessLogin</samp>
+        to then prompt for a password.</p>
+
+      <p class="p">From the user perspective, the user enters an identifier at the log in prompt. Then the
+        user completes the login by entering a PIN or password. Or, if SSO-enabled, the user
+        bypasses login.</p>
+
+      <p class="p">For an example, see <a class="xref" href="#apex_interface_Auth_LoginDiscoveryHandler_Example">LoginDiscoveryHandler Example Implementation</a>. For more details, see
+          <a class="xref" href="https://help.salesforce.com/articleView?id=identity_about_customers_partners.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Salesforce Customer Identity</a>
+        in <cite class="cite">Salesforce Help</cite>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_LoginDiscoveryHandler.htm#apex_Auth_LoginDiscoveryHandler_methods">LoginDiscoveryHandler Method</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_LoginDiscoveryHandler.htm#apex_interface_Auth_LoginDiscoveryHandler_Example">LoginDiscoveryHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_LoginDiscoveryHandler_methods">
+<a name="apex_Auth_LoginDiscoveryHandler_methods"><!-- --></a>
+  <h2 class="helpHead2">LoginDiscoveryHandler Method</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">Here’s the method for <samp class="codeph apex_code">LoginDiscoveryHandler</samp>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_LoginDiscoveryHandler.htm#apex_Auth_LoginDiscoveryHandler_login">login(identifier, startUrl, requestAttributes)</a></strong><br>
+Log in the customer or partner given the specified identifier, such       as email or phone number. If successful, redirect the user to the Experience Cloud site page       specified by the start URL.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_LoginDiscoveryHandler_login">
+<a name="apex_Auth_LoginDiscoveryHandler_login"><!-- --></a>
+  <h3 class="helpHead3">login(identifier, startUrl, requestAttributes)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Log in the customer or partner given the specified identifier, such
+      as email or phone number. If successful, redirect the user to the Experience Cloud site page
+      specified by the start URL.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference login(<span class="keyword">String</span> identifier, <span class="keyword">String</span>
+          startUrl, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;requestAttributes)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">identifier</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Identifier</p>
+<p class="p">the customer or partner entered at the login prompt, for example, an email
+            address or phone number.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">startUrl</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Path to the Experience Cloud site page requested by the customer or partner. The user
+            is redirected to this location after successful login.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">requestAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">Information about the login request based on the user’s browser state when accessing
+            the login page. <samp class="codeph apex_code">requestAttributes</samp> passes in the
+            CommunityUrl, IpAddress, UserAgent, Platform, Application, City, Country, and
+            Subdivision values. The City, Country, and Subdivision values come from IP
+            geolocation.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm#apex_system_pagereference" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+
+      <p class="p">The URL of the page where the user is redirected.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">Here’s a sample <samp class="codeph apex_code">requestAttributes</samp> response.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">CommunityUrl=http:<span class="onelineComment">//my-developer-edition.mycompany.com:5555/discover</span>
+IpAddress=55.555.0.0
+UserAgent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/11.1 Safari/605.1.15
+Platform=Mac OSX
+Application=Browser
+City=San Mateo
+Country=United States
+Subdivision=California</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Auth_LoginDiscoveryHandler_Example">
+<a name="apex_interface_Auth_LoginDiscoveryHandler_Example"><!-- --></a>
+    <h2 class="helpHead2">LoginDiscoveryHandler Example Implementation</h2>
+
+    
+    <div class="body refbody">
+        <div class="section" id="logindiscoveryhandler_code">
+<a name="logindiscoveryhandler_code"><!-- --></a>
+            <p class="p">This Apex code example implements the <samp class="codeph apex_code">Auth.LoginDiscoveryHandler</samp> interface. It checks whether the user who
+                is logging in has a verified email or phone number, depending on which identifier
+                was supplied on the login page. If verified, with <samp class="codeph apex_code">Auth.VerificationMethod.EMAIL</samp> or <samp class="codeph apex_code">Auth.VerificationMethod.SMS</samp>, we send a challenge to the identifier,
+                either the user’s email address or mobile device. If the user enters the code
+                correctly on the verify page, the user is redirected to the Experience Cloud site’s
+                page specified by the start URL. If the user isn’t verified, the user must enter a
+                password to log in. The handler also checks that the email and phone number are
+                unique with this code: <samp class="codeph apex_code">users.size()==1</samp>.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <p class="p">Passwordless login works only with verified methods. You can check the
+                    verification status on the User object, for example, with User list view, a
+                    report, or the API. Make sure that your solution handles the case where the user
+                    doesn’t have a verification method. This code example falls back to a password. </p>
+
+                <p class="p">The default discoverable login handler checks whether the user entered a valid
+                    email address or phone number before redirecting the user to the verification
+                    page. If an invalid entry is made, the handler returns an error. Because this
+                    behavior is vulnerable to user enumeration attack, make sure that your solution
+                    prevents this attack. For example, you can create a dummy page similar to the
+                    verification page and redirect the user to the dummy page when invalid user
+                    identifier is entered. Also, use generic error messages to avoid providing
+                    additional information.</p>
+
+            </p>
+</div>
+</div></div></div></div>
+
+            <p class="p">The <samp class="codeph apex_code">discoveryResult</samp> function calls the
+                    <samp class="codeph apex_code">Site.passwordlessLogin</samp> method to log the
+                user in with the specified verification method. The <samp class="codeph apex_code">getSsoRedirect</samp> function looks up whether the user logs in with SAML or
+                an Auth Provider. Add the implementation-specific logic to handle the lookup.</p>
+
+        </div>
+
+        <div class="section">
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> AutocreatedDiscLoginHandler1535377170343 <span class="keyword">implements</span> Auth.LoginDiscoveryHandler {
+
+<span class="keyword">global</span> PageReference login(<span class="keyword">String</span> identifier, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span> &amp;&amp; isValidEmail(identifier)) {
+        <span class="onelineComment">// Search for user by email. </span>
+        List&lt;User&gt; users = [SELECT Id FROM User WHERE Email = :identifier AND IsActive = TRUE];
+        <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+            <span class="onelineComment">// User must have a verified email before using this verification method. </span>
+            <span class="onelineComment">// We cannot send messages to unverified emails. </span>
+            <span class="onelineComment">// You can check if the user's email verified bit set and add the </span>
+            <span class="onelineComment">// password verification method as fallback.</span>
+            List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedEmailAddress FROM TwoFactorMethodsInfo WHERE UserId = :users[0].Id];
+            <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedEmailAddress == <span class="keyword">true</span>) {
+                <span class="onelineComment">// Use email verification method if the user's email is verified.</span>
+                <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.EMAIL, startUrl, requestAttributes);
+            } <span class="statement">else</span> {
+                <span class="onelineComment">// Use password verification method as fallback </span>
+                <span class="onelineComment">// if the user's email is unverified.</span>
+                <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.PASSWORD, startUrl, requestAttributes);
+            }
+        } <span class="statement">else</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No unique user found. User count='</span> + users.size());
+        }
+    }
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span>) {
+        <span class="keyword">String</span> formattedSms = getFormattedSms(identifier);
+        <span class="statement">if</span> (formattedSms != <span class="keyword">null</span>) {
+            <span class="onelineComment">// Search for user by SMS. </span>
+            List&lt;User&gt; users = [SELECT Id FROM User WHERE MobilePhone = :formattedSms AND IsActive = TRUE];
+            <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+                <span class="onelineComment">// User must have a verified SMS before using this verification method. </span>
+                <span class="onelineComment">// We cannot send messages to unverified mobile numbers. </span>
+                <span class="onelineComment">// You can check if the user's mobile verified bit is set or add </span>
+                <span class="onelineComment">// the password verification method as fallback.</span>
+                List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedMobileNumber FROM TwoFactorMethodsInfo WHERE UserId = :users[0].Id];
+                <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedMobileNumber == <span class="keyword">true</span>) {
+                    <span class="onelineComment">// Use SMS verification method if the user's mobile number is verified.</span>
+                    <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.SMS, startUrl, requestAttributes);
+                } <span class="statement">else</span> {
+                    <span class="onelineComment">// Use password verification method as fallback if the user's </span>
+                    <span class="onelineComment">// mobile number is unverified.</span>
+                    <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.PASSWORD, startUrl, requestAttributes);
+                }
+            } <span class="statement">else</span> {
+                <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No unique user found. User count='</span> + users.size());
+            }
+        }
+    }
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span>) {
+        <span class="onelineComment">// You can customize the code to find user via other attributes,</span>
+        <span class="onelineComment">// such as SSN or Federation ID.</span>
+    }
+    <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'Invalid Identifier'</span>);
+}
+<span class="keyword">private</span> boolean isValidEmail(<span class="keyword">String</span> identifier) {
+    <span class="keyword">String</span> emailRegex = <span class="string">'^[a-zA-Z0-9._|\\\\%#~`=?&amp;/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'</span>;
+    <span class="onelineComment">// source: https://www.regular-expressions.info/email.html </span>
+    Pattern EmailPattern = Pattern.compile(emailRegex);
+    Matcher EmailMatcher = EmailPattern.matcher(identifier);
+    <span class="statement">if</span> (EmailMatcher.matches()) { <span class="statement">return</span> <span class="keyword">true</span>; }
+    <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">false</span>; }
+}
+<span class="keyword">private</span> <span class="keyword">String</span> getFormattedSms(<span class="keyword">String</span> identifier) {
+    <span class="onelineComment">// Accept SMS input formats with 1- or 2-digit country code, </span>
+    <span class="onelineComment">// 3-digit area code, and 7-digit number.</span>
+    <span class="onelineComment">// You can customize the SMS regex to allow different formats.</span>
+    <span class="keyword">String</span> smsRegex = <span class="string">'^(\\+?\\d{1,2}?[\\s-])?(\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{4})$'</span>;
+    Pattern smsPattern = Pattern.compile(smsRegex);
+    Matcher smsMatcher = SmsPattern.matcher(identifier);
+    <span class="statement">if</span> (smsMatcher.matches()) {
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Format user input into the verified SMS format '+xx xxxxxxxxxx' </span>
+            <span class="onelineComment">// before DB lookup. If no country code is provided, append </span>
+            <span class="onelineComment">// US country code +1 for the default.</span>
+            <span class="keyword">String</span> countryCode = smsMatcher.group(1) == <span class="keyword">null</span> ? <span class="string">'+1'</span> : smsMatcher.group(1);
+            <span class="statement">return</span> System.UserManagement.formatPhoneNumber(countryCode, smsMatcher.group(2));
+        } <span class="statement">catch</span>(System.InvalidParameterValueException e) {
+            <span class="statement">return</span> <span class="keyword">null</span>;
+        }
+    } <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">null</span>; }
+}
+<span class="keyword">private</span> PageReference getSsoRedirect(User user, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="onelineComment">// You can look up to check whether the user should log in with </span>
+    <span class="onelineComment">// SAML or an Auth Provider and return the URL to initialize SSO.</span>
+    <span class="statement">return</span> <span class="keyword">null</span>;
+}
+<span class="keyword">private</span> PageReference discoveryResult(User user, Auth.VerificationMethod method, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="onelineComment">// Only users with an External Identity or community license can log in </span>
+    <span class="onelineComment">// using Site.passwordlessLogin. Use getSsoRedirect to let your org employees </span>
+    <span class="onelineComment">// log in to an Experience Cloud site.</span>
+    PageReference ssoRedirect = getSsoRedirect(user, startUrl, requestAttributes);
+    <span class="statement">if</span> (ssoRedirect != <span class="keyword">null</span>) {
+        <span class="statement">return</span> ssoRedirect;
+    } <span class="statement">else</span> {
+        <span class="statement">if</span> (method != <span class="keyword">null</span>) {
+            List&lt;Auth.VerificationMethod&gt; methods = <span class="keyword">new</span> List&lt;Auth.VerificationMethod&gt;();
+            methods.add(method);
+            PageReference pwdlessRedirect = Site.passwordlessLogin(user.Id, methods, startUrl);
+            <span class="statement">if</span> (pwdlessRedirect != <span class="keyword">null</span>) {
+                <span class="statement">return</span> pwdlessRedirect;
+            } <span class="statement">else</span> {
+                <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No Passwordless Login redirect URL returned for verification method: '</span> + method);
+            }
+        } <span class="statement">else</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No method found'</span>);
+        }
+    }
+}
+}</pre></div>
+
+            
+        </div>
+
+        <div class="section">
+<h3 class="helpHead3">Code Example: Filter Login Discovery Users by Profile</h3>
+
+            
+            <p class="p">Your production org can have multiple users with the same verified email address and
+                mobile number. But your customers must have unique ones. To address this problem,
+                you can add a few lines of code that filters users by profile to ensure uniqueness.
+                This code example handles users with the External Identity User profile, but can be
+                adapted to support other use cases. For example, you can modify the first line of
+                code to address users with other user licenses or criteria.</p>
+
+            <p class="p">Login Discovery is available with the following user licenses: Customer Community,
+                Customer Community Plus, External Identity, Partner Community, and Partner Community
+                Plus. It depends on which profiles have access to your Experience Cloud site.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> AutocreatedDiscLoginHandler1551301979709 <span class="keyword">implements</span> Auth.LoginDiscoveryHandler {
+
+<span class="keyword">global</span> PageReference login(<span class="keyword">String</span> identifier, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span> &amp;&amp; isValidEmail(identifier)) {
+        <span class="onelineComment">// Ensure uniqueness by profile</span>
+        Profile p = [SELECT id FROM profile WHERE name = <span class="string">'External Identity User'</span>];
+        List&lt;User&gt; users = [SELECT Id FROM User WHERE Email = :identifier AND IsActive = TRUE AND profileId=:p.id];
+        <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+            <span class="onelineComment">// User must have verified email before using this verification method. We cannot send messages to unverified emails. </span>
+            <span class="onelineComment">// You can check if the user has email verified bit on and add the password verification method as fallback.</span>
+            List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedEmailAddress FROM TwoFactorMethodsInfo WHERE UserId = :users[0].Id];
+            <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedEmailAddress == <span class="keyword">true</span>) {
+                <span class="onelineComment">// Use email verification method if the user's email is verified.</span>
+                <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.EMAIL, startUrl, requestAttributes);
+            } <span class="statement">else</span> {
+                <span class="onelineComment">// Use password verification method as fallback if the user's email is unverified.</span>
+                <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.PASSWORD, startUrl, requestAttributes);
+            }
+        } <span class="statement">else</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No unique user found. User count='</span> + users.size());
+        }
+    }
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span>) {
+        <span class="keyword">String</span> formattedSms = getFormattedSms(identifier);
+        <span class="statement">if</span> (formattedSms != <span class="keyword">null</span>) {
+            <span class="onelineComment">// Ensure uniqueness by profile</span>
+            Profile p = [SELECT id FROM profile WHERE name = <span class="string">'External Identity User'</span>];
+            List&lt;User&gt; users = [SELECT Id FROM User WHERE MobilePhone = :formattedSms AND IsActive = TRUE AND profileId=:p.id];
+            <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+                <span class="onelineComment">// User must have verified SMS before using this verification method. We cannot send messages to unverified mobile numbers. </span>
+                <span class="onelineComment">// You can check if the user has mobile verified bit on or add the password verification method as fallback.</span>
+                List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedMobileNumber FROM TwoFactorMethodsInfo WHERE UserId = :users[0].Id];
+                <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedMobileNumber == <span class="keyword">true</span>) {
+                    <span class="onelineComment">// Use SMS verification method if the user's mobile number is verified.</span>
+                    <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.SMS, startUrl, requestAttributes);
+                } <span class="statement">else</span> {
+                    <span class="onelineComment">// Use password verification method as fallback if the user's mobile number is unverified.</span>
+                    <span class="statement">return</span> discoveryResult(users[0], Auth.VerificationMethod.PASSWORD, startUrl, requestAttributes);
+                }
+            } <span class="statement">else</span> {
+                <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No unique user found. User count='</span> + users.size());
+            }
+        }
+    }
+    <span class="statement">if</span> (identifier != <span class="keyword">null</span>) {
+        <span class="onelineComment">// You can customize the code to find user via other attributes, such as SSN or Federation ID</span>
+    }
+    <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'Invalid Identifier'</span>);
+}
+
+<span class="keyword">private</span> boolean isValidEmail(<span class="keyword">String</span> identifier) {
+    <span class="keyword">String</span> emailRegex = <span class="string">'^[a-zA-Z0-9._|\\\\%#~`=?&amp;/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'</span>;
+    <span class="onelineComment">// source: https://www.regular-expressions.info/email.html </span>
+    Pattern EmailPattern = Pattern.compile(emailRegex);
+    Matcher EmailMatcher = EmailPattern.matcher(identifier);
+    <span class="statement">if</span> (EmailMatcher.matches()) { <span class="statement">return</span> <span class="keyword">true</span>; }
+    <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">false</span>; }
+}
+
+<span class="keyword">private</span> <span class="keyword">String</span> getFormattedSms(<span class="keyword">String</span> identifier) {
+    <span class="onelineComment">// Accept SMS input formats with 1 or 2 digits country code, 3 digits area code and 7 digits number</span>
+    <span class="onelineComment">// You can customize the SMS regex to allow different formats</span>
+    <span class="keyword">String</span> smsRegex = <span class="string">'^(\\+?\\d{1,2}?[\\s-])?(\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{4})$'</span>;
+    Pattern smsPattern = Pattern.compile(smsRegex);
+    Matcher smsMatcher = SmsPattern.matcher(identifier);
+    <span class="statement">if</span> (smsMatcher.matches()) {
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Format user input into the verified SMS format '+xx xxxxxxxxxx' before DB lookup</span>
+            <span class="onelineComment">// Append US country code +1 by default if no country code is provided</span>
+            <span class="keyword">String</span> countryCode = smsMatcher.group(1) == <span class="keyword">null</span> ? <span class="string">'+1'</span> : smsMatcher.group(1);
+            <span class="statement">return</span> System.UserManagement.formatPhoneNumber(countryCode, smsMatcher.group(2));
+        } <span class="statement">catch</span>(System.InvalidParameterValueException e) {
+            <span class="statement">return</span> <span class="keyword">null</span>;
+        }
+    } <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">null</span>; }
+}
+
+<span class="keyword">private</span> PageReference getSsoRedirect(User user, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="onelineComment">// You can look up if the user should log in with SAML or an Auth Provider and return the URL to initialize SSO.</span>
+    <span class="statement">return</span> <span class="keyword">null</span>;
+}
+
+<span class="keyword">private</span> PageReference discoveryResult(User user, Auth.VerificationMethod method, <span class="keyword">String</span> startUrl, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; requestAttributes) {
+    <span class="onelineComment">//Only users with an External Identity or community license can login using Site.passwordlessLogin</span>
+    <span class="onelineComment">//Use getSsoRedirect to enable your org employees to log in to an Experience Cloud site</span>
+    PageReference ssoRedirect = getSsoRedirect(user, startUrl, requestAttributes);
+    <span class="statement">if</span> (ssoRedirect != <span class="keyword">null</span>) {
+        <span class="statement">return</span> ssoRedirect;
+    } <span class="statement">else</span> {
+        <span class="statement">if</span> (method != <span class="keyword">null</span>) {
+            List&lt;Auth.VerificationMethod&gt; methods = <span class="keyword">new</span> List&lt;Auth.VerificationMethod&gt;();
+            methods.add(method);
+            PageReference pwdlessRedirect = Site.passwordlessLogin(user.Id, methods, startUrl);
+            <span class="statement">if</span> (pwdlessRedirect != <span class="keyword">null</span>) {
+                <span class="statement">return</span> pwdlessRedirect;
+            } <span class="statement">else</span> {
+                <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No Passwordless Login redirect URL returned for verification method: '</span> + method);
+            }
+        } <span class="statement">else</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> Auth.LoginDiscoveryException(<span class="string">'No method found'</span>);
+        }
+    }
+}
+}
+</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>

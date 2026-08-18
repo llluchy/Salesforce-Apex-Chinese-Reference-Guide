@@ -1,0 +1,309 @@
+<a name="apex_class_Invocable_Action_AdditionalAttribute"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Action.AdditionalAttribute Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods to get metadata about attributes associated with invocable action
+    parameters.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Invocable.htm" title="The Invocable namespace provides classes for calling invocable actions from Apex.">Invocable</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Additional attributes extend invocable action parameters with custom metadata beyond
+                the standard parameter properties. Use the <samp class="codeph ">AdditionalAttribute</samp> class to access this extensibility metadata when
+                working with invocable actions.</p>
+
+            <p class="p">For type-safe access to collection values, use the typed getter methods such as
+                    <samp class="codeph ">getValueAsStringList()</samp>, <samp class="codeph ">getValueAsIntegerList()</samp>, <samp class="codeph ">getValueAsDoubleList()</samp>, or <samp class="codeph ">getValueAsBooleanList()</samp>. These methods return <samp class="codeph ">null</samp> when the requested data type doesn't match the
+                attribute's actual data type. Check <samp class="codeph ">getDataType()</samp>
+                and <samp class="codeph ">getIsCollection()</samp> before calling typed
+                getters to ensure you use the appropriate method.</p>
+
+        </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Invocable.Action action = Invocable.Action.createStandardAction('otherActionName');
+List&lt;Invocable.Action.DescribeResult&gt; results = action.getDescribe();
+
+for (Invocable.Action.DescribeResult result : results) {
+    for (Invocable.Action.InputParameter input : result.getInputs()) {
+        List&lt;Invocable.Action.AdditionalAttribute&gt; attrs = input.getAdditionalAttributes();
+        if (attrs != null) {
+            for (Invocable.Action.AdditionalAttribute attr : attrs) {
+                System.debug('Attribute: ' + attr.getName());
+                System.debug('Data Type: ' + attr.getDataType());
+
+                // Handle collection vs single value
+                if (attr.getIsCollection()) {
+                    if (attr.getDataType() == 'STRING') {
+                        List&lt;String&gt; stringValues = attr.getValueAsStringList();
+                        System.debug('String Values: ' + stringValues);
+                    }
+                } else {
+                    System.debug('Value: ' + attr.getValue());
+                }
+            }
+        }
+    }
+}
+</pre></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_methods">Action.AdditionalAttribute Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_methods">
+<a name="apex_Invocable_Action_AdditionalAttribute_methods"><!-- --></a><h2 class="helpHead2">Action.AdditionalAttribute Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">Action.AdditionalAttribute</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getApexClass">getApexClass()</a></strong><br>
+Gets the Apex class name of an additional attribute for an invocable action     parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getDataType">getDataType()</a></strong><br>
+Gets the data type of an additional attribute for an invocable action     parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getIsCollection">getIsCollection()</a></strong><br>
+Indicates whether an additional attribute for an invocable action parameter contains a     collection of values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getName">getName()</a></strong><br>
+Gets the name of an additional attribute for an invocable action parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValue">getValue()</a></strong><br>
+Gets the value for an additional attribute for an invocable action parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsBooleanList">getValueAsBooleanList()</a></strong><br>
+Returns a value as a list of Booleans when <samp class="codeph ">isCollection</samp> is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is BOOLEAN.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsDateList">getValueAsDateList()</a></strong><br>
+Returns a value as a list of dates when <samp class="codeph ">isCollection</samp>     is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is     DATE.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsDoubleList">getValueAsDoubleList()</a></strong><br>
+Returns a value as a list of doubles when <samp class="codeph ">isCollection</samp>     is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is     DOUBLE.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsIntegerList">getValueAsIntegerList()</a></strong><br>
+Returns a value as a list of integers when <samp class="codeph ">isCollection</samp> is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is INTEGER.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsList">getValueAsList()</a></strong><br>
+Returns a value as a list when <samp class="codeph ">isCollection</samp> is       <samp class="ph systemoutput">true</samp>. The list elements have the type specified by the <samp class="codeph ">dataType</samp> property.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsLongList">getValueAsLongList()</a></strong><br>
+Returns a value as a list of longs when <samp class="codeph ">isCollection</samp>     is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is     LONG.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action_AdditionalAttribute.htm#apex_Invocable_Action_AdditionalAttribute_getValueAsStringList">getValueAsStringList()</a></strong><br>
+Returns a value as a list of strings when <samp class="codeph ">isCollection</samp>     is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is     STRING.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getApexClass">
+<a name="apex_Invocable_Action_AdditionalAttribute_getApexClass"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getApexClass()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the Apex class name of an additional attribute for an invocable action
+    parameter.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getApexClass()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Apex class name of the additional attribute for the invocable action parameter.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getDataType">
+<a name="apex_Invocable_Action_AdditionalAttribute_getDataType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getDataType()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the data type of an additional attribute for an invocable action
+    parameter.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getDataType()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Data type of the additional attribute for the invocable action parameter. For example: STRING,
+        INTEGER, BOOLEAN, DOUBLE, LONG, DATE.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getIsCollection">
+<a name="apex_Invocable_Action_AdditionalAttribute_getIsCollection"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getIsCollection()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Indicates whether an additional attribute for an invocable action parameter contains a
+    collection of values.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Boolean getIsCollection()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">This method returns <samp class="ph systemoutput">true</samp> if the additional attribute for the
+        invocable action parameter is a collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getName">
+<a name="apex_Invocable_Action_AdditionalAttribute_getName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getName()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the name of an additional attribute for an invocable action parameter.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String getName()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the additional attribute for the invocable action parameter.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValue">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValue"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValue()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the value for an additional attribute for an invocable action parameter.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Object getValue()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Object</p>
+<p class="p">Value of the additional attribute for the invocable action parameter. Cast to the appropriate
+        type based on the <samp class="codeph ">dataType</samp> and <samp class="codeph ">isCollection</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsBooleanList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsBooleanList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsBooleanList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of Booleans when <samp class="codeph ">isCollection</samp> is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is BOOLEAN.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Boolean&gt; getValueAsBooleanList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>&gt;</p>
+<p class="p">List of Boolean values, or null if not a Boolean collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsDateList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsDateList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsDateList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of dates when <samp class="codeph ">isCollection</samp>
+    is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is
+    DATE.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Date&gt; getValueAsDateList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_date.htm#apex_methods_system_date" title="Contains methods for the Date primitive data type.">Date</a>&gt;</p>
+<p class="p">List of date values, or null if not a date collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsDoubleList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsDoubleList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsDoubleList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of doubles when <samp class="codeph ">isCollection</samp>
+    is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is
+    DOUBLE.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Double&gt; getValueAsDoubleList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a>&gt;</p>
+<p class="p">List of double values, or null if not a double collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsIntegerList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsIntegerList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsIntegerList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of integers when <samp class="codeph ">isCollection</samp> is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is INTEGER.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Integer&gt; getValueAsIntegerList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a>&gt;</p>
+<p class="p">List of integer values, or null if not an integer collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list when <samp class="codeph ">isCollection</samp> is
+      <samp class="ph systemoutput">true</samp>. The list elements have the type specified by the <samp class="codeph ">dataType</samp> property.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;ANY&gt; getValueAsList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;Object&gt;</p>
+<p class="p">List of values type according to <samp class="codeph ">dataType</samp>, or null if not a
+        collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsLongList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsLongList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsLongList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of longs when <samp class="codeph ">isCollection</samp>
+    is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is
+    LONG.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Long&gt; getValueAsLongList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a>&gt;</p>
+<p class="p">List of long values, or null if not a long collection.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Invocable_Action_AdditionalAttribute_getValueAsStringList">
+<a name="apex_Invocable_Action_AdditionalAttribute_getValueAsStringList"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getValueAsStringList()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a value as a list of strings when <samp class="codeph ">isCollection</samp>
+    is <samp class="ph systemoutput">true</samp> and <samp class="codeph ">dataType</samp> is
+    STRING.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;String&gt; getValueAsStringList()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">List of string values, or null if not a string collection.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

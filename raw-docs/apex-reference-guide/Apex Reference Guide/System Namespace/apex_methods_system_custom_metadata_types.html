@@ -1,0 +1,310 @@
+<a name="test"><!-- --></a><div class="nested0">
+   <h1 class="helpHead1">Custom Metadata Type Methods</h1>
+
+   
+   
+   <div class="body">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Custom metadata types are customizable, deployable, packageable, and
+         upgradeable application metadata. All custom metadata is exposed in the application cache,
+         which allows access without repeated queries to the database. The metadata is then
+         available for formula fields, validation rules, flows, Apex, and SOAP API. All methods are
+         static.</span></div>
+
+      <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+         
+         <p class="p">Custom metadata types methods are instance type methods and are called by and operate on
+            a specific instance of a custom metadata type.</p>
+
+      </div>
+
+      <div class="section">
+<h2 class="helpHead2">Custom Metadata Types Example</h2>
+<div class="p">The following example uses the <samp class="codeph apex_code">getAll()</samp> method. The custom metadata type named Games
+         has a field called <var class="keyword varname">GameType__c</var>. This example determines if the field
+         value of the first record is equal to the string
+         <var class="keyword varname">PC</var>.<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Games__mdt&gt; mcs = Games__mdt.getAll().values();
+<span class="keyword">Boolean</span> isPcGameType = <span class="keyword">false</span>;
+<span class="statement">if</span> (mcs[0].GameType__c == <span class="string">'PC'</span>) {
+    isPcGameType = <span class="keyword">true</span>;
+}
+Assert.isTrue(isPcGameType);
+</pre></div>
+</div>
+</div>
+
+   </div>
+
+
+        
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm#apex_System_CustomMetadataType_getall">getAll()</a></strong><br>
+Returns a map containing custom metadata records for the specific custom metadata type.   The map keys are the record DeveloperNames  and the map values are the record   sObjects.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm#apex_System_CustomMetadataType_getinstance">getInstance(recordId)</a></strong><br>
+Returns a single custom metadata type record sObject for a specified record ID. Returns   null if no record matches the parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm#apex_System_CustomMetadataType_getinstance_devName">getInstance(developerName)</a></strong><br>
+Returns a single custom metadata type record sObject for a specified developerName field   of the custom metadata type object. Returns null if no record matches the parameter.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_metadata_types.htm#apex_System_CustomMetadataType_getinstance_apiName">getInstance(qualifiedApiName)</a></strong><br>
+Returns a single custom metadata type record sObject for a qualified API name. Returns     null if no record matches the parameter.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_CustomMetadataType_getall">
+<a name="apex_System_CustomMetadataType_getall"><!-- --></a>
+ <h2 class="helpHead2">getAll()</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a map containing custom metadata records for the specific custom metadata type.
+  The map keys are the record DeveloperNames  and the map values are the record
+  sObjects.</div>
+
+  <div class="section">
+<h3 class="helpHead3">Signature</h3>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>, CustomMetadataType__mdt&gt;
+     getAll()</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Return Value</h3>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code">Map&lt;<span class="keyword">String</span>, CustomMetadataType__mdt&gt;</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Usage</h3>
+
+   
+   <p class="p">If no records are defined for the type, this method returns an empty map. To iterate over the
+    list of custom metadata type record sObjects, use <samp class="codeph apex_code">getAll().values()</samp>. Only the first 255 characters are returned for any field in a
+    custom metadata type record, so longer text fields get truncated. If you want all the field data
+    from a custom metadata type record, use a SOQL query.</p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Example</h3>
+
+   
+   <p class="p">This sample returns a map of all the records for a custom metadata type named <samp class="codeph apex_code">Games__mdt</samp>.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, Games__mdt&gt; mcs = Games__mdt.getAll();</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_CustomMetadataType_getinstance">
+<a name="apex_System_CustomMetadataType_getinstance"><!-- --></a>
+ <h2 class="helpHead2">getInstance(recordId)</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a single custom metadata type record sObject for a specified record ID. Returns
+  null if no record matches the parameter.</div>
+
+  <div class="section">
+<h3 class="helpHead3">Signature</h3>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomMetadataType__mdt
+    getInstance(recordId)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Parameters</h3>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">recordId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Return Value</h3>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code">CustomMetadataType__mdt</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Usage</h3>
+
+   
+   <p class="p">Use this method to explicitly retrieve custom metadata type information at the user level.
+    Only the first 255 characters of any field in a custom metadata type record are returned.
+    Therefore, fields such as long text fields can be truncated. If you want all the field data from
+    a custom metadata type record, use a SOQL query.</p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Example</h3>
+
+   
+   <p class="p">This sample returns a single record sObject for the custom metadata type named <samp class="codeph apex_code">Games_mdt</samp> with <var class="keyword varname">recordID</var> specified as <samp class="codeph apex_code">m00000000000001</samp>.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Games__mdt mc = Games__mdt.getInstance(<span class="string">'m00000000000001'</span>);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_CustomMetadataType_getinstance_devName">
+<a name="apex_System_CustomMetadataType_getinstance_devName"><!-- --></a>
+ <h2 class="helpHead2">getInstance(developerName)</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a single custom metadata type record sObject for a specified developerName field
+  of the custom metadata type object. Returns null if no record matches the parameter.</div>
+
+  <div class="section">
+<h3 class="helpHead3">Signature</h3>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomMetadataType__mdt getInstance(<span class="keyword">String</span>
+     developerName)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Parameters</h3>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">developerName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Return Value</h3>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code">CustomMetadataType__mdt</samp></p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Usage</h3>
+
+   
+   <p class="p">Use this method to return a single custom metadata type record for the specified
+     <var class="keyword varname">developerName</var>. The <var class="keyword varname">developerName</var> is the unique name of
+    the custom metadata type object in the API. Only the first 255 characters of any field in a
+    custom metadata type record are returned. Therefore, fields such as long text fields can be
+    truncated. If you want all the field data from a custom metadata type record, use a SOQL
+    query.</p>
+
+  </div>
+
+  <div class="section">
+<h3 class="helpHead3">Example</h3>
+
+   
+   <p class="p">Returns a single record sObject for the custom metadata type named <samp class="codeph apex_code">Games_mdt</samp> with <var class="keyword varname">developerName</var> specified as
+     <samp class="codeph apex_code">FirstRecord</samp>.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Games__mdt mc = Games__mdt.getInstance(<span class="string">'FirstRecord'</span>);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_CustomMetadataType_getinstance_apiName">
+<a name="apex_System_CustomMetadataType_getinstance_apiName"><!-- --></a>
+  <h2 class="helpHead2">getInstance(qualifiedApiName)</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Returns a single custom metadata type record sObject for a qualified API name. Returns
+    null if no record matches the parameter.</div>
+
+    <div class="section">
+<h3 class="helpHead3">Signature</h3>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomMetadataType__mdt getInstance(<span class="keyword">String</span>
+          qualifiedApiName)</samp></p>
+
+    </div>
+
+    <div class="section">
+<h3 class="helpHead3">Parameters</h3>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">qualifiedApiName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h3 class="helpHead3">Return Value</h3>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code">CustomMetadataType__mdt</samp></p>
+
+    </div>
+
+    <div class="section">
+<h3 class="helpHead3">Usage</h3>
+
+      
+      <p class="p">Use this method to return a single custom metadata type record for the specified
+          <var class="keyword varname">qualifiedApiName</var>. The <var class="keyword varname">qualifiedApiName</var> is a
+        concatenation of the namespace prefix and developerName, and has this format:
+          <var class="keyword varname">namespacePrefix__developerName</var>. The developerName is the unique name of
+        the custom metadata type object in the API. Only the first 255 characters of any field in a
+        custom metadata type record are returned. Therefore, fields such as long text fields can be
+        truncated. If you want all the field data from a custom metadata type record, use a SOQL
+        query.</p>
+
+    </div>
+
+    <div class="section">
+<h3 class="helpHead3">Example</h3>
+
+      
+      <p class="p">This sample returns a single record sObject for the custom metadata type named <samp class="codeph apex_code">Games_mdt</samp> with <var class="keyword varname">qualifiedApiName</var>
+        specified as <samp class="codeph apex_code">MyNamespace__FirstRecord</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Games__mdt mc = Games__mdt.getInstance(<span class="string">'MyNamespace__FirstRecord'</span>);
+</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

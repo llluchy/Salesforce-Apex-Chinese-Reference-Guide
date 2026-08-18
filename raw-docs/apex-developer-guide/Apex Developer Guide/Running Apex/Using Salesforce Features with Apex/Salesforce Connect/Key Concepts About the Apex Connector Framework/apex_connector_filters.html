@@ -1,0 +1,41 @@
+<a name="apex_connector_filters"><!-- --></a><h1 class="helpHead1">Filters in the Apex Connector Framework</h1><div class="body conbody">
+<div class="shortdesc">The <samp class="codeph apex_code">DataSource.QueryContext</samp> contains one
+            <samp class="codeph apex_code">DataSource.TableSelection</samp>. The <samp class="codeph apex_code">DataSource.SearchContext</samp> can have more than one <samp class="codeph apex_code">TableSelection</samp>. Each <samp class="codeph apex_code">TableSelection</samp> has a <samp class="codeph apex_code">filter</samp> property
+        that represents the <samp class="codeph nolang">WHERE</samp> clause in a SOQL or SOSL
+        query.</div>
+
+        <p class="p">For example, when a user goes to an external object’s record detail page, your <samp class="codeph apex_code">DataSource.Connection</samp> is executed. Behind the
+            scenes, we generate a SOQL query similar to the following.</p>
+
+        <div class="codeSection soql"><pre class="codeblock brush:plain">SELECT <em class="ph i"><strong class="ph b">columnNames</strong></em> 
+FROM <em class="ph i"><strong class="ph b">externalObjectApiName</strong></em> 
+WHERE ExternalId = '<em class="ph i"><strong class="ph b">selectedExternalObjectExternalId</strong></em>'</pre></div>
+
+        <p class="p">This SOQL query causes the <samp class="codeph apex_code">query</samp> method on your
+                <samp class="codeph apex_code">DataSource.Connection</samp> class to be invoked.
+            The following code can detect this condition.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (context.tableSelection.filter != <span class="keyword">null</span>) {
+    <span class="statement">if</span> (context.tableSelection.filter.type == DataSource.FilterType.EQUALS 
+        &amp;&amp; <span class="string">'ExternalId'</span> ==  context.tableSelection.filter.columnName 
+        &amp;&amp; context.tableSelection.filter.columnValue instanceOf <span class="keyword">String</span>) {
+        <span class="keyword">String</span> selection = (<span class="keyword">String</span>)context.tableSelection.filter.columnValue;
+        <span class="statement">return</span> DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>, 
+                tableSelection.tableSelected, findSingleResult(selection));
+    }
+}</pre></div>
+
+        <p class="p">This code example assumes that you implemented a <samp class="codeph apex_code">findSingleResult</samp> method that returns a single record, given the selected
+                <samp class="codeph apex_code">ExternalId</samp>. Make sure that your code obtains
+            the record that matches the requested <samp class="codeph apex_code">ExternalId</samp>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_connector_filters_evaluating.htm">Evaluating Filters in the Apex Connector Framework</a></strong><br>
+A filter evaluates to true for a row if that row matches the conditions that the         filter describes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_connector_filters_compound.htm">Compound Filters in the Apex Connector Framework</a></strong><br>
+Filters can have child filters, which are stored in the <samp class="codeph apex_code">subfilters</samp> property.</li>
+</ul>
+</div>

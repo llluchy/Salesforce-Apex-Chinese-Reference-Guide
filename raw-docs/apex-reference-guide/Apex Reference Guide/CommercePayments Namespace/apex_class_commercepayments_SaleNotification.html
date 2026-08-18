@@ -1,0 +1,432 @@
+<a name="apex_class_commercepayments_SaleNotification"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SaleNotification Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>When a payment gateway sends a notification for a sale payment, the
+      payment gateway adapter creates the <samp class="codeph apex_code">SaleNotification</samp>
+      object to store information about notification.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p"><samp class="codeph apex_code">SaleNotification</samp> is used in
+        asynchronous payment gateway adapters. Specify the <samp class="codeph apex_code">CommercePayments</samp> namespace when creating an instance of this class. The
+        constructor of this class takes no arguments. For example:  <samp class="codeph apex_code">commercePayments.SaleNotification saleNotification = <span class="keyword">new</span>
+          commercepayments.SaleNotification();</samp>
+      </p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">global</span> commercepayments.GatewayNotificationResponse processNotification(commercepayments.PaymentGatewayNotificationContext gatewayNotificationContext) {
+    commercepayments.PaymentGatewayNotificationRequest gatewayNotificationRequest = gatewayNotificationContext.getPaymentGatewayNotificationRequest();
+    <span class="keyword">Blob</span> request = gatewayNotificationRequest.getRequestBody();
+    AdyenNotificationRequest notificationRequest = AdyenNotificationRequest.parse(request.toString().replace(<span class="string">'currency'</span>, <span class="string">'currencyCode'</span>));
+    List &lt; AdyenNotificationRequest.NotificationItems &gt; notificationItems = notificationRequest.notificationItems;
+    AdyenNotificationRequest.NotificationRequestItem notificationRequestItem = notificationItems[0].NotificationRequestItem;
+
+    <span class="keyword">Boolean</span> success = <span class="keyword">Boolean</span>.valueOf(notificationRequestItem.success);
+    <span class="keyword">String</span> pspReference = notificationRequestItem.pspReference;
+    <span class="keyword">String</span> eventCode = notificationRequestItem.eventCode;
+    <span class="keyword">Double</span> amount = notificationRequestItem.amount.value;
+    <span class="keyword">String</span> reason = notificationRequestItem.reason;
+    <span class="keyword">Datetime</span> eventDate = notificationRequestItem.eventDate;
+
+    commercepayments.NotificationStatus notificationStatus = <span class="keyword">null</span>;
+    <span class="statement">if</span> (success) {
+        notificationStatus = commercepayments.NotificationStatus.Success;
+    } <span class="statement">else</span> {
+        notificationStatus = commercepayments.NotificationStatus.Failed;
+    }
+
+    commercepayments.BaseNotification notification = <span class="keyword">null</span>;
+    <span class="statement">if</span> (<span class="string">'AUTHORISATION'</span>.equals(eventCode) &amp;&amp; amount &gt; 0) {
+        notification = <span class="keyword">new</span> commercepayments.SaleNotification();
+        notification.setGatewayReferenceNumber(pspReference);
+    } <span class="statement">else</span> {
+        system.debug(<span class="string">'handling unknown event : '</span> + eventCode);
+        commercepayments.GatewayNotificationResponse unknownEventResponse = <span class="keyword">new</span> commercepayments.GatewayNotificationResponse();
+        unknownEventResponse.setStatusCode(200);
+        unknownEventResponse.setResponseBody(<span class="keyword">Blob</span>.valueOf(<span class="string">'[not allowed]'</span>));
+        <span class="statement">return</span> unknownEventResponse;
+    }
+
+    notification.setStatus(notificationStatus);
+    notification.setAmount(amount / 100);
+    notification.setGatewayResultCodeDescription(reason);
+    notification.setGatewayDate(eventDate);
+
+    commercepayments.NotificationSaveResult saveResult = commercepayments.NotificationClient.record(notification);
+
+    commercepayments.GatewayNotificationResponse gnr = <span class="keyword">new</span> commercepayments.GatewayNotificationResponse();
+    <span class="statement">if</span> (saveResult.isSuccess()) {
+        gnr.setStatusCode(200);
+    } <span class="statement">else</span> {
+        gnr.setStatusCode(400);
+    }
+    gnr.setResponseBody(<span class="keyword">Blob</span>.valueOf(saveResult.toString()));
+    <span class="statement">return</span> gnr;
+}</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_methods">SaleNotification Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_methods">
+<a name="apex_commercepayments_SaleNotification_methods"><!-- --></a><h2 class="helpHead2">SaleNotification Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">SaleNotification</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setAmount">setAmount(amount)</a></strong><br>
+Sets the amount for the sale payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayAvsCode">setGatewayAvsCode(gatewayAvsCode)</a></strong><br>
+Sets the AVS (address verification system) result code information       that the gateway returned. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayDate">setGatewayDate(gatewayDate)</a></strong><br>
+Sets the date that the sale occurred. Some gateways don’t send this       value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayMessage">setGatewayMessage(gatewayMessage)</a></strong><br>
+Sets error messages that the gateway returned for the sale request.       Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayReferenceDetails">setGatewayReferenceDetails(gatewayReferenceDetails)</a></strong><br>
+Sets additional data that you can use for the sale payment. You can       use any data that isn’t normalized in financial entities. This field has a maximum length of       1000 characters and can store data as JSON or XML.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayReferenceNumber">setGatewayReferenceNumber(gatewayReferenceNumber)</a></strong><br>
+Sets the unique gateway reference number for the transaction that the       gateway returned. Maximum length of 255 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayResultCode">setGatewayResultCode(gatewayResultCode)</a></strong><br>
+Sets a gateway-specific result code. The code may be mapped to a       Salesforce-specific result code. Maximum length of 64 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setGatewayResultCodeDescription">setGatewayResultCodeDescription(gatewayResultCodeDescription)</a></strong><br>
+Sets a description of the gateway-specific result code that a payment       gateway returned. Maximum length of 1000 characters.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setId">setId(id)</a></strong><br>
+Sets the ID of a notification sent by the payment     gateway.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setRetryCategory">setRetryCategory(retryCategory)</a></strong><br>
+Sets the retry category returned by the payment gateway for the failed     payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setRetryDecision">setRetryDecision(retryDecision)</a></strong><br>
+Sets the retry decision.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setSalesforceResultCodeInfo">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</a></strong><br>
+Sets the Salesforce-specific result code information. Payment gateways       have many response codes for payment calls. Salesforce uses the result code information to map       payment gateway codes to a predefined set of standard Salesforce result     codes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_SaleNotification.htm#apex_commercepayments_SaleNotification_setStatus">setStatus(status)</a></strong><br>
+Sets the notification status value on the notification     object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setAmount">
+<a name="apex_commercepayments_SaleNotification_setAmount"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setAmount(amount)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the amount for the sale payment.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setAmount(Double amount)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">amount</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayAvsCode">
+<a name="apex_commercepayments_SaleNotification_setGatewayAvsCode"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayAvsCode(gatewayAvsCode)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the AVS (address verification system) result code information
+      that the gateway returned. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayAvsCode(String gatewayAvsCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayAvsCode</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Used to verify the address mapped to a payment method when the payments platform
+            requests tokenization from the payment gateway.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayDate">
+<a name="apex_commercepayments_SaleNotification_setGatewayDate"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayDate(gatewayDate)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the date that the sale occurred. Some gateways don’t send this
+      value.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayDate(Datetime gatewayDate)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayDate</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayMessage">
+<a name="apex_commercepayments_SaleNotification_setGatewayMessage"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayMessage(gatewayMessage)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets error messages that the gateway returned for the sale request.
+      Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayMessage(String gatewayMessage)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayMessage</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayReferenceDetails">
+<a name="apex_commercepayments_SaleNotification_setGatewayReferenceDetails"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayReferenceDetails(gatewayReferenceDetails)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets additional data that you can use for the sale payment. You can
+      use any data that isn’t normalized in financial entities. This field has a maximum length of
+      1000 characters and can store data as JSON or XML.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayReferenceDetails(String gatewayReferenceDetails)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceDetails</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayReferenceNumber">
+<a name="apex_commercepayments_SaleNotification_setGatewayReferenceNumber"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayReferenceNumber(gatewayReferenceNumber)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the unique gateway reference number for the transaction that the
+      gateway returned. Maximum length of 255 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayReferenceNumber(String gatewayReferenceNumber)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayReferenceNumber</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayResultCode">
+<a name="apex_commercepayments_SaleNotification_setGatewayResultCode"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayResultCode(gatewayResultCode)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a gateway-specific result code. The code may be mapped to a
+      Salesforce-specific result code. Maximum length of 64 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayResultCode(String gatewayResultCode)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCode</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setGatewayResultCodeDescription">
+<a name="apex_commercepayments_SaleNotification_setGatewayResultCodeDescription"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setGatewayResultCodeDescription(gatewayResultCodeDescription)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets a description of the gateway-specific result code that a payment
+      gateway returned. Maximum length of 1000 characters.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setGatewayResultCodeDescription(String gatewayResultCodeDescription)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">gatewayResultCodeDescription</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Description of the gateway’s result code. Use this field to learn more about why the
+            gateway returned a certain result code.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setId">
+<a name="apex_commercepayments_SaleNotification_setId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setId(id)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Sets the ID of a notification sent by the payment
+    gateway.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setId(String id)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">id</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setRetryCategory">
+<a name="apex_commercepayments_SaleNotification_setRetryCategory"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setRetryCategory(retryCategory)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the retry category returned by the payment gateway for the failed
+    payment.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setRetryCategory(commercepayments.RetryCategory retryCategory)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">retryCategory</var></strong>: Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_RetryCategory.htm" title="Specifies the retry category.">RetryCategory</a> Specifies the payment failure category used to determine retry
+              eligibility.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setRetryDecision">
+<a name="apex_commercepayments_SaleNotification_setRetryDecision"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setRetryDecision(retryDecision)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the retry decision.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setRetryDecision(commercepayments.RetryDecision retryDecision)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">retryDecision</var></strong>: Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_RetryDecision.htm" title="Specifies the retry decision.">RetryDecision</a> Determines whether the payment operation can be retried based on the
+              retry category.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setSalesforceResultCodeInfo">
+<a name="apex_commercepayments_SaleNotification_setSalesforceResultCodeInfo"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setSalesforceResultCodeInfo(salesforceResultCodeInfo)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Salesforce-specific result code information. Payment gateways
+      have many response codes for payment calls. Salesforce uses the result code information to map
+      payment gateway codes to a predefined set of standard Salesforce result
+    codes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setSalesforceResultCodeInfo(commercepayments.SalesforceResultCodeInfo salesforceResultCodeInfo)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">salesforceResultCodeInfo</var></strong>: Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_SalesforceResultCode.htm" title="Defines the gateway call status values in Salesforce based on the call status values that the payment gateway returned.">SalesforceResultCodeInfo</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercepayments_SaleNotification_setStatus">
+<a name="apex_commercepayments_SaleNotification_setStatus"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setStatus(status)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Sets the notification status value on the notification
+    object.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public void setStatus(commercepayments.NotificationStatus status)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">status</var></strong>: Type: commercepayments.<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercepayments_NotificationStatus.htm" title="Shows whether the payments platform successfully received the notification from the gateway.">NotificationStatus</a>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

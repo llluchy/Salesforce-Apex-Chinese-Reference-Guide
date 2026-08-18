@@ -1,0 +1,105 @@
+<a name="apex_classes_access_modifiers"><!-- --></a><h1 class="helpHead1">Access Modifiers</h1><div class="body">
+      <p class="p">Apex allows you to use the <samp class="codeph apex_code"><span class="keyword">private</span></samp>, <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, and <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifiers
+         when defining methods and variables. </p>
+
+      <p class="p">While triggers and anonymous blocks can also use these access modifiers, they aren’t as
+         useful in smaller portions of Apex. For example, declaring a method as <samp class="codeph apex_code"><span class="keyword">global</span></samp> in an anonymous block doesn’t enable you to call
+         it from outside of that code. </p>
+
+      <p class="p">For more information on class access modifiers, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_defining.htm">Apex Class Definition</a>.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Methods defined in an interface have the same access modifier as the interface (<samp class="codeph apex_code"><span class="keyword">public</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span></samp>). For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_interfaces.htm" title="An interface is like a class in which none of the methods have been implemented—the method signatures are there, but the body of each method is empty. To use an interface, another class must implement it by providing a body for all of the methods contained in the interface.">Interfaces</a>.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">By default, a method or variable is visible only to the Apex code <em class="ph i">within the defining
+            class</em>. Explicitly specify a method or variable as public in order for it to be
+         available to other classes in the same application namespace (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_prefix.htm" title="The Salesforce application supports the use of namespace prefixes. Namespace prefixes are used in managed AppExchange packages to differentiate custom object and field names from names used by other organizations.">Namespace Prefix</a>). You can change the
+         level of visibility by using the following access modifiers:</p>
+
+      <ul class="ul bulletList">
+         <li class="li">
+<strong class="ph b"><samp class="codeph apex_code"><span class="keyword">private</span></samp></strong>: This access modifier <span class="ph" id="private_descr"><a name="private_descr"><!-- --></a>is the default, and means that the
+                  method or variable is accessible only within the Apex class in which it’s defined.
+                  If you don’t specify an access modifier, the method or variable is <samp class="codeph apex_code"><span class="keyword">private</span></samp>. </span>
+</li>
+
+         <li class="li">
+<strong class="ph b"><samp class="codeph apex_code"><span class="keyword">protected</span></samp></strong>: This means that the method or variable is visible to any inner classes in the
+               defining Apex class, and to the classes that extend the defining Apex class. You can
+               only use this access modifier for instance methods and member variables. This setting
+               is strictly more permissive than the default (private) setting, just like Java.</li>
+
+         <li class="li">
+<strong class="ph b"><samp class="codeph apex_code"><span class="keyword">public</span></samp></strong>: This <span class="ph" id="public_descr"><a name="public_descr"><!-- --></a>means that the method or variable is accessible by all
+                  Apex within a specific package. For accessibility by all second-generation (2GP)
+                  managed packages that share a namespace, use <samp class="codeph apex_code"><span class="keyword">public</span></samp> with the <samp class="codeph apex_code">@NamespaceAccessible</samp> annotation. Using the public access modifier in
+                  no-namespace packages implicitly renders the Apex code as @NamespaceAccessible.
+                  </span><div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>In Apex, the <samp class="codeph apex_code"><span class="keyword">public</span></samp> access
+                  modifier isn’t the same as it is in Java. This was done to discourage joining
+                  applications, to keep the code for each application separate. In Apex, if you want
+                  to make something public like it is in Java, you must use the <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier. </p>
+</div>
+</div></div></div></div>
+ For more information on namespace-based visibility, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_namespace_visibility.htm" target="_blank" title="HTML (New Window)">Namespace-Based Visibility
+                  for Apex Classes in Second-Generation Packages</a>.</li>
+
+         <li class="li">
+<strong class="ph b"><samp class="codeph apex_code" id="modifier_global"><a name="modifier_global"><!-- --></a><span class="keyword">global</span></samp></strong>: This <span class="ph" id="global_descr"><a name="global_descr"><!-- --></a>means the method or variable can be used by any Apex code
+                  that has access to the class, not just the Apex code in the same application. This
+                  access modifier must be used for any method that must be referenced outside of the
+                  application, either in SOAP API or by other Apex code. If you declare a method or
+                  variable as <samp class="codeph apex_code"><span class="keyword">global</span></samp>, you must also declare
+                  the class that contains it as <samp class="codeph apex_code"><span class="keyword">global</span></samp>.</span><div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>We recommend using the <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier rarely, if at all. Cross-application
+                  dependencies are difficult to maintain. </p>
+</div>
+</div></div></div></div>
+</li>
+
+      </ul>
+
+      <p class="p">To use the <samp class="codeph apex_code"><span class="keyword">private</span></samp>, <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, or <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifiers,
+         use the following syntax:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">[(none)|<span class="keyword">private</span>|<span class="keyword">protected</span>|<span class="keyword">public</span>|<span class="keyword">global</span>] <var class="keyword varname">declaration</var></pre></div>
+
+      <p class="p">For example:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// private variable s1</span>
+<span class="keyword">private</span> string s1 = <span class="string">'1'</span>;
+
+<span class="onelineComment">// public method getsz()</span>
+<span class="keyword">public</span> string getsz() { 
+   ... 
+}
+</pre></div>
+
+      <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+         
+         <p class="p">In API version 65.0 and later, an abstract or override method requires a <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, or <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier.
+            If one of these access modifiers isn’t explicitly included in the method declaration,
+            then method access defaults to <samp class="codeph apex_code"><span class="keyword">private</span></samp>. Private
+            access is invalid for these method types because the implementing class can’t access the
+            abstract method. Therefore, if you attempt to declare an abstract or override method
+            without an allowed access modifier, you get the compilation error <samp class="codeph apex_code">Abstract methods require at least one of the following:
+               <span class="keyword">global</span>, <span class="keyword">public</span>, <span class="keyword">protected</span></samp>.</p>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_constructors.htm" title="Using Constructors">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_static.htm" title="Static and Instance Methods, Variables, and Initialization Code">Next →</a></li>
+</ul></div>
+</div>

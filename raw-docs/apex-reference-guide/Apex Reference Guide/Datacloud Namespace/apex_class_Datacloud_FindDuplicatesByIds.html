@@ -1,0 +1,220 @@
+<a name="apex_class_Datacloud_FindDuplicatesByIds"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FindDuplicatesByIds Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Performs rule-based searches for duplicate records. The input is an
+      array of IDs. Each ID specifies records to search for duplicates among. The duplicates are
+      detected based on the active duplicate rules applicable to the object type corresponding to
+      the input IDs.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_datacloud.htm" title="The Datacloud namespace provides classes and methods for retrieving information about duplicate rules. Duplicate rules let you control whether and when users can save duplicate records within Salesforce.">Datacloud</a></p>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_FindDuplicatesByIds.htm#apex_Datacloud_FindDuplicatesByIds_methods">FindDuplicatesByIds Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Datacloud_FindDuplicatesByIds_methods">
+<a name="apex_Datacloud_FindDuplicatesByIds_methods"><!-- --></a><h2 class="helpHead2">FindDuplicatesByIds Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">FindDuplicatesByIds</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_FindDuplicatesByIds.htm#apex_Datacloud_FindDuplicatesByIds_findDuplicatesByIds">findDuplicatesByIds(ids)</a></strong><br>
+Identifies duplicates of       record IDs       provided       and returns a list of <samp class="codeph nolang">FindDuplicatesResult</samp>     objects.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Datacloud_FindDuplicatesByIds_findDuplicatesByIds">
+<a name="apex_Datacloud_FindDuplicatesByIds_findDuplicatesByIds"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">findDuplicatesByIds(ids)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Identifies duplicates of
+      record IDs
+      provided
+      and returns a list of <samp class="codeph nolang">FindDuplicatesResult</samp>
+    objects.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      
+      <p class="p"><samp class="codeph nolang">FindDuplicatesByIds</samp> uses the duplicate rules for the
+        object that has the same type as the input record IDs. For example, if the record ID
+        represents an Account, <samp class="codeph nolang">FindDuplicatesByIds</samp> uses the
+        duplicate rules associated with the Account object.</p>
+
+      
+      <p class="p"><samp class="codeph nolang">FindDuplicatesByIds</samp> identifies duplicate records
+        according to activated standard and custom matching rules. <a class="xref" href="https://help.salesforce.com/s/articleView?id=sales.matching_rules_standard_rules.htm&amp;language=en_US&amp;type=5" target="_blank" title="HTML (New Window)">Standard matching rules</a> don’t
+        include custom fields in their matching criteria. You can configure custom matching rules
+        that do include custom fields for matching criteria, and then assign the custom matching
+        rule to a <a class="xref" href="https://help.salesforce.com/s/articleView?id=sales.duplicate_rules_map_of_reference.htm&amp;type=5&amp;language=en_US" target="_blank">duplicate rule</a>. However, configuring these rules
+        isn’t a part of the Datacloud API.</p>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Input</strong>: <ul class="ul bulletList">
+              <li class="li">All record IDs in the input array must be of the same object type, and that type
+                must correspond to an object type that supports duplicate rules.</li>
+
+              <li class="li">The input array is limited to 50 elements. If you exceed this limit, an exception
+                is thrown with the following message: <samp class="codeph nolang">Configuration
+                  error: The number of records to check is greater than the permitted batch
+                  size.</samp>
+</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b">Output</strong>: <ul class="ul bulletList">
+              <li class="li">The output of <samp class="codeph nolang">FindDuplicatesByIds</samp> is an array
+                of objects with the same number of elements as the input array, and in the same
+                order. The output objects encapsulate record IDs for duplicate records. The output
+                objects also contain values from the duplicate records.</li>
+
+              <li class="li">Each
+                element
+                contains
+                an array of
+                  <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records."><samp class="codeph nolang">DuplicateResult</samp></a>
+                objects,
+                which each represent a duplicate rule that <samp class="codeph nolang">FindDuplicatesByIds</samp> applied. Within each <samp class="codeph nolang">DuplicateResult</samp> object is an array of <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_MatchResult.htm#apex_class_Datacloud_MatchResult" title="Represents the duplicate results for a matching rule."><samp class="codeph apex_code">MatchResult</samp></a> objects,
+                which each represent a matching rule that the duplicate rule applied.
+                If
+                  <samp class="codeph nolang">FindDuplicatesByIds</samp> doesn’t find any
+                duplicates
+                for that matching rule,
+                then the
+                  <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_MatchResult.htm#apex_Datacloud_MatchResult_getMatchRecords" title="Returns information about the duplicates for the matching rule."><samp class="codeph nolang">MatchResult.getMatchRecords()</samp></a> array is
+                empty.
+                Otherwise, the <samp class="codeph nolang">MatchResult.getMatchRecords()</samp>
+                array contains <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_MatchRecord.htm#apex_class_Datacloud_MatchRecord" title="Represents a duplicate record detected by a matching rule."><samp class="codeph nolang">MatchRecord</samp></a>
+                objects, which each represent a duplicate record.</li>
+
+              
+              <li class="li">If no duplicate rule is active for the object type of the record IDs in the input
+                array, a <samp class="codeph nolang">System.HandledException</samp> exception is
+                thrown with this message: <samp class="ph systemoutput">No active duplicate rules are defined for
+                  the {ObjectName} object type</samp>.</li>
+
+              
+            </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create list of existing record IDs to check for duplicates</span>
+List&lt;Id&gt; idList = <span class="keyword">new</span> List&lt;Id&gt;();
+idList.add(<span class="string">'</span><var class="keyword varname">EXISTING_ID</var><span class="string">'); // Replace placeholder with an existing 18-digit record ID 
+</span>
+<span class="onelineComment">// Call the FindDuplicatesByIds method, which returns one FindDuplicatesResult for each ID in the input list.</span>
+List&lt;Datacloud.FindDuplicatesResult&gt; results = Datacloud.FindDuplicatesByIds.findDuplicatesByIds(idList);
+
+<span class="onelineComment">//Get the result for the first record ID (index 0).</span>
+Datacloud.FindDuplicatesResult idResult = results[0];
+
+<span class="onelineComment">// Check that findDuplicates() was successfully executed for this record</span>
+<span class="statement">if</span> (!idResult.isSuccess()) {
+  List&lt;Database.Error&gt; errs = idResult.getErrors();
+  <span class="statement">for</span> (Database.Error err : errs) {
+      System.debug(err.getMessage());
+  }
+} <span class="statement">else</span> {
+
+  <span class="keyword">Boolean</span> duplicatesFound = <span class="keyword">false</span>;
+  <span class="keyword">Boolean</span> matchError = <span class="keyword">false</span>;
+
+  <span class="onelineComment">// Iterate through the duplicate rules that were evaluated.</span>
+  <span class="statement">for</span> (Datacloud.DuplicateResult dupResult : idResult.getDuplicateResults()) {
+    <span class="onelineComment">// Iterate through the matching rules that were evaluated for each duplicate rule</span>
+    <span class="statement">for</span> (Datacloud.MatchResult matchResult : dupResult.getMatchResults()) {
+      <span class="onelineComment">// Check that getMatchResults() was successfully executed for this matching rule</span>
+      <span class="statement">if</span> (!matchResult.isSuccess()) {
+        List&lt;Database.Error&gt; errs = matchResult.getErrors();
+        <span class="statement">for</span> (Database.Error err : errs) {
+          System.debug(err.getMessage());
+        }
+        matchError = <span class="keyword">true</span>;
+      } <span class="statement">else</span> {
+        <span class="onelineComment">// Check if duplicates are found according to the matching rule</span>
+        <span class="statement">if</span> (!matchResult.getMatchRecords().isEmpty()) {
+          System.debug(<span class="string">'Duplicate record(s) found with matching rule: '</span> + matchResult.getRule());
+          duplicatesFound = <span class="keyword">true</span>;
+          <span class="onelineComment">// Get information about the duplicates</span>
+          <span class="statement">for</span> (Datacloud.MatchRecord matchRecord : matchResult.getMatchRecords()) {
+            System.debug(<span class="string">'Duplicate record: '</span> + matchRecord.getRecord());
+          }
+        }
+      }
+    }
+  }
+
+  <span class="onelineComment">// If no duplicates were found and no errors occurred for first record ID</span>
+  <span class="statement">if</span> (!duplicatesFound &amp;&amp; !matchError) {
+    System.debug(<span class="string">'No duplicates found for record ID: '</span> + idList[0]);
+  }
+}
+</pre></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Datacloud.FindDuplicatesResult&gt;
+          findDuplicatesByIds(List&lt;Id&gt; ids)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">ids</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>&gt; A list of IDs for which you want to find duplicates.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_FindDuplicatesResult.htm#apex_class_Datacloud_FindDuplicatesResult" title="Output for rule-based searches for duplicate records. FindDuplicatesResult contains results of detecting duplicates using instances of FindDuplicates or FindDuplicatesByIds classes.">FindDuplicatesResult</a>&gt;</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

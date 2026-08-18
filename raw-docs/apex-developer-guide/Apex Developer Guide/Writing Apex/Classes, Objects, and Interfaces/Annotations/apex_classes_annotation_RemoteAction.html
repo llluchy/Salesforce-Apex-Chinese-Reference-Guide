@@ -1,0 +1,122 @@
+<a name="apex_classes_annotation_RemoteAction"><!-- --></a><h1 class="helpHead1">RemoteAction Annotation</h1><div class="body">
+    <p class="p" id="annotation_defn"><a name="annotation_defn"><!-- --></a>The <samp class="codeph apex_code">RemoteAction</samp> annotation
+      provides support for Apex methods used in Visualforce to be called via JavaScript. This
+      process is often referred to as JavaScript remoting.</p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Methods with the <samp class="codeph apex_code">RemoteAction</samp> annotation must be
+        <samp class="codeph apex_code"><span class="keyword">static</span></samp> and either <samp class="codeph apex_code"><span class="keyword">global</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</p>
+</div>
+</div></div></div></div>
+
+    <div class="p">Add the Apex class as a custom controller or a controller extension to your
+        page.<div class="codeSection apex_code"><pre class="codeblock brush:apex">&lt;apex:page controller=<span class="string">"MyController"</span> extension=<span class="string">"MyExtension"</span>&gt;</pre></div>
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Adding a controller or controller extension grants access to all <samp class="codeph nolang">@RemoteAction</samp> methods in that Apex class, even if those
+        methods aren’t used in the page. Anyone who can view the page can execute all <samp class="codeph nolang">@RemoteAction</samp> methods and provide fake or malicious data to
+        the controller.</p>
+</div>
+</div></div></div></div>
+Then, add the request as a JavaScript function call. A simple
+      JavaScript remoting invocation takes the following
+        form.<div class="codeSection javascript"><pre class="codeblock brush:js">[<var class="keyword varname">namespace</var>.]<var class="keyword varname">MyController</var>.<var class="keyword varname">method</var>(
+    [parameters...,]
+    <var class="keyword varname">callbackFunction</var>,
+    [configuration]
+);</pre></div>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Remote Request Elements</span></caption>
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d26777e91">Element</th>
+
+              <th class="featureTableHeader  " id="d26777e94">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element"><samp class="codeph nolang">namespace</samp></td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">The namespace of the controller class. The namespace element is required if
+                your organization has a namespace defined, or if the class comes from an installed
+                package.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element">
+<samp class="codeph nolang">MyController</samp>, <samp class="codeph nolang">MyExtension</samp>
+</td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">The name of your Apex controller or extension.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element"><samp class="codeph nolang">method</samp></td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">The name of the Apex method you’re calling.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element"><samp class="codeph nolang">parameters</samp></td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">A comma-separated list of parameters that your method takes.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element"><samp class="codeph nolang">callbackFunction</samp></td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">The name of the JavaScript function that handles the response from the
+                controller. You can also declare an anonymous function inline. <samp class="codeph nolang">callbackFunction</samp> receives the status of the method
+                call and the result as parameters.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d26777e91" data-title="Element"><samp class="codeph nolang">configuration</samp></td>
+
+              <td class="entry" headers="d26777e94" data-title="Description">Configures the handling of the remote call and response. Use this element to
+                                change the behavior of a remoting call, such as whether to escape
+                                the Apex method’s response.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+</div>
+
+    <div class="p">In your controller, your Apex method declaration is preceded with the <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> annotation like
+      this:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RemoteAction</span>
+<span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> getItemId(<span class="keyword">String</span> objectName) { ... }</pre></div>
+Apex <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> methods must be <samp class="codeph apex_code"><span class="keyword">static</span></samp> and either <samp class="codeph apex_code"><span class="keyword">global</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</div>
+
+    <p class="p">Your method can take Apex primitives, collections, typed and generic sObjects, and
+      user-defined Apex classes and interfaces as arguments. Generic sObjects must have an ID or
+      sobjectType value to identify actual type. Interface parameters must have an apexType to
+      identify actual type. Your method can return Apex primitives, sObjects, collections,
+      user-defined Apex classes and enums, <samp class="codeph apex_code">SaveResult</samp>,
+        <samp class="codeph apex_code">UpsertResult</samp>, <samp class="codeph apex_code">DeleteResult</samp>, <samp class="codeph apex_code">SelectOption</samp>, or <samp class="codeph apex_code">PageReference</samp>.</p>
+
+    <p class="p">For more information, see “JavaScript Remoting for Apex Controllers” in the
+        <cite class="cite">Visualforce Developer's Guide</cite>.</p>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_ReadOnly.htm" title="ReadOnly Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_SuppressWarnings.htm" title="SuppressWarnings Annotation">Next →</a></li>
+</ul></div>
+</div>

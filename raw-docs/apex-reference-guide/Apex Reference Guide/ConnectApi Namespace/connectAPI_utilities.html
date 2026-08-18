@@ -1,0 +1,77 @@
+<a name="connectAPI_utilities"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">ConnectApi</span> Utilities</h1><div class="body refbody">
+<div class="shortdesc">The <samp class="codeph apex_code">ConnectApi</samp> namespace contains a
+                utility class.</div>
+
+                <div class="section">
+                        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                                        
+                                        
+                                        <thead class="thead sorted" align="left">
+                                                <tr>
+                                                  <th class="featureTableHeader vertical-align-top " id="d1190656e50">Utility</th>
+
+                                                  <th class="featureTableHeader vertical-align-top " id="d1190656e53">Description</th>
+
+                                                </tr>
+
+                                        </thead>
+
+                                        <tbody class="tbody">
+                                                <tr>
+                                                  <td class="entry" headers="d1190656e50" data-title="Utility"><samp class="codeph apex_code">ConnectApi.ConnectUtilities.unwrapApexWrapper()</samp></td>
+
+                                                  <td class="entry" headers="d1190656e53" data-title="Description">Unwraps obfuscated, Apex-wrapped objects
+                                                  into known types such as <samp class="codeph nolang">Map&lt;String,
+                                                  Object&gt;</samp>. Example from Apex Debug
+                                                  log: <samp class="codeph nolang">core.connect.apex.ApexMapWrapper@7270879d</samp>
+</td>
+
+                                                </tr>
+
+                                        </tbody>
+
+                                </table></div>
+
+                </div>
+
+                <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+                        
+                        <p class="p">This example calls <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_ManagedContentDelivery_static_methods.htm#apex_ConnectAPI_ManagedContentDelivery_getManagedContentForSite_4" title="Get a piece of published content for an Experience Cloud site."><samp class="codeph apex_code">getManagedContentForSite(siteId, contentKeyOrId,
+                                                showAbsoluteUrl)</samp></a> to get a custom
+                                content type with an image reference and uses the <samp class="codeph apex_code">ConnectApi.ConnectUtilities.unwrapApexWrapper()</samp>
+                                utility.</p>
+
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.ManagedContentDeliveryDocument res = 
+    ConnectApi.ManagedContentDelivery.getManagedContentForSite (<span class="string">'0DMXXXXXXXXXXXXXXX'</span>,<span class="string">'MCLXXXXXXXXXXXXXXXXXXXXXXXXX'</span>,<span class="keyword">true</span>);
+
+<span class="onelineComment">//before contentBody field ApexWrapper is unwrapped </span>
+system.debug(res.contentBody); 
+
+<span class="onelineComment">//unwrap contentBody field in res</span>
+Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; contentBody = (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;)ConnectApi.ConnectUtilities.unwrapApexWrapper(res.contentBody);
+
+<span class="onelineComment">//after contentBody field ApexWrapper is unwrapped, but image field still wrapped</span>
+system.debug(contentBody);
+
+<span class="onelineComment">//before image field ApexWrapper is unwrapped </span>
+system.debug(contentBody.get(<span class="string">'Image'</span>)); 
+
+<span class="onelineComment">//unwrap Image field in contentBody</span>
+Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; Image = (Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;)ConnectApi.ConnectUtilities.unwrapApexWrapper(contentBody.get(<span class="string">'Image'</span>));
+
+<span class="onelineComment">//after image field ApexWrapper is unwrapped </span>
+system.debug(Image); 
+
+<span class="onelineComment">//replace wrapped primary_image in contentBody with unwrapped version</span>
+contentBody.put(<span class="string">'Image'</span>, Image);
+
+<span class="onelineComment">//after contentBody field ApexWrapper is unwrapped, with image field also unwrapped</span>
+system.debug(contentBody);</pre></div>
+
+                </div>
+
+        </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,144 @@
+<a name="langCon_apex_enums"><!-- --></a><h1 class="helpHead1">Enums</h1><div class="body">
+<div class="shortdesc">An enum is an abstract data type with values that each take on exactly one of a
+        finite set of identifiers that you specify. Enums are typically used to define a set of
+        possible values that don’t otherwise have a numerical order. Typical examples include
+        the suit of a card, or a particular season of the year.</div>
+
+        
+        <p class="p">Although each value corresponds to a distinct integer value, the enum hides this
+            implementation. Hiding the implementation prevents any possible misuse of the values to
+            perform arithmetic and so on. After you create an enum, variables, method arguments, and
+            return types can be declared of that type.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Unlike Java, the enum type itself has no constructor syntax. </p>
+</div>
+</div></div></div></div>
+
+        <p class="p">To define an enum, use the <samp class="codeph apex_code"><span class="keyword">enum</span></samp> keyword in your
+            declaration and use curly braces to demarcate the list of possible values. For example,
+            the following code creates an enum called <samp class="codeph apex_code">Season</samp>:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">enum</span> Season {WINTER, SPRING, SUMMER, FALL}</pre></div>
+
+        <p class="p">By creating the enum <samp class="codeph apex_code">Season</samp>, you have also
+            created a new data type called <samp class="codeph apex_code">Season</samp>. You can
+            use this new data type as you would any other data type. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Season southernHemisphereSeason = Season.WINTER;
+
+<span class="keyword">public</span> Season getSouthernHemisphereSeason(Season northernHemisphereSeason) {
+
+    <span class="statement">if</span> (northernHemisphereSeason == Season.SUMMER) <span class="statement">return</span> southernHemisphereSeason;
+     <span class="onelineComment">//...</span>
+} </pre></div>
+
+        <p class="p">You can also define a class as an enum. When you create an enum class, do not use the
+                <samp class="codeph apex_code"><span class="keyword">class</span></samp> keyword in the definition. </p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">enum</span> MyEnumClass { X, Y }</pre></div>
+
+        <p class="p">You can use an enum in any place you can use another data type name. If you define a
+            variable whose type is an enum, any object you assign to it must be an instance of that
+            enum class.</p>
+
+        <p class="p">Any <samp class="codeph apex_code">webservice</samp> method can use enum types as part
+            of their signature. In this case, the associated WSDL file includes definitions for the
+            enum and its values, which the API client can use. </p>
+
+        <p class="p">Apex provides the following system-defined enums:</p>
+
+        <ul class="ul bulletList">
+            <li class="li" id="statuscode">
+<a name="statuscode"><!-- --></a><samp class="codeph apex_code">System.StatusCode</samp><p class="p">This
+                    enum corresponds to the API error code that is exposed in the WSDL document for
+                    all API operations. For
+                    example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">StatusCode.CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY
+StatusCode.INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY</pre></div>
+<p class="p">The full
+                    list of status codes is available in the WSDL file for your organization. For
+                    more information about accessing the WSDL file for your organization, see
+                        <cite class="cite">Downloading Salesforce WSDLs and Client Authentication
+                        Certificates</cite> in Salesforce Help.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.XmlTag</samp>:
+                    <p class="p">This enum returns a list of XML tags used for parsing the result XML from a
+                        <samp class="codeph apex_code">webservice</samp> method. For more
+                    information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_XmlStream_reader.htm" target="_blank">XmlStreamReader Class</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.ApplicationReadWriteMode</samp>:
+                This enum indicates if an organization is in 5 Minute Upgrade read-only mode during
+                Salesforce upgrades and downtimes. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_getApplicationReadWriteMode" target="_blank">System.getApplicationReadWriteMode()</a>.</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.LoggingLevel</samp>:
+                    <p class="p">This enum is used with the <samp class="codeph apex_code">system.debug</samp> method, to specify the log level for all <samp class="codeph apex_code">debug</samp> calls. For more information, see
+                        <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm" target="_blank">System Class</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.RoundingMode</samp>:
+                    <p class="p">This enum is used by methods that perform mathematical operations to specify
+                    the rounding behavior for the operation. Typical examples are the Decimal
+                        <samp class="codeph apex_code">divide</samp> method and the Double
+                        <samp class="codeph apex_code">round</samp> method. For more information,
+                    see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_decimal.htm" target="_blank">Rounding Mode</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.SoapType</samp>:
+                    <p class="p">This enum is returned by the field describe result <samp class="codeph apex_code">getSoapType</samp> method. For more information,
+                    see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Schema_SOAPType.htm" target="_blank">SOAPType Enum</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.DisplayType</samp>:
+                    <p class="p">This enum is returned by the field describe result <samp class="codeph apex_code">getType</samp> method. For more information, see
+                        <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_Schema_DisplayType.htm" target="_blank">DisplayType Enum</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">System.JSONToken</samp>:
+                    <p class="p">This enum is used for parsing JSON content. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_System_JsonToken.htm" target="_blank">JsonToken Enum</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">ApexPages.Severity</samp>:
+                    <p class="p">This enum specifies the severity of a Visualforce message. For more
+                    information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_pages_message.htm" target="_blank">ApexPages.Severity Enum</a>.</p>
+</li>
+
+            <li class="li">
+<samp class="codeph apex_code">Dom.XmlNodeType</samp>:
+                    <p class="p">This enum specifies the node type in a DOM document.</p>
+</li>
+
+        </ul>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="enums_no_system_defined"><a name="enums_no_system_defined"><!-- --></a>System-defined enums cannot be used in Web service
+                methods.</span>
+        </p>
+</div>
+</div></div></div></div>
+
+        <p class="p">All enum values, including system enums, have common methods associated with them. For
+            more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_enum.htm" target="_blank">Enum Methods</a>.</p>
+
+        <p class="p">You cannot add user-defined methods to enum values.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections.htm" title="Collections">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_variables.htm" title="Variables">Next →</a></li>
+</ul></div>
+</div>

@@ -1,0 +1,162 @@
+<a name="langCon_apex_variables"><!-- --></a><h1 class="helpHead1">Variables</h1><div class="body conbody">
+<div class="shortdesc">Local variables are declared with Java-style syntax.</div>
+
+        <p class="p">For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i = 0;
+<span class="keyword">String</span> str;
+List&lt;<span class="keyword">String</span>&gt; strList;
+Set&lt;<span class="keyword">String</span>&gt; s;
+Map&lt;<span class="keyword">ID</span>, <span class="keyword">String</span>&gt; m;</pre></div>
+
+        <p class="p">As with Java, multiple variables can be declared and initialized in a single statement,
+            using comma separation. For example:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i, j, k;</pre></div>
+
+        <div class="section">
+<h2 class="helpHead2">Variable Naming Rules</h2>
+
+            
+            <p class="p">When naming variables, follow these rules.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Variable names are case-insensitive.</li>
+
+                <li class="li">Variable names can contain only letters (A-Z or a-z), numbers (0-9), and
+                    underscores (_). Spaces and other special characters, including dollar signs ($)
+                    and hyphens (-), aren’t allowed.</li>
+
+                <li class="li">Variable names must begin with a letter (A-Z or a-z). Names can’t begin with a
+                    number (0-9) or an underscore (_).</li>
+
+                <li class="li">Variable names can’t end with an underscore (_).</li>
+
+                <li class="li">Varable names can’t contain consecutive underscores (_ _).</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_reserved_words.htm" target="_blank">Reserved keywords</a> can’t be used as
+                    variable names.</li>
+
+                <li class="li">Variable names can have a maximum length of 255 characters.</li>
+
+                <li class="li">Salesforce doesn't recommend sharing the same name between a variable and either
+                    its class or a method in its class, although it is permitted to do so.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Null Variables and Initial Values</h2>
+
+            
+            <div class="p">If you declare a variable and don't initialize it with a value, it will be <samp class="codeph apex_code"><span class="keyword">null</span></samp>. In essence, <samp class="codeph apex_code"><span class="keyword">null</span></samp> means the absence of a value. You can also assign <samp class="codeph apex_code"><span class="keyword">null</span></samp> to any variable declared with a primitive
+                type. For example, both of these statements result in a variable set to <samp class="codeph apex_code"><span class="keyword">null</span></samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Boolean</span> x = <span class="keyword">null</span>;
+<span class="keyword">Decimal</span> d;</pre></div>
+</div>
+
+            <div class="p">Many instance methods on the data type will fail if the variable is <samp class="codeph apex_code"><span class="keyword">null</span></samp>. In this example, the second statement
+                generates an exception (<samp class="codeph apex_code">NullPointerException</samp>)
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Date</span> d;
+d.addDays(2);</pre></div>
+</div>
+
+            <p class="p">All variables are initialized to <samp class="codeph apex_code"><span class="keyword">null</span></samp> if
+                they aren’t assigned a value. For instance, in the following example, <samp class="codeph apex_code">i</samp>, and <samp class="codeph apex_code">k</samp> are assigned values, while the integer variable <samp class="codeph apex_code">j</samp> and the boolean variable <samp class="codeph apex_code">b</samp> are set to <samp class="codeph apex_code"><span class="keyword">null</span></samp> because they aren’t explicitly initialized.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i = 0, j, k = 1;
+<span class="keyword">Boolean</span> b;</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>A common pitfall is to assume that an uninitialized boolean variable is
+                initialized to <samp class="codeph apex_code"><span class="keyword">false</span></samp> by the system. This
+                isn’t the case. Like all other variables, boolean variables are null if not
+                assigned a value explicitly.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Variable Scope</h2>
+
+            
+            <p class="p">Variables can be defined at any point in a block, and take on scope from that point
+                forward. Sub-blocks can’t redefine a variable name that has already been used
+                in a parent block, but parallel blocks can reuse a variable name. For example:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i;
+{
+   <span class="onelineComment">// Integer i;  This declaration is not allowed</span>
+}
+
+<span class="statement">for</span> (<span class="keyword">Integer</span> j = 0; j &lt; 10; j++);
+<span class="statement">for</span> (<span class="keyword">Integer</span> j = 0; j &lt; 10; j++);
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Case Sensitivity</h2>
+<div class="p">
+<p class="p">To avoid confusion with case-insensitive SOQL
+                and SOSL queries, Apex is also case-insensitive. This means:</p>
+<ul class="ul bulletList">
+                <li class="li">Variable and method names are case-insensitive. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> I;
+<span class="onelineComment">//Integer i;</span></pre></div>
+</li>
+
+                <li class="li">References to object and field names are case-insensitive. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a1;
+ACCOUNT a2;</pre></div>
+</li>
+
+                <li class="li">SOQL and SOSL statements are case- insensitive. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accts = [sELect <span class="keyword">ID</span> From ACCouNT where nAme = <span class="string">'fred'</span>];</pre></div>
+</li>
+
+            </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You’ll learn more about sObjects, SOQL, and SOSL later in this
+                guide.</p>
+</div>
+</div></div></div></div>
+<p class="p">Also note that Apex uses the same filtering semantics as SOQL, which
+                is the basis for comparisons in the SOAP API and the Salesforce user interface. The
+                use of these semantics can lead to some interesting behavior. For example, if an
+                end-user generates a report based on a filter for values that come before 'm' in the
+                alphabet (that is, values &lt; 'm'), null fields are returned in the result. The
+                rationale for this behavior is that users typically think of a field without a value
+                as just a space character, rather than its actual <samp class="codeph apex_code"><span class="keyword">null</span></samp> value. Consequently, in Apex, the following expressions all
+                evaluate to <samp class="codeph apex_code"><span class="keyword">true</span></samp>:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> s;
+System.assert(<span class="string">'a'</span> == <span class="string">'A'</span>);
+System.assert(s &lt; <span class="string">'b'</span>);
+System.assert(!(s &gt; <span class="string">'b'</span>));</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Although <samp class="codeph apex_code">s &lt; <span class="string">'b'</span></samp> evaluates to <samp class="codeph apex_code"><span class="keyword">true</span></samp>
+                in the example above, <samp class="codeph apex_code"><span class="string">'b.'</span>compareTo(s)</samp>
+                generates an error because you’re trying to compare a letter to a <samp class="codeph apex_code"><span class="keyword">null</span></samp> value.</p>
+</div>
+</div></div></div></div>
+</div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_enums.htm" title="Enums">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_constants.htm" title="Constants">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_naming_conventions.htm">Naming Conventions</a></div></li></ul>
+</div>
+</div>

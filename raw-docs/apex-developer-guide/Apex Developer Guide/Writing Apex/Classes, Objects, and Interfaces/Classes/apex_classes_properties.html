@@ -1,0 +1,205 @@
+<a name="apex_classes_properties"><!-- --></a><h1 class="helpHead1">Apex Properties</h1><div class="body">
+      <p class="p"><span class="ph" id="apex_properties_defn"><a name="apex_properties_defn"><!-- --></a>An Apex <dfn class="term">property</dfn> is similar to a variable;
+                however, you can do additional things in your code to a property value before it’s
+                accessed or returned. Properties can be used to validate data before a change is
+                made, to prompt an action when data is changed (such as altering the value of other
+                member variables), or to expose data that is retrieved from some other source (such
+                as another class). </span></p>
+
+      <div class="p">Property definitions include one or two code blocks, representing a <dfn class="term">get
+            accessor</dfn> and a <dfn class="term">set accessor</dfn>: <ul class="ul bulletList">
+            <li class="li">The code in a get accessor executes when the property is read.</li>
+
+            <li class="li">The code in a set accessor executes when the property is assigned a new value.</li>
+
+         </ul>
+</div>
+
+      <p class="p">If a property has only a get accessor, it’s considered read-only. If a property has only a
+            set accessor, it’s considered write-only. A property with both accessors is considered
+            read-write.</p>
+
+      <p class="p">To declare a property, use the following syntax in the body of a class:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Public <span class="keyword">class</span> BasicClass {
+
+   <span class="onelineComment">// Property declaration</span>
+   <var class="keyword varname">access_modifier</var><var class="keyword varname"> return_type</var><var class="keyword varname"> property_name</var> {
+      get {
+         <span class="onelineComment">//Get accessor code block</span>
+      }
+      set {
+         <span class="onelineComment">//Set accessor code block</span>
+      }
+   } 
+}</pre></div>
+
+      <div class="p">Where:<ul class="ul bulletList">
+            <li class="li">
+<var class="keyword varname">access_modifier</var> is the access modifier for the property. The
+               access modifiers that can be applied to properties include: <samp class="codeph apex_code"><span class="keyword">public</span></samp>, <samp class="codeph apex_code"><span class="keyword">private</span></samp>, <samp class="codeph apex_code"><span class="keyword">global</span></samp>, and <samp class="codeph apex_code"><span class="keyword">protected</span></samp>. In addition, these definition
+               modifiers can be applied: <samp class="codeph apex_code"><span class="keyword">static</span></samp> and <samp class="codeph apex_code">transient</samp>. For more information on access
+               modifiers, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm">Access
+               Modifiers</a>.</li>
+
+            <li class="li">
+<var class="keyword varname">return_type</var> is the type of the property, such as Integer, Double,
+               sObject, and so on. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_data_types.htm" title="In Apex, all variables and expressions have a data type, such as sObject, primitive, or enum.">Data Types</a>.</li>
+
+            <li class="li">
+<var class="keyword varname">property_name</var> is the name of the property</li>
+
+         </ul>
+</div>
+
+      <p class="p">For example, the following class defines a property named <samp class="codeph apex_code">prop</samp>. The property is public. The property returns an integer data type.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="class"><a name="class"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> BasicProperty {
+   <span class="keyword">public</span> integer prop {
+      get { <span class="statement">return</span> prop; }
+      set { prop = value; }
+   }
+}</pre></div>
+
+      <p class="p">The following code segment calls the BasicProperty class, exercising the get and set
+         accessors:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">BasicProperty bp = <span class="keyword">new</span> BasicProperty();
+bp.prop = 5;                   <span class="onelineComment">// Calls set accessor</span>
+System.assertEquals(5, bp.prop);   <span class="onelineComment">// Calls get accessor</span>
+</pre></div>
+
+      <p class="p">Note the following:</p>
+
+      <ul class="ul bulletList">
+         <li class="li">The body of the get accessor is similar to that of a method. It must return a value of
+            the property type. Executing the get accessor is the same as reading the value of the
+            variable. </li>
+
+         <li class="li">The get accessor must end in a return statement. </li>
+
+         <li class="li">We recommend that your get accessor not change the state of the object that it’s
+                defined on. </li>
+
+         <li class="li">The set accessor is similar to a method whose return type is void. </li>
+
+         <li class="li">When you assign a value to the property, the set accessor is invoked with an argument
+            that provides the new value.</li>
+
+            <li class="li">In API version 42.0 and later, unless a variable value is set in a set accessor, you
+                can’t update its value in a get accessor.</li>
+
+         <li class="li">When the set accessor is invoked, the system passes an implicit argument to the setter
+            called <samp class="codeph apex_code">value</samp> of the same data type as the
+            property.</li>
+
+         <li class="li">Properties can’t be defined on <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_interfaces.htm" title="An interface is like a class in which none of the methods have been implemented—the method signatures are there, but the body of each method is empty. To use an interface, another class must implement it by providing a body for all of the methods contained in the interface."><samp class="codeph apex_code"><span class="keyword">interface</span></samp></a>.</li>
+
+         <li class="li">Apex properties are based on their counterparts in C#, with the following differences:<ul class="ul bulletList">
+               <li class="li">Properties provide storage for values directly. You don’t need to create
+                        supporting members for storing values.</li>
+
+               <li class="li">It’s possible to create automatic properties in Apex. For more information, see
+                            <a class="xref" href="#apex_automatic_properties">Using Automatic Properties</a>.</li>
+
+            </ul>
+</li>
+
+      </ul>
+
+      <div class="section" id="apex_automatic_properties">
+<a name="apex_automatic_properties"><!-- --></a><h2 class="helpHead2">Using Automatic Properties</h2>
+
+         
+         <p class="p">Properties don’t require additional code in their get or set accessor code blocks.
+            Instead, you can leave get and set accessor code blocks empty to define an
+               <dfn class="term">automatic property</dfn>. Automatic properties allow you to write more compact
+            code that is easier to debug and maintain. They can be declared as read-only,
+            read-write, or write-only. The following example creates three automatic properties: </p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> AutomaticProperty {
+   <span class="keyword">public</span> integer MyReadOnlyProp { get; }
+   <span class="keyword">public</span> double MyReadWriteProp { get; set; }
+   <span class="keyword">public</span> string MyWriteOnlyProp { set; }
+}</pre></div>
+
+         <p class="p">The following code segment exercises these properties:</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">AutomaticProperty ap = <span class="keyword">new</span> AutomaticProperty();
+ap.MyReadOnlyProp = 5;                 <span class="onelineComment">// This produces a compile error: not writable</span>
+ap.MyReadWriteProp = 5;                <span class="onelineComment">// No error</span>
+System.assertEquals(5, ap.MyWriteOnlyProp);   <span class="onelineComment">// This produces a compile error: not readable</span>
+</pre></div>
+
+      </div>
+
+      <div class="section" id="apex_static_properties">
+<a name="apex_static_properties"><!-- --></a><h2 class="helpHead2">Using Static Properties</h2>
+
+         
+         <p class="p">When a property is declared as <samp class="codeph apex_code"><span class="keyword">static</span></samp>, the
+            property's accessor methods execute in a static context. Therefore, accessors don’t have
+            access to non-static member variables defined in the class. The following example
+            creates a class with both static and instance properties:</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> StaticProperty {
+   <span class="keyword">private</span> <span class="keyword">static</span> integer StaticMember;
+   <span class="keyword">private</span> integer NonStaticMember;
+
+   <span class="onelineComment">// The following produces a system error</span>
+   <span class="onelineComment">// public static integer MyBadStaticProp { return NonStaticMember; }</span>
+
+   <span class="keyword">public</span> <span class="keyword">static</span> integer MyGoodStaticProp { 
+     get {<span class="statement">return</span> StaticMember;} 
+     set { StaticMember = value; } 
+   }  
+   <span class="keyword">public</span> integer MyGoodNonStaticProp { 
+     get {<span class="statement">return</span> NonStaticMember;} 
+     set { NonStaticMember = value; } 
+   } 
+}
+</pre></div>
+
+         <p class="p">The following code segment calls the static and instance properties:</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">StaticProperty sp = <span class="keyword">new</span> StaticProperty();
+<span class="onelineComment">// The following produces a system error: a static variable cannot be</span>
+<span class="onelineComment">// accessed through an object instance</span>
+<span class="onelineComment">// sp.MyGoodStaticProp = 5;</span>
+
+<span class="onelineComment">// The following does not produce an error</span>
+StaticProperty.MyGoodStaticProp = 5;
+</pre></div>
+
+      </div>
+
+      <div class="section" id="apex_properties_access_modifiers">
+<a name="apex_properties_access_modifiers"><!-- --></a><h2 class="helpHead2">Using Access Modifiers on Property Accessors</h2>
+
+         
+         <p class="p">Property accessors can be defined with their own access modifiers. If an accessor
+            includes its own access modifier, this modifier overrides the access modifier of the
+            property. The access modifier of an individual accessor must be more restrictive than
+            the access modifier on the property itself. For example, if the property has been
+            defined as <samp class="codeph apex_code"><span class="keyword">public</span></samp>, the individual accessor
+            can’t be defined as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. The following class
+            definition shows additional examples:</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">virtual</span> <span class="keyword">class</span> PropertyVisibility {
+   <span class="onelineComment">// X is private for read and public for write</span>
+   <span class="keyword">public</span> integer X { <span class="keyword">private</span> get; set; }
+   <span class="onelineComment">// Y can be globally read but only written within a class</span>
+   <span class="keyword">global</span> integer Y { get; <span class="keyword">public</span> set; }
+   <span class="onelineComment">// Z can be read within the class but only subclasses can set it</span>
+   <span class="keyword">public</span> integer Z { get; <span class="keyword">protected</span> set; }
+}
+</pre></div>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_static.htm" title="Static and Instance Methods, Variables, and Initialization Code">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_extending.htm" title="Extending a Class">Next →</a></li>
+</ul></div>
+</div>

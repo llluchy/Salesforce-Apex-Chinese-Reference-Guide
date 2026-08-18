@@ -1,0 +1,165 @@
+<a name="apex_limits_elastic_limits"><!-- --></a><h1 class="helpHead1">Elastic Limits for Asynchronous Apex Jobs (Beta)</h1><div class="body conbody">
+<div class="shortdesc">To help avoid disruptions to your workflow, enable elastic limits for asynchronous
+        Apex jobs (beta). The setting supports throttled processing of asynchronous jobs above the
+        standard rolling 24-hour limit, which prevents execution failures and limit exceptions if
+        your org reaches or exceeds this limit. </div>
+
+        <div class="section">
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Elastic Limits for Queueable Apex and Future Methods is a pilot
+                or beta service that is subject to the Beta Services Terms at <a class="xref" href="https://www.salesforce.com/company/legal/agreements/" target="_blank">Agreements - Salesforce.com</a> or a written Unified Pilot
+                Agreement if executed by Customer, and applicable terms in the <a class="xref" href="https://ptd.salesforce.com/?_ga=2.247987783.1372150065.1709219475-629000709.1639001992" target="_blank">Product Terms Directory</a>. Use of this pilot
+                or beta service is at the Customer's sole discretion.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Elastic Limits Overview</h2>
+
+            
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Elastic limits for asynchronous Apex jobs (beta) applies to only
+                Queueable Apex and future methods in production and demo orgs. Batch Apex and
+                scheduled jobs currently remain capped at the rolling 24-hour asynchronous job
+                limit.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">If you enable the “Use elastic limits for asynchronous Apex jobs (Beta)” setting, you
+                can enqueue Queueable Apex and future method jobs up to an increased elastic
+                asynchronous job limit. This elastic limit is the org’s rolling 24-hour asynchronous
+                job limit plus either the org’s licensed rolling 24-hour asynchronous job limit
+                (defined as 250,000 jobs or 200 times the number of applicable user licenses,
+                whichever is greater) or 10 million jobs, whichever is less.</p>
+
+            <p class="p">In other words, the <samp class="codeph nolang">DailyAsyncApexElasticExecutions</samp> limit is calculated according to this
+                formula:</p>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">// DailyAsyncApexElasticExecutions limit calculation (pseudocode)
+DailyAsyncApexElasticExecutions = DailyAsyncApexExecutions + min(licensed DailyAsyncApexExecutions, 10000000)</pre></div>
+
+            <p class="p">For example, if an org’s rolling 24-hour asynchronous Apex job limit is 250,000 and
+                the org’s licensed rolling 24-hour asynchronous job limit is 250,000, then the org’s
+                elastic limit is 500,000 jobs (250,000 + 250,000). However, if an org’s rolling
+                24-hour asynchronous Apex job limit is 12 million and the org’s licensed rolling
+                24-hour asynchronous job limit is 12 million, then the org’s elastic limit is 22
+                million jobs (12 million + 10 million).</p>
+
+            <p class="p">If an org reaches both the rolling 24-hour asynchronous Apex job limit and the
+                elastic asynchronous job limit, exceptions are thrown for enqueued jobs that exceed
+                the elastic limit.</p>
+
+            <p class="p">If the number of asynchronous Apex jobs processed over a rolling 24-hour period
+                exceeds the daily limit, Salesforce processes any additional enqueued asynchronous
+                jobs at a throttled rate of one concurrent job per asynchronous Apex type.
+                Processing resumes the regular, non-throttled concurrency rate only after the number
+                of executed asynchronous jobs in the past 24 hours falls below the daily limit.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Enable Elastic Limits</h2>
+
+            
+            <p class="p">To enable elastic limits for asynchronous Apex:</p>
+
+            <ol class="ol enumList">
+                <li class="li">In Setup, in the Quick Find box, enter <kbd class="ph userinput">Apex Settings</kbd>, and
+                    then select <strong class="ph uicontrol">Apex Settings</strong>.</li>
+
+                <li class="li">Select <strong class="ph uicontrol">Use elastic limits for asynchronous Apex jobs
+                    (Beta)</strong>.</li>
+
+                <li class="li">Save your changes.</li>
+
+            </ol>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Monitor Asynchronous Job Usage</h2>
+
+            
+            <p class="p">To check your asynchronous job usage against the daily and elastic limits, see the
+                Apex Jobs page in Setup. A banner shows the number of asynchronous jobs processed in
+                the past 24 hours, along with the org’s daily and elastic limits. It also indicates
+                whether asynchronous processing is currently being throttled.</p>
+
+            <div class="fig fignone">
+                <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fapex_elastic_async_limits_overage_dev_doc.png&folder=apexcode" width="800" alt="The Percent of Asynchronous Apex Used banner on the Apex Jobs page when the org reaches its licensed daily limit."></span></div>
+            </div>
+
+            <p dir="ltr" class="p">You can also use these methods on the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_OrgLimits.htm" target="_blank"><samp class="codeph apex_code">OrgLimits</samp></a> class to check asynchronous job usage.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Map of OrgLimit instances</span>
+Map&lt;<span class="keyword">String</span>,System.OrgLimit&gt; limitsMap = OrgLimits.getMap();
+
+<span class="onelineComment">// Daily Limit Methods</span>
+System.OrgLimit asyncApexDailyLimit = limitsMap.get(<span class="string">'DailyAsyncApexExecutions'</span>);
+System.debug(<span class="string">'Limit Name: '</span> + asyncApexDailyLimit.getName());
+
+<span class="onelineComment">// The total async jobs enqueued in the past 24 hours.</span>
+<span class="onelineComment">// Gives the same value as asyncApexElasticLimit.getValue()</span>
+System.debug(<span class="string">'Usage Value: '</span> + asyncApexDailyLimit.getValue());
+
+<span class="onelineComment">// The daily async job limit </span>
+System.debug(<span class="string">'Maximum Limit: '</span> + asyncApexRequestsLimit.getLimit());
+
+<span class="onelineComment">// -------------------------------------------------</span>
+
+<span class="onelineComment">// Elastic Limit Methods</span>
+System.OrgLimit asyncApexElasticLimit = limitsMap.get(<span class="string">'DailyAsyncApexElasticExecutions'</span>);
+System.debug(<span class="string">'Limit Name: '</span> + asyncApexElasticLimit.getName());
+
+<span class="onelineComment">// The total async jobs enqueued in the past 24 hours. </span>
+<span class="onelineComment">// Gives the same value as the asyncApexDailyLimit.getValue() </span>
+System.debug(<span class="string">'Usage Value: '</span> + asyncApexElasticLimit.getValue()); 
+
+<span class="onelineComment">// The sum of the daily limit and the additional jobs allowed up to the elastic limit</span>
+System.debug(<span class="string">'Maximum Limit: '</span> + asyncApexElasticLimit.getLimit()); 
+</pre></div>
+
+            <p class="p">For example, let’s say an org’s rolling 24-hour limit is 400,000 asynchronous jobs,
+                and it enqueues 700,000 asynchronous jobs within a 24-hour period. Here’s the org’s
+                    <samp class="codeph nolang">DailyAsyncApexExecutions</samp> and <samp class="codeph nolang">DailyAsyncApexElasticExecutions</samp> OrgLimits instance
+                values.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Example Org Limits for Async Jobs</span>
+
+<span class="onelineComment">// Daily Limit Methods</span>
+Limit Name: DailyAsyncApexExecutions
+Usage Value: 700000
+Maximum Limit: 400000
+
+<span class="onelineComment">// Elastic Limit Methods</span>
+Limit Name: DailyAsyncApexElasticExecutions
+Usage Value: 700000
+Maximum Limit: 800000
+</pre></div>
+
+            <p class="p">When you use the <samp class="codeph apex_code">OrgLimits</samp> class, keep these
+                considerations in mind.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">If the “Use elastic limits for asynchronous Apex jobs (Beta)” setting isn’t
+                    enabled, the <samp class="codeph apex_code">OrgLimits.getMap()</samp> method
+                    doesn’t return a <samp class="codeph apex_code">DailyAsyncApexElasticExecutions</samp> key-value pair.</li>
+
+                <li class="li">The <samp class="codeph apex_code">getValue()</samp> method returns the total
+                    number of asynchronous jobs <em class="ph i">enqueued</em> over the last 24 hours, not the
+                    number <em class="ph i">executed</em>. Because asynchronous jobs are throttled only when actual
+                    executions exceed the rolling 24-hour limit, the enqueued jobs count may surpass
+                    the rolling 24-hour limit when asynchronous jobs are still being processed at
+                    the regular concurrency rate.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

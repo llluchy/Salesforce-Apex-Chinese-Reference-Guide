@@ -1,0 +1,224 @@
+<a name="apex_classes_enforce_usermode"><!-- --></a><h1 class="helpHead1">Set an Access Mode for Database Operations</h1><div class="body conbody">
+<div class="shortdesc">Apex database operations run in user mode by default, which means that they apply the
+        sharing rules, field-level security (FLS), and object permissions of the running user.
+        Database operations only ignore FLS and object permissions if you explicitly set them to run
+        in system mode.</div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If you set a database operation to user mode, the operation always respects the user’s
+            sharing rules. However, if you set the operation to system mode, the sharing keyword on
+            the calling class determines whether the operation respects the user’s record-level
+            permissions. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" title="Use the with sharing or without sharing keywords on a class to specify whether sharing rules are enforced. Use the inherited sharing keyword on a class to run the class in the sharing mode of the calling class. The default sharing mode is with sharing.">Use the with sharing, without sharing, and inherited sharing Keywords</a>.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Set an Access Mode for SOQL and SOSL Queries</h2>
+
+            
+            <p class="p">To indicate an access mode for a SOQL or SOSL query, insert a <samp class="codeph soql">WITH USER_MODE</samp> or <samp class="codeph soql">WITH
+                    SYSTEM_MODE</samp> clause. This example specifies user mode in SOQL.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; acc = [SELECT Id FROM Account WITH USER_MODE];</pre></div>
+
+            <p class="p">In SOQL queries, user mode:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Supports polymorphic fields, such as as <samp class="codeph nolang">Owner</samp> and <samp class="codeph nolang">Task.whatId</samp>.</li>
+
+                <li class="li">Processes all clauses in the SOQL <samp class="codeph soql">SELECT</samp>
+                    statement including the <samp class="codeph nolang">WHERE</samp> clause.</li>
+
+                <li class="li">Finds all FLS errors in your SOQL query. </li>
+
+                <li class="li">Supports the <samp class="codeph ">getInaccessibleFields()</samp> method
+                    on QueryException to examine the full set of access errors.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Set an Access Mode for DML Statements</h2>
+
+            
+            <p class="p">To indicate an access mode for a DML statement, insert the <samp class="codeph apex_code"><span class="statement">as</span> user</samp> or <samp class="codeph apex_code"><span class="statement">as</span>
+                    system</samp> keywords between the DML operator and the object name. This
+                example inserts a new account in user mode.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Account acc = new Account(Name='test');
+                insert as user acc;</pre></div>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>
+                <p class="p">If you run DML operations in user mode, you can use the <samp class="codeph ">DMLException</samp> method <samp class="codeph ">getDmlFieldNames()</samp> to obtain the fields with FLS errors.</p>
+
+            </p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Set an Access Mode for Database and Search Methods</h2>
+
+            
+            <p class="p">The <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_class_System_AccessLevel" target="_blank"><samp class="codeph ">AccessLevel</samp></a> class represents the two modes in which Apex
+                runs database operations. Use this class to define the mode as user mode or system
+                mode. </p>
+
+            <p class="p">An <var class="keyword varname">accessLevel</var> parameter in Database and Search methods specifies
+                whether the method runs in user mode (<samp class="codeph ">AccessLevel.USER_MODE</samp>) or system mode (<samp class="codeph ">AccessLevel.SYSTEM_MODE</samp>).</p>
+
+            <p class="p">These DML and query operations support the <var class="keyword varname">accessLevel</var>
+                parameter.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_query_2" target="_blank"><samp class="codeph ">Database.query</samp></a> method. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_soql.htm" title="Dynamic SOQL refers to the creation of a SOQL string at run time with Apex code. Dynamic SOQL enables you to create more flexible applications. For example, you can create a search based on input from an end user or update records with varying field names.">Dynamic SOQL</a>.</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_getQueryLocator_3" target="_blank"><samp class="codeph ">Database.getQueryLocator</samp></a> methods</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_countQuery_2" target="_blank"><samp class="codeph ">Database.countQuery</samp></a> method</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_getCursor_2" target="_blank"><samp class="codeph apex_code">Database.getCursor</samp></a> method</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_database_getPaginationCursor" target="_blank"><samp class="codeph apex_code">Database.getPaginationCursor</samp></a>
+                    method</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_search.htm#apex_System_Search_query_2" target="_blank"><samp class="codeph ">Search.query</samp></a> method</li>
+
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm" target="_blank">Database DML methods</a> (<samp class="codeph ">insert</samp>, <samp class="codeph ">update</samp>, <samp class="codeph ">upsert</samp>, <samp class="codeph ">merge</samp>, <samp class="codeph ">delete</samp>,
+                        <samp class="codeph ">undelete</samp>, and <samp class="codeph ">convertLead</samp>). Includes the <samp class="codeph ">*Immediate</samp> and <samp class="codeph ">*Async</samp> methods,
+                    such as <samp class="codeph ">insertImmediate</samp> and <samp class="codeph ">deleteAsync</samp>.</li>
+
+            </ul>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>
+                <p class="p">If you run Database DML methods with <samp class="codeph ">AccessLevel.USER_MODE</samp>, you can access errors via <samp class="codeph ">SaveResult.getErrors().getFields()</samp>.</p>
+
+            </p>
+</div>
+</div></div></div></div>
+
+            <p class="p">These Database methods require the <var class="keyword varname">accessLevel</var> parameter.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_queryWithBinds" target="_blank"><samp class="codeph ">Database.queryWithBinds</samp></a>.</li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_getQueryLocatorWithBinds" target="_blank"><samp class="codeph ">Database.getQueryLocatorWithBinds</samp></a></li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_countQueryWithBinds" target="_blank"><samp class="codeph ">Database.countQueryWithBinds</samp></a></li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_getCursorWithBinds" target="_blank"><samp class="codeph apex_code">Database.getCursorWithBinds</samp></a></li>
+
+                <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_database_getPaginationCursorWithBinds" target="_blank"><samp class="codeph apex_code">Database.getPaginationCursorWithBinds</samp></a></li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Use Permission Sets to Enforce Security in DML and Search Operations (Developer
+                Preview)</h2>
+
+            
+            <p class="p">In Developer Preview, you can specify a permission set that to augment the
+                field-level and object-level security for database and search operations. Run the
+                    <samp class="codeph ">AccessLevel.withPermissionSetId()</samp> method with
+                a specified permission set ID. Specific user mode DML operations that are performed
+                with that <samp class="codeph ">AccessLevel</samp>, respect the permissions in
+                the specified permission set, in addition to the running user’s permissions.</p>
+
+            <div class="p">This example runs the <samp class="codeph ">AccessLevel.withPermissionSetId()</samp> method with the specified permission
+                set and inserts a custom object.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> ElevateUserModeOperations_Test {
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">static</span> <span class="keyword">void</span> objectCreatePermViaPermissionSet() {
+    Profile p = [
+      SELECT Id
+      FROM Profile
+      WHERE Name = <span class="string">'Minimum Access - Salesforce'</span>
+    ];
+    User u = <span class="keyword">new</span> User(
+      Alias = <span class="string">'standt'</span>,
+      Email = <span class="string">'standarduser@testorg.com'</span>,
+      EmailEncodingKey = <span class="string">'UTF-8'</span>,
+      LastName = <span class="string">'Testing'</span>,
+      LanguageLocaleKey = <span class="string">'en_US'</span>,
+      LocaleSidKey = <span class="string">'en_US'</span>,
+      ProfileId = p.Id,
+      TimeZoneSidKey = <span class="string">'America/Los_Angeles'</span>,
+      UserName = <span class="string">'standarduser'</span> + DateTime.now().getTime() + <span class="string">'@testorg.com'</span>
+    );
+
+    System.runAs(u) {
+      <span class="statement">try</span> {
+        Database.<span class="statement">insert</span>(<span class="keyword">new</span> Account(name = <span class="string">'foo'</span>), AccessLevel.User_mode);
+        Assert.fail();
+      } <span class="statement">catch</span> (SecurityException ex) {
+        Assert.isTrue(ex.getMessage().contains(<span class="string">'Account'</span>));
+      }
+      <span class="onelineComment">//Get ID of previously created permission set named 'AllowCreateToAccount'</span>
+      Id permissionSetId = [
+        SELECT Id
+        FROM PermissionSet
+        WHERE Name = <span class="string">'AllowCreateToAccount'</span>
+        LIMIT 1
+      ]
+      .Id;
+
+      Database.<span class="statement">insert</span>(
+        <span class="keyword">new</span> Account(name = <span class="string">'foo'</span>),
+        AccessLevel.User_mode.withPermissionSetId(permissionSetId)
+      );
+
+      <span class="onelineComment">// The elevated access level is not persisted to subsequent operations</span>
+      <span class="statement">try</span> {
+        Database.<span class="statement">insert</span>(<span class="keyword">new</span> Account(name = <span class="string">'foo2'</span>), AccessLevel.User_mode);
+        Assert.fail();
+      } <span class="statement">catch</span> (SecurityException ex) {
+        Assert.isTrue(ex.getMessage().contains(<span class="string">'Account'</span>));
+      }
+    }
+  }
+}</pre></div>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Checkmarx, the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.packagingGuide.meta/packagingGuide/security_review_partner_security_portal_scanners.htm" target="_blank">AppExchange Security Review</a> source code
+                scanner, isn’t updated with this new Apex feature. Until it’s updated, Checkmarx can
+                generate false positives for field or object-level security violations that require
+                exception documentation.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 67.0 and later, Apex runs in user context by default, meaning that the
+                current user’s permissions and field-level security (FLS) are enforced during code
+                execution. In API version 66.0 and earlier, system mode is the default.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

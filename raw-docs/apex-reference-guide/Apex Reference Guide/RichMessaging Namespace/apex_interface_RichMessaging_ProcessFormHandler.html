@@ -1,0 +1,99 @@
+<a name="apex_interface_RichMessaging_ProcessFormHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ProcessFormHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc">Apex interface that processes the responses to forms submitted in a messaging
+        session.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_RichMessaging.htm" title="Provides objects and methods for handling content in enhanced Messaging channels.">RichMessaging</a></p>
+</div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_RichMessaging_ProcessFormHandler.htm#apex_RichMessaging_ProcessFormHandler_methods">ProcessFormHandler Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_RichMessaging_ProcessFormHandler_methods">
+<a name="apex_RichMessaging_ProcessFormHandler_methods"><!-- --></a><h2 class="helpHead2">ProcessFormHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">ProcessFormHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_RichMessaging_ProcessFormHandler.htm#apex_RichMessaging_ProcessFormHandler_processFormRequest">processFormRequest</a></strong><br>
+Processes the form request and returns the ID of the record created during form     processing.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_RichMessaging_ProcessFormHandler_processFormRequest">
+<a name="apex_RichMessaging_ProcessFormHandler_processFormRequest"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">processFormRequest</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Processes the form request and returns the ID of the record created during form
+    processing.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">ID processFormRequest(RichMessaging.ProcessFormResponse
+          formResponse)</samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">formResponse</var></strong>: Type: RichMessaging.ProcessFormResponse The form response.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <a name="dl_wsd_pry_23c"><!-- --></a><ul class="ul bulletList" id="dl_wsd_pry_23c">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">ID</var></strong>: Type: RichMessaging.ProcessFormResponse</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_rcl_rry_23c">
+<a name="section_rcl_rry_23c"><!-- --></a><h4 class="helpHead4">ProcessFormHandler Example Implementation</h4>
+<p dir="ltr" class="p">The sample <samp class="codeph nolang">ContactApexFormHandler</samp> Apex class
+        automatically captures the customer's submitted details, creates a Contact record in
+        Salesforce, and returns the Contact record ID.</p>
+<p class="p">This is an example implementation of the <samp class="codeph nolang">RichMessaging.ProcessFormHandler</samp> interface.</p>
+<div class="codeSection nolang"><pre class="codeblock brush:plain">global class ContactApexFormHandler implements Richmessaging.ProcessFormHandler{
+    global ID 
+    processFormRequest(RichMessaging.ProcessFormResponse formResponse) {
+        // Create a new Contact object
+            Contact newContact = new Contact(
+            Phone = formResponse.formValues.get('Phone'),
+            Salutation = formResponse.formValues.get('Salutation'),
+            Email = formResponse.formValues.get('Email')
+            );
+    // Insert the new contact into the database
+    insert newContact;
+     // Return the ID of the newly created contact
+     return newContact.Id;</pre></div>
+<p class="p">For more information, see "Create a Form Based on
+        an Apex Class" in <a class="xref" href="https://help.salesforce.com/s/articleView?id=service.messaging_components_forms.htm&amp;language=en_US" target="_blank">this help topic</a>.</p>
+</div>
+
+  </div>
+</div>
+</div>
+</div>

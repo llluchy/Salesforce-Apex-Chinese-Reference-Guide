@@ -1,0 +1,163 @@
+<a name="langCon_apex_transaction_control"><!-- --></a><h1 class="helpHead1">Transaction Control</h1><div class="body">
+<div class="shortdesc">Read about transaction requests, generating and releasing savepoints, rolling back
+    transactions, and more.</div>
+
+    <p class="p"><span class="ph" id="transaction_control_descr"><a name="transaction_control_descr"><!-- --></a>All requests are delimited by the trigger, class method,
+        Web Service, Visualforce page, or anonymous block that executes the Apex code. If the entire
+        request completes successfully, all changes are committed to the database. For example,
+        suppose a Visualforce page called an Apex controller, which in turn called an additional
+        Apex class. Only when all the Apex code has finished running and the Visualforce page has
+        finished running, are the changes committed to the database. If the request doesn’t complete
+        successfully, all database changes are rolled back. </span></p>
+
+    <div class="section">
+<h2 class="helpHead2">Generating Savepoints and Rolling Back Transactions</h2>
+
+      
+      <p class="p"><span class="ph" id="savepoint_defn"><a name="savepoint_defn"><!-- --></a>Sometimes during the processing of records, your business rules
+          require that partial work (already executed DML statements) is rolled back so that the
+          processing can continue in another direction. Apex gives you the ability to generate a
+            <dfn class="term">savepoint</dfn>, that is, a point in the request that specifies the state of the
+          database at that time. Any DML statement that occurs after the savepoint can be discarded,
+          restoring the database to the condition it was in when you generated the savepoint. All
+          table and row locks acquired since the savepoint are released. </span></p>
+
+      <p class="p">The following limitations apply to generating savepoint variables and rolling back the
+        database:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">If you set more than one savepoint, then roll back to a savepoint that isn’t the last
+          savepoint you generated, the later savepoint variable is also rolled back and becomes
+          invalid. For example, if you generated savepoint <samp class="codeph apex_code">SP1</samp> first, savepoint <samp class="codeph apex_code">SP2</samp> after that,
+          and then you rolled back to <samp class="codeph apex_code">SP1</samp>, the variable
+            <samp class="codeph apex_code">SP2</samp> is no longer valid. If you try to use
+          savepoint <samp class="codeph apex_code">SP2</samp>, you receive a runtime error.</li>
+
+        <li class="li">References to savepoints can’t cross-trigger invocations because each trigger invocation
+          is a new trigger context. If you declare a savepoint as a static variable then try to use
+          it across trigger contexts, you receive a run-time error.</li>
+
+        <li class="li">Each savepoint you set counts against the governor limit for DML statements.</li>
+
+        <li class="li">
+          <p class="p">Static variables aren’t reverted during a rollback. If you try to run the trigger
+            again, the static variables retain the values from the first run.</p>
+
+        </li>
+
+        <li class="li">
+<samp class="codeph ">Database.rollback(Savepoint)</samp>
+          and <samp class="codeph ">Database.setSavepoint()</samp>don’t
+          count against the DML row limit, but
+          count toward
+          the DML statement limit. This behavior applies to all API versions.</li>
+
+        <li class="li"><span class="ph" id="rollbackIDs"><a name="rollbackIDs"><!-- --></a>The ID on an sObject inserted after setting a savepoint isn’t
+            cleared after a rollback. Attempting to insert the sObject using the variable created
+            before the rollback fails because the sObject variable has an ID. Updating or upserting
+            the sObject using the same variable also fails because the sObject isn’t in the database
+            and, thus, can’t be updated. To perform further DML operations, create an sObject
+            variable without setting its ID.</span></li>
+
+      </ul>
+
+      <p class="p">The following is an example using the <samp class="codeph apex_code">setSavepoint</samp>
+        and <samp class="codeph apex_code">rollback</samp> Database methods.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Account a = new Account(Name = 'xyz');
+insert a; 
+Assert.isNull([SELECT AccountNumber FROM Account WHERE Id  = :a.Id]. AccountNumber);  
+// Create a savepoint while AccountNumber is null 
+Savepoint sp = Database.setSavepoint(); 
+// Change the account number 
+a.AccountNumber = '123'; 
+update a; 
+Assert.areEqual('123', [SELECT AccountNumber FROM Account WHERE Id  = :a.Id]. AccountNumber); 
+// Rollback to the previous null value 
+Database.rollback(sp);
+Assert.isNull([SELECT AccountNumber FROM Account WHERE Id  = :a.Id]. AccountNumber);</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Releasing Savepoints and Using Callouts</h2>
+
+      
+      <p class="p">To allow callouts, roll back all uncommitted DML by using a savepoint. Then use the <samp class="codeph ">Database.releaseSavepoint</samp> method to explicitly release
+        savepoints before making the desired callout. When <samp class="codeph ">Database.releaseSavepoint()</samp> is called, <samp class="codeph nolang">SAVEPOINT_RELEASE</samp> is logged. </p>
+
+      <p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_releaseSavepoint" target="_blank"><samp class="codeph ">releaseSavepoint()</samp></a> for more information. </p>
+
+      <p class="p">In this example, the <samp class="codeph ">makeACallout()</samp> callout succeeds
+        because the uncommitted DML is rolled back and the savepoint is released.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Savepoint sp = Database.setSavepoint();
+try {
+  // Try a database operation
+  insert new Account(name='Foo');
+  integer bang = 1 / 0;
+} catch (Exception ex) {
+   Database.rollback(sp);
+   Database.releaseSavepoint(sp);
+   makeACallout();
+}
+</pre></div>
+
+      <p class="p">In this example, the savepoint isn’t released before making the callout. The <samp class="codeph ">CalloutException</samp> informs you that you must release all active
+        savepoints before making the callout.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Savepoint sp = Database.setSavepoint();
+try {
+  makeACallout(); 
+} catch (System.CalloutException ex) {
+   Assert.isTrue(ex.getMessage().contains('All active Savepoints must be released before making callouts.'));
+}
+</pre></div>
+
+      <p class="p">In this example, DML is pending when the callout is made. The <samp class="codeph ">CalloutException</samp> informs you that you must roll back the transaction before the
+        callout is made or the transaction must be committed.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Savepoint sp = Database.setSavepoint();
+insert new Account(name='Foo');
+Database.releaseSavepoint(sp);
+try {
+  makeACallout(); 
+} catch (System.CalloutException ex) {
+   Assert.isTrue(ex.getMessage().contains('You have uncommitted work pending. Please commit or rollback before calling out.'));
+}
+</pre></div>
+
+      <p class="p">Use these guidelines for using callouts and savepoints.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">If there’s uncommitted work pending when <samp class="codeph ">Database.releaseSavepoint()</samp> is called, the uncommitted work isn’t rolled back.
+          It’s committed if the transaction succeeds.</li>
+
+        <li class="li">Attempts to roll back to a released savepoint result in a <samp class="codeph ">TypeException</samp>.</li>
+
+        <li class="li">Attempts to roll back after calling <samp class="codeph ">Database.releaseSavepoint()</samp> result in a <samp class="codeph ">System.InvalidOperationException</samp>. </li>
+
+        <li class="li">Calling the <samp class="codeph ">Database.releaseSavepoint()</samp> method on a
+          savepoint also releases nested savepoints, that is, any subsequent savepoints created
+          after a savepoint.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">For Apex tests with API version 60.0 or later, all savepoints are released when <samp class="codeph ">Test.startTest()</samp> and <samp class="codeph ">Test.stopTest()</samp> are called. If any savepoints are reset, a <samp class="codeph nolang">SAVEPOINT_RESET</samp> event is logged.</p>
+
+      <p class="p">Before API version 60.0, making a callout after creating savepoints throws a <samp class="codeph ">CalloutException</samp> regardless of whether there was uncommitted
+        DML or the changes were rolled back to a savepoint. Also, before API version 60.0,
+        both
+          <samp class="codeph ">Database.rollback(databaseSavepoint)</samp>
+        and <samp class="codeph ">Database.setSavepoint()</samp> calls
+        incremented the DML row usage limit.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

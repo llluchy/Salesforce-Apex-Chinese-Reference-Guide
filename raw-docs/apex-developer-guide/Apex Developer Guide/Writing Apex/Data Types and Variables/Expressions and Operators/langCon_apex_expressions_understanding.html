@@ -1,0 +1,59 @@
+<a name="langCon_apex_expressions_understanding"><!-- --></a><h1 class="helpHead1">Expressions</h1><div class="body">
+<div class="shortdesc">An expression is a construct made up of variables, operators, and method invocations
+        that evaluates to a single value.</div>
+
+        <p class="p">In Apex, an expression is always one of the following types:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">A literal expression. For example:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">1 + 1</pre></div>
+</li>
+
+            <li class="li">A new sObject, Apex object, list, set, or map. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> Account(&lt;field_initializers&gt;)
+<span class="keyword">new</span> <span class="keyword">Integer</span>[&lt;n&gt;]
+<span class="keyword">new</span> Account[]{&lt;elements&gt;}
+<span class="keyword">new</span> List&lt;Account&gt;()
+<span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;{}
+<span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Integer</span>&gt;()
+<span class="keyword">new</span> myRenamingClass(string oldName, string newName)</pre></div>
+</li>
+
+            <li class="li">Any value that can act as the left-hand of an assignment operator (L-values),
+                including variables, one-dimensional list positions, and most sObject or Apex object
+                field references. For example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> i
+myList[3]
+myContact.name
+myRenamingClass.oldName</pre></div>
+</li>
+
+            <li class="li">Any sObject field reference that is not an L-value, including:<ul class="ul bulletList">
+                    <li class="li">The ID of an sObject in a list (see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_lists.htm" title="A list is an ordered collection of elements that are distinguished by their indices. List elements can be of any data type—primitive types, collections, sObjects, user-defined types, and built-in Apex types.">Lists</a>)</li>
+
+                    <li class="li">A set of child records associated with an sObject (for example, the set of
+                        contacts associated with a particular account). This type of expression
+                        yields a query result, much like SOQL and SOSL queries.</li>
+
+                </ul>
+</li>
+
+            <li class="li">A SOQL or SOSL query surrounded by square brackets, allowing for on-the-fly
+                evaluation in Apex. For
+                    example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] aa = [SELECT Id, Name FROM Account WHERE Name =<span class="string">'Acme'</span>];
+<span class="keyword">Integer</span> i = [SELECT COUNT() FROM Contact WHERE LastName =<span class="string">'Weissman'</span>];
+List&lt;List&lt;SObject&gt;&gt; searchList = [FIND <span class="string">'map*'</span> IN ALL FIELDS RETURNING Account (Id, Name), Contact, Opportunity, Lead];</pre></div>
+<p class="p">For
+                    information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL.htm" title="You can evaluate Salesforce Object Query Language (SOQL) or Salesforce Object Search Language (SOSL) statements on-the-fly in Apex by surrounding the statement in square brackets.">SOQL and SOSL
+                        Queries</a>.</p>
+</li>
+
+            <li class="li">A static or instance method invocation. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.assert(<span class="keyword">true</span>)
+myRenamingClass.replaceNames()
+changePoint(<span class="keyword">new</span> Point(x, y));
+</pre></div>
+</li>
+
+        </ul>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,76 @@
+<a name="langCon_apex_collections_lists_sorting"><!-- --></a><h1 class="helpHead1">List Sorting</h1><div class="body conbody">
+<div class="shortdesc">You can sort list elements and the sort order depends on the data type of the
+    elements.</div>
+
+    <p class="p">Using the <samp class="codeph apex_code">List.sort</samp> method, you can sort elements in
+      a list. Sorting is in ascending order for elements of primitive data types, such as strings.
+      The sort order of other more complex data types is described in the chapters covering those
+      data types.</p>
+
+    <p class="p">You can sort custom types (your Apex classes) if they implement the <samp class="codeph ">Comparable</samp> interface. Alternatively, a class implementing the <samp class="codeph ">Comparator</samp> interface can be passed as a parameter to the <samp class="codeph ">List.sort</samp> method. For more information on the sort order used for
+      sObjects, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_list_sorting_sobject.htm" target="_blank">Sorting Lists of sObjects</a>. </p>
+
+    <p class="p">This example shows how to sort a list of strings and verifies that the colors are in
+      ascending order in the list.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">String</span>&gt; colors = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{
+    <span class="string">'Yellow'</span>,
+    <span class="string">'Red'</span>,
+    <span class="string">'Green'</span>};
+colors.sort();
+System.assertEquals(<span class="string">'Green'</span>, colors.get(0));
+System.assertEquals(<span class="string">'Red'</span>, colors.get(1));
+System.assertEquals(<span class="string">'Yellow'</span>, colors.get(2));</pre></div>
+
+    <p class="p">For the Visualforce SelectOption control, sorting is in ascending order based on the value
+      and label fields. See this next section for the sequence of comparison steps used for
+      SelectOption.</p>
+
+    <div class="section" id="SelectOptionDefaultSortOrderSection">
+<a name="SelectOptionDefaultSortOrderSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="SelectOptionDefaultSortOrderSectionTitle"><a name="SelectOptionDefaultSortOrderSectionTitle"><!-- --></a>Default Sort Order for
+          SelectOption</span></h2>
+
+      
+      <div class="p">The <samp class="codeph apex_code">List.sort</samp> method sorts SelectOption elements in
+        ascending order using the value and label fields, and is based on this comparison sequence.<ol class="ol enumList">
+          <li class="li">The value field is used for sorting first.</li>
+
+          <li class="li">If two value fields have the same value or are both empty, the label field is
+            used.</li>
+
+        </ol>
+</div>
+
+      <p class="p">The disabled field isn’t used for sorting.</p>
+
+      <p class="p">For text fields, the sort algorithm uses the Unicode sort order. Also, empty fields precede
+        non-empty fields in the sort order.</p>
+
+      <p class="p">In this example, a list contains three SelectOption elements. Two elements, United States
+        and Mexico, have the same value field (‘A’). The <samp class="codeph apex_code">List.sort</samp> method sorts these two elements based on the
+        label field, and places Mexico before United States, as shown in the output. The last
+        element in the sorted list is Canada and is sorted on its value field ‘C’,
+        which comes after ‘A’.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;SelectOption&gt; options = <span class="keyword">new</span> List&lt;SelectOption&gt;();
+options.add(<span class="keyword">new</span> SelectOption(<span class="string">'A'</span>,<span class="string">'United States'</span>));
+options.add(<span class="keyword">new</span> SelectOption(<span class="string">'C'</span>,<span class="string">'Canada'</span>));
+options.add(<span class="keyword">new</span> SelectOption(<span class="string">'A'</span>,<span class="string">'Mexico'</span>));
+System.debug(<span class="string">'Before sorting: '</span> + options);
+options.sort();
+System.debug(<span class="string">'After sorting: '</span> + options);</pre></div>
+
+      <p class="p">The output of the debug statements shows the contents of the list, both before and after
+        the sort.</p>
+
+      <div class="codeSection nolang"><pre class="codeblock brush:plain">DEBUG|Before sorting: (System.SelectOption[value="A", label="United States", disabled="false"], 
+  System.SelectOption[value="C", label="Canada", disabled="false"], 
+  System.SelectOption[value="A", label="Mexico", disabled="false"])
+DEBUG|After sorting: (System.SelectOption[value="A", label="Mexico", disabled="false"], 
+  System.SelectOption[value="A", label="United States", disabled="false"], 
+  System.SelectOption[value="C", label="Canada", disabled="false"])
+</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

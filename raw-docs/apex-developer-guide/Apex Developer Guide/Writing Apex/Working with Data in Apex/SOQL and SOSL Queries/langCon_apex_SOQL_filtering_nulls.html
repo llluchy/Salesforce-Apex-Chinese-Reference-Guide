@@ -1,0 +1,52 @@
+<a name="langCon_apex_SOQL_filtering_nulls"><!-- --></a><h1 class="helpHead1">Improve Performance by Avoiding Null Values</h1><div class="body">
+<div class="p">In your SOQL and SOSL queries, explicitly filtering out null values in
+         the WHERE clause allows Salesforce to improve query performance. In the following example,
+         any records where the <samp class="codeph apex_code">Thread__c</samp> value is null are
+         eliminated from the
+         search.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Public <span class="keyword">class</span> TagWS {
+
+<span class="multilineComment">/* getThreadTags
+*
+* a quick method to pull tags not in the existing list
+*
+*/</span>
+   <span class="keyword">public</span> <span class="keyword">static</span> webservice List&lt;<span class="keyword">String</span>&gt; 
+   getThreadTags(<span class="keyword">String</span> threadId, List&lt;<span class="keyword">String</span>&gt; tags) {
+
+      system.debug(LoggingLevel.Debug,tags);
+
+      List&lt;<span class="keyword">String</span>&gt; retVals = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+      Set&lt;<span class="keyword">String</span>&gt; tagSet = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;();
+      Set&lt;<span class="keyword">String</span>&gt; origTagSet = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;();
+      origTagSet.addAll(tags);
+
+<span class="onelineComment">// Note WHERE clause optimizes search where Thread__c is not null</span>
+
+      <span class="statement">for</span>(CSO_CaseThread_Tag__c t : 
+         [SELECT Name FROM CSO_CaseThread_Tag__c 
+         WHERE Thread__c = :threadId AND
+         Thread__c != <span class="keyword">null</span>]) 
+
+      {
+         tagSet.add(t.Name);
+      }
+      <span class="statement">for</span>(<span class="keyword">String</span> x : origTagSet) { 
+   <span class="onelineComment">// return a minus version of it so the UI knows to clear it</span>
+         <span class="statement">if</span>(!tagSet.contains(x)) retVals.add(<span class="string">'-'</span> + x);
+      }
+      <span class="statement">for</span>(<span class="keyword">String</span> x : tagSet) { 
+   <span class="onelineComment">// return a plus version so the UI knows it's new</span>
+         <span class="statement">if</span>(!origTagSet.contains(x)) retvals.add(<span class="string">'+'</span> + x);
+      }
+
+      <span class="statement">return</span> retVals;
+   }
+} </pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_single_row.htm" title="Using SOQL Queries That Return One Record">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_polymorphic_relationships.htm" title="Working with Polymorphic Relationships in SOQL Queries">Next →</a></li>
+</ul></div>
+</div>

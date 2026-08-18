@@ -1,0 +1,70 @@
+<a name="apex_System_Cases_generateThreadingMessageId"><!-- --></a><h1 class="helpHead1">generateThreadingMessageId(caseId)</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns an RFC 2822-compliant message identifier that contains
+   information used to match the email and its replies to a case. </span></div>
+
+  <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> generateThreadingMessageId(Id
+     caseId)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Parameters</h2>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">caseId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a> The case SObject ID to which replies to this email should be attached.</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <p class="p">Use the returned message identifier when sending case-related emails in Apex. The returned
+        message identifier can be used in Message-ID or References headers. However, because
+        Salesforce doesn’t let users specify the Message-ID, we set this identifier in the
+        References header. When users reply to the sent email, replies should be attached to the
+        specified case.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+   
+   <p class="p">In this sample, we create an email with a message identifier so that the email and any
+        responses can be associated with the related case. </p>
+
+   <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>//Get your Case ID. Here we use a dummy ID
+ID caseId = Id.valueOf('500xx000000bpkTAAQ');
+//Create a SingleEmailMessage object
+Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+//Set recipients and other fields
+email.setToAddresses(new String[] {'test@salesforce.com'});
+email.setPlainTextBody('Test Email Notification');
+//........... more fields ...........
+//Get the threading message identifier
+String messageId = Cases.generateThreadingMessageId(caseId);
+//Insert the message identifier into the References header
+email.setReferences(messageId);
+//Send out the email
+Messaging.sendEmail(new Messaging.SingleEmailMessage[]{email});</pre></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

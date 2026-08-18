@@ -1,0 +1,101 @@
+<a name="apex_manpkgs_chapter"><!-- --></a><h1 class="helpHead1">Develop and Distribute Apex for Managed Packages</h1><div class="body conbody">
+<div class="shortdesc">As an independent software vendor (ISV) or Salesforce partner, you can distribute
+        Apex code to customer orgs by using managed packages. For first-generation managed packages
+        (1GP) and migrated second-generation managed packages (2GP), use versioning to evolve
+        components of your managed package gracefully without breaking existing customer
+        integrations. Understand how global Apex in managed packages behaves and learn how to
+        develop global Apex in managed packages specifically for agents.</div>
+
+        <p class="p">As you develop managed Apex, keep these points in mind.</p>
+
+        <ul class="ul bulletList">
+            <li class="li">The code contained in an Apex class, trigger, or Visualforce component that’s part
+                of a managed package is obfuscated. You generally can’t view this code in an
+                installing org. The only exceptions are methods declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp>. You can view global method signatures in
+                an installing org. In addition, license management organization users with the View
+                and Debug Managed Apex permission can view their packages’ obfuscated Apex classes
+                when logged in to subscriber orgs via the Subscriber Support Console.</li>
+
+            <li class="li">1GP managed packages each have a unique namespace. 2GP managed packages can have the
+                same namespace as other 2GP managed packages. However, you can’t associate a single
+                2GP managed package with more than one namespace. The namespace is prepended to your
+                class’s names, methods, variables, and so on, which helps prevent duplicate names in
+                a subscriber’s org.</li>
+
+            <li class="li">You can use the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm"><samp class="codeph apex_code">@NamespaceAccessible</samp></a> annotation to make public Apex in a 2GP
+                managed package available to other 2GP managed packages that use the same
+                namespace.</li>
+
+            <li class="li">In a single transaction, you can reference only 10 unique namespaces. For example,
+                suppose that you have an object that executes a class in a managed package when the
+                object is updated. Then that class updates a second object, which in turn executes a
+                different class in a different package. Even though the first package didn’t access
+                the second package directly, the access occurs in the same transaction. It’s
+                therefore included in the number of namespaces accessed in a single transaction. </li>
+
+            <li class="li">You can use the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_deprecated.htm"><samp class="codeph nolang">@Deprecated</samp></a> annotation to
+                identify methods, classes, exceptions, enums, interfaces, and variables that can no
+                longer be referenced in subsequent releases of the managed package in which they
+                reside. This annotation is useful when you’re refactoring code in managed packages
+                as the requirements evolve. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_deprecated.htm" title="Use the @Deprecated annotation to specify Apex identifiers that can subscribers can no longer reference in subsequent releases of the managed package. Deprecation is useful when you’re refactoring code in managed packages as the requirements evolve.">Deprecate Apex in Managed Packages</a>.</li>
+
+            <li class="li">For 1GP and migrated 2GP managed packages, you can write test methods that change
+                the package version context to a different package version by using the <samp class="codeph apex_code">System.runAs()</samp> method. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_behavior_testing.htm" title="When you change the behavior in an Apex class or trigger for different package versions, it’s important to test that your code runs as expected in the different package versions. You can write test methods that change the package version context to a different package version by using the System.runAs method. You can only use System.runAs in a test method.">Testing
+                    Behavior in Package Versions</a>.</li>
+
+            <li class="li">You can’t add a method to a global interface or an abstract method to a global class
+                after you upload that interface or class in a Managed - Released package version. If
+                the class in the Managed - Released package is virtual, the method that you can add
+                to it must also be virtual and must have an implementation. If the class in the
+                Managed - Release package extends another class, you can’t remove the existing
+                class’s contract. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global Apex in Managed
+                    Packages</a>.</li>
+
+            <li class="li">Salesforce blocks managed package session IDs from authenticating anonymous Apex via
+                Tooling API or SOAP API. Managed packages can’t use <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_userinfo.htm#apex_System_UserInfo_getSessionId" target="_blank"><samp class="codeph apex_code">UserInfo.getSessionId()</samp></a> to obtain a session ID and then use
+                the session ID to execute anonymous Apex. This restriction applies to new managed
+                packages with namespaces created in Summer ’26 and later. For existing managed
+                packages with namespaces created in Spring ’26 and earlier, this restriction is
+                enforced as a release update. The release update is available to package subscribers
+                starting in Summer ’26 and is enforced in Summer ’27. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=release-notes.rn_apex_block_exec_anon_ru.htm&amp;type=5&amp;language=en_US" target="_blank">Block Execute Anonymous from Managed Packages (Release Update)</a>. Instead,
+                we recommend that managed packages interact with subscriber org code through
+                standard mechanisms, such as a shared <samp class="codeph apex_code"><span class="keyword">global</span></samp>
+                interface and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_forName" target="_blank"><samp class="codeph nolang">Type.forName()</samp></a>.</li>
+
+        </ul>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If a <samp class="codeph apex_code">ConnectApi</samp> class has a
+            dependency on Chatter, the code can be compiled and installed in orgs that don’t have
+            Chatter enabled. However, if Chatter isn’t enabled, the code throws an error at run
+            time. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_connect_api_packaging.htm" title="If you include ConnectApi classes in a package, be aware of Chatter dependencies.">Packaging <samp class="codeph apex_code">ConnectApi</samp> Classes</a>.</p>
+</div>
+</div></div></div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_package_versions.htm">Apex Versioning in Managed Packages</a></strong><br>
+A managed package component can exhibit different behavior in different package   versions. By versioning managed Apex, you can add and refine components in the managed package,   while maintaining backwards compatibility for existing subscribers.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_behavior.htm">Version Apex Code Behavior</a></strong><br>
+Package developers can use conditional logic in Apex classes and triggers to exhibit         different behavior for different versions. With this conditional logic, you can support         existing behavior in classes and triggers in previous package versions while evolving the         code.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_behavior_not_versioned.htm">Apex Code Items That Aren’t Versioned</a></strong><br>
+Some Apex items in managed packages can’t be versioned. The changes that you make to     these items are reflected across all package versions. Additionally, there are limitations to     the changes that you can make to some of these items when they are used in Apex code in managed     packages.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_deprecated.htm">Deprecate Managed Apex</a></strong><br>
+Use the <samp class="codeph apex_code"><span class="keyword">@Deprecated</span></samp> annotation to specify Apex   identifiers that can subscribers can no longer reference in subsequent releases of the managed   package. Deprecation is useful when you’re refactoring code in managed packages as the   requirements evolve.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_behavior_testing.htm">Testing Versioned Behavior in Apex Code</a></strong><br>
+When you change the behavior in an Apex class or trigger for different package         versions, it’s important to test that your code runs as expected in the different package         versions. You can write test methods that change the package version             context to a different package version by using the <samp class="codeph apex_code">System.runAs</samp> method. You can only use <samp class="codeph apex_code">System.runAs</samp> in a test method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm">Best Practices for Using Global Apex in Managed Packages</a></strong><br>
+As an independent software vendor (ISV) developer, understand when and how to use       <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex in managed packages. Learn design patterns    that maximize flexibility and comply with the strict manageability rules applied to <samp class="codeph apex_code"><span class="keyword">global</span></samp> Apex     after your managed package’s release. By following these best practices, you can improve the     stability and maintainability of your API.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_agent.htm">Design Managed Apex for Agentforce</a></strong><br>
+As an independent software vendor (ISV) developer, you can build custom agent actions   using Apex and distribute them in managed packages. To ensure that subscriber admins can   declaratively configure your Apex agent actions and that Agentforce can invoke the actions at run   time, follow these requirements and recommendations.</li>
+</ul>
+</div>

@@ -1,0 +1,109 @@
+<a name="apex_class_commerce_payments_GatewayErrorResponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">GatewayErrorResponse Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use to respond with an error indication following errors from the
+        <samp class="codeph apex_code">PaymentGateway</samp> adapter, such as request-forbidden
+      responses, custom validation errors, or expired API tokens.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">Use <samp class="codeph apex_code">GatewayErrorResponse</samp> to
+      create an object that stores information about error responses sent by the payment gateway
+      adapter.</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">If <samp class="codeph apex_code">GatewayResponse</samp>
+      receives an exception rather than a valid request, it calls <samp class="codeph apex_code">GatewayErrorResponse</samp> to create an error object with information about the
+      exception.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+        commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+        commercepayments.GatewayResponse response;
+        <span class="statement">try</span> {
+            <span class="statement">if</span> (requestType == commercepayments.RequestType.Authorize) {
+                response = createAuthResponse((commercepayments.AuthorizationRequest)gatewayContext.getPaymentRequest());
+            } <span class="statement">else</span> <span class="statement">if</span> (requestType == commercepayments.RequestType.Capture) {
+                response =  createCaptureResponse((commercepayments.CaptureRequest)gatewayContext.getPaymentRequest()) ;
+            } <span class="statement">else</span> <span class="statement">if</span> (requestType == commercepayments.RequestType.ReferencedRefund) {
+                response = createRefundResponse((commercepayments.ReferencedRefundRequest)gatewayContext.getPaymentRequest());
+            }
+            <span class="statement">return</span> response;
+        } <span class="statement">catch</span>(SalesforceValidationException e) {
+             commercepayments.GatewayErrorResponse error = <span class="keyword">new</span> commercepayments.GatewayErrorResponse(<span class="string">'400'</span>, e.getMessage());
+             <span class="statement">return</span> error;
+        }
+    }</pre></div>
+</div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayErrorResponse.htm#apex_commerce_payments_GatewayErrorResponse_constructors">GatewayErrorResponse Constructors</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commerce_payments_GatewayErrorResponse_constructors">
+<a name="apex_commerce_payments_GatewayErrorResponse_constructors"><!-- --></a><h2 class="helpHead2">GatewayErrorResponse Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">GatewayErrorResponse</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_GatewayErrorResponse.htm#apex_commerce_payments_GatewayErrorResponse_ctor">GatewayErrorResponse(errorCode, errorMessage)</a></strong><br>
+Constructor to create a GatewayErrorResponse object that accepts         <samp class="codeph nolang">errorCode</samp> and <samp class="codeph nolang">errorMessage</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commerce_payments_GatewayErrorResponse_ctor">
+<a name="apex_commerce_payments_GatewayErrorResponse_ctor"><!-- --></a><h3 class="helpHead3">GatewayErrorResponse(errorCode, errorMessage)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Constructor to create a GatewayErrorResponse object that accepts
+        <samp class="codeph nolang">errorCode</samp> and <samp class="codeph nolang">errorMessage</samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> GatewayErrorResponse(<span class="keyword">String</span> errorCode, <span class="keyword">String</span>
+          errorMessage)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">errorCode</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Should match with the HTTP status code to be returned to the user. Here are a few examples. <ul class="ul bulletList">
+              <li class="li">If the status code is for a bad request, the errorCode should be 400. </li>
+
+              <li class="li">If the status code is for a forbidden request, errorCode should be 403.</li>
+
+              <li class="li">If errorCode isn’t a valid HTTP status code, a 500 internal server error is
+                returned.</li>
+
+            </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><var class="keyword varname">errorCode</var> must have a value, otherwise the platform throws
+              an error.</p>
+</div>
+</div></div></div></div>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">errorMessage</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The message response to users following an error. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><var class="keyword varname">errorMessage</var> must have a value, otherwise the platform throws
+              an error.</p>
+</div>
+</div></div></div></div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

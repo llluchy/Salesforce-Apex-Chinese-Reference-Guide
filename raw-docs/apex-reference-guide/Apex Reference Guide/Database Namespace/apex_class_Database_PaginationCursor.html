@@ -1,0 +1,143 @@
+<a name="apex_class_Database_PaginationCursor"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">PaginationCursor Class</h1>
+<div class="body refbody">
+<div class="shortdesc">This class represents a pagination cursor that can traverse a SOQL query result set. It
+        contains methods that fetch rows by page. It also contains a method that returns the total
+        number of rows in the result set. </div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">A pagination cursor is created when a SOQL query is executed on a <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_database_getPaginationCursor" title="Creates a pagination cursor when the specified SOQL query is executed."><samp class="codeph ">Database.getPaginationCursor()</samp></a> or a <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_database_getPaginationCursorWithBinds" title="Creates a pagination cursor when the specified SOQL query is executed."><samp class="codeph ">Database.getPaginationCursorWithBinds()</samp></a> call. When the SOQL
+                query is invoked, the corresponding rows are returned from the pagination
+                cursor.</p>
+
+            <p class="p">Use a pagination cursor for traversing human-viewable data, such as a list of records
+                in a UI. The maximum number of rows per pagination cursor is 100,000, regardless of whether the operation is synchronous or asynchronous.</p>
+
+            <p class="p">For a comparison between pagination cursors and standard cursors, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cursors.htm" target="_blank" title="HTML (New Window)">Apex Cursors</a> in the
+                    <cite class="cite">Apex Developer Guide</cite>.</p>
+
+            <p class="p">For Apex pagination cursor limits, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank">Execution Governors and Limits </a>in the
+                    <cite class="cite">Apex Developer Guide</cite>.</p>
+
+        </div>
+
+    </div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_PaginationCursor.htm#apex_Database_PaginationCursor_methods">PaginationCursor Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_PaginationCursor_methods">
+<a name="apex_Database_PaginationCursor_methods"><!-- --></a><h2 class="helpHead2">PaginationCursor Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">PaginationCursor</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_PaginationCursor.htm#apex_Database_PaginationCursor_fetchDeleted">fetchDeleted(start, pageSize)</a></strong><br>
+Fetches the number of deleted rows within the specified range. The method counts only   rows deleted after the creation of the pagination cursor. Calling the   <samp class="codeph ">PaginationCursor.fetchDeleted()</samp> method counts against the SOQL query   limit, and the rows fetched count against the SOQL query row limit.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_PaginationCursor.htm#apex_Database_PaginationCursor_fetchPage">fetchPage(start, pageSize)</a></strong><br>
+Fetches a page of rows from the result set. By default, the method skips rows deleted     after the creation of the pagination cursor. The method also returns information used to fetch     the next page. Calling the <samp class="codeph ">PaginationCursor.fetchPage()</samp> method counts against     the SOQL query limit, and the rows fetched count against the SOQL query row limit.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_PaginationCursor.htm#apex_Database_PaginationCursor_getNumRecords">getNumRecords()</a></strong><br>
+Gets the total number of rows in the SOQL query result set.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_PaginationCursor_fetchDeleted">
+<a name="apex_Database_PaginationCursor_fetchDeleted"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">fetchDeleted(start, pageSize)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Fetches the number of deleted rows within the specified range. The method counts only
+  rows deleted after the creation of the pagination cursor. Calling the
+  <samp class="codeph ">PaginationCursor.fetchDeleted()</samp> method counts against the SOQL query
+  limit, and the rows fetched count against the SOQL query row limit.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer fetchDeleted(Integer start, Integer
+                pageSize)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">start</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The zero-based index from which to begin checking for deleted rows.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">pageSize</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The number of rows to check, beginning at the <var class="keyword varname">start</var> index.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_PaginationCursor_fetchPage">
+<a name="apex_Database_PaginationCursor_fetchPage"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">fetchPage(start, pageSize)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Fetches a page of rows from the result set. By default, the method skips rows deleted
+    after the creation of the pagination cursor. The method also returns information used to fetch
+    the next page. Calling the <samp class="codeph ">PaginationCursor.fetchPage()</samp> method counts against
+    the SOQL query limit, and the rows fetched count against the SOQL query row limit.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Database.CursorFetchResult fetchPage(Integer start, Integer
+          pageSize)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">start</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The zero-based index from which to begin fetching rows.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">pageSize</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The maximum number of rows to include on the current page.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Database_CursorFetchResult.htm#apex_class_Database_CursorFetchResult" title="This class encapsulates the result of a PaginationCursor.fetchPage() call. It contains methods that get the rows for the current page, the start index of the next page, and the number of deleted rows skipped during the fetch operation. It also contains a method that indicates whether the pagination cursor has fetched all available rows in the result set.">Database.CursorFetchResult</a></p>
+<p class="p">Contains the rows for the current page and the information used to fetch the next page.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_PaginationCursor_getNumRecords">
+<a name="apex_Database_PaginationCursor_getNumRecords"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getNumRecords()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the total number of rows in the SOQL query result set.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer getNumRecords()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_database_getPaginationCursor" title="Creates a pagination cursor when the specified SOQL query is executed.">getPaginationCursor(query, accessLevel)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_Database_CursorFetchResult.htm#apex_class_Database_CursorFetchResult" title="This class encapsulates the result of a PaginationCursor.fetchPage() call. It contains methods that get the rows for the current page, the start index of the next page, and the number of deleted rows skipped during the fetch operation. It also contains a method that indicates whether the pagination cursor has fetched all available rows in the result set.">CursorFetchResult Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cursors.htm" target="_blank" title="Apex Developer Guide: Apex Cursors - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Apex Cursors</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

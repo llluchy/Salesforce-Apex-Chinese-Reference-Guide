@@ -1,0 +1,259 @@
+<a name="apex_interface_Auth_SamlJitHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SamlJitHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use this interface to control and customize Just-in-Time user
+      provisioning logic during SAML single sign-on.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">To use custom logic for user provisioning during SAML single sign-on, you must create a
+        class that implements <samp class="codeph apex_code">Auth.SamlJitHandler</samp>. This
+        allows you to incorporate organization-specific logic (such as populating custom fields)
+        when users log in to Salesforce with single sign-on. Keep in mind
+        that your class must perform the logic of creating and updating user data as appropriate,
+        including any associated account and contact records.</p>
+
+      <p class="p">In Salesforce, you specify your class that
+        implements this interface in the <span class="keyword parmname">SAML JIT Handler</span> field in SAML Single
+        Sign-On Settings. Make sure that the user you specify to run the class has “Manage Users”
+        permission.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_SamlJitHandler.htm#apex_Auth_SamlJitHandler_methods">SamlJitHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_SamlJitHandler.htm#apex_interface_Auth_SamlJitHandler_Example">SamlJitHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_SamlJitHandler_methods">
+<a name="apex_Auth_SamlJitHandler_methods"><!-- --></a><h2 class="helpHead2">SamlJitHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SamlJitHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_SamlJitHandler.htm#apex_Auth_SamlJitHandler_createUser">createUser(samlSsoProviderId, communityId, portalId, federationId, attributes, assertion)</a></strong><br>
+Returns a User object using the specified Federation ID. The User       object corresponds to the user information. This object can be a new user that hasn’t been       inserted in the database or an existing user record in the database.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_SamlJitHandler.htm#apex_Auth_SamlJitHandler_updateUser">updateUser(userId, samlSsoProviderId, communityId, portalId, federationId, attributes, assertion)</a></strong><br>
+Updates the specified user’s information. This method is called       if the user has logged in before with SAML single sign-on and then logs in again, or if your       application is using the <span class="keyword parmname">Existing User Linking URL</span>. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_SamlJitHandler_createUser">
+<a name="apex_Auth_SamlJitHandler_createUser"><!-- --></a><h3 class="helpHead3">createUser(samlSsoProviderId, communityId, portalId, federationId, attributes, assertion)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a User object using the specified Federation ID. The User
+      object corresponds to the user information. This object can be a new user that hasn’t been
+      inserted in the database or an existing user record in the database.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> User createUser(Id samlSsoProviderId, Id communityId, Id
+          portalId, <span class="keyword">String</span> federationId, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; attributes, <span class="keyword">String</span>
+          assertion)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">samlSsoProviderId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the SamlSsoConfig standard object.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">communityId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the Experience Cloud site. This parameter can be <samp class="codeph apex_code"><span class="keyword">null</span></samp> if you’re not creating an Experience Cloud
+            user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">portalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the portal. This parameter can be <samp class="codeph apex_code"><span class="keyword">null</span></samp> if
+            you’re not creating a portal user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">federationId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID Salesforce expects to be used for this
+            user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">attributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; All attributes in the SAML assertion that were added to the default assertion; for
+            example, custom attributes. Attributes are case-sensitive. If the assertion is encrypted, the attribute map contains a decrypted assertion stored
+            as a value with the key <samp class="codeph xml">Sfdc.SamlAssertion</samp>.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">assertion</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The default SAML assertion, base-64 encoded. If the assertion is encrypted, this parameter is also encrypted. To access the
+            decrypted assertion, see the <samp class="codeph xml">Sfdc.SamlAssertion</samp> key in
+            the attribute map.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: User</p>
+
+      <p class="p">A User sObject.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The <var class="keyword varname">communityId</var> and <var class="keyword varname">portalId</var> parameter values can be
+          <samp class="codeph apex_code"><span class="keyword">null</span></samp> or the associated keys can be empty if
+        there’s no Experience Cloud site or portal configured with this organization.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_SamlJitHandler_updateUser">
+<a name="apex_Auth_SamlJitHandler_updateUser"><!-- --></a><h3 class="helpHead3">updateUser(userId, samlSsoProviderId, communityId, portalId, federationId, attributes, assertion)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Updates the specified user’s information. This method is called
+      if the user has logged in before with SAML single sign-on and then logs in again, or if your
+      application is using the <span class="keyword parmname">Existing User Linking URL</span>. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> updateUser(Id userId, Id samlSsoProviderId, Id
+          communityId, Id portalId, <span class="keyword">String</span> federationId, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; attributes, <span class="keyword">String</span>
+          assertion)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the Salesforce user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">samlSsoProviderId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the SamlSsoConfig object.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">communityId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the Experience Cloud site. This type can be <samp class="codeph apex_code"><span class="keyword">null</span></samp> if you’re not updating an Experience Cloud user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">portalId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the portal. This type can be <samp class="codeph apex_code"><span class="keyword">null</span></samp> if you’re
+            not updating a portal user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">federationId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID Salesforce expects to be used for this
+            user.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">attributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">All attributes in the SAML assertion that were added to the default assertion; for
+            example, custom attributes. Attributes are case-sensitive. If the assertion is encrypted, the attribute map also contains a decrypted assertion
+            stored as a value with the key <samp class="codeph xml">Sfdc.SamlAssertion</samp>.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">assertion</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The default SAML assertion, base-64 encoded. If the assertion is encrypted, this parameter is also encrypted. To access the
+            decrypted assertion, see the <samp class="codeph xml">Sfdc.SamlAssertion</samp> key in
+            the attribute map.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Auth_SamlJitHandler_Example">
+<a name="apex_interface_Auth_SamlJitHandler_Example"><!-- --></a><h2 class="helpHead2">SamlJitHandler Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+            <p class="p">This is an example implementation of the <samp class="codeph apex_code">Auth.SamlJitHandler</samp> interface. This code uses private methods to
+                handle accounts and contacts (handleContact() and handleAccount()), which aren’t
+                included in this example.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> StandardUserHandler <span class="keyword">implements</span> Auth.SamlJitHandler {
+    <span class="keyword">private</span> <span class="keyword">class</span> JitException <span class="keyword">extends</span> Exception{}
+    <span class="keyword">private</span> <span class="keyword">void</span> handleUser(boolean create, User u, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; attributes,
+        <span class="keyword">String</span> federationIdentifier, boolean isStandard) {
+        <span class="statement">if</span>(create &amp;&amp; attributes.containsKey(<span class="string">'User.Username'</span>)) {
+            u.Username = attributes.get(<span class="string">'User.Username'</span>);
+        }
+        <span class="statement">if</span>(create) {
+            <span class="statement">if</span>(attributes.containsKey(<span class="string">'User.FederationIdentifier'</span>)) {
+                u.FederationIdentifier = attributes.get(<span class="string">'User.FederationIdentifier'</span>);
+            } <span class="statement">else</span> {
+                u.FederationIdentifier = federationIdentifier;
+            }
+        }
+        <span class="statement">if</span>(attributes.containsKey(<span class="string">'User.ProfileId'</span>)) {
+            <span class="keyword">String</span> profileId = attributes.get(<span class="string">'User.ProfileId'</span>);
+            Profile p = [SELECT Id FROM Profile WHERE Id=:profileId];
+            u.ProfileId = p.Id;
+        }
+        <span class="statement">if</span>(attributes.containsKey(<span class="string">'User.UserRoleId'</span>)) {
+            <span class="keyword">String</span> userRole = attributes.get(<span class="string">'User.UserRoleId'</span>);
+            UserRole r = [SELECT Id FROM UserRole WHERE Id=:userRole];
+            u.UserRoleId = r.Id;
+        }
+        <span class="statement">if</span>(attributes.containsKey(<span class="string">'User.Phone'</span>)) {
+            u.Phone = attributes.get(<span class="string">'User.Phone'</span>);
+        }
+        <span class="statement">if</span>(attributes.containsKey(<span class="string">'User.Email'</span>)) {
+            u.Email = attributes.get(<span class="string">'User.Email'</span>);
+        }
+
+	<span class="onelineComment">//More attributes here - removed for length</span>
+
+        <span class="onelineComment">//Handle custom fields here</span>
+
+        <span class="statement">if</span>(!create) {
+            <span class="statement">update</span>(u);
+        }
+    }
+
+    <span class="keyword">private</span> <span class="keyword">void</span> handleJit(boolean create, User u, Id samlSsoProviderId, Id communityId, Id portalId,
+        <span class="keyword">String</span> federationIdentifier, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; attributes, <span class="keyword">String</span> assertion) {
+        <span class="statement">if</span>(communityId != <span class="keyword">null</span> || portalId != <span class="keyword">null</span>) {
+            <span class="keyword">String</span> account = handleAccount(create, u, attributes);
+            handleContact(create, account, u, attributes);
+            handleUser(create, u, attributes, federationIdentifier, <span class="keyword">false</span>);
+        } <span class="statement">else</span> {
+            handleUser(create, u, attributes, federationIdentifier, <span class="keyword">true</span>);
+        }
+    }
+
+    <span class="keyword">global</span> User createUser(Id samlSsoProviderId, Id communityId, Id portalId,
+        <span class="keyword">String</span> federationIdentifier, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; attributes, <span class="keyword">String</span> assertion) {
+        User u = <span class="keyword">new</span> User();
+        handleJit(<span class="keyword">true</span>, u, samlSsoProviderId, communityId, portalId,
+            federationIdentifier, attributes, assertion);
+        <span class="statement">return</span> u;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">void</span> updateUser(Id userId, Id samlSsoProviderId, Id communityId, Id portalId,
+        <span class="keyword">String</span> federationIdentifier, Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; attributes, <span class="keyword">String</span> assertion) {
+        User u = [SELECT Id FROM User WHERE Id=:userId];
+        handleJit(<span class="keyword">false</span>, u, samlSsoProviderId, communityId, portalId,
+            federationIdentifier, attributes, assertion);
+    }
+}</pre></div>
+
+        </div>
+</div>
+</div>
+</div>

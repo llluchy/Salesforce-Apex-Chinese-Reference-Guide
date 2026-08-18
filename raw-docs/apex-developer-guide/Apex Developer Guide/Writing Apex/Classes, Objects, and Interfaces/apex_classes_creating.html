@@ -1,0 +1,136 @@
+<a name="apex_classes_creating"><!-- --></a><h1 class="helpHead1">Class Definition Creation</h1><div class="body">
+<div class="shortdesc">Use the class editor to create a class in Salesforce.</div>
+
+        <ol class="ol enumList">
+                <li class="li">From Setup, enter <kbd class="ph userinput">Apex Classes</kbd> in the <span class="keyword parmname">Quick
+                        Find</span> box, then select <strong class="ph uicontrol">Apex Classes</strong>.</li>
+
+                <li class="li">Click <strong class="ph uicontrol">New</strong>.</li>
+
+                <li class="li" id="specify_version_settings">
+<a name="specify_version_settings"><!-- --></a>Click <strong class="ph uicontrol">Version Settings</strong> to
+                    specify the version of Apex and the API used with this class. <span class="ph">If your organization has installed managed packages from the AppExchange,
+                        you can also specify which version of each managed package to use with this
+                        class.</span> Use the default values for all versions. This associates the
+                    class with the most recent version of Apex and the API, as well as each managed
+                    package. <span class="ph" id="set_older_versions"><a name="set_older_versions"><!-- --></a>You can specify an older
+                        version of a managed package if you want to access components or
+                        functionality that differs from the most recent package version. </span>You
+                    can specify an older version of Apex and the API to maintain specific behavior. </li>
+
+                <li class="li">In the class editor, enter the Apex code for the class. A single class can be up
+                    to 1 million characters in length, not including comments, test methods, or
+                    classes defined using <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp>.</li>
+
+                <li class="li">Click <strong class="ph uicontrol">Save</strong> to save your changes and return to the class
+                    detail screen, or click <strong class="ph uicontrol">Quick Save</strong> to save your changes
+                    and continue editing your class. Your Apex class must compile correctly before
+                    you can save your class.</li>
+
+            </ol>
+
+        <p class="p">Classes can also be automatically generated from a WSDL by clicking <strong class="ph uicontrol">Generate
+                from WSDL</strong>. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex.htm">SOAP
+                Services: Defining a Class from a WSDL Document</a>.</p>
+
+        <p class="p">Once saved, classes can be invoked through class methods or variables by other Apex code,
+            such as a trigger.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To aid backwards-compatibility, classes are stored with the version settings for a
+            specified version of Apex and the API. If the Apex class references components, such as
+            a custom object, in installed managed packages, the version settings for each managed
+            package referenced by the class is saved too. Additionally, classes are stored with an
+                <samp class="codeph apex_code">isValid</samp> flag that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> as long as dependent metadata hasn’t changed
+            since the class was last compiled. If any changes are made to object names or fields
+            that are used in the class, including superficial changes such as edits to an object or
+            field description, or if changes are made to a class that calls this class, the <samp class="codeph apex_code">isValid</samp> flag is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>. When a trigger or Web service call invokes
+            the class, the code is recompiled and the user is notified if there are any errors. If
+            there are no errors, the <samp class="codeph apex_code">isValid</samp> flag is reset
+            to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">The Apex Class Editor</h2>
+
+            
+            <p class="p">The Apex and Visualforce editor has the following functionality:</p>
+<a name="editor_functionality"><!-- --></a><ul class="ul bulletList" id="editor_functionality">
+                    <li class="li">
+<strong class="ph b">Syntax highlighting</strong>: The editor automatically applies syntax highlighting for keywords and
+                            all functions and operators.</li>
+
+                    <li class="li">
+<strong class="ph b">Search</strong> (<img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fsearch.gif&folder=apexcode" alt="search icon">): Search enables you to search for text within the current page, class, or
+                            trigger. To use search, enter a string in the
+                                <span class="keyword parmname">Search</span> textbox and click <strong class="ph uicontrol">Find
+                                Next</strong>.<ul class="ul bulletList">
+                                <li class="li">To replace a found search string with another string, enter the
+                                    new string in the <span class="keyword parmname">Replace</span> textbox and click
+                                        <strong class="ph uicontrol">replace</strong> to replace just that
+                                    instance, or <strong class="ph uicontrol">Replace All</strong> to replace that
+                                    instance and all other instances of the search string that occur
+                                    in the page, class, or trigger.</li>
+
+                                <li class="li">To make the search operation case sensitive, select the
+                                        <strong class="ph uicontrol">Match Case</strong> option.</li>
+
+                                <li class="li">To use a regular expression as your search string, select the
+                                        <strong class="ph uicontrol">Regular Expressions</strong> option. The
+                                    regular expressions follow JavaScript's regular expression
+                                    rules. A search using regular expressions can find strings that
+                                    wrap over more than one line.<p class="p">If you use the replace operation
+                                        with a string found by a regular expression, the replace
+                                        operation can also bind regular expression group variables
+                                            (<samp class="codeph apex_page">$1</samp>, <samp class="codeph apex_page">$2</samp>, and so on) from the
+                                        found search string. For example, to replace an <samp class="codeph html"><span class="tag">&lt;h1</span>&gt;</samp> tag with an <samp class="codeph html"><span class="tag">&lt;h2</span>&gt;</samp> tag and keep all the
+                                        attributes on the original <samp class="codeph html"><span class="tag">&lt;h1</span>&gt;</samp> intact, search for <samp class="codeph html"><span class="tag">&lt;h1(\s+)(.*)</span>&gt;</samp> and replace
+                                        it with <samp class="codeph html"><span class="tag">&lt;h2$1$2</span>&gt;</samp>.</p>
+</li>
+
+                            </ul>
+</li>
+
+                    <li class="li">
+<strong class="ph b">Go to line</strong> (<img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fgo_to_line.gif&folder=apexcode" alt="Go to line arrow">): This button allows you to highlight a specified line number. If the line
+                            isn’t currently visible, the editor scrolls to that line.</li>
+
+                    <li class="li">
+<strong class="ph b">Undo  and Redo</strong> (<img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fundo.gif&folder=apexcode" alt="Undo button">) (<img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fredo.gif&folder=apexcode" alt="Redo button">): Use undo to reverse an editing action and redo to recreate an editing
+                            action that was undone.</li>
+
+                    <li class="li">
+<strong class="ph b">Font size</strong>: Select a font size from the dropdown list to control the size of the
+                            characters displayed in the editor.</li>
+
+                    <li class="li">
+<strong class="ph b">Line and column position</strong>: The line and column position of the cursor is displayed in the status
+                            bar at the bottom of the editor. This can be used with go to line
+                                (<img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fgo_to_line.gif&folder=apexcode" alt="Go to line arrow">) to
+                            quickly navigate through the editor.</li>
+
+                    <li class="li">
+<strong class="ph b">Line and character count</strong>: The total number of lines and characters is displayed in the status bar
+                            at the bottom of the editor.</li>
+
+                </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_naming_conventions.htm">Naming Conventions</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_name_shadowing.htm">Name Shadowing</a><br>
+</li>
+</ol>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_java_diffs.htm" title="Differences Between Apex Classes and Java Classes">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_namespace_prefix.htm" title="Namespace Prefix">Next →</a></li>
+</ul></div>
+</div>

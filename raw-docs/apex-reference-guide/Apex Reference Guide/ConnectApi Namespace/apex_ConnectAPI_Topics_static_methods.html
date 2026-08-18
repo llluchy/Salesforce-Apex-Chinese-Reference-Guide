@@ -1,0 +1,3515 @@
+<a name="apex_ConnectAPI_Topics_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">Topics Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Access information about topics, such as their descriptions, the number of people
+  talking about them, related topics, and information about groups contributing to the topic. Update
+  a topic’s name or description, merge topics, and add and remove topics from records and
+  feed items.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_methods">
+<a name="apex_ConnectAPI_Topics_methods"><!-- --></a>
+  <h2 class="helpHead2">Topics Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">These methods are for <samp class="codeph apex_code">Topics</samp>. All methods are
+    static.</div>
+
+    <div class="section"><div class="p">These methods in this class require Chatter and are subject to the per user, per
+      namespace, per hour rate limit. <ul class="ul bulletList">
+        <li class="li"><a class="xref" href="#apex_ConnectAPI_Topics_getGroupsRecentlyTalkingAboutTopic" title="Get information about the five groups that most recently contributed to a topic."><samp class="codeph apex_code">getGroupsRecentlyTalkingAboutTopic(communityId, topicId)</samp></a></li>
+
+        <li class="li"><a class="xref" href="#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForGroup" title="Get up to five topics most recently used in a group."><samp class="codeph apex_code">getRecentlyTalkingAboutTopicsForGroup(communityId, groupId)</samp></a></li>
+
+        <li class="li"><a class="xref" href="#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForUser" title="Get up to five topics most recently used by a user."><samp class="codeph apex_code">getRecentlyTalkingAboutTopicsForUser(communityId, userId)</samp></a></li>
+
+      </ul>
+All other methods in this class count toward the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_api.htm" target="_blank">Salesforce Platform total API request allocations</a>,
+      which are per org and span a 24-hour period.</div></div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_assignTopic">assignTopic(communityId, recordId, topicId)</a></strong><br>
+Assign a topic to a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_assignTopicByName">assignTopicByName(communityId, recordId, topicName)</a></strong><br>
+Assign a topic to a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_createTopic_10">createTopic(communityId, name, description)</a></strong><br>
+Create a topic. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_createTopicDataCategoryRules_3">createTopicDataCategoryRules(communityId, dataCategoryGroup, dataCategory, topicNames)</a></strong><br>
+Create topic and article assignment rules by data     category.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_deleteTopic">deleteTopic(communityId, topicId)</a></strong><br>
+Delete a topic. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getGroupsRecentlyTalkingAboutTopic">getGroupsRecentlyTalkingAboutTopic(communityId, topicId)</a></strong><br>
+Get information about the five groups that most recently contributed to a       topic.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForGroup">getRecentlyTalkingAboutTopicsForGroup(communityId, groupId)</a></strong><br>
+Get up to five topics most recently used in a group.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForUser">getRecentlyTalkingAboutTopicsForUser(communityId, userId)</a></strong><br>
+Get up to five topics most recently used by a user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRelatedTopics">getRelatedTopics(communityId, topicId)</a></strong><br>
+Get up to five topics most closely related to a topic.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopic">getTopic(communityId, topicId)</a></strong><br>
+Get a topic.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicDataCategoryRules_2">getTopicDataCategoryRules(communityId, dataCategoryGroup, dataCategory)</a></strong><br>
+Get topic and article assignment rules by data     category.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics">getTopics(communityId, recordId)</a></strong><br>
+Get the first page of topics assigned to a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_2">getTopics(communityId)</a></strong><br>
+Get the first page of topics for the org or Experience Cloud site.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_3">getTopics(communityId, sortParam)</a></strong><br>
+Get the first page of sorted topics for the org or community.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_4">getTopics(communityId, pageParam, pageSize)</a></strong><br>
+Get a page of topics.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_5">getTopics(communityId, pageParam, pageSize, sortParam)</a></strong><br>
+Get a page of sorted topics.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_6">getTopics(communityId, q, sortParam)</a></strong><br>
+Get the sorted topics that match the search criteria.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_7">getTopics(communityId, q, pageParam, pageSize)</a></strong><br>
+Get a page of topics that match the search criteria.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_8">getTopics(communityId, q, pageParam, pageSize, sortParam)</a></strong><br>
+Get a page of sorted topics that match the search criteria.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_9">getTopics(communityId, q, exactMatch)</a></strong><br>
+Get the topic that matches the exact, case-insensitive name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopics_10">getTopicsOrFallBackToRenamedTopics(communityId, q, exactMatch, fallBackToRenamedTopics)</a></strong><br>
+Get the most recent renamed topic match, if there isn’t an exact match.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestions">getTopicSuggestions(communityId, recordId, maxResults)</a></strong><br>
+Get up to a specified number of suggested topics for a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestions_2">getTopicSuggestions(communityId, recordId)</a></strong><br>
+Get suggested topics for a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestionsForText">getTopicSuggestionsForText(communityId, text, maxResults)</a></strong><br>
+Get up to a specified number of suggested topics for a string of text.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestionsForText_2">getTopicSuggestionsForText(communityId, text)</a></strong><br>
+Get suggested topics for a string of text.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTrendingTopics">getTrendingTopics(communityId)</a></strong><br>
+Get trending topics for the org or Experience Cloud site.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTrendingTopics_2">getTrendingTopics(communityId, maxResults)</a></strong><br>
+Get up to a specified number of trending topics for the org or Experience Cloud     site.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_mergeTopics">mergeTopics(communityId, topicId, idsToMerge)</a></strong><br>
+Merge up to five secondary topics with a primary topic.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_reassignTopicDataCategoryRules_4">reassignTopicDataCategoryRules(communityId, dataCategoryGroup, dataCategory, topicNames)</a></strong><br>
+Reassign topic and article assignment rules by data category by       deleting the existing rules and creating new rules.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_reassignTopicsByName">reassignTopicsByName(communityId, recordId, topicNames)</a></strong><br>
+Reassign all the topics on a record or feed item, that is, remove all the assigned     topics on a record or feed item and add topics. Optionally, provide a list of suggested topics     to assign to a record or feed item to improve future topic suggestions.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_unassignTopic">unassignTopic(communityId, recordId, topicId)</a></strong><br>
+Remove a topic from a record or feed item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_updateTopic">updateTopic(communityId, topicId, topic)</a></strong><br>
+Update the description or name of a topic or merge up to five secondary topics with a     primary topic.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_updateTopicsForArticlesInDataCategory_1">updateTopicsForArticlesInDataCategory(communityId, dataCategoryGroup, dataCategory, articleTopicAssignmentJob)</a></strong><br>
+Assign topics to articles and unassign topics from articles in a data       category.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_assignTopic">
+<a name="apex_ConnectAPI_Topics_assignTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">assignTopic(communityId, recordId, topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Assign a topic to a record or feed item.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic assignTopic(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> recordId, <span class="keyword">String</span> topicId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a record or feed item.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Assign Topics permission can add existing
+      topics to records or feed items. Administrators must enable topics for objects before users can add topics to records of that object type.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_assignTopicByName">
+<a name="apex_ConnectAPI_Topics_assignTopicByName"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">assignTopicByName(communityId, recordId,
+    topicName)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Assign a topic to a record or feed item.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic assignTopicByName(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> recordId, <span class="keyword">String</span> topicName)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the record or feed item to which to assign the topic.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicName</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The name of a new or existing topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Assign Topics permission can add existing
+      topics to records or feed items. Only users with the Create Topics permission can add new
+      topics to records or feed items. Administrators must enable topics for objects before users can add topics to records of that object type.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_createTopic_10">
+<a name="apex_ConnectAPI_Topics_createTopic_10"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createTopic(communityId, name, description)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Create a topic. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">36.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic createTopic(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> name, <span class="keyword">String</span> description)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">name</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The name of the topic.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">description</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The description of the topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Create Topics permission can create a
+      topic.</div>
+</div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_createTopicDataCategoryRules_3">
+<a name="apex_ConnectAPI_Topics_createTopicDataCategoryRules_3"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createTopicDataCategoryRules(communityId, dataCategoryGroup,
+      dataCategory, topicNames)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Create topic and article assignment rules by data
+    category.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">40.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          createTopicDataCategoryRules(<span class="keyword">String</span> communityId, <span class="keyword">String</span> dataCategoryGroup, <span class="keyword">String</span>
+          dataCategory, ConnectApi.TopicNamesInput topicNames)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategoryGroup</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category group used by articles.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategory</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category used by articles.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicNames</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_topic_name_collection.htm" title="A list of topic names to replace currently assigned topics. Also a list of suggested topics to assign.">ConnectApi.TopicNamesInput</a></samp>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.TopicNamesInput</samp> object with the
+            names of topics to assign to articles in a data category.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm#apex_connectapi_output_topicPage" title="Page of topics."><samp class="codeph apex_code">ConnectApi.TopicPage</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_deleteTopic">
+<a name="apex_ConnectAPI_Topics_deleteTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">deleteTopic(communityId, topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Delete a topic. </div>
+
+  <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+   
+   <p class="p">29.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+   
+   <p class="p">No</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void deleteTopic(<span class="keyword">String</span> communityId, <span class="keyword">String</span>
+     topicId)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <dl class="dl detailList">
+    
+     <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+     <dd class="dd">Type: String,</dd>
+
+     <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">ID for a topic.</dd>
+
+    
+   </dl>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Delete Topics or Modify All Data
+   permission can delete topics.<p class="p">Topic deletion is asynchronous. If a topic is requested before
+    the deletion completes, the response is successful and the <samp class="codeph nolang">isBeingDeleted</samp> property of <samp class="codeph apex_code">ConnectApi.Topic</samp>
+    is <samp class="codeph apex_code"><span class="keyword">true</span></samp> in version 33.0 and later. If a topic is
+    requested after the deletion completes, the response is <samp class="codeph apex_code">ConnectApi.NotFoundException</samp>.</p>
+</div>
+</div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getGroupsRecentlyTalkingAboutTopic">
+<a name="apex_ConnectAPI_Topics_getGroupsRecentlyTalkingAboutTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getGroupsRecentlyTalkingAboutTopic(communityId,
+   topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get information about the five groups that most recently contributed to a
+      topic.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ChatterGroupSummaryPage
+getGroupsRecentlyTalkingAboutTopic(<span class="keyword">String</span> communityId, <span class="keyword">String</span> topicId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a topic.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_GroupSummaryPage.htm" title="Page of group summaries.">ConnectApi.​Chatter​Group​SummaryPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetGroupsRecentlyTalkingAboutTopic" title="Register a ConnectApi.ChatterGroupSummaryPage object to be returned when the matching ConnectApi.getGroupsRecentlyTalkingAboutTopic method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetGroupsRecentlyTalkingAboutTopic(communityId, topicId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForGroup">
+<a name="apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForGroup"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getRecentlyTalkingAboutTopicsForGroup(communityId,
+   groupId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to five topics most recently used in a group.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getRecentlyTalkingAboutTopicsForGroup(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> groupId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">groupId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a group.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForGroup" title="Register a ConnectApi.​TopicPage object to be returned when the matching ConnectApi.getRecentlyTalkingAboutTopicsForGroup method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetRecentlyTalkingAboutTopicsForGroup(communityId, groupId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForUser">
+<a name="apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForUser"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getRecentlyTalkingAboutTopicsForUser(communityId,
+   userId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to five topics most recently used by a user.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">Yes</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getRecentlyTalkingAboutTopicsForUser(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> userId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">userId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a user.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForUser" title="Register a ConnectApi.​TopicPage object to be returned when the matching ConnectApi.getRecentlyTalkingAboutTopicsForUser method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetRecentlyTalkingAboutTopicsForUser(communityId, userId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getRelatedTopics">
+<a name="apex_ConnectAPI_Topics_getRelatedTopics"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getRelatedTopics(communityId, topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to five topics most closely related to a topic.</div>
+
+    <div class="section">
+      <p class="p">Two topics that are assigned to the same feed item at least three times are related.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+
+      
+      <p class="p">32.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getRelatedTopics(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> topicId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetRelatedTopics" title="Register a ConnectApi.TopicPage object to be returned when the matching ConnectApi.getRelatedTopics method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetRelatedTopics(communityId, topicId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopic">
+<a name="apex_ConnectAPI_Topics_getTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopic(communityId, topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a topic.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic getTopic(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> topicId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a topic.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopicDataCategoryRules_2">
+<a name="apex_ConnectAPI_Topics_getTopicDataCategoryRules_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getTopicDataCategoryRules(communityId, dataCategoryGroup,
+      dataCategory)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Get topic and article assignment rules by data
+    category.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">40.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          getTopicDataCategoryRules(<span class="keyword">String</span> communityId, <span class="keyword">String</span> dataCategoryGroup, <span class="keyword">String</span>
+          dataCategory)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategoryGroup</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category group used by articles.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategory</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category used by articles.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm#apex_connectapi_output_topicPage" title="Page of topics."><samp class="codeph apex_code">ConnectApi.TopicPage</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics">
+<a name="apex_ConnectAPI_Topics_getTopics"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, recordId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get the first page of topics assigned to a record or feed item.</div>
+
+  <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+   
+   <p class="p">29.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+
+   
+   <p class="p">32.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+   
+   <p class="p">No</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+     communityId, <span class="keyword">String</span> recordId)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <dl class="dl detailList">
+    
+     <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">ID for a record or feed item.</dd>
+
+    
+   </dl>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Administrators must enable topics for objects before users can add topics to records of that object type.</div>
+</div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_2">
+<a name="apex_ConnectAPI_Topics_getTopics_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get the first page of topics for the org or Experience Cloud site.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_3">
+<a name="apex_ConnectAPI_Topics_getTopics_3"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, sortParam)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get the first page of sorted topics for the org or community.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, ConnectApi.TopicSort sortParam)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">sortParam</var></strong></p>
+
+      <p class="p">Type: <samp class="codeph apex_code">ConnectApi.​TopicSort</samp></p>
+
+      <p class="p">Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">popularDesc</samp>—Sorts topics by popularity with the most popular first. This value is the default.</li>
+ <li class="li">
+<samp class="codeph nolang">alphaAsc</samp>—Sorts topics alphabetically.</li>
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_4">
+<a name="apex_ConnectAPI_Topics_getTopics_4"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, pageParam, pageSize)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a page of topics.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageParam</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageSize</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_5">
+<a name="apex_ConnectAPI_Topics_getTopics_5"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, pageParam, pageSize,
+                  sortParam)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a page of sorted topics.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize, ConnectApi.TopicSort
+sortParam)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageParam</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageSize</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">sortParam</var></strong></p>
+
+      <p class="p">Type: <samp class="codeph apex_code">ConnectApi.​TopicSort</samp></p>
+
+      <p class="p">Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">popularDesc</samp>—Sorts topics by popularity with the most popular first. This value is the default.</li>
+ <li class="li">
+<samp class="codeph nolang">alphaAsc</samp>—Sorts topics alphabetically.</li>
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_6">
+<a name="apex_ConnectAPI_Topics_getTopics_6"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, q, sortParam)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get the sorted topics that match the search criteria.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> q, ConnectApi.TopicSort sortParam)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">q</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">Specifies the string to search. The string must contain at least two characters, not including wildcards.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">sortParam</var></strong></p>
+
+      <p class="p">Type: <samp class="codeph apex_code">ConnectApi.​TopicSort</samp></p>
+
+      <p class="p">Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">popularDesc</samp>—Sorts topics by popularity with the most popular first. This value is the default.</li>
+ <li class="li">
+<samp class="codeph nolang">alphaAsc</samp>—Sorts topics alphabetically.</li>
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_7">
+<a name="apex_ConnectAPI_Topics_getTopics_7"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, q, pageParam,
+            pageSize)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a page of topics that match the search criteria.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> q, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">q</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">Specifies the string to search. The string must contain at least two characters, not including wildcards.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageParam</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">pageSize</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_8">
+<a name="apex_ConnectAPI_Topics_getTopics_8"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, q, pageParam, pageSize,
+                  sortParam)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get a page of sorted topics that match the search criteria.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> q, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize, ConnectApi.TopicSort
+sortParam)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">q</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">Specifies the string to search. The string must contain at least two characters, not including wildcards.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageParam</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageSize</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">sortParam</var></strong></p>
+
+      <p class="p">Type: <samp class="codeph apex_code">ConnectApi.​TopicSort</samp></p>
+
+      <p class="p">Values are:</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">popularDesc</samp>—Sorts topics by popularity with the most popular first. This value is the default.</li>
+ <li class="li">
+<samp class="codeph nolang">alphaAsc</samp>—Sorts topics alphabetically.</li>
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_9">
+<a name="apex_ConnectAPI_Topics_getTopics_9"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getTopics(communityId, q, exactMatch)</span></h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Get the topic that matches the exact, case-insensitive name.</div>
+
+  <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+   
+   <p class="p">33.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+
+   
+   <p class="p">33.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+   
+   <p class="p">No</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTopics(<span class="keyword">String</span>
+     communityId, <span class="keyword">String</span> q, <span class="keyword">Boolean</span> exactMatch)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <dl class="dl detailList">
+    
+     <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">q</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">Specifies the string to search. The string must contain at least two characters, not including wildcards.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">exactMatch</var></dt>
+
+     <dd class="dd">Type: Boolean</dd>
+
+     <dd class="dd">Specify <samp class="codeph nolang">true</samp> to find a topic by its exact,
+      case-insensitive name.</dd>
+
+    
+   </dl>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopics_10">
+<a name="apex_ConnectAPI_Topics_getTopics_10"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getTopicsOrFallBackToRenamedTopics(communityId, q,
+      exactMatch, fallBackToRenamedTopics)</span></h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Get the most recent renamed topic match, if there isn’t an exact match.</div>
+
+  <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+   
+   <p class="p">35.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+
+   
+   <p class="p">35.0</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+   
+   <p class="p">No</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          getTopicsOrFallBackToRenamedTopics(<span class="keyword">String</span> communityId, <span class="keyword">String</span> q, <span class="keyword">Boolean</span> exactMatch,
+          <span class="keyword">Boolean</span> fallBackToRenamedTopics)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <dl class="dl detailList">
+    
+     <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">q</var></dt>
+
+     <dd class="dd">Type: String</dd>
+
+     <dd class="dd">Specifies the string to search. The string must contain at least two characters, not including wildcards.</dd>
+
+    
+    
+     <dt class="dt dlterm"><var class="keyword varname">exactMatch</var></dt>
+
+     <dd class="dd">Type: Boolean</dd>
+
+     <dd class="dd">Specify <samp class="codeph nolang">true</samp> to find a topic by its exact,
+            case-insensitive name or to find the most recent renamed topic match if there isn’t an
+            exact match.</dd>
+
+    
+    
+          <dt class="dt dlterm"><var class="keyword varname">fallBackToRenamedTopics</var></dt>
+
+          <dd class="dd">Type: Boolean</dd>
+
+          <dd class="dd">Specify <samp class="codeph nolang">true</samp> and if there isn’t an exact match,
+            the most recent renamed topic match is returned. If there are multiple renamed topic
+            matches, only the most recent is returned. If there are no renamed topic matches, an
+            empty collection is returned.</dd>
+
+        
+   </dl>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopicSuggestions">
+<a name="apex_ConnectAPI_Topics_getTopicSuggestions"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopicSuggestions(communityId, recordId,
+      maxResults)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to a specified number of suggested topics for a record or feed item.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicSuggestionPage
+getTopicSuggestions(<span class="keyword">String</span> communityId, <span class="keyword">String</span> recordId, <span class="keyword">Integer</span> maxResults)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or feed item.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Administrators must enable topics for objects before users can
+   see suggested topics for records of that object type.<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTopicSuggestions" title="Register a ConnectApi.TopicSuggestionPage object to be returned when the matching ConnectApi.getTopicSuggestions method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTopicSuggestions(communityId, recordId, maxResults, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopicSuggestions_2">
+<a name="apex_ConnectAPI_Topics_getTopicSuggestions_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopicSuggestions(communityId, recordId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get suggested topics for a record or feed item.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicSuggestionPage
+getTopicSuggestions(<span class="keyword">String</span> communityId, <span class="keyword">String</span> recordId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or feed item.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Administrators must enable topics for objects before users can
+   see suggested topics for records of that object type.<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTopicSuggestions_2" title="Register a ConnectApi.TopicSuggestionPage object to be returned when the matching ConnectApi.getTopicSuggestions method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTopicSuggestions(communityId, recordId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopicSuggestionsForText">
+<a name="apex_ConnectAPI_Topics_getTopicSuggestionsForText"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopicSuggestionsForText(communityId, text,
+   maxResults)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to a specified number of suggested topics for a string of text.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicSuggestionPage
+getTopicSuggestionsForText(<span class="keyword">String</span> communityId, <span class="keyword">String</span> text, <span class="keyword">Integer</span>
+maxResults)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">text</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">String of text.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText" title="Register a ConnectApi.TopicSuggestionPage object to be returned when the matching ConnectApi.getTopicSuggestionsForText method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTopicSuggestionsForText(communityId, text, maxResults, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTopicSuggestionsForText_2">
+<a name="apex_ConnectAPI_Topics_getTopicSuggestionsForText_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTopicSuggestionsForText(communityId, text)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get suggested topics for a string of text.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicSuggestionPage
+getTopicSuggestionsForText(<span class="keyword">String</span> communityId, <span class="keyword">String</span> text)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">text</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">String of text.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText_2" title="Register a ConnectApi.TopicSuggestionPage object to be returned when the matching ConnectApi.getTopicSuggestionsForText method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTopicSuggestionsForText(communityId, text, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTrendingTopics">
+<a name="apex_ConnectAPI_Topics_getTrendingTopics"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTrendingTopics(communityId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get trending topics for the org or Experience Cloud site.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTrendingTopics(<span class="keyword">String</span>
+communityId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The more frequently people add a specific topic to their posts
+      and comments and comment on or like posts with the same topic over a short period, the more
+      likely it is to become a trending topic. For example, if your coworkers are attending the
+      upcoming Dreamforce conference and have started discussing it in Chatter, you might see a
+      trending topic for Dreamforce. A trending topic is not solely based on popularity and usually
+      relates to a one-time or infrequent event that has a spike in activity, such as a conference
+      or a project deadline.<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTrendingTopics" title="Register a ConnectApi.TopicPage object to be returned when the matching ConnectApi.getTrendingTopics method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTrendingTopics(communityId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_getTrendingTopics_2">
+<a name="apex_ConnectAPI_Topics_getTrendingTopics_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">getTrendingTopics(communityId, maxResults)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Get up to a specified number of trending topics for the org or Experience Cloud
+    site.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Available to Guest Users</h4>
+<p class="p">32.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage getTrendingTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">Integer</span> maxResults)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">The more frequently people add a specific topic to their posts
+      and comments and comment on or like posts with the same topic over a short period, the more
+      likely it is to become a trending topic. For example, if your coworkers are attending the
+      upcoming Dreamforce conference and have started discussing it in Chatter, you might see a
+      trending topic for Dreamforce. A trending topic is not solely based on popularity and usually
+      relates to a one-time or infrequent event that has a spike in activity, such as a conference
+      or a project deadline.<p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_setTestGetTrendingTopics_2" title="Register a ConnectApi.TopicPage object to be returned when the matching ConnectApi.getTrendingTopics method is called in a test context. Use the method with the same parameters or you receive an exception.">setTestGetTrendingTopics(communityId, maxResults, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_mergeTopics">
+<a name="apex_ConnectAPI_Topics_mergeTopics"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">mergeTopics(communityId, topicId,
+    idsToMerge)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Merge up to five secondary topics with a primary topic.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">33.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic mergeTopics(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> topicId, List&lt;<span class="keyword">String</span>&gt; idsToMerge)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID for the primary topic for the merge. If this topic is a managed topic, it
+            retains its topic type, topic images, and children topics.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">idsToMerge</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;String&gt;</dd>
+
+          <dd class="dd">A list of up to five comma-separated secondary topic IDs to merge with the primary
+            topic. <span class="ph" id="topicMergeWarning"><a name="topicMergeWarning"><!-- --></a>If any of the secondary topics are navigational or
+              featured topics, they lose their topic type, topic images, and children topics. Their
+              feed items are reassigned to the primary topic. If you merge a topic with a content
+              topic, the content associations are preserved. If you merge a topic with an inactive
+              endorsee, the endorsement isn’t mapped to the primary topic.</span>
+</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Delete Topics or Modify All Data permission can
+      merge topics.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_reassignTopicDataCategoryRules_4">
+<a name="apex_ConnectAPI_Topics_reassignTopicDataCategoryRules_4"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">reassignTopicDataCategoryRules(communityId, dataCategoryGroup,
+      dataCategory, topicNames)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Reassign topic and article assignment rules by data category by
+      deleting the existing rules and creating new rules.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">40.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          reassignTopicDataCategoryRules(<span class="keyword">String</span> communityId, <span class="keyword">String</span> dataCategoryGroup, <span class="keyword">String</span>
+          dataCategory, ConnectApi.TopicNamesInput topicNames)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategoryGroup</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category group used by articles.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategory</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The data category used by articles.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicNames</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_topic_name_collection.htm" title="A list of topic names to replace currently assigned topics. Also a list of suggested topics to assign.">ConnectApi.TopicNamesInput</a></samp>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.TopicNamesInput</samp> object with the
+            names of topics to reassign to articles in a data category.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm#apex_connectapi_output_topicPage" title="Page of topics."><samp class="codeph apex_code">ConnectApi.TopicPage</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_reassignTopicsByName">
+<a name="apex_ConnectAPI_Topics_reassignTopicsByName"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">reassignTopicsByName(communityId, recordId,
+      topicNames)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Reassign all the topics on a record or feed item, that is, remove all the assigned
+    topics on a record or feed item and add topics. Optionally, provide a list of suggested topics
+    to assign to a record or feed item to improve future topic suggestions.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">35.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          reassignTopicsByName(<span class="keyword">String</span> communityId, <span class="keyword">String</span> recordId, ConnectApi.TopicNamesInput
+          topicNames)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the record or feed item to which to assign the topic.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicNames</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_topic_name_collection.htm" title="A list of topic names to replace currently assigned topics. Also a list of suggested topics to assign.">ConnectApi.TopicNamesInput</a></samp>
+</dd>
+
+          <dd class="dd">A list of topics to replace the currently assigned topics. Optionally, a list of
+            suggested topics to assign to improve future topic suggestions.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Assign Topics permission can remove topics from
+      records or feed items and add existing topics to records or feed items. Only users with the
+      Create Topics permission can add new topics to records or feed items. Administrators must enable topics for objects before users can add topics to records of that object type.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_unassignTopic">
+<a name="apex_ConnectAPI_Topics_unassignTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">unassignTopic(communityId, recordId, topicId)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Remove a topic from a record or feed item.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void unassignTopic(<span class="keyword">String</span> communityId, <span class="keyword">String</span>
+          recordId, <span class="keyword">String</span> topicId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a record or feed item.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Assign Topics permission can remove topics from
+      feed items or records. Administrators must enable topics for objects before users can add topics to records of that object type.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_updateTopic">
+<a name="apex_ConnectAPI_Topics_updateTopic"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">updateTopic(communityId, topicId, topic)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Update the description or name of a topic or merge up to five secondary topics with a
+    primary topic.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Topic updateTopic(<span class="keyword">String</span>
+          communityId, <span class="keyword">String</span> topicId, ConnectApi.TopicInput topic)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for a topic.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">topic</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_Topic.htm" title="Update a topic’s name or description or merge topics."><samp class="codeph apex_code">ConnectApi.TopicInput</samp></a>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.TopicInput</samp> object containing the
+            name and description of the topic or up to five comma-separated secondary topic IDs to
+            merge with the primary topic.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topic.htm" title="Topic.">ConnectApi.​Topic</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">Only users with the Edit Topics or Modify All Data permission can
+      update topic names and descriptions. Only users with the Delete Topics or Modify All Data
+      permission can merge topics.</div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_updateTopicsForArticlesInDataCategory_1">
+<a name="apex_ConnectAPI_Topics_updateTopicsForArticlesInDataCategory_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">updateTopicsForArticlesInDataCategory(communityId,
+      dataCategoryGroup, dataCategory, articleTopicAssignmentJob)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Assign topics to articles and unassign topics from articles in a data
+      category.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">40.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.TopicPage
+          updateTopicsForArticlesInDataCategory(<span class="keyword">String</span> communityId, <span class="keyword">String</span> dataCategoryGroup, <span class="keyword">String</span>
+          dataCategory, ConnectApi.ArticleTopicAssignmentJobInput
+          articleTopicAssignmentJob)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategoryGroup</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd"><span class="ph" id="dataCategoryGroup"><a name="dataCategoryGroup"><!-- --></a>The data category group used by articles.</span></dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">dataCategory</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd"><span class="ph" id="dataCategory"><a name="dataCategory"><!-- --></a>The data category used by articles.</span></dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">articleTopicAssignmentJob</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_article_topic_assignment_job.htm#apex_connectapi_input_article_topic_assignment_job" title="An article and topic assignment job."><samp class="codeph apex_code">ConnectApi.ArticleTopicAssignmentJobInput</samp></a>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.ArticleTopicAssignmentJobInput</samp>
+            object that indicates the operation to take on which topics.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm#apex_connectapi_output_topicPage" title="Page of topics."><samp class="codeph apex_code">ConnectApi.TopicPage</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTest_methods">
+<a name="apex_ConnectAPI_Topics_setTest_methods"><!-- --></a>
+ <h2 class="helpHead2">Topics Test Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These test methods are for <samp class="codeph apex_code">Topics</samp>. All methods
+  are static.</div>
+
+  <div class="section">
+   <p class="p">For information about using these methods to test your <samp class="codeph apex_code">ConnectApi</samp> code, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank">Testing ConnectApi Code</a>.</p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetGroupsRecentlyTalkingAboutTopic">
+<a name="apex_ConnectAPI_Topics_setTestGetGroupsRecentlyTalkingAboutTopic"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetGroupsRecentlyTalkingAboutTopic(communityId,
+      topicId, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.ChatterGroupSummaryPage</samp>
+    object to be returned when the matching <samp class="codeph apex_code">ConnectApi.getGroupsRecentlyTalkingAboutTopic</samp> method is called in a test context.
+    Use the method with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetGroupsRecentlyTalkingAboutTopic(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> topicId, ConnectApi.ChatterGroupSummaryPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a topic.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_GroupSummaryPage.htm" title="Page of group summaries.">ConnectApi.​Chatter​Group​SummaryPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getGroupsRecentlyTalkingAboutTopic" title="Get information about the five groups that most recently contributed to a topic.">getGroupsRecentlyTalkingAboutTopic(communityId, topicId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForGroup">
+<a name="apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForGroup"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetRecentlyTalkingAboutTopicsForGroup(communityId,
+      groupId, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.​TopicPage</samp> object to
+    be returned when the matching <samp class="codeph apex_code">ConnectApi.getRecentlyTalkingAboutTopicsForGroup</samp> method is called in a test context.
+    Use the method with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetRecentlyTalkingAboutTopicsForGroup(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> groupId, ConnectApi.​TopicPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">groupId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a group.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForGroup" title="Get up to five topics most recently used in a group.">getRecentlyTalkingAboutTopicsForGroup(communityId, groupId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForUser">
+<a name="apex_ConnectAPI_Topics_setTestGetRecentlyTalkingAboutTopicsForUser"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetRecentlyTalkingAboutTopicsForUser(communityId,
+      userId, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.​TopicPage</samp> object to
+    be returned when the matching <samp class="codeph apex_code">ConnectApi.getRecentlyTalkingAboutTopicsForUser</samp> method is called in a test context.
+    Use the method with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetRecentlyTalkingAboutTopicsForUser(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> userId, ConnectApi.TopicPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">userId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a user.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp>
+</dd>
+
+<dd class="dd">Specify the test topics page.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRecentlyTalkingAboutTopicsForUser" title="Get up to five topics most recently used by a user.">getRecentlyTalkingAboutTopicsForUser(communityId, userId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetRelatedTopics">
+<a name="apex_ConnectAPI_Topics_setTestGetRelatedTopics"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetRelatedTopics(communityId, topicId,
+    result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicPage</samp> object to be
+    returned when the matching <samp class="codeph apex_code">ConnectApi.getRelatedTopics</samp>
+    method is called in a test context. Use the method with the same parameters or you receive an
+    exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetRelatedTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> topicId, ConnectApi.TopicPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">topicId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a topic.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getRelatedTopics" title="Get up to five topics most closely related to a topic.">getRelatedTopics(communityId, topicId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTopicSuggestions">
+<a name="apex_ConnectAPI_Topics_setTestGetTopicSuggestions"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTopicSuggestions(communityId, recordId, maxResults,
+      result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicSuggestionPage</samp> object
+    to be returned when the matching <samp class="codeph apex_code">ConnectApi.getTopicSuggestions</samp> method is called in a test context. Use the method
+    with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTopicSuggestions(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> recordId, <span class="keyword">Integer</span> maxResults, ConnectApi.TopicSuggestionPage
+result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or feed item.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp>
+</dd>
+
+<dd class="dd">Specify the test topic suggestions page.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestions" title="Get up to a specified number of suggested topics for a record or feed item.">getTopicSuggestions(communityId, recordId, maxResults)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTopicSuggestions_2">
+<a name="apex_ConnectAPI_Topics_setTestGetTopicSuggestions_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTopicSuggestions(communityId, recordId,
+   result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicSuggestionPage</samp> object
+      to be returned when the matching <samp class="codeph apex_code">ConnectApi.getTopicSuggestions</samp> method is called in a test context. Use the method
+      with the same parameters or you receive an exception. </div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTopicSuggestions(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> recordId, ConnectApi.​TopicSuggestionPage
+result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">recordId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for a record or feed item.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestions_2" title="Get suggested topics for a record or feed item.">getTopicSuggestions(communityId, recordId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText">
+<a name="apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTopicSuggestionsForText(communityId, text,
+   maxResults, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicSuggestionPage</samp> object
+      to be returned when the matching <samp class="codeph apex_code">ConnectApi.getTopicSuggestionsForText</samp> method is called in a test context. Use the
+      method with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTopicSuggestionsForText(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> text, <span class="keyword">Integer</span> maxResults, ConnectApi.TopicSuggestionPage
+result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">text</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">String of text.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestionsForText" title="Get up to a specified number of suggested topics for a string of text.">getTopicSuggestionsForText(communityId, text, maxResults)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText_2">
+<a name="apex_ConnectAPI_Topics_setTestGetTopicSuggestionsForText_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTopicSuggestionsForText(communityId, text,
+   result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicSuggestionPage</samp> object
+      to be returned when the matching <samp class="codeph apex_code">ConnectApi.getTopicSuggestionsForText</samp> method is called in a test context. Use the
+      method with the same parameters or you receive an exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTopicSuggestionsForText(<span class="keyword">String</span>
+communityId, <span class="keyword">String</span> text, ConnectApi.TopicSuggestionPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">text</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">String of text.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicSuggestionPage.htm" title="Page of topic suggestions.">ConnectApi.​TopicSuggestionPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTopicSuggestionsForText_2" title="Get suggested topics for a string of text.">getTopicSuggestionsForText(communityId, text)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTrendingTopics">
+<a name="apex_ConnectAPI_Topics_setTestGetTrendingTopics"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTrendingTopics(communityId, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicPage</samp> object to be
+    returned when the matching <samp class="codeph apex_code">ConnectApi.getTrendingTopics</samp>
+    method is called in a test context. Use the method with the same parameters or you receive an
+    exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTrendingTopics(<span class="keyword">String</span>
+communityId, ConnectApi.TopicPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTrendingTopics" title="Get trending topics for the org or Experience Cloud site.">getTrendingTopics(communityId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Topics_setTestGetTrendingTopics_2">
+<a name="apex_ConnectAPI_Topics_setTestGetTrendingTopics_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetTrendingTopics(communityId, maxResults,
+      result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.TopicPage</samp> object to be
+    returned when the matching <samp class="codeph apex_code">ConnectApi.getTrendingTopics</samp>
+    method is called in a test context. Use the method with the same parameters or you receive an
+    exception.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetTrendingTopics(<span class="keyword">String</span>
+communityId, <span class="keyword">Integer</span> maxResults, ConnectApi.TopicPage result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">maxResults</var></dt>
+
+<dd class="dd">Type: Integer</dd>
+
+<dd class="dd">Maximum number of topic suggestions that get returned. The default is 5. Value must be greater than 0 and less than or equal to 25.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_topicPage.htm" title="Page of topics.">ConnectApi.​TopicPage</a></samp>
+</dd>
+
+<dd class="dd">Object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Topics_static_methods.htm#apex_ConnectAPI_Topics_getTrendingTopics_2" title="Get up to a specified number of trending topics for the org or Experience Cloud site.">getTrendingTopics(communityId, maxResults)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

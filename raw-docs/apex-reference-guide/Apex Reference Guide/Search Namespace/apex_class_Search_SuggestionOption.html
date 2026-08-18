@@ -1,0 +1,115 @@
+<a name="apex_class_Search_SuggestionOption"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SuggestionOption Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Options that narrow record and article suggestion results returned
+      from a call to <samp class="codeph apex_code">System.Search.suggest(<span class="keyword">String</span>, <span class="keyword">String</span>,
+        Search.SuggestionOption)</samp>.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Search.htm#apex_namespace_Search" title="The Search namespace provides classes for getting search results and suggestion results.">Search</a></p>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Search_SuggestionOption_methods">
+<a name="apex_Search_SuggestionOption_methods"><!-- --></a><h2 class="helpHead2">SuggestionOption Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SuggestionOption</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Search_SuggestionOption.htm#apex_Search_SuggestionOption_setFilter">setFilter(knowledgeSuggestionFilter)</a></strong><br>
+Set filters that narrow Salesforce Knowledge article results in a       call to <samp class="codeph apex_code">System.Search.suggest(<span class="keyword">String</span>, <span class="keyword">String</span>,         Search.SuggestionOption)</samp>. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Search_SuggestionOption.htm#apex_Search_SuggestionOption_setLimit">setLimit(limit)</a></strong><br>
+The maximum number of record or article suggestions to     retrieve.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Search_SuggestionOption_setFilter">
+<a name="apex_Search_SuggestionOption_setFilter"><!-- --></a><h3 class="helpHead3">setFilter(knowledgeSuggestionFilter)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Set filters that narrow Salesforce Knowledge article results in a
+      call to <samp class="codeph apex_code">System.Search.suggest(<span class="keyword">String</span>, <span class="keyword">String</span>,
+        Search.SuggestionOption)</samp>. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setFilter(Search.KnowledegeSuggestionFilter
+          knowledgeSuggestionFilter)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">knowledgeSuggestionFilter</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Search_KnowledgeSuggestionFilter.htm#apex_class_Search_KnowledgeSuggestionFilter" title="Filter settings that narrow the results from a call to System.Search.suggest(searchQuery, sObjectType, options) when the SOSL search query contains a KnowledgeArticleVersion object.">KnowledgeSuggestionFilter</a> An object containing filters that narrow the search results.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <div class="p">
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Search.KnowledgeSuggestionFilter filters = <span class="keyword">new</span> Search.KnowledgeSuggestionFilter(); 
+filters.setLanguage(<span class="string">'en_US'</span>); 
+filters.setPublishStatus(<span class="string">'Online'</span>); 
+filters.setChannel(<span class="string">'app'</span>); 
+
+Search.SuggestionOption options = <span class="keyword">new</span> Search.SuggestionOption(); 
+options.setFilter(filters); 
+
+Search.SuggestionResults suggestionResults = Search.suggest(<span class="string">'all'</span>, <span class="string">'KnowledgeArticleVersion'</span>, options); 
+
+<span class="statement">for</span> (Search.SuggestionResult searchResult : suggestionResults.getSuggestionResults()) {     
+  KnowledgeArticleVersion article = (KnowledgeArticleVersion)searchResult.getSObject();   
+  System.debug(article.title); 
+} </pre></div>
+
+      </div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Search_SuggestionOption_setLimit">
+<a name="apex_Search_SuggestionOption_setLimit"><!-- --></a><h3 class="helpHead3">setLimit(limit)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The maximum number of record or article suggestions to
+    retrieve.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setLimit(<span class="keyword">Integer</span> limit)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">limit</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> The maximum number of record or article suggestions to retrieve.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <div class="p">By default, the <samp class="codeph apex_code">System.Search.suggest(<span class="keyword">String</span>, <span class="keyword">String</span>,
+          Search.SuggestionOption)</samp> method returns the 5 most relevant results. However, if
+        your query is broad, it could match more than 5 results. If<samp class="codeph apex_code">
+          Search.SuggestionResults.hasMoreResults()</samp> returns <samp class="codeph apex_code"><span class="keyword">true</span></samp>, there are more than 5 results. To retrieve them, call <samp class="codeph apex_code">setLimit(<span class="keyword">Integer</span>)</samp> to increase the number of suggestions
+        results.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Search.SuggestionOption option = <span class="keyword">new</span> Search.SuggestionOption();
+option.setLimit(10);
+Search.suggest(<span class="string">'my query'</span>, <span class="string">'mySObjectType'</span>, option);</pre></div>
+</div>
+
+    </div>
+</div>
+</div>
+</div>
+</div>

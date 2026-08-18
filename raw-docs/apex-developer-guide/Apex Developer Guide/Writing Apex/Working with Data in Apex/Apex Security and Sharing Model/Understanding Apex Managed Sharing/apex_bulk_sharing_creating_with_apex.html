@@ -1,0 +1,464 @@
+<a name="apex_bulk_sharing_creating_with_apex"><!-- --></a><h1 class="helpHead1">Sharing a Record Using Apex</h1><div class="body">
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Where possible, we changed noninclusive terms to align with our
+            company value of Equality. We maintained certain terms to avoid any effect on
+            customer implementations.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">To access sharing programmatically, you must use the share object associated with the
+            standard or custom object for which you want to share. For example, AccountShare is the
+            sharing object for the Account object, ContactShare is the sharing object for the
+            Contact object. In addition, all custom object sharing objects are named as follows,
+            where <var class="keyword varname">MyCustomObject</var> is the name of the custom object:</p>
+
+        <p class="p"><var class="keyword varname">MyCustomObject</var><samp class="codeph apex_code">__Share</samp></p>
+
+        <p class="p">Objects on the detail side of a master-detail relationship don’t have an associated
+            sharing object. The detail record’s access is determined by the master’s
+            sharing object and the relationship’s sharing setting. For more information, see
+            “Custom Object Security” in the Salesforce Help.</p>
+
+        <p class="p">A share object includes records supporting all three types of sharing: managed sharing,
+            user managed sharing, and Apex managed sharing. Sharing that is granted to users
+            implicitly through organization-wide defaults, the role hierarchy, and permissions such
+            as the “View All Records” and “Modify All Records”
+            permissions for the given object, “View All Data,” and “Modify All
+            Data” aren’t tracked with this object.</p>
+
+        <p class="p">Every share object has the following properties:</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <thead class="thead sorted" align="left">
+                    <tr>
+                        <th class="featureTableHeader vertical-align-top " id="d11028e65">Property Name</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d11028e68">Description</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry" headers="d11028e65" data-title="Property Name">
+<var class="keyword varname">objectName</var><samp class="codeph apex_code">AccessLevel</samp>
+</td>
+
+                        <td class="entry" headers="d11028e68" data-title="Description">The level of access that the specified user or group has been granted
+                            for a share sObject. The name of the property is <samp class="codeph apex_code">AccessLevel</samp> appended to the object
+                                name. For example, the property name for LeadShare object is
+                                    <samp class="codeph apex_code">LeadAccessLevel</samp>.
+                            Valid values are:<ul class="ul bulletList">
+                                <li class="li"><samp class="codeph apex_code">Edit</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">Read</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">All</samp></li>
+
+                            </ul>
+<p class="p">The <samp class="codeph apex_code">All</samp> access level is
+                                an internal value and can’t be granted.</p>
+<p class="p">This field must be set
+                                to an access level that’s higher than the organization’s
+                                default access level for the parent object. For more information,
+                                see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm" title="Sharing enables record-level access control for all custom objects, as well as many standard objects (such as Account, Contact, Opportunity and Case). Administrators first set an object’s organization-wide default sharing access level, and then grant additional access based on record ownership, the role hierarchy, sharing rules, and manual sharing. Developers can then use Apex managed sharing to grant additional access programmatically with Apex.">Understanding Sharing</a>.</p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d11028e65" data-title="Property Name"><samp class="codeph apex_code">ParentID</samp></td>
+
+                        <td class="entry" headers="d11028e68" data-title="Description">The ID of the custom object. This field can’t be updated.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d11028e65" data-title="Property Name"><samp class="codeph apex_code">RowCause</samp></td>
+
+                        <td class="entry" headers="d11028e68" data-title="Description">The reason why the user or group is being granted access. The reason
+                            determines the type of sharing, which controls who can alter the sharing
+                            record. This field can’t be updated.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d11028e65" data-title="Property Name"><samp class="codeph apex_code">UserOrGroupId</samp></td>
+
+                        <td class="entry" headers="d11028e68" data-title="Description">The user or group IDs to which you’re granting access. A group can be:<ul class="ul bulletList">
+                                <li class="li">A public group or a sharing group associated with a role.</li>
+
+                                <li class="li">A territory group.</li>
+
+                            </ul>
+<p class="p">This field can’t be updated. You can't grant access to
+                                unauthenticated guest users using Apex.</p>
+</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">You can share a standard or custom object with users or groups. For more information
+            about the types of users and groups you can share an object with, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_user.htm" target="_blank" title="HTML (New Window)">User</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_group.htm" target="_blank" title="HTML (New Window)">Group</a> in the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/" target="_blank" title="HTML (New Window)">Object Reference for
+                Salesforce</a></cite>.</p>
+
+        <div class="section" id="user_sharing_with_apex">
+<a name="user_sharing_with_apex"><!-- --></a><h2 class="helpHead2">Creating User Managed Sharing Using Apex</h2>
+
+            
+            <p class="p">It’s possible to manually share a record to a user or a group using Apex or SOAP API.
+                If the owner of the record changes, the sharing is automatically deleted. The
+                following example class contains a method that shares the job specified by the job
+                ID with the specified user or group ID with read access. It also includes a test
+                method that validates this method. Before you save this example class, create a
+                custom object called Job.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Manual shares written using Apex contains <samp class="codeph nolang">RowCause="Manual"</samp> by default. Only shares with this
+                condition are removed when ownership changes.</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> JobSharing {
+   
+   <span class="keyword">public</span> <span class="keyword">static</span> boolean manualShareRead(Id recordId, Id userOrGroupId){
+      <span class="onelineComment">// Create new sharing object for the custom object Job.</span>
+      Job__Share jobShr  = <span class="keyword">new</span> Job__Share();
+   
+      <span class="onelineComment">// Set the ID of record being shared.</span>
+      jobShr.ParentId = recordId;
+        
+      <span class="onelineComment">// Set the ID of user or group being granted access.</span>
+      jobShr.UserOrGroupId = userOrGroupId;
+        
+      <span class="onelineComment">// Set the access level.</span>
+      jobShr.AccessLevel = <span class="string">'Read'</span>;
+        
+      <span class="onelineComment">// Set rowCause to 'manual' for manual sharing.</span>
+      <span class="onelineComment">// This line can be omitted as 'manual' is the default value for sharing objects.</span>
+      jobShr.RowCause = Schema.Job__Share.RowCause.Manual;
+        
+      <span class="onelineComment">// Insert the sharing record and capture the save result. </span>
+      <span class="onelineComment">// The false parameter allows for partial processing if multiple records passed </span>
+      <span class="onelineComment">// into the operation.</span>
+      Database.SaveResult sr = Database.<span class="statement">insert</span>(jobShr,<span class="keyword">false</span>, AccessLevel.USER_MODE);
+
+      <span class="onelineComment">// Process the save results.</span>
+      <span class="statement">if</span>(sr.isSuccess()){
+         <span class="onelineComment">// Indicates success</span>
+         <span class="statement">return</span> <span class="keyword">true</span>;
+      }
+      <span class="statement">else</span> {
+         <span class="onelineComment">// Get first save result error.</span>
+         Database.Error err = sr.getErrors()[0];
+         
+         <span class="onelineComment">// Check if the error is related to trival access level.</span>
+         <span class="onelineComment">// Access level must be more permissive than the object's default.</span>
+         <span class="onelineComment">// These sharing records are not required and thus an insert exception is acceptable. </span>
+         <span class="statement">if</span>(err.getStatusCode() == StatusCode.FIELD_FILTER_VALIDATION_EXCEPTION  &amp;&amp;  
+                  err.getMessage().contains(<span class="string">'AccessLevel'</span>)){
+            <span class="onelineComment">// Indicates success.</span>
+            <span class="statement">return</span> <span class="keyword">true</span>;
+         }
+         <span class="statement">else</span>{
+            <span class="onelineComment">// Indicates failure.</span>
+            <span class="statement">return</span> <span class="keyword">false</span>;
+         }
+       }
+   }
+   
+}
+</pre></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> JobSharingTest {
+   <span class="onelineComment">// Test for the manualShareRead method</span>
+   <span class="keyword">@IsTest</span>
+   <span class="keyword">static</span> <span class="keyword">void</span> testManualShareRead(){
+      <span class="onelineComment">// Select users for the test.</span>
+      List&lt;User&gt; users = [SELECT Id FROM User WHERE IsActive = <span class="keyword">true</span> WITH USER_MODE LIMIT 2];
+      Id User1Id = users[0].Id;
+      Id User2Id = users[1].Id;
+   
+      <span class="onelineComment">// Create new job.</span>
+      Job__c j = <span class="keyword">new</span> Job__c();
+      j.Name = <span class="string">'Test Job'</span>;
+      j.OwnerId = user1Id;
+      <span class="statement">insert</span> <span class="statement">as</span> user j;    
+                
+      <span class="onelineComment">// Insert manual share for user who is not record owner.</span>
+      Assert.isTrue(JobSharing.manualShareRead(j.Id, user2Id));
+   
+      <span class="onelineComment">// Query job sharing records.</span>
+      List&lt;Job__Share&gt; jShrs = [SELECT Id, UserOrGroupId, AccessLevel, 
+         RowCause FROM job__share WHERE ParentId = :j.Id AND UserOrGroupId= :user2Id WITH USER_MODE];
+      
+      <span class="onelineComment">// Test for only one manual share on job.</span>
+      Assert.areEqual(1, jShrs.size(), <span class="string">'Set the object\'s sharing model to Private.'</span>);
+      
+      <span class="onelineComment">// Test attributes of manual share.</span>
+      Assert.areEqual(<span class="string">'Read'</span>, jShrs[0].AccessLevel);
+      Assert.areEqual(<span class="string">'Manual'</span>, jShrs[0].RowCause);
+      Assert.areEqual(user2Id, jShrs[0].UserOrGroupId);
+      
+      <span class="onelineComment">// Test invalid job Id.</span>
+      <span class="statement">delete</span> <span class="statement">as</span> user j;   
+   
+      <span class="onelineComment">// Insert manual share for deleted job id. </span>
+      Assert.isFalse(JobSharing.manualShareRead(j.Id, user2Id));
+   }  
+}
+</pre></div>
+
+            <div class="box message confirm" id="ORG_level">
+<a name="ORG_level"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>The object’s organization-wide default
+                access level must not be set to the most permissive access level. For custom
+                objects, this level is Public Read/Write. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm" title="Sharing enables record-level access control for all custom objects, as well as many standard objects (such as Account, Contact, Opportunity and Case). Administrators first set an object’s organization-wide default sharing access level, and then grant additional access based on record ownership, the role hierarchy, sharing rules, and manual sharing. Developers can then use Apex managed sharing to grant additional access programmatically with Apex.">Understanding Sharing</a>.</p>
+</div>
+</div></div></div>
+</div>
+
+        </div>
+
+        <div class="section" id="creating_apex_managed_sharing">
+<a name="creating_apex_managed_sharing"><!-- --></a><h2 class="helpHead2">Creating Apex Managed Sharing</h2>
+
+            
+            <p class="p">Apex managed sharing enables developers to programmatically manipulate sharing to
+                support their application’s behavior through either Apex or SOAP API. This
+                type of sharing is similar to managed sharing. Only users with “Modify All
+                Data” permission can add or change Apex managed sharing on a record. Apex
+                managed sharing is maintained when the record owner changes or is deactivated. </p>
+
+            <p class="p">Apex managed sharing must use an <em class="ph i">Apex</em><dfn class="term"> sharing reason</dfn>. <span class="ph" id="apex_sharing_reason_defn"><a name="apex_sharing_reason_defn"><!-- --></a>Apex sharing reasons are a way for developers to
+                    track why they shared a record with a user or group of users. Using multiple
+                    Apex sharing reasons simplifies the coding required to make updates and
+                    deletions of sharing records. They also enable developers to share with the same
+                    user or group multiple times using different reasons. </span></p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex sharing reasons aren’t available in Lightning Experience. Use Salesforce
+                Classic to create sharing reasons within the UI. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.lex_gaps_limitations_ui_customization.htm&amp;type=5&amp;language=en_US" target="_blank">Point and Click Customization</a> for the
+                complete list of differences in features and settings between Salesforce Classic and
+                Lightning Experience.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">Apex sharing reasons are defined on an object's detail page. Each Apex sharing reason
+                has a label and a name:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">The label displays in the <span class="keyword parmname">Reason</span> column when viewing the
+                    sharing for a record in the user interface. This label allows users and
+                    administrators to understand the source of the sharing. The label is also
+                    enabled for translation through the Translation Workbench.</li>
+
+                <li class="li">The name is used when referencing the reason in the API and Apex. </li>
+
+            </ul>
+
+            <p class="p">All Apex sharing reason names have the following format:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">MyReasonName__c</pre></div>
+
+            <div class="p">Apex sharing reasons can be referenced programmatically as
+                follows:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.<var class="keyword varname">CustomObject__Share</var>.rowCause.<var class="keyword varname">SharingReason__c</var></pre></div>
+</div>
+
+            <div class="p">For example, an Apex sharing reason called Recruiter for an object called Job can be
+                referenced as
+                follows:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.Job__Share.rowCause.Recruiter__c</pre></div>
+</div>
+
+            <p class="p">For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_schema.htm" target="_blank">System.Schema Class</a>.</p>
+
+            <p class="p">To create an Apex sharing reason:</p>
+
+        </div>
+
+        <ol class="ol enumList">
+            <li class="li">From the management settings for the custom object, click <strong class="ph uicontrol">New</strong>
+                in the Apex Sharing Reasons related list.</li>
+
+            <li class="li">Enter a label for the Apex sharing reason. The label displays in the
+                    <span class="keyword parmname">Reason</span> column when viewing the sharing for a record in the
+                user interface. The label is also enabled for translation through the Translation
+                Workbench.</li>
+
+            <li class="li">Enter a name for the Apex sharing reason. The name is used when referencing the
+                reason in the API and Apex. This name can contain only underscores and alphanumeric
+                characters, and must be unique in your org. It must begin with a letter, not include
+                spaces, not end with an underscore, and not contain two consecutive
+                underscores.</li>
+
+            <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+        </ol>
+
+        <div class="section" id="creating_apex_sharing">
+<a name="creating_apex_sharing"><!-- --></a>
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex sharing reasons and Apex managed sharing recalculation are only available for
+                custom objects.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section" id="create_apex_sharing_example">
+<a name="create_apex_sharing_example"><!-- --></a><h2 class="helpHead2">Apex Managed Sharing Example</h2>
+
+            
+            <p class="p">For this example, suppose that you’re building a recruiting application and have an
+                object called Job. You want to validate that the recruiter and hiring manager listed
+                on the job have access to the record. The following trigger grants the recruiter and
+                hiring manager access when the job record is created. This example requires a custom
+                object called Job, with two lookup fields associated with User records called
+                Hiring_Manager and Recruiter. Also, the Job custom object must have two sharing
+                reasons added called Hiring_Manager and Recruiter.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> JobApexSharing on Job__c (after <span class="statement">insert</span>) {
+    
+    <span class="statement">if</span>(<span class="keyword">trigger</span>.isInsert){
+        <span class="onelineComment">// Create a new list of sharing objects for Job</span>
+        List&lt;Job__Share&gt; jobShrs  = <span class="keyword">new</span> List&lt;Job__Share&gt;();
+        
+        <span class="onelineComment">// Declare variables for recruiting and hiring manager sharing</span>
+        Job__Share recruiterShr;
+        Job__Share hmShr;
+        
+        <span class="statement">for</span>(Job__c job : <span class="keyword">trigger</span>.<span class="keyword">new</span>){
+            <span class="onelineComment">// Instantiate the sharing objects</span>
+            recruiterShr = <span class="keyword">new</span> Job__Share();
+            hmShr = <span class="keyword">new</span> Job__Share();
+            
+            <span class="onelineComment">// Set the ID of record being shared</span>
+            recruiterShr.ParentId = job.Id;
+            hmShr.ParentId = job.Id;
+            
+            <span class="onelineComment">// Set the ID of user or group being granted access</span>
+            recruiterShr.UserOrGroupId = job.Recruiter__c;
+            hmShr.UserOrGroupId = job.Hiring_Manager__c;
+            
+            <span class="onelineComment">// Set the access level</span>
+            recruiterShr.AccessLevel = <span class="string">'edit'</span>;
+            hmShr.AccessLevel = <span class="string">'read'</span>;
+            
+            <span class="onelineComment">// Set the Apex sharing reason for hiring manager and recruiter</span>
+            recruiterShr.RowCause = Schema.Job__Share.RowCause.Recruiter__c;
+            hmShr.RowCause = Schema.Job__Share.RowCause.Hiring_Manager__c;
+            
+            <span class="onelineComment">// Add objects to list for insert</span>
+            jobShrs.add(recruiterShr);
+            jobShrs.add(hmShr);
+        }
+        
+        <span class="onelineComment">// Insert sharing records and capture save result </span>
+        <span class="onelineComment">// The false parameter allows for partial processing if multiple records are passed </span>
+        <span class="onelineComment">// into the operation </span>
+        Database.SaveResult[] lsr = Database.<span class="statement">insert</span>(jobShrs,<span class="keyword">false</span>, AccessLevel.USER_MODE);
+        
+        <span class="onelineComment">// Create counter</span>
+        <span class="keyword">Integer</span> i=0;
+        
+        <span class="onelineComment">// Process the save results</span>
+        <span class="statement">for</span>(Database.SaveResult sr : lsr){
+            <span class="statement">if</span>(!sr.isSuccess()){
+                <span class="onelineComment">// Get the first save result error</span>
+                Database.Error err = sr.getErrors()[0];
+                
+                <span class="onelineComment">// Check if the error is related to a trivial access level</span>
+                <span class="onelineComment">// Access levels equal or more permissive than the object's default </span>
+                <span class="onelineComment">// access level are not allowed. </span>
+                <span class="onelineComment">// These sharing records are not required and thus an insert exception is </span>
+                <span class="onelineComment">// acceptable. </span>
+                <span class="statement">if</span>(!(err.getStatusCode() == StatusCode.FIELD_FILTER_VALIDATION_EXCEPTION  
+                                               &amp;&amp;  err.getMessage().contains(<span class="string">'AccessLevel'</span>))){
+                    <span class="onelineComment">// Throw an error when the error is not related to trivial access level.</span>
+                    <span class="keyword">trigger</span>.newMap.get(jobShrs[i].ParentId).
+                      addError(
+                       <span class="string">'Unable to grant sharing access due to following exception: '</span>
+                       + err.getMessage());
+                }
+            }
+            i++;
+        }   
+    }
+    
+}</pre></div>
+
+            <p class="p">Under certain circumstances, inserting a share row results in an update of an
+                existing share row. Consider these examples:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">A manual share access level is set to Read and you insert a new one set to
+                    Write. The original share rows are updated to Write, indicating the higher level
+                    of access.</li>
+
+                <li class="li">Users can access an account because they can access its child records (contact,
+                    case, opportunity, and so on). If an account sharing rule is created, the
+                    sharing rule row cause (which is a higher access level) replaces the parent
+                    implicit share row cause, indicating the higher level of access.</li>
+
+            </ul>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>The object’s organization-wide default access level must
+                not be set to the most permissive access level. For custom objects, this level is
+                Public Read/Write. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing_understanding.htm" title="Sharing enables record-level access control for all custom objects, as well as many standard objects (such as Account, Contact, Opportunity and Case). Administrators first set an object’s organization-wide default sharing access level, and then grant additional access based on record ownership, the role hierarchy, sharing rules, and manual sharing. Developers can then use Apex managed sharing to grant additional access programmatically with Apex.">Understanding Sharing</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Creating Apex Managed Sharing for Customer Community Plus users</h2>
+
+            
+            <p class="p">Customer Community Plus users are previously known as Customer Portal users. Share
+                objects, such as <samp class="codeph nolang">AccountShare</samp> and <samp class="codeph nolang">ContactShare</samp>, aren’t available to these users. If
+                you must use share objects as a Customer Community Plus user, consider using a
+                trigger, which operates with the <samp class="codeph nolang">without
+                    sharing</samp> keyword by default. Otherwise, use an inner class with the same
+                keyword to enable the DML operation to run successfully. A separate utility class
+                can also be used to enable this access.</p>
+
+            <p class="p">Granting visibility via manual or apex shares written to the share objects is
+                supported but the objects themselves aren't available to Customer Community Plus
+                users. However, other users can add shares that grant access to Customer Community
+                Plus users.</p>
+
+            <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>After enabling digital experiences, records accessible to Roles and
+                Subordinates via Apex managed sharing are automatically made accessible to Roles,
+                Internal, and Portal Subordinates. To secure external users’ access, update your
+                Apex code so that it creates shares to the Role and Internal Subordinates group.
+                Because this conversion is a large-scale operation, consider using <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch.htm">batch Apex</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,108 @@
+<a name="apex_interface_functions_FunctionInvocationError"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">FunctionInvocationError Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use FunctionInvocationError to get detailed error information about a
+      failed Function invocation.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_functions.htm" title="The Functions namespace provides classes and methods used to invoke and manage Salesforce Functions.">functions</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">FunctionInvocationError contains various error information such as the error message at the time
+        of the error.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocationError.htm#apex_functions_FunctionInvocationError_methods">FunctionInvocationError Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocationError.htm#apex_interface_functions_FunctionInvocationError_Example">FunctionInvocationError Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_functions_FunctionInvocationError_methods">
+<a name="apex_functions_FunctionInvocationError_methods"><!-- --></a><h2 class="helpHead2">FunctionInvocationError Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">FunctionInvocationError</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocationError.htm#apex_functions_FunctionInvocationError_getMessage">getMessage()</a></strong><br>
+Returns the error message from a Function invocation     error.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_functions_FunctionInvocationError.htm#apex_functions_FunctionInvocationError_getType">getType()</a></strong><br>
+Returns the error type for FunctionInvocationError.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_FunctionInvocationError_getMessage">
+<a name="apex_functions_FunctionInvocationError_getMessage"><!-- --></a><h3 class="helpHead3">getMessage()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the error message from a Function invocation
+    error.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getMessage()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_functions_FunctionInvocationError_getType">
+<a name="apex_functions_FunctionInvocationError_getType"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getType()</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the error type for FunctionInvocationError.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> functions.FunctionErrorType getType()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_functions_FunctionErrorType.htm" title="Represents the error type of FunctionInvocationError.">functions.FunctionErrorType</a></p>
+
+    </div>
+
+  </div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_functions_FunctionInvocationError_Example">
+<a name="apex_interface_functions_FunctionInvocationError_Example"><!-- --></a><h2 class="helpHead2">FunctionInvocationError Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+            <p class="p">This is an example implementation of the <samp class="codeph apex_code">functions.FunctionInvocationError</samp> interface.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyFunctionInvocationError
+  <span class="keyword">implements</span> functions.FunctionInvocationError {
+      <span class="keyword">public</span> <span class="keyword">String</span> getMessage() {
+          <span class="statement">return</span> <span class="string">'Mock error message for testing'</span>;
+      }
+      <span class="keyword">public</span> functions.FunctionErrorType getType() {
+          <span class="statement">return</span> functions.FunctionErrorType.FUNCTION_EXCEPTION;
+      }
+}</pre></div>
+
+            <p class="p">This example tests the implementation.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">functions.FunctionInvocationError testError = <span class="keyword">new</span> MyFunctionInvocationError();
+System.debug(<span class="string">'Error: '</span> + testError.getMessage() + <span class="string">' Type: '</span> + testError.getType());
+</pre></div>
+
+        </div>
+</div>
+</div>
+</div>

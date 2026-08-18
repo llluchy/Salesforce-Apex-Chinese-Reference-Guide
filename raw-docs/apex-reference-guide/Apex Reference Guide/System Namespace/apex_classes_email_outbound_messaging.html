@@ -1,0 +1,718 @@
+<a name="apex_classes_email_outbound_messaging"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Messaging Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">Contains messaging methods used when sending a single or
+mass email.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+    <p class="p">Sending email by using Apex requires domain-level and user-level email verification.
+     System-generated emails also require verification of the From email address. Email delivery
+     fails if any of these verifications is incomplete. See <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.security_email_verification_requirements.htm&amp;language=en_US&amp;type=5" target="_blank">Requirements to Send Email from Salesforce</a>.</p>
+
+   </p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+  
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Messaging_methods">
+<a name="apex_System_Messaging_methods"><!-- --></a>
+<h2 class="helpHead2">Messaging Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Messaging</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_messaging_extractInboundEmail">extractInboundEmail(source, includeForwardedAttachments)</a></strong><br>
+Use this method in your email service code to control how to parse       and process forwarded or attached emails. Returns an instance of <samp class="codeph apex_code">Messaging.InboundEmail</samp> from a stream of data that is in       RFC822 format. The data stream can be a forwarded email in an attachment to an existing       InboundEmail, or a stream from another source.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_Messaging_reserveMassEmailCapacity">reserveMassEmailCapacity(amountReserved)</a></strong><br>
+Reserves email capacity to send mass email to the specified number of email addresses,   after the current transaction commits.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_Messaging_reserveSingleEmailCapacity">reserveSingleEmailCapacity(amountReserved)</a></strong><br>
+Reserves email capacity to send single email to the specified number of email addresses,   after the current transaction commits.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_Messaging_sendEmail">sendEmail(emails, allOrNothing)</a></strong><br>
+Sends the list of emails instantiated with either <samp class="codeph apex_code">SingleEmailMessage</samp> or <samp class="codeph apex_code">MassEmailMessage</samp> and     returns a list of SendEmailResult objects. When org preferences are set to save EmailMessage     objects and a trigger is defined for EmailMessage objects, the trigger is fired for each <samp class="codeph apex_code">SingleEmailMessage</samp> individually. The <samp class="codeph apex_code">sendEmail</samp> method can be called 10 times per Apex transaction     and each method invocation can include up to 100 "To", 25 "Cc", and 25 "Bcc" recipients. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_Messaging_sendEmailMessage">sendEmailMessage(emailMessageIds, allOrNothing)</a></strong><br>
+Sends draft email messages as defined by the specified       email message IDs and returns a list of SendEmailResult objects.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_messaging_renderEmailTemplate">renderEmailTemplate(whoId, whatId, bodies)</a></strong><br>
+Replaces merge fields in text bodies of email templates with values       from Salesforce records.       Returns an array of <samp class="codeph apex_code">RenderEmailTemplateBodyResult</samp>       objects, each of which corresponds to an element in the supplied array of text bodies. Each         <samp class="codeph apex_code">RenderEmailTemplateBodyResult</samp> provides a success or       failure indication, along with either an error code or the rendered text.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_messaging_renderStoredEmailTemplate">renderStoredEmailTemplate(templateId, whoId, whatId)</a></strong><br>
+Renders a text, custom, HTML, or Visualforce email template that       exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Includes all attachment content in the returned       email message.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_messaging_renderStoredEmailTemplate_2">renderStoredEmailTemplate(templateId, whoId, whatId, attachmentRetrievalOption)</a></strong><br>
+Renders a text, custom, HTML, or Visualforce email template that       exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Provides options for including attachment metadata       only, attachment metadata and content, or excluding attachments.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_messaging_renderStoredEmailTemplate_3">renderStoredEmailTemplate(templateId, whoId, whatId, attachmentRetrievalOption, updateEmailTemplateUsage)</a></strong><br>
+Renders a text, custom, HTML, or Visualforce email template that       exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Provides options for including attachment metadata       only, attachment metadata and content, or excluding attachments.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_messaging_extractInboundEmail">
+<a name="apex_System_messaging_extractInboundEmail"><!-- --></a>
+  <h3 class="helpHead3">extractInboundEmail(source, includeForwardedAttachments)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use this method in your email service code to control how to parse
+      and process forwarded or attached emails. Returns an instance of <samp class="codeph apex_code">Messaging.InboundEmail</samp> from a stream of data that is in
+      RFC822 format. The data stream can be a forwarded email in an attachment to an existing
+      InboundEmail, or a stream from another source.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Messaging.InboundEmail
+          extractInboundEmail(<span class="keyword">Object</span> source, <span class="keyword">Boolean</span> includeForwardedAttachments)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">source</var></strong>:<p class="p">Type: </p>
+<p class="p">Object An instance of <samp class="codeph apex_code">Messaging.InboundEmail.BinaryAttachment</samp> whose MimeTypeSubtype is <samp class="codeph nolang">message/rfc822</samp> or a Blob. If <var class="keyword varname">source</var> is
+            a Blob, then supply a byte array in RFC822 format.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">includeForwardedAttachments</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">This parameter controls how attachments to embedded or forwarded emails are handled.
+            Set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> to provide all attachments, even
+            attachments in embedded emails in the <samp class="codeph nolang">binaryAttachments</samp> and <samp class="codeph nolang">textAttachments</samp>
+            properties of the returned value. Set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>
+            to provide only the attachments that are at the top level of the source email.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_inbound_inbound.htm#apex_classes_email_inbound_inbound" title="Represents an inbound email object.">Messaging.InboundEmail</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Messaging_reserveMassEmailCapacity">
+<a name="apex_System_Messaging_reserveMassEmailCapacity"><!-- --></a>
+ <h3 class="helpHead3">reserveMassEmailCapacity(amountReserved)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Reserves email capacity to send mass email to the specified number of email addresses,
+  after the current transaction commits.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void reserveMassEmailCapacity(<span class="keyword">Integer</span>
+     amountReserved)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">amountReserved</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method can be called when you know in advance how many addresses emails will be sent to
+    as a result of the transaction. If the transaction would cause the organization to exceed its
+    daily email limit, using this method results in the following error: <samp class="codeph apex_code">System.HandledException: The daily limit <span class="statement">for</span> the org would be exceeded
+     by <span class="statement">this</span> request.</samp>If the organization doesn’t have permission to send API or mass
+    email, using this method results in the following error: <samp class="codeph apex_code">System.NoAccessException: The organization <span class="statement">is</span> not permitted to send email.</samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Messaging_reserveSingleEmailCapacity">
+<a name="apex_System_Messaging_reserveSingleEmailCapacity"><!-- --></a>
+ <h3 class="helpHead3">reserveSingleEmailCapacity(amountReserved)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Reserves email capacity to send single email to the specified number of email addresses,
+  after the current transaction commits.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void reserveSingleEmailCapacity(<span class="keyword">Integer</span>
+     amountReserved)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">amountReserved</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method can be called when you know in advance how many addresses emails will be sent to
+    as a result of the transaction. If the transaction would cause the organization to exceed its
+    daily email limit, using this method results in the following error: <samp class="codeph apex_code">System.HandledException: The daily limit <span class="statement">for</span> the org would be exceeded
+     by <span class="statement">this</span> request.</samp>If the organization doesn’t have permission to send API or mass
+    email, using this method results in the following error: <samp class="codeph apex_code">System.NoAccessException: The organization <span class="statement">is</span> not permitted to send email.</samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Messaging_sendEmail">
+<a name="apex_System_Messaging_sendEmail"><!-- --></a>
+<h3 class="helpHead3">sendEmail(emails, allOrNothing)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sends the list of emails instantiated with either <samp class="codeph apex_code">SingleEmailMessage</samp> or <samp class="codeph apex_code">MassEmailMessage</samp> and
+    returns a list of SendEmailResult objects. When org preferences are set to save EmailMessage
+    objects and a trigger is defined for EmailMessage objects, the trigger is fired for each <samp class="codeph apex_code">SingleEmailMessage</samp> individually. The <samp class="codeph apex_code">sendEmail</samp> method can be called 10 times per Apex transaction
+    and each method invocation can include up to 100 "To", 25 "Cc", and 25 "Bcc" recipients. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Messaging.SendEmailResult[] sendEmail(Messaging.Email[]
+emails, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">emails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_base.htm#apex_classes_email_outbound_base" title="Contains base email methods common to both single and mass email.">Messaging.Email</a>[]</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The optional <var class="keyword varname">opt_allOrNone</var>
+              parameter specifies whether <samp class="codeph apex_code">sendEmail</samp> prevents
+              delivery of all other messages when any of the messages fail due to an error (<samp class="codeph apex_code"><span class="keyword">true</span></samp>), or whether it allows delivery of the messages
+              that don't have errors (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). The default is
+                <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_sendemailresult.htm#apex_classes_email_outbound_sendemailresult" title="Contains the result of sending an email message.">Messaging.SendEmailResult</a>[]</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Messaging_sendEmailMessage">
+<a name="apex_System_Messaging_sendEmailMessage"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">sendEmailMessage(emailMessageIds,
+    allOrNothing)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="send_email_message_desc"><a name="send_email_message_desc"><!-- --></a>Sends draft email messages as defined by the specified
+      email message IDs and returns a list of SendEmailResult objects.</span></div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Messaging.SendEmailResult[] sendEmailMessage(List&lt;<span class="keyword">ID</span>&gt;
+          emailMessageIds, <span class="keyword">Boolean</span> allOrNothing)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">emailMessageIds</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>&gt;</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">allOrNothing</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_sendemailresult.htm#apex_classes_email_outbound_sendemailresult" title="Contains the result of sending an email message.">Messaging.SendEmailResult</a>[]</p>
+
+      <p class="p">If the <var class="keyword varname">emailMessageIds</var> parameter is null, the method throws a <samp class="codeph ">System.IllegalArgumentException</samp> exception.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The <samp class="codeph apex_code">sendEmailMessage</samp> method assumes that the
+        optional <var class="keyword varname">allOrNothing</var> parameter is always <samp class="codeph apex_code"><span class="keyword">false</span></samp> and ignores the value you set. Delivery of all messages is attempted even
+        if some messages fail due to an error.</p>
+
+      <p class="p">The email address of the user calling the <samp class="codeph apex_code">sendEmailMessage</samp> method is inserted in the From Address field of the email
+        header and the Email Message record.</p>
+
+    </div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p" id="send_email_message_example_intro"><a name="send_email_message_example_intro"><!-- --></a>This example shows how to send a draft email message. It creates
+a case and a new email message associated with the case. Next, the
+example sends a draft email message and checks the results. Before
+running this example, make sure to replace the email address with
+a valid address.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="send_email_message_example"><a name="send_email_message_example"><!-- --></a>Case c = <span class="keyword">new</span> Case();
+<span class="statement">insert</span> c;
+
+EmailMessage e = <span class="keyword">new</span> EmailMessage();
+e.parentid = c.id;
+<span class="onelineComment">// Set to draft status.</span>
+<span class="onelineComment">// This status is required </span>
+<span class="onelineComment">// for sendEmailMessage().</span>
+e.Status = <span class="string">'5'</span>; 
+e.TextBody = 
+  <span class="string">'Sample email message.'</span>;
+e.Subject = <span class="string">'Apex sample'</span>;
+e.ToAddress = <span class="string">'customer@email.com'</span>;
+<span class="statement">insert</span> e;
+
+List&lt;Messaging.SendEmailResult&gt; 
+  results = 
+  Messaging.sendEmailMessage(<span class="keyword">new</span> <span class="keyword">ID</span>[] 
+    { e.id });
+
+System.assertEquals(1, results.size());
+System.assertEquals(<span class="keyword">true</span>, 
+                    results[0].success);
+</pre></div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Versioned Behavior Changes</h4>
+
+      
+      <p class="p">In API version 54.0 and later, a null <var class="keyword varname">emailMessageIds</var> parameter results
+        in a <samp class="codeph ">System.IllegalArgumentException</samp> exception. In API
+        version 53.0 and earlier, a null <var class="keyword varname">emailMessageIds</var> parameter results in an
+        error.</p>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_messaging_renderEmailTemplate">
+<a name="apex_System_messaging_renderEmailTemplate"><!-- --></a><h3 class="helpHead3">renderEmailTemplate(whoId, whatId, bodies)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Replaces merge fields in text bodies of email templates with values
+      from Salesforce records.
+      Returns an array of <samp class="codeph apex_code">RenderEmailTemplateBodyResult</samp>
+      objects, each of which corresponds to an element in the supplied array of text bodies. Each
+        <samp class="codeph apex_code">RenderEmailTemplateBodyResult</samp> provides a success or
+      failure indication, along with either an error code or the rendered text.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Messaging.RenderEmailTemplateBodyResult&gt; renderEmailTemplate(<span class="keyword">String</span> whoId, <span class="keyword">String</span> whatId, List&lt;<span class="keyword">String</span>&gt; bodies)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">whoId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The identifier of an object in the database, typically a contact, lead, or user. The database
+            record for that object is read and used in merge field processing.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">whatId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Identifies</p>
+<p class="p">an object in the database like an account or opportunity. The record for that object
+            is read and used in merge field processing.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">bodies</var></strong>:<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">An array of strings that are examined for merge field references. The corresponding
+            data from the object referenced by the <samp class="codeph apex_code">whoId</samp> or
+              <samp class="codeph apex_code">whatId</samp> replaces the merge field
+            reference.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;Messaging.RenderEmailTemplateBodyResult&gt;</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method in situations in which you want to dynamically compose blocks of text that
+        are enriched with data from the database. You can then use the the rendered blocks of text
+        to compose and send an email or update a text value in another database record.</p>
+
+      <p class="p">Executing the <samp class="codeph apex_code">renderEmailTemplate</samp> method counts
+        toward the SOQL governor limit. The number of SOQL queries that this method consumes is the
+        number of elements in the list of strings passed in the <var class="keyword varname">bodies</var>
+        parameter.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank" title="Execution Governors and Limits - HTML (New Window)">Execution Governors and Limits</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_messaging_renderStoredEmailTemplate">
+<a name="apex_System_messaging_renderStoredEmailTemplate"><!-- --></a><h3 class="helpHead3">renderStoredEmailTemplate(templateId, whoId, whatId)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Renders a text, custom, HTML, or Visualforce email template that
+      exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Includes all attachment content in the returned
+      email message.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Messaging.SingleEmailMessage
+          renderStoredEmailTemplate(<span class="keyword">String</span> templateId, <span class="keyword">String</span> whoId, <span class="keyword">String</span> whatId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">templateId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">An email template that exists in the database, such as text, HTML, custom, and
+            Visualforce templates.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whoId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The identifier of an object in the database, typically a contact, lead, or user. The
+            database record for that object is read and used in merge field processing.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whatId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Identifies</p>
+<p class="p">an object in the database, like an account or opportunity. The record for
+            that object is read and used in merge field processing.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_single.htm#apex_classes_outbound_single" title="Contains methods for sending single email messages.">Messaging.SingleEmailMessage</a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Executing the <samp class="codeph apex_code">renderStoredEmailTemplate</samp> method
+        counts toward the SOQL governor limit as one query.</p>
+
+    </div>
+
+  </div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_gov_limits.htm" target="_blank" title="Execution Governors and Limits - HTML (New Window)">Execution Governors and Limits</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_messaging_renderStoredEmailTemplate_2">
+<a name="apex_System_messaging_renderStoredEmailTemplate_2"><!-- --></a>
+  <h3 class="helpHead3">renderStoredEmailTemplate(templateId, whoId, whatId, attachmentRetrievalOption)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Renders a text, custom, HTML, or Visualforce email template that
+      exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Provides options for including attachment metadata
+      only, attachment metadata and content, or excluding attachments.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Messaging.SingleEmailMessage
+          renderStoredEmailTemplate(<span class="keyword">String</span> templateId, <span class="keyword">String</span> whoId, <span class="keyword">String</span> whatId,
+          Messaging.AttachmentRetrievalOption attachmentRetrievalOption)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">templateId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">An email template that exists in the database, such as text, HTML, custom, and
+            Visualforce templates.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whoId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The identifier of an object in the database, typically a contact, lead, or user. The
+            database record for that object is read and used in merge field processing.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whatId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Identifies</p>
+<p class="p">an object in the database, like an account or opportunity. The record for
+            that object is read and used in merge field processing.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">attachmentRetrievalOption</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Messaging_AttachmentRetrievalOptionEnum.htm" title="Provides options for including attachment metadata only, attachment metadata and content, or excluding attachments.">Messaging.AttachmentRetrievalOption</a></p>
+<div class="p">Specifies options for including attachments in the <samp class="codeph apex_code">fileAttachments</samp> property of the returned <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Set to one of the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Messaging_AttachmentRetrievalOptionEnum.htm" title="Provides options for including attachment metadata only, attachment metadata and content, or excluding attachments.">Messaging.AttachmentRetrievalOption</a> values to include attachment metadata
+            only, attachment metadata and content, or to exclude attachments. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>When the <var class="keyword varname">attachmentRetrievalOption</var> parameter is <em class="ph i">not</em> set
+              to <samp class="codeph apex_code">NONE</samp>, the <samp class="codeph apex_code">entityAttachments</samp> property of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp> contains the ID of the Salesforce content
+              objects to attach (ContentVersion or Document). The <samp class="codeph apex_code">fileAttachments</samp> property contains the IDs of attachments, in addition to
+              all the IDs in the <samp class="codeph apex_code">entityAttachments</samp> property.
+              As a result, the ID values in <samp class="codeph apex_code">entityAttachments</samp> are duplicates of the IDs in the <samp class="codeph apex_code">fileAttachments</samp> property. If you call <samp class="codeph apex_code">renderStoredEmailTemplate()</samp> by passing the <samp class="codeph apex_code">METADATA_WITH_BODY</samp> option, and send the rendered
+              email message, the email will contain duplicate attachments. Before using the returned
+              email message with <a class="xref" href="#apex_System_Messaging_sendEmail" title='Sends the list of emails instantiated with either SingleEmailMessage or MassEmailMessage and returns a list of SendEmailResult objects. When org preferences are set to save EmailMessage objects and a trigger is defined for EmailMessage objects, the trigger is fired for each SingleEmailMessage individually. The sendEmail method can be called 10 times per Apex transaction and each method invocation can include up to 100 "To", 25 "Cc", and 25 "Bcc" recipients.'>sendEmail(emails, allOrNothing)</a>, you can remove attachments
+              from <samp class="codeph apex_code">fileAttachments</samp> that are duplicated in
+                <samp class="codeph apex_code">entityAttachments</samp>.</p>
+</div>
+</div></div></div></div>
+</div>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_single.htm#apex_classes_outbound_single" title="Contains methods for sending single email messages.">Messaging.SingleEmailMessage</a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Executing the <samp class="codeph apex_code">renderStoredEmailTemplate</samp> method
+        counts toward the SOQL governor limit as one query.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_messaging_renderStoredEmailTemplate_3">
+<a name="apex_System_messaging_renderStoredEmailTemplate_3"><!-- --></a>
+  <h3 class="helpHead3">renderStoredEmailTemplate(templateId, whoId, whatId, attachmentRetrievalOption, updateEmailTemplateUsage)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Renders a text, custom, HTML, or Visualforce email template that
+      exists in the database into an instance of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Provides options for including attachment metadata
+      only, attachment metadata and content, or excluding attachments.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Messaging.SingleEmailMessage
+          renderStoredEmailTemplate(<span class="keyword">String</span> templateId, <span class="keyword">String</span> whoId, <span class="keyword">String</span> whatId,
+          Messaging.AttachmentRetrievalOption attachmentRetrievalOption, <span class="keyword">Boolean</span>
+          updateEmailTemplateUsage)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">templateId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">An email template that exists in the database, such as text, HTML, custom, and
+            Visualforce templates.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whoId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The identifier of an object in the database, typically a contact, lead, or user. The
+            database record for that object is read and used in merge field processing.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">whatId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Identifies</p>
+<p class="p">an object in the database, like an account or opportunity. The record for
+            that object is read and used in merge field processing.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">attachmentRetrievalOption</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Messaging_AttachmentRetrievalOptionEnum.htm" title="Provides options for including attachment metadata only, attachment metadata and content, or excluding attachments.">Messaging.AttachmentRetrievalOption</a></p>
+<div class="p">Specifies options for including attachments in the <samp class="codeph apex_code">fileAttachments</samp> property of the returned <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp>. Set to one of the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Messaging_AttachmentRetrievalOptionEnum.htm" title="Provides options for including attachment metadata only, attachment metadata and content, or excluding attachments.">Messaging.AttachmentRetrievalOption</a> values to include attachment metadata
+            only, attachment metadata and content, or to exclude attachments. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>When the <var class="keyword varname">attachmentRetrievalOption</var> parameter is <em class="ph i">not</em> set
+              to <samp class="codeph apex_code">NONE</samp>, the <samp class="codeph apex_code">entityAttachments</samp> property of <samp class="codeph apex_code">Messaging.SingleEmailMessage</samp> contains the ID of the Salesforce content
+              objects to attach (ContentVersion or Document). The <samp class="codeph apex_code">fileAttachments</samp> property contains the IDs of attachments, in addition to
+              all the IDs in the <samp class="codeph apex_code">entityAttachments</samp> property.
+              As a result, the ID values in <samp class="codeph apex_code">entityAttachments</samp> are duplicates of the IDs in the <samp class="codeph apex_code">fileAttachments</samp> property. If you call <samp class="codeph apex_code">renderStoredEmailTemplate()</samp> by passing the <samp class="codeph apex_code">METADATA_WITH_BODY</samp> option, and send the rendered
+              email message, the email will contain duplicate attachments. Before using the returned
+              email message with <a class="xref" href="#apex_System_Messaging_sendEmail" title='Sends the list of emails instantiated with either SingleEmailMessage or MassEmailMessage and returns a list of SendEmailResult objects. When org preferences are set to save EmailMessage objects and a trigger is defined for EmailMessage objects, the trigger is fired for each SingleEmailMessage individually. The sendEmail method can be called 10 times per Apex transaction and each method invocation can include up to 100 "To", 25 "Cc", and 25 "Bcc" recipients.'>sendEmail(emails, allOrNothing)</a>, you can remove attachments
+              from <samp class="codeph apex_code">fileAttachments</samp> that are duplicated in
+                <samp class="codeph apex_code">entityAttachments</samp>.</p>
+</div>
+</div></div></div></div>
+</div>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">updateEmailTemplateUsage</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Specifies whether the usage field in the EmailTemplate record is updated upon
+            successful rendering.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_email_outbound_single.htm#apex_classes_outbound_single" title="Contains methods for sending single email messages.">Messaging.SingleEmailMessage</a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Executing the <samp class="codeph apex_code">renderStoredEmailTemplate</samp> method
+        counts toward the SOQL governor limit as one query.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

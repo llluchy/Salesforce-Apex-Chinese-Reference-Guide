@@ -1,0 +1,311 @@
+<a name="apex_transaction_finalizers"><!-- --></a><h1 class="helpHead1">Transaction Finalizers</h1><div class="body conbody">
+<div class="shortdesc">The Transaction Finalizers feature enables you to attach actions, using the <samp class="codeph apex_code">System.Finalizer</samp> interface, to asynchronous Apex jobs
+        that use the Queueable framework. A specific use case is to design recovery actions when a
+        Queueable job fails.</div>
+
+        <div class="section"><div class="p">
+<div class="p">The Transaction Finalizers feature provides a direct way for you to specify
+                actions to be taken when asynchronous jobs succeed or fail. Before Transaction
+                Finalizers, you could only take these two actions for asynchronous job failures: <ul class="ul bulletList">
+                    <li class="li">Poll the status of <samp class="codeph apex_code">AsyncApexJob</samp>
+                        using a SOQL query and re-enqueue the job if it fails</li>
+
+                    <li class="li">Fire BatchApexErrorEvents when a batch Apex method encounters an unhandled
+                        exception</li>
+
+                </ul>
+
+            </div>
+With transaction finalizers, you can attach a post-action sequence to a Queueable
+            job and take relevant actions based on the job execution result.<p class="p">A Queueable job that
+                failed due to an unhandled exception can be successively re-enqueued five times by a
+                transaction finalizer. This limit applies to a series of consecutive Queueable job
+                failures. The counter is reset when the Queueable job completes without an unhandled
+                exception. </p>
+<p class="p">Finalizers can be implemented as an inner class. Also, you can
+                implement both Queueable and Finalizer interfaces with the same class.</p>
+<div class="p">The
+                Queueable job and the Finalizer run in separate Apex and Database transactions. For
+                example, the Queueable can include DML, and the Finalizer can include REST callouts.
+                Using a finalizer doesn’t count as an extra execution against your daily Async Apex
+                limit. Synchronous governor limits apply for the Finalizer transaction, except in
+                these cases where asynchronous limits apply: <ul class="ul bulletList">
+                    <li class="li">Total heap size</li>
+
+                    <li class="li">Maximum number of Apex jobs added to the queue with <samp class="codeph apex_code">System.enqueueJob</samp>
+</li>
+
+                    <li class="li">Maximum number of methods with the <samp class="codeph apex_code">future</samp>
+                        annotation allowed per Apex invocation</li>
+
+                </ul>
+For more information on governor limits, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution Governors and Limits</a>. </div>
+</div></div>
+
+        <div class="section">
+<h2 class="helpHead2">System.Finalizer Interface</h2>
+
+            
+            <div class="p">The <samp class="codeph apex_code">System.Finalizer</samp> interface includes the
+                    <samp class="codeph apex_code">execute</samp> method:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">void</span> execute(System.FinalizerContext <var class="keyword varname">ctx</var>) {}</pre></div>
+This
+                method is called on the provided Finalizer instance for every enqueued job with a
+                finalizer attached. Within the <samp class="codeph apex_code">execute</samp>
+                method, you can define the actions to be taken at the end of the Queueable job. An
+                instance of <samp class="codeph apex_code">System.FinalizerContext</samp> is
+                injected by the Apex runtime engine as an argument to the <samp class="codeph apex_code">execute</samp> method. </div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">System.FinalizerContext Interface</h2>
+
+            
+            <div class="p">The <samp class="codeph apex_code">System.FinalizerContext</samp> interface
+                contains four methods.<ul class="ul bulletList">
+                    <li class="li">
+<samp class="codeph apex_code">getAsyncApexJobId</samp> method:
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> Id getAsyncApexJobId {}</pre></div>
+Returns
+                        the ID of the Queueable job for which this finalizer is defined.</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">getRequestId</samp> method:
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">String</span> getRequestId {}</pre></div>
+Returns
+                        the request ID, a string that uniquely identifies the request, and can be
+                        correlated with Event Monitoring logs. To correlate with the AsyncApexJob
+                        table, use the <samp class="codeph apex_code">getAsyncApexJobId</samp>
+                        method instead. The Queueable job and the Finalizer execution both share the
+                        (same) request ID.</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">getResult</samp> method:
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> System.ParentJobResult getResult {}</pre></div>
+Returns
+                        the <samp class="codeph apex_code">System.ParentJobResult</samp> enum,
+                        which represents the result of the parent asynchronous Apex Queueable job to
+                        which the finalizer is attached. The enum takes these values: <samp class="codeph apex_code">SUCCESS</samp>, <samp class="codeph apex_code">UNHANDLED_EXCEPTION</samp>.</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">getException</samp> method:
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> System.Exception getException {}</pre></div>
+Returns
+                        the exception with which the Queueable job failed when <samp class="codeph apex_code">getResult</samp> is <samp class="codeph apex_code">UNHANDLED_EXCEPTION</samp>, null
+                        otherwise.</li>
+
+                </ul>
+</div>
+
+            <div class="p">Attach the finalizer to your Queueable jobs using the <samp class="codeph apex_code">System.attachFinalizer</samp> method. <ol class="ol enumList">
+                    <li class="li"> Define a class that implements the <samp class="codeph apex_code">System.Finalizer</samp> interface. </li>
+
+                    <li class="li"> Attach a finalizer within a Queueable job’s <samp class="codeph apex_code">execute</samp> method. To attach the finalizer, invoke the <samp class="codeph apex_code">System.attachFinalizer</samp> method, using as
+                        argument the instantiated class that implements the System.Finalizer
+                        interface.
+                        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">void</span> attachFinalizer(Finalizer finalizer) {}</pre></div>
+</li>
+
+                </ol>
+</div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Implementation Details</h2>
+
+            
+            <div class="p">
+                <ul class="ul bulletList">
+                    <li class="li">Only one finalizer instance can be attached to any Queueable job.</li>
+
+                    <li class="li">You can enqueue a single asynchronous Apex job (Queueable, Future, or Batch)
+                        in the finalizer’s implementation of the <samp class="codeph apex_code">execute</samp> method.</li>
+
+                    <li class="li"> Callouts are allowed in finalizer implementations. </li>
+
+                    <li class="li">The Finalizer framework uses the state of the Finalizer object (if attached)
+                        at the end of Queueable execution. Mutation of the Finalizer state, after
+                        it’s attached, is therefore supported.</li>
+
+                    <li class="li">Variables that are declared <samp class="codeph apex_code">transient</samp> are
+                        ignored by serialization and deserialization, and therefore don’t persist in
+                        the Transaction Finalizer.</li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <div class="section" id="LoggingFinalizerExample">
+<a name="LoggingFinalizerExample"><!-- --></a><h2 class="helpHead2">Logging Finalizer Example</h2>
+
+            
+            <p class="p">This example demonstrates the use of Transaction Finalizers in logging messages from
+                a Queueable job, regardless of whether the job succeeds or fails. The
+                LoggingFinalizer class here implements both Queueable and Finalizer interfaces. The
+                Queueable implementation instantiates the finalizer, attaches it, and then invokes
+                the addLog() method to buffer log messages. The Finalizer implementation of
+                LoggingFinalizer includes the addLog(message, source) method that allows buffering
+                log messages from the Queueable job into finalizer's state. When the Queueable job
+                completes, the finalizer instance commits the buffered log. The finalizer state is
+                preserved even if the Queueable job fails, and can be accessed for use in DML in
+                finalizer implementation or execution. </p>
+
+            <div class="p">
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">public</span> <span class="keyword">class</span> LoggingFinalizer <span class="keyword">implements</span> Finalizer, Queueable {
+
+  <span class="onelineComment">// Queueable implementation</span>
+  <span class="onelineComment">// A queueable job that uses LoggingFinalizer to buffer the log</span>
+  <span class="onelineComment">// and commit upon exit, even if the queueable execution fails</span>
+
+    <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext ctx) {
+        <span class="keyword">String</span> jobId = <span class="string">''</span> + ctx.getJobId();
+        System.debug(<span class="string">'Begin: executing queueable job: '</span> + jobId);
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Create an instance of LoggingFinalizer and attach it</span>
+            <span class="onelineComment">// Alternatively, System.attachFinalizer(this) can be used instead of instantiating LoggingFinalizer</span>
+            LoggingFinalizer f = <span class="keyword">new</span> LoggingFinalizer();
+            System.attachFinalizer(f);
+
+            <span class="onelineComment">// While executing the job, log using LoggingFinalizer.addLog()</span>
+            <span class="onelineComment">// Note that addlog() modifies the Finalizer's state after it is attached </span>
+            DateTime start = DateTime.now();
+            f.addLog(<span class="string">'About to do some work...'</span>, jobId);
+
+            <span class="statement">while</span> (<span class="keyword">true</span>) {
+              <span class="onelineComment">// Results in limit error</span>
+            }
+        } <span class="statement">catch</span> (Exception e) {
+            System.debug(<span class="string">'Error executing the job ['</span> + jobId + <span class="string">']: '</span> + e.getMessage());
+        } <span class="statement">finally</span> {
+            System.debug(<span class="string">'Completed: execution of queueable job: '</span> + jobId);
+        }
+    }
+
+  <span class="onelineComment">// Finalizer implementation</span>
+  <span class="onelineComment">// Logging finalizer provides a public method addLog(message,source) that allows buffering log lines from the Queueable job.</span>
+  <span class="onelineComment">// When the Queueable job completes, regardless of success or failure, the LoggingFinalizer instance commits this buffered log.</span>
+  <span class="onelineComment">// Custom object LogMessage__c has four custom fields-see addLog() method.</span>
+
+    <span class="onelineComment">// internal log buffer</span>
+    <span class="keyword">private</span> List&lt;LogMessage__c&gt; logRecords = <span class="keyword">new</span> List&lt;LogMessage__c&gt;();
+
+    <span class="keyword">public</span> <span class="keyword">void</span> execute(FinalizerContext ctx) {
+        <span class="keyword">String</span> parentJobId = ctx.getAsyncApexJobId();
+        System.debug(<span class="string">'Begin: executing finalizer attached to queueable job: '</span> + parentJobId);
+
+        <span class="onelineComment">// Update the log records with the parent queueable job id</span>
+        System.Debug(<span class="string">'Updating job id on '</span> + logRecords.size() + <span class="string">' log records'</span>);
+        <span class="statement">for</span> (LogMessage__c log : logRecords) {
+            log.Request__c = parentJobId; <span class="onelineComment">// or could be ctx.getRequestId()</span>
+        }
+        <span class="onelineComment">// Commit the buffer</span>
+        System.Debug(<span class="string">'committing log records to database'</span>);
+        Database.<span class="statement">insert</span>(logRecords, <span class="keyword">false</span>);
+
+        <span class="statement">if</span> (ctx.getResult() == ParentJobResult.SUCCESS) {
+            System.debug(<span class="string">'Parent queueable job ['</span> + parentJobId + <span class="string">'] completed successfully.'</span>);
+        } <span class="statement">else</span> {
+            System.debug(<span class="string">'Parent queueable job ['</span> + parentJobId + <span class="string">'] failed due to unhandled exception: '</span> + ctx.getException().getMessage());
+            System.debug(<span class="string">'Enqueueing another instance of the queueable...'</span>);
+        }
+        System.debug(<span class="string">'Completed: execution of finalizer attached to queueable job: '</span> + parentJobId);
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> addLog(<span class="keyword">String</span> message, <span class="keyword">String</span> source) {
+        <span class="onelineComment">// append the log message to the buffer</span>
+        logRecords.add(<span class="keyword">new</span> LogMessage__c(
+            DateTime__c = DateTime.now(),
+            Message__c = message,
+            Request__c = <span class="string">'setbeforecommit'</span>,
+            Source__c = source
+        ));
+    }
+}
+
+</pre></div>
+
+            </div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Retry Queueable Example</h2>
+
+            
+            <p class="p">This example demonstrates how to re-enqueue a failed Queueable job in its finalizer.
+                It also shows that jobs can be re-enqueued up to a queueable chaining limit of 5
+                retries.</p>
+
+            <div class="p">
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">public</span> <span class="keyword">class</span> RetryLimitDemo <span class="keyword">implements</span> Finalizer, Queueable {
+
+  <span class="onelineComment">// Queueable implementation</span>
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext ctx) {
+    <span class="keyword">String</span> jobId = <span class="string">''</span> + ctx.getJobId();
+    System.debug(<span class="string">'Begin: executing queueable job: '</span> + jobId);
+    <span class="statement">try</span> {
+        Finalizer finalizer = <span class="keyword">new</span> RetryLimitDemo();
+        System.attachFinalizer(finalizer);
+        System.debug(<span class="string">'Attached finalizer'</span>);
+        <span class="keyword">Integer</span> accountNumber = 1;
+        <span class="statement">while</span> (<span class="keyword">true</span>) { <span class="onelineComment">// results in limit error</span>
+          Account a = <span class="keyword">new</span> Account();
+          a.Name = <span class="string">'Account-Number-'</span> + accountNumber;
+          <span class="statement">insert</span> a;
+          accountNumber++;
+        }
+    } <span class="statement">catch</span> (Exception e) {
+        System.debug(<span class="string">'Error executing the job ['</span> + jobId + <span class="string">']: '</span> + e.getMessage());
+    } <span class="statement">finally</span> {
+        System.debug(<span class="string">'Completed: execution of queueable job: '</span> + jobId);
+    }
+  }
+
+  <span class="onelineComment">// Finalizer implementation</span>
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(FinalizerContext ctx) {
+    <span class="keyword">String</span> parentJobId = <span class="string">''</span> + ctx.getAsyncApexJobId();
+    System.debug(<span class="string">'Begin: executing finalizer attached to queueable job: '</span> + parentJobId);
+    <span class="statement">if</span> (ctx.getResult() == ParentJobResult.SUCCESS) {
+        System.debug(<span class="string">'Parent queueable job ['</span> + parentJobId + <span class="string">'] completed successfully.'</span>);
+    } <span class="statement">else</span> {
+        System.debug(<span class="string">'Parent queueable job ['</span> + parentJobId + <span class="string">'] failed due to unhandled exception: '</span> + ctx.getException().getMessage());
+        System.debug(<span class="string">'Enqueueing another instance of the queueable...'</span>);
+        <span class="keyword">String</span> newJobId = <span class="string">''</span> + System.enqueueJob(<span class="keyword">new</span> RetryLimitDemo()); <span class="onelineComment">// This call fails after 5 times when it hits the chaining limit</span>
+        System.debug(<span class="string">'Enqueued new job: '</span> + newJobId);
+    }
+    System.debug(<span class="string">'Completed: execution of finalizer attached to queueable job: '</span> + parentJobId);
+  }
+}</pre></div>
+
+            </div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Considerations</h2>
+
+            
+            <p class="p">If a job request is terminated unexpectedly, such as a database shutdown during
+                system upgrade, the transaction finalizer can fail to execute.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Best Practices</h2>
+
+            
+            <p class="p">We urge ISVs to exercise caution in using global Finalizers with state-mutating
+                methods in packages. If a subscriber org’s implementation invokes such methods in
+                the global Finalizer, it can result in unexpected behavior. Examine all
+                state-mutating methods to see how they affect the finalizer state and overall
+                behavior. </p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

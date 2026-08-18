@@ -1,0 +1,615 @@
+<a name="apex_class_commercetax_TaxDetailsResponse"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">TaxDetailsResponse Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores details of the tax values that an external tax engine
+            calculates in response to a tax calculation request.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercetax.htm" title="Manage the communication between Salesforce and an external tax engine.">CommerceTax</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">If your tax calculation request contains multiple line items,
+            we recommend building your adapter using a list of <samp class="codeph ">TaxDetailsResponse</samp> instances. Each instance represents the tax details
+            calculated for a given line item.</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>List&lt;commercetax.TaxDetailsResponse&gt; taxDetailsResponses = new List&lt;commercetax.TaxDetailsResponse&gt;();
+                 for(integer i =0;i&lt;1;i++){
+                     Integer rate  = 1;
+                     Double taxableAmount = lineItem.amount;
+                     commercetax.TaxDetailsResponse taxDetailsResponse = new commercetax.TaxDetailsResponse();
+                     taxDetailsResponse.setRate(Double.valueOf(rate));
+                     taxDetailsResponse.setTaxableAmount(taxableAmount);
+                     Double tax = taxableAmount*rate;
+                     totalLineTax+=tax;
+                     taxDetailsResponse.setTax(taxableAmount*rate);
+                     taxDetailsResponse.setExemptAmount(0);
+                     taxDetailsResponse.setExemptReason('exemptReason');
+                     taxDetailsResponse.setTaxRegionId('taxRegionId');
+                     taxDetailsResponse.setTaxId(String.valueOf(getRandomInteger(0,2323233)));
+                     taxDetailsResponse.setSerCode('serCode');
+                     taxDetailsResponse.setTaxAuthorityTypeId('taxAuthorityTypeId');
+                     if(request.DocumentCode == 'SetsNullForResponseWithoutException'){
+                         taxDetailsResponse.setImposition(null);
+                     }else{
+                         commercetax.ImpositionResponse imposition = new commercetax.ImpositionResponse();
+                         imposition.setSubType('subtype');
+                         imposition.setType('type');
+                         taxDetailsResponse.setImposition(imposition);
+                     }
+ 
+                     if(request.DocumentCode == 'SetsNullForResponseWithoutException'){
+                         taxDetailsResponse.setJurisdiction(null);
+                     }else{
+                         commercetax.JurisdictionResponse jurisdiction = new commercetax.JurisdictionResponse();
+                         jurisdiction.setCountry('country');
+                         jurisdiction.setRegion('region');
+                         jurisdiction.setName('name');
+                         jurisdiction.setStateAssignedNumber('stateAssignedNo');
+                         jurisdiction.setId('id');
+                         jurisdiction.setLevel('level');
+                         taxDetailsResponse.setJurisdiction(jurisdiction);
+                     }
+ 
+                     taxDetailsResponses.add(taxDetailsResponse);
+                 }
+                 lineItemResponse.setTaxes(taxDetailsResponses);
+                 totalTax +=totalLineTax;
+                 totalAmount+=lineItem.amount;</pre></div>
+</div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_methods">TaxDetailsResponse Methods</a></strong><br>
+Learn more about the available methods with the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_methods">
+<a name="apex_commercetax_TaxDetailsResponse_methods"><!-- --></a>
+  <h2 class="helpHead2">TaxDetailsResponse Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Learn more about the available methods with the <samp class="codeph ">TaxDetailsResponse</samp> class.</div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph apex_code">TaxDetailsResponse</samp> class includes these
+        methods.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setCustomTaxAttributes">setCustomTaxAttributes(customTaxAttributes)</a></strong><br>
+Uses an instance of <samp class="codeph ">CustomTaxAttributesResponse</samp> class to include additional attributes in the tax       response at the tax line item level.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setExemptAmount">setExemptAmount(exemptAmount)</a></strong><br>
+Sets the ExemptAmount field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setExemptReason">setExemptReason(reason)</a></strong><br>
+Sets the ExemptReason field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setImposition">setImposition(imposition)</a></strong><br>
+Sets the Imposition field of the <samp class="codeph ">TaxDetailsResponse</samp> class using an instance of the <samp class="codeph ">ImpositionResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setJurisdiction">setJurisdiction(jurisdiction)</a></strong><br>
+Sets the Jurisdiction field of the <samp class="codeph ">TaxDetailsResponse</samp> using an instance of the <samp class="codeph ">JurisdictionResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setRate">setRate(rate)</a></strong><br>
+Sets the Rate field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setSerCode">setSerCode(serCode)</a></strong><br>
+Sets the Service Code field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTax">setTax(tax)</a></strong><br>
+Sets the Tax field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTaxAuthorityTypeId">setTaxAuthorityTypeId(taxAuthorityTypeId)</a></strong><br>
+Sets the TaxAuthorityTypeId field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTaxId">setTaxId(taxId)</a></strong><br>
+Sets the TaxId field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTaxRegionId">setTaxRegionId(taxRegionId)</a></strong><br>
+Sets the TaxRegionId field on the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTaxRuleDetails">setTaxRuleDetails(taxRuleDetails)</a></strong><br>
+Sets the       TaxRuleDetails       field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_commercetax_TaxDetailsResponse_setTaxableAmount">setTaxableAmount(taxableAmount)</a></strong><br>
+Sets the TaxableAmount field of the <samp class="codeph ">TaxDetailsResponse class</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setCustomTaxAttributes">
+<a name="apex_commercetax_TaxDetailsResponse_setCustomTaxAttributes"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setCustomTaxAttributes(customTaxAttributes)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Uses an instance of <samp class="codeph ">CustomTaxAttributesResponse</samp> class to include additional attributes in the tax
+      response at the tax line item level.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">global void
+          setCustomTaxAttributes(commercetax.CustomTaxAttributesResponse
+          customTaxAttributes)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">customTaxAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CustomTaxAttributesResponse.htm#apex_class_commercetax_CustomTaxAttributesResponse" title="Sets additional data or custom attributes in the tax response.">CustomTaxAttributesResponse</a></p>
+<p class="p">Additional</p>
+<p class="p">data or custom attributes to include in the tax response.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setExemptAmount">
+<a name="apex_commercetax_TaxDetailsResponse_setExemptAmount"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setExemptAmount(exemptAmount)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the ExemptAmount field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setExemptAmount(<span class="keyword">Double</span>
+      exemptAmount)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">exemptAmount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Amount of tax on a line item that is exempt from tax calculation.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setExemptReason">
+<a name="apex_commercetax_TaxDetailsResponse_setExemptReason"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setExemptReason(reason)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the ExemptReason field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setExemptReason(<span class="keyword">String</span>
+      reason)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">reason</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Optional user-defined information on why a tax exemption applies to a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setImposition">
+<a name="apex_commercetax_TaxDetailsResponse_setImposition"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setImposition(imposition)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Imposition field of the <samp class="codeph ">TaxDetailsResponse</samp> class using an instance of the <samp class="codeph ">ImpositionResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setImposition(commercetax.ImpositionResponse
+          imposition)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">imposition</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_ImpositionResponse.htm#apex_class_commercetax_ImpositionResponse" title="Stores details of tax impositions from the external tax engine.">ImpositionResponse</a></p>
+<p class="p">Contains information about why tax was imposed on a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setJurisdiction">
+<a name="apex_commercetax_TaxDetailsResponse_setJurisdiction"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setJurisdiction(jurisdiction)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Jurisdiction field of the <samp class="codeph ">TaxDetailsResponse</samp> using an instance of the <samp class="codeph ">JurisdictionResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setJurisdiction(commercetax.JurisdictionResponse
+          jurisdiction)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">jurisdiction</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_JurisdictionResponse.htm#apex_class_commercetax_JurisdictionResponse" title="Stores details from the external tax engine about the tax jurisdiction used in the tax calculation process. A tax jurisdiction represents a government entity that collects tax.">JurisdictionResponse</a></p>
+<p class="p">Contains address information about the tax jurisdiction used in the tax calculation
+            process.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setRate">
+<a name="apex_commercetax_TaxDetailsResponse_setRate"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setRate(rate)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Rate field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setRate(<span class="keyword">Double</span>
+      rate)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">rate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Tax used during tax calculation.</p>
+<p class="p">This value is often a decimal amount, such as 0.1 or
+            0.06, based on the applied tax percentage.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setSerCode">
+<a name="apex_commercetax_TaxDetailsResponse_setSerCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setSerCode(serCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Service Code field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setSerCode(<span class="keyword">String</span>
+      serCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">serCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Service code used in tax calculation.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTax">
+<a name="apex_commercetax_TaxDetailsResponse_setTax"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTax(tax)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Tax field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTax(<span class="keyword">Double</span>
+      tax)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">tax</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Amount of tax</p>
+<p class="p">for a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTaxAuthorityTypeId">
+<a name="apex_commercetax_TaxDetailsResponse_setTaxAuthorityTypeId"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxAuthorityTypeId(taxAuthorityTypeId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the TaxAuthorityTypeId field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTaxAuthorityTypeId(<span class="keyword">String</span>
+      taxAuthorityTypeId)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxAuthorityTypeId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">ID of the organization that oversees tax collection.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTaxId">
+<a name="apex_commercetax_TaxDetailsResponse_setTaxId"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxId(taxId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the TaxId field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTaxId(<span class="keyword">String</span>
+      taxId)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">ID value used to determine</p>
+<p class="p">the tax for an individual or business.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTaxRegionId">
+<a name="apex_commercetax_TaxDetailsResponse_setTaxRegionId"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxRegionId(taxRegionId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the TaxRegionId field on the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTaxRegionId(<span class="keyword">String</span>
+      taxRegionId)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxRegionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">ID of the tax region used in tax calculation. A tax region represents a geographical
+            area where tax is applied.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTaxRuleDetails">
+<a name="apex_commercetax_TaxDetailsResponse_setTaxRuleDetails"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxRuleDetails(taxRuleDetails)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the
+      TaxRuleDetails
+      field of the <samp class="codeph ">TaxDetailsResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setTaxRuleDetails(commercetax.RuleDetailsResponse
+          taxRuleDetails)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxRuleDetails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_RuleDetailsResponse.htm#apex_class_commercetax_RuleDetailsResponse" title="Contains details about the tax rules used for tax calculation.">RuleDetailsResponse</a></p>
+<p class="p">Information about</p>
+<p class="p">the Salesforce tax rules used during tax calculation.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_TaxDetailsResponse_setTaxableAmount">
+<a name="apex_commercetax_TaxDetailsResponse_setTaxableAmount"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxableAmount(taxableAmount)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the TaxableAmount field of the <samp class="codeph ">TaxDetailsResponse class</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTaxableAmount(<span class="keyword">Double</span>
+      taxableAmount)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxableAmount</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Amount that c</p>
+<p class="p">an be taxed on a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

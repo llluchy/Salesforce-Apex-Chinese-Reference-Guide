@@ -1,0 +1,329 @@
+<a name="apex_qs_core_concepts"><!-- --></a><h1 class="helpHead1">Understanding Apex Core Concepts</h1><div class="body refbody">
+<div class="shortdesc">Apex code typically contains many things that you're familiar with from other
+        programming languages.</div>
+
+        <div class="section">
+            <div class="fig fignone">
+<span class="figcap">Programming elements in Apex </span>
+                
+                <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2FAC_Elements.png&folder=apexcode" alt="Programming Elements in Apex Code"></span>
+            </div>
+
+            <p class="p">The section describes the basic functionality of Apex, as well as some of the core
+                concepts.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Version Settings</h2>
+
+            
+            <p class="p">In the Salesforce user interface you can specify a version of the Salesforce API
+                against which to save your Apex class or trigger. This setting indicates not only
+                the version of SOAP API to use, but which version of Apex as well. You can change
+                the version after saving. Every class or trigger name must be unique. You can’t save
+                the same class or trigger against different versions.</p>
+
+            <p class="p">You can also use version settings to associate a class or trigger with a particular
+                version of a managed package that is installed in your organization from
+                AppExchange. This version of the managed package continues to be used by the class
+                or trigger if later versions of the managed package are installed, unless you
+                manually update the version setting. To add an installed managed package to the
+                settings list, select a package from the list of available packages. The list is
+                only displayed if you have an installed managed package that is not already
+                associated with the class or trigger.</p>
+
+            <div class="fig fignone">
+                <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2FAPI_version.jpg&folder=apexcode" alt="The Apex Class Edit page. The Version Settings tab is selected and the Version is set to 16.0."></span>
+            </div>
+
+            <p class="p">For more information about using version settings with managed packages, see
+                    <cite class="cite">About Package Versions</cite> in Salesforce Help.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Naming Variables, Methods and Classes</h2>
+
+            
+            <p class="p">You can’t use any of the Apex reserved keywords when naming variables, methods, or
+                classes. These include words that are part of Apex and the Lightning Platform, such
+                as <samp class="codeph apex_code">list</samp>, <samp class="codeph apex_code">test</samp>, or <samp class="codeph apex_code">account</samp>, as well as
+                    <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_reserved_words.htm" title="These words can be used only as keywords.">reserved
+                    keywords</a>. </p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Variables and Expressions</h2>
+
+            
+            <p class="p">Apex is a <dfn class="term">strongly-typed</dfn> language, that is, you must declare the data
+                type of a variable when you first refer to it. Apex data types include basic types
+                such as Integer, Date, and Boolean, as well as more advanced types such as lists,
+                maps, objects, and sObjects. </p>
+
+            <p class="p">Variables are declared with a name and a data type. You can assign a value to a
+                variable when you declare it. You can also assign values later. Use the following
+                syntax when declaring variables:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"> <var class="keyword varname">datatype</var>​ <var class="keyword varname">variable_name</var> [ = <var class="keyword varname">value</var>];</pre></div>
+
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>The semi-colon at the end of preceding codeblock is <em class="ph i">not</em>
+                optional. You must end all statements with a semi-colon.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">The following are examples of variable declarations:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// The following variable has the data type of Integer with the name Count, </span>
+<span class="onelineComment">// and has the value of 0.</span>
+<span class="keyword">Integer</span> Count = 0;
+<span class="onelineComment">// The following variable has the data type of Decimal with the name Total. Note </span>
+<span class="onelineComment">// that no value has been assigned to it.</span>
+<span class="keyword">Decimal</span> Total;
+<span class="onelineComment">// The following variable is an account, which is also referred to as an sObject.</span>
+Account MyAcct = <span class="keyword">new</span> Account();</pre></div>
+
+            <p class="p">In Apex, all primitive data type arguments, such as Integer or String, are passed
+                into methods by value. This fact means that any changes to the arguments exist only
+                within the scope of the method. When the method returns, the changes to the
+                arguments are lost.</p>
+
+            <p class="p">Non-primitive data type arguments, such as sObjects, are passed into methods by
+                reference. Therefore, when the method returns, the passed-in argument still
+                references the same object as before the method call. Within the method, the
+                reference can't be changed to point to another object, but the values of the
+                object's fields can be changed.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Statements</h2>
+
+            
+            <p class="p">A <dfn class="term">statement</dfn> is any coded instruction that performs an action.</p>
+
+            <p class="p">In Apex, statements must end with a semicolon and can be one of these types:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Assignment, such as assigning a value to a variable</li>
+
+                <li class="li">Conditional (if-else)</li>
+
+                <li class="li">Loops:<ul class="ul bulletList">
+                        <li class="li">Do-while</li>
+
+                        <li class="li">While</li>
+
+                        <li class="li">For</li>
+
+                    </ul>
+</li>
+
+                <li class="li">Locking</li>
+
+                <li class="li">Data Manipulation Language (DML)</li>
+
+                <li class="li">Transaction Control</li>
+
+                <li class="li">Method Invoking</li>
+
+                <li class="li">Exception Handling</li>
+
+            </ul>
+
+            <p class="p">A <dfn class="term">block</dfn> is a series of statements that are grouped with curly braces and
+                can be used in any place where a single statement is allowed. For example:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (<span class="keyword">true</span>) {
+    System.debug(1);
+    System.debug(2);
+} <span class="statement">else</span> {
+    System.debug(3);
+    System.debug(4);
+}</pre></div>
+
+            <p class="p">In cases where a block consists of only one statement, the curly braces can be left
+                off. For example:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (<span class="keyword">true</span>) 
+    System.debug(1);
+<span class="statement">else</span> 
+    System.debug(2);
+
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Collections</h2>
+
+            
+            <p class="p">Apex has the following types of collections:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Lists (arrays)</li>
+
+                <li class="li">Maps</li>
+
+                <li class="li">Sets</li>
+
+            </ul>
+
+            <p class="p">A <dfn class="term">list</dfn> is a collection of elements, such as Integers, Strings, objects, or
+                other collections. Use a list when the sequence of elements is important. You can have
+                duplicate elements in a list.</p>
+
+            <p class="p">The first index position in a list is always 0. </p>
+
+            <p class="p">To create a list:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Use the <samp class="codeph apex_code"><span class="keyword">new</span></samp> keyword </li>
+
+                <li class="li">Use the <samp class="codeph apex_code">List</samp> keyword followed by the
+                    element type contained within <samp class="codeph apex_code">&lt;&gt;</samp>
+                    characters. </li>
+
+            </ul>
+
+            <p class="p">Use the following syntax for creating a list:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List &lt;<var class="keyword varname">datatype</var>&gt; <var class="keyword varname">list_name</var>
+   [= <span class="keyword">new</span> List&lt;<var class="keyword varname">datatype</var>&gt;();] |
+   [=<span class="keyword">new</span> List&lt;<var class="keyword varname">datatype</var>&gt;{<var class="keyword varname">value</var> [, <var class="keyword varname">value2</var>. . .]};] |
+   ;
+</pre></div>
+
+            <p class="p">The following example creates a list of Integer, and assigns it to the variable <samp class="codeph apex_code">My_List</samp>. Remember, because Apex is strongly typed,
+            you must declare the data type of <samp class="codeph apex_code">My_List</samp> as a
+            list of Integer.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;<span class="keyword">Integer</span>&gt; My_List = <span class="keyword">new</span> List&lt;<span class="keyword">Integer</span>&gt;();</pre></div>
+
+            <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_lists.htm" title="A list is an ordered collection of elements that are distinguished by their indices. List elements can be of any data type—primitive types, collections, sObjects, user-defined types, and built-in Apex types.">Lists</a>.</p>
+
+            <p class="p">A <dfn class="term">set</dfn> is a collection of unique, unordered elements. It can contain
+            primitive data types, such as String, Integer, Date, and so on. It can also contain more
+            complex data types, such as sObjects. </p>
+
+            <p class="p">To create a set:</p>
+
+            <ul class="ul bulletList">
+             <li class="li">Use the <samp class="codeph apex_code"><span class="keyword">new</span></samp> keyword</li>
+
+             <li class="li">Use the <samp class="codeph apex_code">Set</samp> keyword followed by the
+                primitive data type contained within <samp class="codeph apex_code">&lt;&gt;</samp>
+                characters</li>
+
+            </ul>
+
+            <p class="p">Use the following syntax for creating a set:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Set&lt;<var class="keyword varname">datatype</var>&gt; <var class="keyword varname">set_name</var> 
+   [= <span class="keyword">new</span> Set&lt;<var class="keyword varname">datatype</var>&gt;();] |
+   [= <span class="keyword">new</span> Set&lt;<var class="keyword varname">datatype</var>&gt;{<var class="keyword varname">value</var> [, <var class="keyword varname">value2</var>. . .] };] |
+   ;</pre></div>
+
+            <p class="p">The following example creates a set of String. The values for the set are passed in using
+            the curly braces <samp class="codeph apex_code">{}</samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Set&lt;<span class="keyword">String</span>&gt; My_String = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;{<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>};</pre></div>
+
+            <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_sets.htm" title="A set is an unordered collection of elements that do not contain any duplicates. Set elements can be of any data type—primitive types, collections, sObjects, user-defined types, and built-in Apex types.">Sets</a>.</p>
+
+            <p class="p">A <dfn class="term">map</dfn> is a collection of key-value pairs. Keys can be any primitive data
+                type. Values can include primitive data types, as well as objects and other collections.
+                Use a map when finding something by key matters. You can have duplicate values in a map,
+                but each key must be unique. </p>
+
+            <p class="p">To create a map:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Use the <samp class="codeph apex_code"><span class="keyword">new</span></samp> keyword</li>
+
+                <li class="li">Use the <samp class="codeph apex_code">Map</samp> keyword followed by a key-value
+                    pair, delimited by a comma and enclosed in <samp class="codeph apex_code">&lt;&gt;</samp> characters.</li>
+
+            </ul>
+
+            <p class="p">Use the following syntax for creating a map:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<var class="keyword varname">key_datatype</var>, <var class="keyword varname">value_datatype</var>&gt; <var class="keyword varname">map_name</var>
+   [=<span class="keyword">new</span> Map&lt;<var class="keyword varname">key_datatype</var>, <var class="keyword varname">value_datatype</var>&gt;();] | 
+   [=<span class="keyword">new</span> Map&lt;<var class="keyword varname">key_datatype</var>, <var class="keyword varname">value_datatype</var>&gt;
+   {<var class="keyword varname">key1_value</var> =&gt; <var class="keyword varname">value1_value</var> 
+   [, <var class="keyword varname">key2_value</var> =&gt; <var class="keyword varname">value2_value</var>. . .]};] |
+   ;</pre></div>
+
+            <p class="p">The following example creates a map that has a data type of Integer for the key and
+                String for the value. In this example, the values for the map are being passed in
+                between the curly braces <samp class="codeph apex_code">{}</samp> as the map is being
+                created. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt; My_Map = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt;{1 =&gt; <span class="string">'a'</span>, 2 =&gt; <span class="string">'b'</span>, 3 =&gt; <span class="string">'c'</span>};</pre></div>
+
+            <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_collections_maps.htm" title="A map is a collection of key-value pairs where each unique key maps to a single value. Keys and values can be any data type—primitive types, collections, sObjects, user-defined types, and built-in Apex types.">Maps</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Branching</h2>
+
+            
+            <p class="p">An <samp class="codeph apex_code"><span class="statement">if</span></samp> statement is a true-false test that
+             enables your application to do different things based on a condition. The basic
+             syntax is as follows:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">if</span> (<var class="keyword varname">Condition</var>){
+<span class="onelineComment">// Do this if the condition is true</span>
+} <span class="statement">else</span> {
+<span class="onelineComment">// Do this if the condition is not true</span>
+}</pre></div>
+
+            <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_if_else.htm" title="The conditional statement in Apex works similarly to Java.">Conditional (If-Else) Statements</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using Loops</h2>
+
+            
+            <p class="p">While the <samp class="codeph apex_code"><span class="statement">if</span></samp> statement enables your
+                application to do things based on a condition, loops tell your application to do the
+                same thing again and again based on a condition. Apex supports the following types
+                of loops:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Do-while</li>
+
+                <li class="li">While</li>
+
+                <li class="li">For</li>
+
+            </ul>
+
+            <p class="p">A <dfn class="term">Do-while</dfn> loop checks the condition after the code has executed.</p>
+
+            <p class="p">A <dfn class="term">While</dfn> loop checks the condition at the start, before the code
+                executes.</p>
+
+            <p class="p">A <dfn class="term">For</dfn> loop enables you to more finely control the condition used with
+                the loop. In addition, Apex supports traditional For loops where you set the
+                conditions, as well as For loops that use lists and SOQL queries as part of the
+                condition. </p>
+
+            <p class="p">For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_loops.htm" title="Apex supports five types of procedural loops.">Loops</a>.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_intro_what_is_apex.htm" title="What is Apex?">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_intro_when_use_apex.htm" title="When Should I Use Apex?">Next →</a></li>
+</ul></div>
+</div>

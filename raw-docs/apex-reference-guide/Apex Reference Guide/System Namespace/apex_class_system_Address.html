@@ -1,0 +1,413 @@
+<a name="apex_class_system_Address"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Address Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods for accessing the component fields of address
+      compound fields.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Each of these methods is also equivalent to a read-only property. For each getter method,
+        you can access the property using dot notation. For example, <samp class="codeph apex_code">myAddress.getCity()</samp> is equivalent to <samp class="codeph apex_code">myAddress.city</samp>.</p>
+
+      <p class="p">You can’t use dot notation to access compound fields’ subfields directly on the parent
+        field. Instead, assign the parent field to a variable of type <samp class="codeph apex_code">Address</samp>, and then access its components. For example, to access the <samp class="codeph apex_code">City</samp> field in <samp class="codeph apex_code">myAccount.BillingAddress</samp>, do the following:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+Address addr = myAccount.BillingAddress;
+<span class="keyword">String</span> acctCity = addr.City;</pre></div>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>“Address” in Salesforce can also refer to the Address standard object.
+        When referencing the Address object in your Apex code, always use <samp class="codeph apex_code">Schema.Address</samp> instead of <samp class="codeph apex_code">Address</samp> to prevent confusion with the standard Address compound field. If
+        referencing both the Address object and the Address standard field in the same snippet, you
+        can differentiate between the two by using <samp class="codeph apex_code">System.Address</samp> for the field and <samp class="codeph apex_code">Schema.Address</samp> for the object.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Select and access Address fields.</span>
+<span class="onelineComment">// Call the getDistance() method in different ways.</span>
+Account[] records = [SELECT Id, BillingAddress FROM Account WITH USER_MODE LIMIT 10];
+<span class="statement">for</span>(Account acct : records) {
+   Address addr = acct.BillingAddress;
+   <span class="keyword">Double</span> lat = addr.latitude;
+   <span class="keyword">Double</span> lon = addr.longitude;
+   Location loc1 = Location.newInstance(30.1944,-97.6682);
+   <span class="keyword">Double</span> apexDist1 = addr.getDistance(loc1, <span class="string">'mi'</span>);
+   <span class="keyword">Double</span> apexDist2 = loc1.getDistance(addr, <span class="string">'mi'</span>);
+   Assert.areEqual(apexDist1, apexDist2);
+   <span class="keyword">Double</span> apexDist3 = Location.getDistance(addr, loc1, <span class="string">'mi'</span>);
+   Assert.areEqual(apexDist2, apexDist3);
+}</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_methods">Address Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_system_Address_methods">
+<a name="apex_system_Address_methods"><!-- --></a><h2 class="helpHead2">Address Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Address</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getCity">getCity()</a></strong><br>
+Returns the city field of this address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getCountry">getCountry()</a></strong><br>
+Returns the text-only country/territory name component of this       address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getCountryCode">getCountryCode()</a></strong><br>
+Returns the country/territory code of this address if state and       country/territory picklists are enabled in your organization. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getDistance">getDistance(toLocation, unit)</a></strong><br>
+Returns the distance from this location to the specified location       using the specified unit.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_System_Address_getGeocodeAccuracy">getGeocodeAccuracy()</a></strong><br>
+When using geolocation data for a given address, this method gives       you relative location information based on latitude and longitude values. For example, you can       find out if the latitude and longitude values point to the middle of the street, instead of       the exact address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getLatitude">getLatitude()</a></strong><br>
+Returns the latitude field of this address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getLongitude">getLongitude()</a></strong><br>
+Returns the longitude field of this address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getPostalCode">getPostalCode()</a></strong><br>
+Returns the postal code of this address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getState">getState()</a></strong><br>
+Returns the text-only state name component of this     address.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getStateCode">getStateCode()</a></strong><br>
+Returns the state code of this address if state and country/territory       picklists are enabled in your organization. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_system_Address.htm#apex_system_Address_getStreet">getStreet()</a></strong><br>
+Returns the street field of this address.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getCity">
+<a name="apex_system_Address_getCity"><!-- --></a><h3 class="helpHead3">getCity()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the city field of this address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getCity()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getCountry">
+<a name="apex_system_Address_getCountry"><!-- --></a><h3 class="helpHead3">getCountry()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the text-only country/territory name component of this
+      address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getCountry()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getCountryCode">
+<a name="apex_system_Address_getCountryCode"><!-- --></a><h3 class="helpHead3">getCountryCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the country/territory code of this address if state and
+      country/territory picklists are enabled in your organization. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getCountryCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getDistance">
+<a name="apex_system_Address_getDistance"><!-- --></a><h3 class="helpHead3">getDistance(toLocation, unit)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the distance from this location to the specified location
+      using the specified unit.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getDistance(Location toLocation, <span class="keyword">String</span>
+                    unit)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">toLocation</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_system_Location.htm#apex_class_system_Location" title="Contains methods for accessing the component fields of geolocation compound fields.">Location</a></p>
+<p class="p">The <samp class="codeph apex_code">Location</samp> to which you want to calculate
+            the distance from the current <samp class="codeph apex_code">Location</samp>.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">unit</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The distance unit you want to use: <samp class="codeph nolang">mi</samp> or <samp class="codeph nolang">km</samp>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Address_getGeocodeAccuracy">
+<a name="apex_System_Address_getGeocodeAccuracy"><!-- --></a>
+  <h3 class="helpHead3">getGeocodeAccuracy()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>When using geolocation data for a given address, this method gives
+      you relative location information based on latitude and longitude values. For example, you can
+      find out if the latitude and longitude values point to the middle of the street, instead of
+      the exact address.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span>
+          getGeocodeAccuracy()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The <samp class="codeph apex_code">getGeocodeAccuracy()</samp> return value tells you more about the
+        location at a latitude and longitude for a given address. For example, <samp class="codeph nolang">Zip</samp> means the latitude and longitude point to the center of
+        the zip code area, in case a match for an exact street address can’t be found.</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d370222e510">Accuracy Value</th>
+
+              <th class="featureTableHeader  " id="d370222e513">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Address</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">In the same building</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">NearAddress</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Near the address</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Block</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Midway point of the block</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Street</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Midway point of the street</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">ExtendedZip</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the extended zip code area</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Zip</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the zip code area</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Neighborhood</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the neighborhood</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">City</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the city</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">County</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the county</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">State</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">Center of the state</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d370222e510" data-title="Accuracy Value"><samp class="codeph nolang">Unknown</samp></td>
+
+              <td class="entry" headers="d370222e513" data-title="Description">No match for the address was found</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+<div class="p">Geocodes are added only for some standard addresses.<ul class="ul bulletList">
+          <li class="li">
+<span class="keyword parmname">Billing Address</span> on accounts</li>
+
+          <li class="li">
+<span class="keyword parmname">Shipping Address</span> on accounts</li>
+
+          <li class="li">
+<span class="keyword parmname">Mailing Address</span> on contacts</li>
+
+          <li class="li">
+<span class="keyword parmname">Address</span> on leads</li>
+
+      </ul>
+</div>
+<p class="p">Person accounts are not supported.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For <samp class="codeph apex_code">getGeocodeAccuracy()</samp> to work, set up and activate the geocode data
+        integration rules for the related address fields.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getLatitude">
+<a name="apex_system_Address_getLatitude"><!-- --></a><h3 class="helpHead3">getLatitude()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the latitude field of this address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getLatitude()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getLongitude">
+<a name="apex_system_Address_getLongitude"><!-- --></a><h3 class="helpHead3">getLongitude()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the longitude field of this address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Double</span> getLongitude()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getPostalCode">
+<a name="apex_system_Address_getPostalCode"><!-- --></a><h3 class="helpHead3">getPostalCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the postal code of this address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getPostalCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getState">
+<a name="apex_system_Address_getState"><!-- --></a><h3 class="helpHead3">getState()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the text-only state name component of this
+    address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getState()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getStateCode">
+<a name="apex_system_Address_getStateCode"><!-- --></a><h3 class="helpHead3">getStateCode()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the state code of this address if state and country/territory
+      picklists are enabled in your organization. Otherwise, returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getStateCode()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_system_Address_getStreet">
+<a name="apex_system_Address_getStreet"><!-- --></a><h3 class="helpHead3">getStreet()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the street field of this address.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getStreet()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

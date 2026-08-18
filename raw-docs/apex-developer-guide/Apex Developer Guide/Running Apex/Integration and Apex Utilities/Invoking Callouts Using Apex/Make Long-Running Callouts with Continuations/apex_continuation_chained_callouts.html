@@ -1,0 +1,126 @@
+<a name="apex_continuation_chained_callouts"><!-- --></a><h1 class="helpHead1">Chaining Asynchronous Callouts</h1><div class="body conbody">
+<div class="shortdesc">If the order of the callouts matters, or when a callout is conditional on the response
+      of another callout, you can chain callout requests. Chaining callouts means that the next
+      callout is made only after the response of the previous callout returns. For example, you
+      might need to chain a callout to get warranty extension information after the warranty service
+      response indicates that the warranty expired. You can chain up to three callouts.</div>
+
+      <div class="section">
+         <p class="p">The following Visualforce and Apex examples show how to chain one callout to another.
+            The Visualforce page is shown first. The Visualforce page contains a button that invokes
+            the action method <samp class="codeph apex_code">invokeInitialRequest</samp> in the
+            controller. The Visualforce process is suspended each time a continuation is returned.
+            The Visualforce process resumes after each response is returned and renders each
+            response in the <span class="keyword parmname">outputPanel</span> component.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">&lt;apex:page controller=<span class="string">"ChainedContinuationController"</span> showChat=<span class="string">"false"</span> showHeader=<span class="string">"false"</span>&gt;
+   &lt;apex:form &gt;
+      &lt;!-- Invokes the action method when the user clicks <span class="statement">this</span> button. --&gt;
+      &lt;apex:commandButton action=<span class="string">"{!invokeInitialRequest}"</span> value=<span class="string">"Start Request"</span> reRender=<span class="string">"panel"</span>/&gt;  
+   &lt;/apex:form&gt;
+
+   &lt;apex:outputPanel id=<span class="string">"panel"</span>&gt;
+       &lt;!-- Displays the response body of the initial <span class="keyword">callout</span>. --&gt;   
+       &lt;apex:outputText value=<span class="string">"{!result1}"</span> /&gt;
+       
+       &lt;br/&gt;
+       &lt;!-- Displays the response body of the chained <span class="keyword">callout</span>. --&gt;
+       &lt;apex:outputText value=<span class="string">"{!result2}"</span> /&gt;
+   &lt;/apex:outputPanel&gt; 
+   
+&lt;/apex:page&gt;</pre></div>
+
+         <p class="p">This example show the controller class for the Visualforce page. The <samp class="codeph apex_code">invokeInitialRequest</samp> method creates the first
+            continuation. The callback method (<samp class="codeph apex_code">processInitialResponse</samp>) processes the response of the first callout. If
+            this response meets a certain condition, the method chains another callout by returning
+            a second continuation. After the response of the chained continuation is returned, the
+            second callback method (<samp class="codeph apex_code">processChainedResponse</samp>)
+            is invoked and processes the second response.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ChainedContinuationController {
+
+    <span class="onelineComment">// Unique label for the initial callout request</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel1;
+    <span class="onelineComment">// Unique label for the chained callout request</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel2;
+    <span class="onelineComment">// Result of initial callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result1 {get;set;}
+    <span class="onelineComment">// Result of chained callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result2 {get;set;}
+    <span class="onelineComment">// Endpoint of long-running service</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL1 = 
+        <span class="string">'&lt;Insert your first service URL&gt;'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL2 = 
+        <span class="string">'&lt;Insert your second service URL&gt;'</span>;
+           
+    <span class="onelineComment">// Action method</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> invokeInitialRequest() {
+      <span class="onelineComment">// Create continuation with a timeout</span>
+      Continuation con = <span class="keyword">new</span> Continuation(60);
+      <span class="onelineComment">// Set callback method</span>
+      con.continuationMethod=<span class="string">'processInitialResponse'</span>;
+      
+      <span class="onelineComment">// Create first callout request</span>
+      HttpRequest req = <span class="keyword">new</span> HttpRequest();
+      req.setMethod(<span class="string">'GET'</span>);
+      req.setEndpoint(LONG_RUNNING_SERVICE_URL1);
+      
+      <span class="onelineComment">// Add initial callout request to continuation</span>
+      <span class="statement">this</span>.requestLabel1 = con.addHttpRequest(req);              
+      
+      <span class="onelineComment">// Return the continuation</span>
+      <span class="statement">return</span> con;  
+    }
+    
+    <span class="onelineComment">// Callback method for initial request</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> processInitialResponse() {   
+      <span class="onelineComment">// Get the response by using the unique label</span>
+      HttpResponse response = Continuation.getResponse(<span class="statement">this</span>.requestLabel1);
+      <span class="onelineComment">// Set the result variable that is displayed on the Visualforce page</span>
+      <span class="statement">this</span>.result1 = response.getBody();
+           
+      Continuation chainedContinuation = <span class="keyword">null</span>;
+      <span class="onelineComment">// Chain continuation if some condition is met</span>
+      <span class="statement">if</span> (response.getBody().toLowerCase().contains(<span class="string">'expired'</span>)) {
+          <span class="onelineComment">// Create a second continuation </span>
+          chainedContinuation = <span class="keyword">new</span> Continuation(60);
+          <span class="onelineComment">// Set callback method</span>
+          chainedContinuation.continuationMethod=<span class="string">'processChainedResponse'</span>;
+          
+          <span class="onelineComment">// Create callout request</span>
+          HttpRequest req = <span class="keyword">new</span> HttpRequest();
+          req.setMethod(<span class="string">'GET'</span>);
+          req.setEndpoint(LONG_RUNNING_SERVICE_URL2);
+          
+          <span class="onelineComment">// Add callout request to continuation</span>
+          <span class="statement">this</span>.requestLabel2 = chainedContinuation.addHttpRequest(req); 
+      }
+      
+      <span class="onelineComment">// Start another continuation </span>
+      <span class="statement">return</span> chainedContinuation;  
+    }    
+    
+    <span class="onelineComment">// Callback method for chained request</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> processChainedResponse() {   
+      <span class="onelineComment">// Get the response for the chained request</span>
+      HttpResponse response = Continuation.getResponse(<span class="statement">this</span>.requestLabel2);
+      <span class="onelineComment">// Set the result variable that is displayed on the Visualforce page</span>
+      <span class="statement">this</span>.result2 = response.getBody();
+           
+      <span class="onelineComment">// Return null to re-render the original Visualforce page</span>
+      <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The response of a continuation must be retrieved before you create a new continuation
+            and before the Visualforce request is suspended again. You can’t retrieve an old
+            response from an earlier continuation in the chain of continuations. </p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+   </div><div id="sfdc:seealso" class="related-links"></div>

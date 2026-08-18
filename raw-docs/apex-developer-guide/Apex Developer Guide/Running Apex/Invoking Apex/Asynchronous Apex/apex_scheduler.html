@@ -1,0 +1,706 @@
+<a name="apex_scheduler"><!-- --></a><h1 class="helpHead1">Apex Scheduler</h1><div class="body conbody">
+<div class="shortdesc">Use the Apex Scheduler to delay execution so that you can run Apex classes at a
+        specified time. This is ideal for daily or weekly maintenance tasks using Batch
+        Apex.</div>
+
+        <p class="p">To invoke Apex classes to run at specific times, first implement the <samp class="codeph apex_code">Schedulable</samp> interface for the class, then specify
+            the schedule using either the Schedule Apex page in the Salesforce user interface, or
+            the <samp class="codeph apex_code">System.schedule</samp> method.</p>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Salesforce schedules the class for execution at the specified time.
+            Actual execution can be delayed based on service availability.<p class="p" id="ClassSchedulerLimit"><a name="ClassSchedulerLimit"><!-- --></a>You can only have 100 scheduled Apex jobs at one time. You
+                can evaluate your current count by viewing the Scheduled Jobs page in Salesforce and
+                creating a custom view with a type filter equal to “Scheduled Apex”.
+                You can also programmatically query the CronTrigger and CronJobDetail objects to get
+                the count of Apex scheduled jobs.</p>
+<p class="p">Use extreme care if you’re planning
+                to schedule a class from a trigger. You must be able to guarantee that the trigger
+                won’t add more scheduled classes than the limit. In particular, consider API
+                bulk updates, import wizards, mass record changes through the user interface, and
+                all cases where more than one record can be updated at a time.</p>
+<p class="p">If there are
+                one or more active scheduled jobs for an Apex class, you can’t update the class or
+                any classes referenced by this class through the Salesforce user interface. However,
+                you can enable deployments to update the class with active scheduled jobs by using
+                the Metadata API (for example, when using the Salesforce extensions for Visual
+                Studio Code). See “Deployment Connections for Change Sets” in Salesforce
+            Help.</p>
+</p>
+</div>
+</div></div></div></div>
+
+        <div class="section" id="schedulable_interface_implementing">
+<a name="schedulable_interface_implementing"><!-- --></a><h2 class="helpHead2">Implementing the <span class="titlecodeph">Schedulable</span>
+                    Interface</h2>
+<div class="p">
+<p class="p">To schedule an Apex class to run at regular intervals, first
+                write an Apex class that implements the Salesforce-provided interface <samp class="codeph apex_code">Schedulable</samp>. </p>
+<p class="p">The scheduler runs as
+                system—all classes are executed, whether the user has permission to execute
+                the class or not.</p>
+<p class="p">To monitor or stop the execution of a scheduled Apex job
+                using the Salesforce user interface, from Setup, enter <kbd class="ph userinput">Scheduled
+                    Jobs</kbd> in the <span class="keyword parmname">Quick Find</span> box, then select
+                    <strong class="ph uicontrol">Scheduled Jobs</strong>.</p>
+<div class="p">The <samp class="codeph apex_code">Schedulable</samp> interface contains one <samp class="codeph apex_code">execute</samp> method that must be
+                implemented.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> execute(SchedulableContext <var class="keyword varname">sc</var>){}</pre></div>
+</div>
+<p class="p">The
+                implemented method must be declared as <samp class="codeph apex_code"><span class="keyword">global</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</p>
+<p class="p">Use
+                this method to instantiate the class you want to schedule. </p>
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>Though it’s possible to do additional processing in the <samp class="codeph apex_code">execute</samp> method, we recommend that all
+                processing take place in a separate class.</p>
+</div>
+</div></div></div></div>
+<p class="p">This example implements the
+                    <samp class="codeph apex_code">Schedulable</samp> interface for a class
+                called <samp class="codeph apex_code">MergeNumbers</samp>:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ScheduledMerge <span class="keyword">implements</span> Schedulable {
+   <span class="keyword">public</span> <span class="keyword">void</span> execute(SchedulableContext SC) {
+      MergeNumbers M = <span class="keyword">new</span> MergeNumbers(); 
+   }
+}
+</pre></div>
+<p class="p">To schedule the class, execute this example in the Developer
+                Console.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">ScheduledMerge m = <span class="keyword">new</span> ScheduledMerge();
+<span class="keyword">String</span> sch = <span class="string">'20 30 8 10 2 ?'</span>;
+<span class="keyword">String</span> jobID = System.schedule(<span class="string">'Merge Job'</span>, sch, m);</pre></div>
+<p class="p">You can also use
+                the <samp class="codeph apex_code">Schedulable</samp> interface with batch Apex
+                classes. The following example illustrates how to implement the <samp class="codeph apex_code">Schedulable</samp> interface for a batch Apex class
+                called <samp class="codeph apex_code">Batchable</samp>:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ScheduledBatchable <span class="keyword">implements</span> Schedulable {
+   <span class="keyword">global</span> <span class="keyword">void</span> execute(SchedulableContext sc) {
+      Batchable b = <span class="keyword">new</span> Batchable(); 
+      Database.executeBatch(b);
+   }
+}
+</pre></div>
+<p class="p">An easier way to schedule a batch job is to call the <samp class="codeph apex_code"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch_interface.htm#apex_batch_scheduleBatch_section" target="_blank" title="HTML (New Window)">System.scheduleBatch</a></samp> method without having to implement the
+                    <samp class="codeph apex_code">Schedulable</samp> interface.</p>
+<p class="p" id="getTriggerId"><a name="getTriggerId"><!-- --></a>Use the SchedulableContext object to track the scheduled job when
+                it's scheduled. The SchedulableContext <samp class="codeph apex_code">getTriggerID</samp> method returns the ID of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_crontrigger.htm" target="_blank" title="HTML (New Window)">CronTrigger</a> object associated
+                with this scheduled job as a string. You can query <samp class="codeph apex_code">CronTrigger</samp> to track the progress of the scheduled job.
+                </p>
+<p class="p">To
+                stop execution of a job that was scheduled, use the <samp class="codeph apex_code">System.abortJob</samp> method with the ID returned by the <samp class="codeph apex_code">getTriggerID</samp> method.</p>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Tracking the Progress of a Scheduled Job Using Queries</h2>
+
+            
+            <p class="p">After the Apex job has been scheduled, you can obtain more information about it by
+                running a SOQL query on CronTrigger. You can retrieve the number of times the job
+                has run, and the date and time when the job is scheduled to run again, as shown in
+                this example.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">CronTrigger ct = 
+    [SELECT TimesTriggered, NextFireTime
+    FROM CronTrigger WHERE Id = :jobID WITH USER_MODE];</pre></div>
+
+            <p class="p">The previous example assumes you have a <samp class="codeph apex_code">jobID</samp>
+                variable holding the ID of the job. The <samp class="codeph apex_code">System.schedule</samp> method returns the job ID. If you’re performing this
+                query inside the <samp class="codeph apex_code">execute</samp> method of your
+                schedulable class, you can obtain the ID of the current job by calling <samp class="codeph apex_code">getTriggerId</samp> on the SchedulableContext argument
+                variable. Assuming this variable name is <samp class="codeph apex_code">sc</samp>,
+                the modified example becomes:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">CronTrigger ct = 
+    [SELECT TimesTriggered, NextFireTime
+    FROM CronTrigger WHERE Id = :sc.getTriggerId() WITH USER_MODE];</pre></div>
+
+            <p class="p">You can also get the job’s name and the job’s type from the
+                CronJobDetail record associated with the CronTrigger record. To do so, use the
+                    <samp class="codeph apex_code">CronJobDetail</samp> relationship when
+                performing a query on CronTrigger. This example retrieves the most recent
+                CronTrigger record with the job name and type from CronJobDetail.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">CronTrigger job = 
+    [SELECT Id, CronJobDetail.Id, CronJobDetail.Name, CronJobDetail.JobType 
+    FROM CronTrigger WITH USER_MODE ORDER BY CreatedDate DESC LIMIT 1];</pre></div>
+
+            <p class="p">Alternatively, you can query CronJobDetail directly to get the job’s name and
+                type. This next example gets the job’s name and type for the CronTrigger
+                record queried in the previous example. The corresponding CronJobDetail record ID is
+                obtained by the <samp class="codeph apex_code">CronJobDetail.Id</samp> expression
+                on the CronTrigger record.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">CronJobDetail ctd = 
+    [SELECT Id, Name, JobType 
+    FROM CronJobDetail WHERE Id = :job.CronJobDetail.Id WITH USER_MODE];</pre></div>
+
+            <p class="p">To obtain the total count of all Apex scheduled jobs, excluding all other scheduled
+                job types, perform the this query. Note the value '7' is specified for the job type,
+                which corresponds to the scheduled Apex job type.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">SELECT COUNT() FROM CronTrigger WHERE CronJobDetail.JobType = <span class="string">'7'</span> WITH USER_MODE</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Testing the Apex
+                    Scheduler</h2>
+<div class="p">
+<p class="p">Here’s
+                an example of how to test using the Apex scheduler. </p>
+<p class="p">The <samp class="codeph apex_code">System.schedule</samp> method starts an asynchronous
+                process. When you test scheduled Apex, you must ensure that the scheduled job is
+                finished before testing against the results. Use the Test methods <samp class="codeph apex_code">startTest</samp> and <samp class="codeph apex_code">stopTest</samp> around the <samp class="codeph apex_code">System.schedule</samp> method to ensure it finishes before continuing your
+                test. All asynchronous calls made after the <samp class="codeph apex_code">startTest</samp> method are collected by the system. When <samp class="codeph apex_code">stopTest</samp> is executed, all asynchronous processes
+                are run synchronously. If you don’t include the <samp class="codeph apex_code">System.schedule</samp> method within the <samp class="codeph apex_code">startTest</samp> and <samp class="codeph apex_code">stopTest</samp> methods, the scheduled job executes at the end of your test
+                method for Apex saved using Salesforce API version 25.0 and later, but not in
+                earlier versions. </p>
+<div class="p">This example defines a class to be tested.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> TestScheduledApexFromTestMethod <span class="keyword">implements</span> Schedulable {
+
+<span class="onelineComment">// This test runs a scheduled job at midnight Sept. 3rd. 2042</span>
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> CRON_EXP = <span class="string">'0 0 0 3 9 ? 2042'</span>;
+   
+   <span class="keyword">public</span> <span class="keyword">void</span> execute(SchedulableContext ctx) {
+      CronTrigger ct = [SELECT Id, CronExpression, TimesTriggered, NextFireTime
+                FROM CronTrigger WHERE Id = :ctx.getTriggerId() WITH USER_MODE];
+
+      Assert.areEqual(CRON_EXP, ct.CronExpression);
+      Assert.areEqual(0, ct.TimesTriggered);
+      Assert.areEqual(<span class="string">'2042-09-03 00:00:00'</span>, <span class="keyword">String</span>.valueOf(ct.NextFireTime));
+
+      Account a = [SELECT Id, Name FROM Account WHERE Name = 
+                  <span class="string">'testScheduledApexFromTestMethod'</span> WITH USER_MODE];
+      a.name = <span class="string">'testScheduledApexFromTestMethodUpdated'</span>;
+      <span class="statement">update</span> <span class="statement">as</span> user a;
+   }   
+}</pre></div>
+</div>
+<div class="p">This code tests the
+                class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> TestClass {
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">static</span> <span class="keyword">void</span> test() {
+    Test.startTest();
+
+    Account a = <span class="keyword">new</span> Account();
+    a.Name = <span class="string">'testScheduledApexFromTestMethod'</span>;
+    <span class="statement">insert</span> <span class="statement">as</span> user a;
+
+    <span class="onelineComment">// Schedule the test job</span>
+
+    <span class="keyword">String</span> jobId = System.schedule(
+      <span class="string">'testBasicScheduledApex'</span>,
+      TestScheduledApexFromTestMethod.CRON_EXP,
+      <span class="keyword">new</span> TestScheduledApexFromTestMethod()
+    );
+
+    <span class="onelineComment">// Get the information from the CronTrigger API object</span>
+    CronTrigger ct = [
+      SELECT Id, CronExpression, TimesTriggered, NextFireTime
+      FROM CronTrigger
+      WHERE Id = :jobId
+      WITH USER_MODE
+    ];
+
+    <span class="onelineComment">// Verify the expressions are the same</span>
+    Assert.areEqual(
+      TestScheduledApexFromTestMethod.CRON_EXP,
+      ct.CronExpression
+    );
+
+    <span class="onelineComment">// Verify the job has not run</span>
+    Assert.areEqual(0, ct.TimesTriggered);
+
+    <span class="onelineComment">// Verify the next time the job will run</span>
+    Assert.areEqual(<span class="string">'2042-09-03 00:00:00'</span>, <span class="keyword">String</span>.valueOf(ct.NextFireTime));
+    Assert.areNotEqual(
+      <span class="string">'testScheduledApexFromTestMethodUpdated'</span>,
+      [SELECT Id, Name FROM Account WHERE Id = :a.Id WITH USER_MODE].Name
+    );
+
+    Test.stopTest();
+
+    Assert.areEqual(
+      <span class="string">'testScheduledApexFromTestMethodUpdated'</span>,
+      [SELECT Id, Name FROM Account WHERE Id = :a.Id WITH USER_MODE].Name
+    );
+  }
+}</pre></div>
+</div>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Using the <span class="titlecodeph">System.schedule</span> Method</h2>
+
+            
+            <p class="p">After you implement a class with the <samp class="codeph apex_code">Schedulable</samp> interface, use the <samp class="codeph apex_code">System.schedule</samp> method to execute it. The scheduler runs as system—all
+                classes are executed, whether the user has permission to execute the class or
+                not.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Use extreme care if you’re planning to schedule a class from a trigger. You must
+                be able to guarantee that the trigger won’t add more scheduled classes than the
+                limit. In particular, consider API bulk updates, import wizards, mass record changes
+                through the user interface, and all cases where more than one record can be updated
+                at a time.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">The <samp class="codeph apex_code">System.schedule</samp> method takes three
+                arguments: a name for the job, a cron expression used to represent the time and date
+                the job is scheduled to run, and the name of the class.</p>
+
+            <p class="p">The name for the job must be unique among the jobs scheduled for execution. If you
+                attempt to schedule another job with the same name, you see the error
+                    <samp class="ph systemoutput">System.AsyncException: The Apex job named
+                        "<var class="keyword varname">jobName</var>" is already scheduled for
+                    execution</samp>.</p>
+
+            <div class="p">The cron expression has this
+                syntax:<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="cron_expression"><a name="cron_expression"><!-- --></a><var class="keyword varname">Seconds</var> <var class="keyword varname">Minutes</var> <var class="keyword varname">Hours</var> <var class="keyword varname">Day_of_month</var> <var class="keyword varname">Month</var> <var class="keyword varname">Day_of_week</var> <var class="keyword varname">Optional_year</var></pre></div>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce schedules the class for execution at the specified time. Actual
+                execution can be delayed based on service availability.<p class="p">The <samp class="codeph apex_code">System.schedule</samp> method uses the user's time
+                    zone as the basis of all schedules. </p>
+</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">These are the values for the expression:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d134881e359">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d134881e362">Values</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d134881e365">Special Characters</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Seconds</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">0–59</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters">None</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Minutes</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">0–59</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters">None</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Hours</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">0–23</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters"><samp class="codeph apex_code">, - * /</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Day_of_month</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">1–31</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters"><samp class="codeph apex_code">, - * ? / L W</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Month</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">1–12 or the following:<ul class="ul bulletList">
+                                    <li class="li"><samp class="codeph apex_code">JAN</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">FEB</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">MAR</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">APR</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">MAY</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">JUN</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">JUL</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">AUG</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">SEP</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">OCT</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">NOV</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">DEC</samp></li>
+
+                                </ul>
+</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters"><samp class="codeph apex_code">, - * /</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">Day_of_week</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">1–7 or the following:<ul class="ul bulletList">
+                                    <li class="li"><samp class="codeph apex_code">SUN</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">MON</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">TUE</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">WED</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">THU</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">FRI</samp></li>
+
+                                    <li class="li"><samp class="codeph apex_code">SAT</samp></li>
+
+                                </ul>
+</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters"><samp class="codeph apex_code">, - * ? / L #</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e359" data-title="Name"><var class="keyword varname">optional_year</var></td>
+
+                            <td class="entry" headers="d134881e362" data-title="Values">null or 1970–2099</td>
+
+                            <td class="entry" headers="d134881e365" data-title="Special Characters"><samp class="codeph apex_code">, - * /</samp></td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <p class="p">The special characters are defined as follows:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d134881e570">Special Character</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d134881e573">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">,</samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Delimits values. For example, use <samp class="codeph apex_code">JAN, MAR, APR</samp> to specify more than one month.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">-</samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies a range. For example, use <samp class="codeph apex_code">JAN-MAR</samp> to specify more than one
+                                month.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">*</samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies all values. For example, if <var class="keyword varname">Month</var> is
+                                specified as <samp class="codeph apex_code">*</samp>, the job is
+                                scheduled for every month.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">?</samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies no specific value. This option is only available for
+                                    <var class="keyword varname">Day_of_month</var> and
+                                    <var class="keyword varname">Day_of_week</var>. It’s typically used when
+                                specifying a value for one and not the other. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">/ </samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies increments. The number before the slash specifies when
+                                the intervals will begin, and the number after the slash is the
+                                interval amount. For example, if you specify <samp class="codeph apex_code">1/5</samp> for
+                                    <var class="keyword varname">Day_of_month</var>, the Apex class runs every fifth
+                                day of the month, starting on the first of the month.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">L </samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies the end of a range (last). This option is only
+                                available for <var class="keyword varname">Day_of_month</var> and
+                                    <var class="keyword varname">Day_of_week</var>. When used with <var class="keyword varname">Day of
+                                    month</var>, <samp class="codeph apex_code">L</samp>
+                                always means the last day of the month, such as January 31, February
+                                29 (for leap years), and so on. When used with
+                                    <var class="keyword varname">Day_of_week</var> by itself, it always means
+                                    <samp class="codeph apex_code">7</samp> or <samp class="codeph apex_code">SAT</samp>. When used with a
+                                    <var class="keyword varname">Day_of_week</var> value, it means the last of that
+                                type of day in the month. For example, if you specify <samp class="codeph apex_code">2L</samp>, you’re specifying the last
+                                Monday of the month. Don’t use a range of values with <samp class="codeph apex_code">L</samp> as the results can be
+                                unexpected.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code">W </samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies the nearest weekday (Monday-Friday) of the given day.
+                                This option is only available for <var class="keyword varname">Day_of_month</var>.
+                                For example, if you specify <samp class="codeph apex_code">20W</samp>, and the 20th is a Saturday, the class runs on the
+                                19th. If you specify <samp class="codeph apex_code">1W</samp>, and
+                                the first is a Saturday, the class doesn’t run in the previous
+                                month, but on the third, which is the following Monday. <p class="p">Use the
+                                        <samp class="codeph apex_code">L</samp> and <samp class="codeph apex_code">W</samp> together to specify the
+                                    last weekday of the month.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e570" data-title="Special Character"><samp class="codeph apex_code"># </samp></td>
+
+                            <td class="entry" headers="d134881e573" data-title="Description">Specifies the <var class="keyword varname">nth</var> day of the month, in the
+                                format <samp class="codeph apex_code"><var class="keyword varname">weekday</var>#<var class="keyword varname">day_of_month</var></samp>.
+                                This option is only available for <var class="keyword varname">Day_of_week</var>.
+                                The number before the <samp class="codeph apex_code">#</samp>
+                                specifies weekday (<samp class="codeph apex_code">SUN-SAT</samp>).
+                                The number after the <samp class="codeph apex_code">#</samp>
+                                specifies the day of the month. For example, specifying <samp class="codeph apex_code">2#1</samp> means the class runs on the
+                                first Monday of every month. </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <p class="p" id="schedule_expression_examples"><a name="schedule_expression_examples"><!-- --></a>The following are some examples of how to use the
+                expression.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d134881e778">Expression</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d134881e781">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d134881e778" data-title="Expression"><samp class="codeph apex_code">0 0 13 * * ?</samp></td>
+
+                            <td class="entry" headers="d134881e781" data-title="Description">The class runs every day at 1 PM.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e778" data-title="Expression"><samp class="codeph apex_code">0 5 * * * ?</samp></td>
+
+                            <td class="entry" headers="d134881e781" data-title="Description">The class runs every hour at 5 minutes past the hour. Apex
+                                doesn’t allow for a job to be scheduled more than once an
+                                hour.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e778" data-title="Expression"><samp class="codeph apex_code">0 0 22 ? * 6L</samp></td>
+
+                            <td class="entry" headers="d134881e781" data-title="Description">The class runs on the last Friday of every month at 10
+                                PM.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e778" data-title="Expression"><samp class="codeph apex_code">0 0 10 ? *
+                                MON-FRI</samp></td>
+
+                            <td class="entry" headers="d134881e781" data-title="Description">The class runs Monday through Friday at 10 AM.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d134881e778" data-title="Expression"><samp class="codeph apex_code">0 0 20 * * ? 2010</samp></td>
+
+                            <td class="entry" headers="d134881e781" data-title="Description">The class runs every day at 8 PM during the year 2010.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <p class="p">In the following example, the class <samp class="codeph apex_code">Proschedule</samp> implements the <samp class="codeph apex_code">Schedulable</samp> interface. The class is scheduled to run at 8 AM on the 13
+                February. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Proschedule p = <span class="keyword">new</span> Proschedule();
+        <span class="keyword">String</span> sch = <span class="string">'0 0 8 13 2 ?'</span>;
+        System.schedule(<span class="string">'One Time Pro'</span>, sch, p);</pre></div>
+
+        </div>
+
+        <div class="section" id="apex_batch_schedule_section">
+<a name="apex_batch_schedule_section"><!-- --></a><h2 class="helpHead2">Using the <span class="titlecodeph">System.scheduleBatch</span> Method
+                for Batch Jobs</h2>
+
+            
+            <p class="p">You can call the <samp class="codeph apex_code">System.scheduleBatch</samp> method
+                to schedule a batch job to run one time at a specified time in the future. This
+                method is available only for batch classes and doesn’t require the implementation of
+                the <samp class="codeph apex_code">Schedulable</samp> interface. It’s therefore
+                easy to schedule a batch job for one execution. For more details on how to use the
+                    <samp class="codeph apex_code">System.scheduleBatch</samp> method, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm#apex_batch_scheduleBatch_section">Using the System.scheduleBatch
+                    Method</a>.</p>
+
+        </div>
+
+        <div class="section" id="scheduled_apex_limits">
+<a name="scheduled_apex_limits"><!-- --></a><h2 class="helpHead2">Apex Scheduler Limits</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+                    <p class="p">You can only have 100 scheduled Apex jobs at one time. You can evaluate your
+                        current count by viewing the Scheduled Jobs page in Salesforce and creating
+                        a custom view with a type filter equal to “Scheduled Apex”.
+                        You can also programmatically query the CronTrigger and CronJobDetail
+                        objects to get the count of Apex scheduled jobs.</p>
+
+                </li>
+
+                <li class="li">The maximum number of scheduled Apex executions per a 24-hour period is 250,000 or the number of user licenses in your organization multiplied by 200,
+                    whichever is greater. This limit is for your entire org and is shared with all
+                    asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future
+                    methods. To check how many asynchronous Apex executions are available, make a
+                    request to REST API <samp class="codeph nolang">limits</samp> resource. See
+                        <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/dome_limits.htm" target="_blank" title="HTML (New Window)">List Organization Limits</a> in the <cite class="cite">REST API Developer
+                        Guide</cite>. If the number of asynchronous Apex executions needed by a job
+                    exceeds the available number that’s calculated using the 24-hour rolling limit,
+                    an exception is thrown. For example, if your async job requires 10,000 method
+                    executions and the available 24-hour rolling limit is 9,500, you get
+                    AsyncApexExecutions Limit exceeded exception. The license types that count
+                    toward this limit include full Salesforce and Salesforce Platform user licenses,
+                    App Subscription user licenses, Chatter Only users, Identity users, and Company
+                    Communities users.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Apex Scheduler Notes and Best Practices</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">Salesforce schedules the class for execution at the specified time. Actual
+                    execution can be delayed based on service availability.</li>
+
+                <li class="li">Use extreme care if you’re planning to schedule a class from a trigger.
+                    You must be able to guarantee that the trigger won’t add more scheduled
+                    classes than the limit. In particular, consider API bulk updates, import
+                    wizards, mass record changes through the user interface, and all cases where
+                    more than one record can be updated at a time.</li>
+
+                <li class="li">Though it's possible to do additional processing in the <samp class="codeph apex_code">execute</samp> method, we recommend that all
+                    processing must take place in a separate class.</li>
+
+                <li class="li">Synchronous Web service callouts aren’t supported from scheduled Apex. To make
+                    asynchronous callouts, use <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm" title="Take control of your asynchronous Apex processes by using the Queueable interface. Salesforce recommends that you use Queueable Apex instead of Apex future methods. Queueables have the same use cases as future methods but offer extra benefits, including job IDs, support for non-primitive types, and job chaining.">Queueable Apex</a>, implementing the <samp class="codeph ">Database.AllowsCallouts</samp> marker interface. If your
+                    scheduled Apex executes a batch job using the <samp class="codeph ">Database.AllowsCallouts</samp> marker interface, callouts are supported
+                    from the batch class. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_batch_interface.htm" title="To use batch Apex, write an Apex class that implements the Salesforce-provided interface Database.Batchable and then invoke the class programmatically. To monitor or stop the execution of the batch Apex job, from Setup, enter Apex Jobs in the Quick Find box and then select Apex Jobs.">Using Batch Apex</a>.</li>
+
+                <li class="li">Apex jobs scheduled to run during a Salesforce service maintenance downtime will
+                    be scheduled to run after the service comes back up, when system resources
+                    become available. If a scheduled Apex job was running when downtime occurred,
+                    the job is rolled back and scheduled again after the service comes back up.
+                    After major service upgrades, there can be longer delays than usual for starting
+                    scheduled Apex jobs because of system usage spikes.</li>
+
+                <li class="li">When you refresh a sandbox, scheduled jobs from the source org aren't copied.
+                    You must reschedule any jobs that you need in the refreshed sandbox. </li>
+
+                <li class="li">Scheduled job objects, along with their member variables and properties, persist
+                    from initialization to subsequent scheduled runs. The object state at the time
+                    of invocation of <samp class="codeph ">System.schedule()</samp> persists
+                    in subsequent job executions.<p class="p"> With Batch Apex, it’s possible to force a new
+                        serialized state for new jobs by using<samp class="codeph ">Database.Stateful</samp>. With Scheduled Apex, use the <samp class="codeph ">transient</samp> keyword so that member variables
+                        and properties aren’t persisted. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_transient.htm">Using the transient Keyword</a>..</p>
+</li>
+
+                <li class="li">If you attempt to deploy changes to a class or its dependent code when the class
+                    is scheduled for execution, you see the error <samp class="ph systemoutput">This schedulable
+                        class has jobs pending or in progress - CronTrigger IDs
+                            (<var class="keyword varname">ids</var>)</samp>. You can also see the message
+                        <samp class="ph systemoutput">You can bypass this error by allowing deployments with Apex
+                        jobs in the Deployment Settings page in Setup.</samp> If you enable
+                    this setting, be aware that the job can fail. Instead, we recommend that you
+                    first delete the scheduled job, and then deploy your changes. After deployment,
+                    create a new scheduled job with the updated class.</li>
+
+                <li class="li">If you resume a paused scheduled job, the job immediately runs one time.
+                    Subsequent executions of the job run according to the established schedule. Any
+                    scheduled executions that were missed while the job was paused don’t run.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_system_schedulable.htm" target="_blank" title="Apex Reference Guide: Schedulable Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Schedulable Interface</a></div></li></ul>
+</div>
+</div>

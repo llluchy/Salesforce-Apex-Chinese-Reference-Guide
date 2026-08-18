@@ -1,0 +1,37 @@
+<a name="apex_classes_annotation_ReadOnly"><!-- --></a><h1 class="helpHead1">ReadOnly Annotation</h1><div class="body">
+  <p class="p"><span class="ph" id="def"><a name="def"><!-- --></a>The <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp> annotation allows you to
+    perform less restrictive queries against the Lightning Platform database by increasing the limit
+    of the number of returned rows for a request to 1,000,000. All other limits still apply. The
+    annotation blocks the following operations within the request: DML operations, calls to <samp class="codeph apex_code">System.schedule</samp>, and enqueued asynchronous Apex jobs.</span></p>
+
+  <p class="p"><span class="ph" id="def2"><a name="def2"><!-- --></a>The <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp> annotation is available for
+                REST and SOAP Web services and the <samp class="codeph apex_code">Schedulable</samp> interface. To use the <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp> annotation, the top-level  request must be in the schedule
+                execution or the Web service invocation. For example, if a Visualforce page calls a
+                Web service that contains the <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp>
+                annotation, the request fails because Visualforce is the top-level request, not the
+                Web service.</span></p>
+
+  <p class="p"><span class="ph" id="def_vf"><a name="def_vf"><!-- --></a>Visualforce pages can call controller methods with the <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp> annotation, and those methods run with
+                the same relaxed restrictions. To increase other Visualforce-specific limits, such
+                as the size of a collection that can be used by an iteration component like <samp class="codeph apex_page"><span class="tag">&lt;apex:pageBlockTable</span>&gt;</samp>, you can set the
+                    <samp class="codeph apex_page">readonly</samp> attribute on the <samp class="codeph apex_page"><span class="tag">&lt;apex:page</span>&gt;</samp> tag to <samp class="codeph nolang">true</samp>. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/pages_controller_readonly_context.htm" target="_blank" title="HTML (New Window)">Working with Large Sets of Data</a>
+                in the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="HTML (New Window)">Visualforce Developer's
+                    Guide</a></cite>.</span></p>
+
+  <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+   
+   <p class="p">Prior to API version 49.0, using <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp> on Apex
+    REST methods (@HttpDelete, @HttpGet, @HttpPatch, @HttpPost, or @HttpPut) also required
+    annotating the method with  <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp>. In API
+    version 49.0 and later, you can annotate Apex REST methods with just  <samp class="codeph apex_code"><span class="keyword">@ReadOnly</span></samp>.</p>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm" title="NamespaceAccessible Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_RemoteAction.htm" title="RemoteAction Annotation">Next →</a></li>
+</ul></div>
+</div>

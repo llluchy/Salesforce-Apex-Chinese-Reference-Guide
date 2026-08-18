@@ -1,0 +1,1584 @@
+<a name="apex_class_cache_Org"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Org Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use the <samp class="codeph apex_code">Cache.Org</samp> class to
+            add, retrieve, and manage values in the org cache. Unlike the session cache, the org
+            cache is not tied to any session and is available to the organization across requests
+            and to all users.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_cache.htm" title="The Cache namespace contains methods for managing the platform cache.">Cache</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="usage_section"><a name="usage_section"><!-- --></a>Usage</span></h2>
+
+            
+            <p class="p"><strong class="ph b">Cache Key Format</strong></p>
+
+            <p class="p">This table lists the format of the key parameter that some methods in
+                this class take, such as <samp class="codeph apex_code">put</samp>, <samp class="codeph apex_code">get</samp>, and <samp class="codeph apex_code">contains</samp>.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader  " id="d634595e83">Key Format</th>
+
+                            <th class="featureTableHeader  " id="d634595e86">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d634595e83" data-title="Key Format"><var class="keyword varname">namespace.partition.key</var></td>
+
+                            <td class="entry" headers="d634595e86" data-title="Description">Fully qualified key name.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d634595e83" data-title="Key Format"><var class="keyword varname">key</var></td>
+
+                            <td class="entry" headers="d634595e86" data-title="Description">Refers to a partition marked as default when the
+                                    <var class="keyword varname">namespace.partition</var> prefix is
+                                omitted.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d634595e83" data-title="Key Format">
+<samp class="codeph nolang">local.</samp><var class="keyword varname">partition.key</var>
+</td>
+
+                            <td class="entry" headers="d634595e86" data-title="Description">Use the <samp class="codeph nolang">local</samp> prefix to
+                                refer to the org’s namespace when the org doesn’t have a namespace
+                                defined. If the org has a namespace defined, the <samp class="codeph nolang">local</samp> prefix also refers to that
+                                org’s namespace.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <ul class="ul bulletList">
+                    <li class="li">If no default partition is specified in the org, calling a cache method
+                        without fully qualifying the key name causes a <samp class="codeph apex_code">Cache.Org.OrgCacheException</samp> to be
+                        thrown.</li>
+
+                    <li class="li">The <samp class="codeph nolang">local</samp> prefix in an installed
+                        managed package refers to the namespace of the subscriber org and not the
+                        package’s namespace. The cache <samp class="codeph apex_code">put</samp>
+                        calls aren’t allowed in a partition that the invoking class doesn’t
+                        own.</li>
+
+                </ul>
+
+            </p>
+</div>
+</div></div></div></div>
+
+        </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This class is the controller for a sample Visualforce page (shown in the subsequent
+                code sample). The cached values are initially added to the cache by the <samp class="codeph apex_code">init()</samp> method, which the Visualforce page
+                invokes when it loads through the <samp class="codeph apex_code">action</samp>
+                attribute. The cache keys don’t contain the <samp class="codeph apex_code">namespace.partition</samp> prefix. They all refer to the default partition in
+                your org. To run this sample, create a partition and mark it as default.</p>
+
+            <p class="p">The Visualforce page contains four output components. These components call <samp class="codeph apex_code">get</samp> methods on the controller that returns the
+                following values from the cache: a date, data based on the <samp class="codeph apex_code">MyData</samp> inner class, a counter, a text value, and
+                a list. The size of the list is also returned.</p>
+
+            <p class="p">The Visualforce page also contains two buttons. The Rerender button invokes the
+                    <samp class="codeph apex_code">go()</samp> method on the controller. This
+                method increases the values of the counter and the custom data in the cache. When
+                you click <strong class="ph uicontrol">Rerender</strong>, the two counters increase by one each
+                time. The <samp class="codeph apex_code">go()</samp> method retrieves the values
+                of these counters from the cache, increments their values by one, and stores them
+                again in the cache.</p>
+
+            <p class="p">The Remove datetime Key button deletes the date-time value (with key <samp class="codeph apex_code">datetime</samp>) from the cache. As a result, the value
+                next to <span class="keyword parmname">Cached datetime:</span> is cleared on the page.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If another user logs in and runs this sample, this user gets the cache values that
+                were last added or updated by the previous user. For example, if the counter value
+                was five, the next user sees the counter value as increased to six.</p>
+</div>
+</div></div></div></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> OrgCacheController {
+
+    <span class="onelineComment">// Inner class.</span>
+    <span class="onelineComment">// Used as the data type of a cache value.</span>
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> MyData {    
+        <span class="keyword">public</span> <span class="keyword">String</span> value { get; set; }
+        <span class="keyword">public</span> <span class="keyword">Integer</span> counter { get; set; }
+        
+        <span class="keyword">public</span> MyData(<span class="keyword">String</span> value) {
+            <span class="statement">this</span>.value = value;
+            <span class="statement">this</span>.counter = 0;
+        }
+        
+        <span class="keyword">public</span> <span class="keyword">void</span> inc() {
+            counter++;
+        }
+        
+        <span class="keyword">override</span> <span class="keyword">public</span> <span class="keyword">String</span> toString() {
+            <span class="statement">return</span> <span class="statement">this</span>.value + <span class="string">':'</span> + <span class="statement">this</span>.counter;
+        }    
+    }
+    
+    <span class="onelineComment">// Apex List.</span>
+    <span class="onelineComment">// Used as the data type of a cached value.</span>
+    <span class="keyword">private</span> List&lt;<span class="keyword">String</span>&gt; numbers = 
+            <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt; { <span class="string">'ONE'</span>, <span class="string">'TWO'</span>, <span class="string">'THREE'</span>, <span class="string">'FOUR'</span>, <span class="string">'FIVE'</span> }; 
+               
+    <span class="onelineComment">// Constructor of the controller for the Visualforce page. </span>
+    <span class="keyword">public</span> OrgCacheController() {  
+    }
+            
+    <span class="onelineComment">// Adds various values to the cache.</span>
+    <span class="onelineComment">// This method is called when the Visualforce page loads.</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> init() {  
+        <span class="onelineComment">// All key values are not qualified by the namespace.partition</span>
+        <span class="onelineComment">// prefix because they use the default partition.</span>
+        
+        <span class="onelineComment">// Add counter to the cache with initial value of 0</span>
+        <span class="onelineComment">//  or increment it if it's already there.</span>
+        <span class="statement">if</span> (!Cache.Org.contains(<span class="string">'counter'</span>)) {
+            Cache.Org.put(<span class="string">'counter'</span>, 0);
+        } <span class="statement">else</span> {
+            Cache.Org.put(<span class="string">'counter'</span>, getCounter() + 1);
+        }
+              
+        <span class="onelineComment">// Add the datetime value to the cache only if it's not already there.</span>
+        <span class="statement">if</span> (!Cache.Org.contains(<span class="string">'datetime'</span>)) {
+            DateTime dt = DateTime.now();
+            Cache.Org.put(<span class="string">'datetime'</span>, dt);
+        }
+     
+        <span class="onelineComment">// Add the custom data to the cache only if it's not already there.</span>
+        <span class="statement">if</span> (!Cache.Org.contains(<span class="string">'data'</span>)) {
+            Cache.Org.put(<span class="string">'data'</span>, <span class="keyword">new</span> MyData(<span class="string">'Some custom value'</span>));
+        }
+                
+        <span class="onelineComment">// Add a list of number to the cache if not already there.</span>
+        <span class="statement">if</span> (!Cache.Org.contains(<span class="string">'list'</span>)) {  
+            Cache.Org.put(<span class="string">'list'</span>, numbers);
+        }
+                
+        <span class="onelineComment">// Add a string value to the cache if not already there.</span>
+        <span class="statement">if</span> (!Cache.Org.contains(<span class="string">'output'</span>)) {
+            Cache.Org.put(<span class="string">'output'</span>, <span class="string">'Cached text value'</span>);
+        }
+    }
+    
+    <span class="onelineComment">// Return counter from the cache.</span>
+    <span class="keyword">public</span> <span class="keyword">Integer</span> getCounter() {
+        <span class="statement">return</span> (<span class="keyword">Integer</span>)Cache.Org.get(<span class="string">'counter'</span>);
+    }
+    
+    <span class="onelineComment">// Return datetime value from the cache.</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getCachedDatetime() {
+        DateTime dt = (DateTime)Cache.Org.get(<span class="string">'datetime'</span>);
+        <span class="statement">return</span> dt != <span class="keyword">null</span> ? dt.format() : <span class="keyword">null</span>;
+    }
+    
+    <span class="onelineComment">// Return cached value whose type is the inner class MyData.</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getCachedData() {
+        MyData mydata = (MyData)Cache.Org.get(<span class="string">'data'</span>);
+        <span class="statement">return</span> mydata != <span class="keyword">null</span> ? mydata.toString() : <span class="keyword">null</span>;
+    }
+    
+    <span class="onelineComment">// Return output from the cache.</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getOutput() {
+        <span class="statement">return</span> (<span class="keyword">String</span>)Cache.Org.get(<span class="string">'output'</span>);
+    }
+    
+    <span class="onelineComment">// Return list from the cache.</span>
+    <span class="keyword">public</span> List&lt;<span class="keyword">String</span>&gt; getList() {
+        <span class="statement">return</span> (List&lt;<span class="keyword">String</span>&gt;)Cache.Org.get(<span class="string">'list'</span>);
+    }
+    
+    <span class="onelineComment">// Method invoked by the Rerender button on the Visualforce page.</span>
+    <span class="onelineComment">// Updates the values of various cached values.</span>
+    <span class="onelineComment">// Increases the values of counter and the MyData counter if those </span>
+    <span class="onelineComment">//   cache values are still in the cache.</span>
+    <span class="keyword">public</span> PageReference go() {
+        <span class="onelineComment">// Increase the cached counter value or set it to 0 </span>
+        <span class="onelineComment">//  if it's not cached.        </span>
+        <span class="statement">if</span> (Cache.Org.contains(<span class="string">'counter'</span>)) {
+            Cache.Org.put(<span class="string">'counter'</span>, getCounter() + 1);
+        } <span class="statement">else</span> {
+            Cache.Org.put(<span class="string">'counter'</span>, 0);
+        }        
+    
+        <span class="onelineComment">// Get the custom data value from the cache.</span>
+        MyData d = (MyData)Cache.Org.get(<span class="string">'data'</span>);
+        <span class="onelineComment">// Only if the data is already in the cache, update it.</span>
+        <span class="statement">if</span> (Cache.Org.contains(<span class="string">'data'</span>)) {
+            d.inc();
+            Cache.Org.put(<span class="string">'data'</span>, d);            
+        }        
+
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    
+    <span class="onelineComment">// Method invoked by the Remove button on the Visualforce page.</span>
+    <span class="onelineComment">// Removes the datetime cached value from the org cache.</span>
+    <span class="keyword">public</span> PageReference remove() {
+        Cache.Org.remove(<span class="string">'datetime'</span>);
+
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+            <p class="p">This is the Visualforce page that corresponds to the <samp class="codeph apex_code">OrgCacheController</samp> class.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"OrgCacheController"</span><span class="attribute"> action=</span><span class="string">"{!init}"</span>&gt;
+
+    <span class="tag">&lt;apex:outputPanel</span><span class="attribute"> id=</span><span class="string">"output"</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;Cached datetime: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!cachedDatetime}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Cached data: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!cachedData}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Cached counter: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!counter}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Output: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!output}"</span>/&gt;
+        <span class="tag">&lt;br/</span>&gt;Repeat: <span class="tag">&lt;apex:repeat</span><span class="attribute"> var=</span><span class="string">"item"</span><span class="attribute"> value=</span><span class="string">"{!list}"</span>&gt;
+            <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!item}"</span>/&gt;&amp;nbsp;
+        <span class="tag">&lt;/apex:repeat</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;List size: <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!list.size}"</span>/&gt;
+    <span class="tag">&lt;/apex:outputPanel</span>&gt;
+    
+    <span class="tag">&lt;br/</span>&gt;<span class="tag">&lt;br/</span>&gt;
+    <span class="tag">&lt;apex:form</span> &gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"go"</span><span class="attribute"> action=</span><span class="string">"{!go}"</span><span class="attribute"> value=</span><span class="string">"Rerender"</span><span class="attribute"> rerender=</span><span class="string">"output"</span>/&gt;
+        <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"remove"</span><span class="attribute"> action=</span><span class="string">"{!remove}"</span><span class="attribute"> value=</span><span class="string">"Remove datetime Key"</span><span class="attribute"> rerender=</span><span class="string">"output"</span>/&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+
+            <p class="p">This is the output of the page after clicking the <strong class="ph uicontrol">Rerender</strong>
+                button twice. The counter value could differ in your case if a key named <samp class="codeph apex_code">counter</samp> was already in the cache before running
+                this sample.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Cached datetime:8/11/2015 1:58 PM
+Cached data:Some custom value:2
+Cached counter:2
+Output:Cached text value
+Repeat:ONE TWO THREE FOUR FIVE 
+List size:5 </pre></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_constants">Org Constants</a></strong><br>
+The Org class provides a constant that you can use when setting the    time-to-live (TTL) value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_methods">Org Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_cache_namespace_overview.htm" target="_blank" title="Apex Developer Guide: Platform Cache - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Platform Cache</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_cache_Org_constants">
+<a name="apex_cache_Org_constants"><!-- --></a>
+ <h2 class="helpHead2">Org Constants</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The Org class provides a constant that you can use when setting the
+   time-to-live (TTL) value.</span></div>
+
+  <div class="section">
+   <div class="p">
+    
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+      
+      
+      <thead class="thead sorted" align="left">
+       <tr>
+        <th class="featureTableHeader vertical-align-top " id="d634595e318">Constant</th>
+
+        <th class="featureTableHeader vertical-align-top " id="d634595e321">Description</th>
+
+       </tr>
+
+      </thead>
+
+      <tbody class="tbody">
+       <tr>
+        <td class="entry" headers="d634595e318" data-title="Constant"><samp class="codeph apex_code">MAX_TTL_SECS</samp></td>
+
+        <td class="entry" headers="d634595e321" data-title="Description">Represents the maximum amount of time, in seconds, to keep the cached value in the
+         org cache.</td>
+
+       </tr>
+
+      </tbody>
+
+     </table></div>
+
+   </div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_cache_Org_methods">
+<a name="apex_cache_Org_methods"><!-- --></a><h2 class="helpHead2">Org Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Org</samp>. All methods are
+        static.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_contains_2">contains(key)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the org             cache contains a cached value corresponding to the specified key.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_contains">contains(keys)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the org       cache contains values for the specified key entries.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_org_contains_3">contains(setOfKeys)</a></strong><br>
+Returns <samp class="codeph ">true</samp> if the org cache contains values for a     specified set of keys.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_get">get(key)</a></strong><br>
+Returns the cached value corresponding to the specified key from the       org cache.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_get_2">get(cacheBuilder, key)</a></strong><br>
+Returns the cached value corresponding to the specified key from the org     cache. Use this method if your cached value is a class that implements the     <samp class="codeph apex_code">CacheBuilder</samp> interface. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_get_3">get(keys)</a></strong><br>
+Returns the cached values corresponding to the specified set of keys       from the org cache.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getAvgGetSize">getAvgGetSize()</a></strong><br>
+ Returns the average item size of all the keys fetched from the org       cache, in bytes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getAvgGetTime">getAvgGetTime()</a></strong><br>
+Returns the average time taken to get a key from the org cache, in       nanoseconds.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getAvgValueSize">getAvgValueSize()</a></strong><br>
+<strong class="ph b">Deprecated and available only in API versions 49.0 and earlier.</strong>       Returns the average item size for keys in the org cache, in bytes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getCapacity">getCapacity()</a></strong><br>
+Returns the percentage of org cache capacity that has been     used.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getKeys">getKeys()</a></strong><br>
+Returns a set of all keys that are stored in the org cache and visible       to the invoking namespace.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getMaxGetSize">getMaxGetSize()</a></strong><br>
+Returns the maximum item size of all the keys fetched from the org       cache, in bytes.   </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getMaxGetTime">getMaxGetTime()</a></strong><br>
+Returns the maximum time taken to get a key from the org cache, in       nanoseconds.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getMaxValueSize">getMaxValueSize()</a></strong><br>
+<strong class="ph b">Deprecated and available only in API versions 49.0 and earlier.</strong>       Returns the maximum item size for keys in the org cache, in bytes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getMissRate">getMissRate()</a></strong><br>
+Returns the miss rate in the org cache.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getName">getName()</a></strong><br>
+Returns the name of the default cache partition.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getNumKeys">getNumKeys()</a></strong><br>
+Returns the total number of keys in the org cache.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_getPartition">getPartition(partitionName)</a></strong><br>
+Returns a partition from the org cache that corresponds to the             specified partition name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_put_4">put(key, value)</a></strong><br>
+Stores the specified key/value pair as a cached entry in the org cache. The <samp class="codeph apex_code">put</samp> method can write only to the cache in your org’s     namespace.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_put_3">put(key, value, visibility)</a></strong><br>
+Stores the specified key/value pair as a cached entry in the org       cache and sets the cached value’s visibility.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_put_2">put(key, value, ttlSecs)</a></strong><br>
+Stores the specified key/value pair as a cached entry in the org       cache and sets the cached value’s lifetime.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_put">put(key, value, ttlSecs, visibility, immutable)</a></strong><br>
+Stores the specified key/value pair as a cached entry in the org       cache. This method also sets the cached value’s lifetime, visibility, and whether it can be       overwritten by another namespace.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_remove">remove(key)</a></strong><br>
+Deletes the cached value corresponding to the specified key from the org     cache.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_cache_Org.htm#apex_cache_Org_remove_2">remove(cacheBuilder, key)</a></strong><br>
+Deletes the cached value corresponding to the specified key from the org     cache. Use this method if your cached value is a class that implements the     <samp class="codeph apex_code">CacheBuilder</samp> interface.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_contains_2">
+<a name="apex_cache_Org_contains_2"><!-- --></a>
+    <h3 class="helpHead3">contains(key)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the org
+            cache contains a cached value corresponding to the specified key.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> contains(<span class="keyword">String</span>
+                key)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value.  For
+                        information about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">true</span></samp> if a cache entry is found. Othewise,
+                    <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_contains">
+<a name="apex_cache_Org_contains"><!-- --></a>
+  <h3 class="helpHead3">contains(keys)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the org
+      cache contains values for the specified key entries.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">Boolean</span>&gt;
+          contains(List&lt;<span class="keyword">String</span>&gt; keys)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">keys</var></strong>:<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A list of keys that identifies cached values. For information about the format of the
+            key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>&gt;</p>
+
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">true</span></samp> if the key entries are found. Othewise,
+          <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_org_contains_3">
+<a name="apex_cache_org_contains_3"><!-- --></a>
+ <h3 class="helpHead3">contains(setOfKeys)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph ">true</samp> if the org cache contains values for a
+    specified set of keys.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map &lt;<span class="keyword">String</span>, <span class="keyword">Boolean</span>&gt; contains (Set&lt;<span class="keyword">String</span>&gt;
+     keys)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">setOfKeys</var></strong>:<p class="p">Type: Set &lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; </p>
+<p class="p">A set of keys that uniquely
+            identifies cached values. For information about the format of the key name, see <a class="xref" href="#usage_section">Usage</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Map &lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, Boolean&gt;</p>
+
+   <p class="p">Returns the cache key and corresponding Boolean value indicating that the key entry exists.
+        The Boolean value is <samp class="codeph ">false</samp> if the key entry doesn't
+        exist.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The number of input keys cannot exceed the maximum limit of 10.</p>
+
+    </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example, the code checks for the presence of multiple keys on the default
+        partition. It fetches the cache key and the corresponding Boolean value for the key entry
+        from the org cache of the default partition.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Set&lt;String&gt; keys = new Set&lt;String&gt;{'key1','key2','key3','key4','key5'};
+Map&lt;String,Boolean&gt; result = Cache.Org.contains(keys);
+for(String key : result.keySet()) {
+    system.debug('key: ' + key);
+    system.debug('Is Key Present in the cache : ' +  result.get(key));
+}</pre></div>
+
+      <p class="p">In this example, the code checks for the presence of multiple keys on different partitions.
+        It fetches the cache key and the corresponding Boolean value for the key entry from the org
+        cache of different partitions.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>// Assuming there are three partitions p1, p2, p3 with default 'local' namespace
+
+Set&lt;String&gt; keys = new Set&lt;String&gt;{'local.p1.key','local.p2.key', 'local.p3.key'};
+Map&lt;String,Boolean&gt; result = Cache.Org.contains(keys);
+for(String key : result.keySet()) {
+    system.debug('key: ' + key);
+    system.debug('Is Key Present in the cache : +  result.get(key));
+}</pre></div>
+
+    </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_get">
+<a name="apex_cache_Org_get"><!-- --></a>
+  <h3 class="helpHead3">get(key)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the cached value corresponding to the specified key from the
+      org cache.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Object</span> get(<span class="keyword">String</span> key)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type:</p>
+<p class="p">Object The cached value as a generic object type. Cast the returned value to the appropriate
+        type.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Because <samp class="codeph apex_code">Cache.Org.get()</samp> returns an object, cast the
+        returned value to a specific type to facilitate use of the returned value.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get a cached value</span>
+<span class="keyword">Object</span> obj = Cache.Org.get(<span class="string">'ns1.partition1.orderDate'</span>);
+<span class="onelineComment">// Cast return value to a specific data type</span>
+DateTime dt2 = (DateTime)obj;
+
+</pre></div>
+
+      <p class="p">If a <samp class="codeph apex_code">Cache.Org.get()</samp> call doesn’t find the
+        referenced key, it returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_get_2">
+<a name="apex_cache_Org_get_2"><!-- --></a>
+  <h3 class="helpHead3">get(cacheBuilder, key)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the cached value corresponding to the specified key from the org
+    cache. Use this method if your cached value is a class that implements the
+    <samp class="codeph apex_code">CacheBuilder</samp> interface. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Object</span>
+          get(System.Type cacheBuilder, <span class="keyword">String</span>
+      key)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">cacheBuilder</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_methods_system_type" title="Contains methods for getting the Apex type that corresponds to an Apex class and for instantiating new types.">System.Type</a></p>
+<p class="p">The Apex class that implements the <samp class="codeph apex_code">CacheBuilder</samp> interface.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that, combined with the class name corresponding to the
+              <var class="keyword varname">cacheBuilder</var> parameter, uniquely identifies a cached value.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type:</p>
+<p class="p">Object The cached value as a generic object type. Cast the returned value to the appropriate
+        type.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Because <samp class="codeph apex_code">Cache.Org.get(<em class="ph i">cacheBuilder</em>,
+          <em class="ph i">key</em>)</samp> returns an object, cast the returned value to a specific type to
+        facilitate use of the returned value.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">return</span> ((DateTime)Cache.Org.get(DateCache.<span class="keyword">class</span>, <span class="string">'datetime'</span>)).format();</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_get_3">
+<a name="apex_cache_Org_get_3"><!-- --></a>
+ <h3 class="helpHead3">get(keys)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the cached values corresponding to the specified set of keys
+      from the org cache.</span></div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Map &lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; get (Set &lt;<span class="keyword">String</span>&gt;
+     keys)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">keys</var></strong>:<p class="p">Type: Set &lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;
+                        </p>
+<p class="p">A set of keys that uniquely identify cached values. For information
+                        about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Map &lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, Object&gt;</p>
+
+   <p class="p">Returns the cache key and corresponding value. Returns null when no corresponding value is
+        found for an input key.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The number of input keys cannot exceed the maximum limit of 10.</p>
+
+    </div>
+
+  <div class="section">
+<h4 class="helpHead4">Examples</h4>
+
+      
+      <p class="p">Fetch multiple keys from the org cache of the default partition.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Set&lt;String&gt; keys = new Set&lt;String&gt;{'key1','key2','key3','key4','key5'};
+Map&lt;String,Object&gt; result = Cache.Org.get(keys);
+for(String key : result.keySet()) {
+    system.debug('key: ' + key);
+    system.debug('value: ' +  result.get(key));
+}</pre></div>
+
+      <p class="p">Fetch multiple keys from the org cache of different partitions.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>// Assuming there are three partitions p1, p2, p3 with default 'local' namespace
+
+Set&lt;String&gt; keys = new Set&lt;String&gt;{'local.p1.key','local.p2.key', 'local.p3.key'};
+Map&lt;String,Object&gt; result = Cache.Org.get(keys);
+for(String key : result.keySet()) {
+    system.debug('key: ' + key);
+    system.debug('value: ' +  result.get(key));
+}</pre></div>
+
+    </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getAvgGetSize">
+<a name="apex_cache_Org_getAvgGetSize"><!-- --></a><h3 class="helpHead3">getAvgGetSize()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a> Returns the average item size of all the keys fetched from the org
+      cache, in bytes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getAvgGetSize()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example the following keys and their corresponding value sizes are inserted. The
+        code then fetches the keys: key 1, key 2, key 3 and key 4 and returns the average item size
+        of the fetched keys.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d634595e1339">Key</th>
+
+              <th class="featureTableHeader  " id="d634595e1342">Key Value Size</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d634595e1339" data-title="Key"><var class="keyword varname">key 1</var></td>
+
+              <td class="entry" headers="d634595e1342" data-title="Key Value Size">42</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1339" data-title="Key"><var class="keyword varname">key 2</var></td>
+
+              <td class="entry" headers="d634595e1342" data-title="Key Value Size">42</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1339" data-title="Key"><var class="keyword varname">key 3</var></td>
+
+              <td class="entry" headers="d634595e1342" data-title="Key Value Size">58</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1339" data-title="Key"><var class="keyword varname">key 4</var></td>
+
+              <td class="entry" headers="d634595e1342" data-title="Key Value Size">36</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1339" data-title="Key"><var class="keyword varname">key 5</var></td>
+
+              <td class="entry" headers="d634595e1342" data-title="Key Value Size">36</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Inserting keys key1, key2, key3, key4, key5</span>
+Cache.Org.put(<span class="string">'key1'</span>, <span class="string">'value1'</span>);
+Cache.Org.put(<span class="string">'key2'</span>, <span class="string">'value2'</span>);
+Cache.Org.put(<span class="string">'key3'</span>, <span class="string">'this is a big value !!!'</span>);
+Cache.Org.put(<span class="string">'key4'</span>, 4);
+Cache.Org.put(<span class="string">'key5'</span>, 5);
+
+
+<span class="onelineComment">// Fetching keys - key1, key2, key3, key4</span>
+<span class="keyword">Object</span> v1 = Cache.Org.get(<span class="string">'key1'</span>);
+<span class="keyword">Object</span> v2 = Cache.Org.get(<span class="string">'key2'</span>);
+<span class="keyword">Object</span> v3 = Cache.Org.get(<span class="string">'key3'</span>);
+<span class="keyword">Object</span> v4 = Cache.Org.get(<span class="string">'key4'</span>);
+
+<span class="onelineComment">// Fetching average get size</span>
+<span class="keyword">Long</span> val = Cache.Org.getAvgGetSize();
+<span class="onelineComment">// Avg item size returned is 44 ( average of 42(key1), 42(key2), 58(key3) and 36(key4) keys that were fetched )</span>
+System.debug(<span class="string">'Avg Get Size :'</span> + val);
+</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getAvgGetTime">
+<a name="apex_cache_Org_getAvgGetTime"><!-- --></a><h3 class="helpHead3">getAvgGetTime()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the average time taken to get a key from the org cache, in
+      nanoseconds.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getAvgGetTime()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getAvgValueSize">
+<a name="apex_cache_Org_getAvgValueSize"><!-- --></a><h3 class="helpHead3">getAvgValueSize()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a><strong class="ph b">Deprecated and available only in API versions 49.0 and earlier.</strong>
+      Returns the average item size for keys in the org cache, in bytes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getAvgValueSize()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getCapacity">
+<a name="apex_cache_Org_getCapacity"><!-- --></a><h3 class="helpHead3">getCapacity()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the percentage of org cache capacity that has been
+    used.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Double</span> getCapacity()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+
+      <p class="p">Used cache as a percentage number.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getKeys">
+<a name="apex_cache_Org_getKeys"><!-- --></a><h3 class="helpHead3">getKeys()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a set of all keys that are stored in the org cache and visible
+      to the invoking namespace.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Set&lt;<span class="keyword">String</span>&gt; getKeys()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+        <p class="p">Type: Set&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+
+      <p class="p">A set containing all cache keys.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getMaxGetSize">
+<a name="apex_cache_Org_getMaxGetSize"><!-- --></a><h3 class="helpHead3">getMaxGetSize()</h3>
+<div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the maximum item size of all the keys fetched from the org
+      cache, in bytes.</span>
+  </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getMaxGetSize()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example the following keys and their corresponding value sizes are inserted. The
+        code fetches the keys: key 1, key 2 and key 4  and returns the maximum key value size from
+        the fetched keys.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d634595e1641">Key</th>
+
+              <th class="featureTableHeader  " id="d634595e1644">Key Value Size</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d634595e1641" data-title="Key"><var class="keyword varname">key 1</var></td>
+
+              <td class="entry" headers="d634595e1644" data-title="Key Value Size">42</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1641" data-title="Key"><var class="keyword varname">key 2</var></td>
+
+              <td class="entry" headers="d634595e1644" data-title="Key Value Size">42</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1641" data-title="Key"><var class="keyword varname">key 3</var></td>
+
+              <td class="entry" headers="d634595e1644" data-title="Key Value Size">58</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1641" data-title="Key"><var class="keyword varname">key 4</var></td>
+
+              <td class="entry" headers="d634595e1644" data-title="Key Value Size">36</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d634595e1641" data-title="Key"><var class="keyword varname">key 5</var></td>
+
+              <td class="entry" headers="d634595e1644" data-title="Key Value Size">36</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Inserting keys key1, key2, key3, key4, key5</span>
+Cache.Org.put(<span class="string">'key1'</span>, <span class="string">'value1'</span>);
+Cache.Org.put(<span class="string">'key2'</span>, <span class="string">'value2'</span>);
+Cache.Org.put(<span class="string">'key3'</span>, <span class="string">'this is a big value !!!'</span>);
+Cache.Org.put(<span class="string">'key4'</span>, 4);
+Cache.Org.put(<span class="string">'key5'</span>, 5);
+
+
+<span class="onelineComment">// Fetching keys - key1, key2, key4</span>
+<span class="keyword">Object</span> v1 = Cache.Org.get(<span class="string">'key1'</span>);
+<span class="keyword">Object</span> v2 = Cache.Org.get(<span class="string">'key2'</span>);
+<span class="keyword">Object</span> v4 = Cache.Org.get(<span class="string">'key4'</span>);
+
+<span class="onelineComment">// Fetching max get size</span>
+<span class="keyword">Long</span> val = Cache.Org.getMaxGetSize();
+<span class="onelineComment">// Max item size returned is 42 ( max of 42(key1), 42(key2), and 36(key4) keys that were fetched )</span>
+System.debug(<span class="string">'Max Get Size :'</span> + val);
+</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getMaxGetTime">
+<a name="apex_cache_Org_getMaxGetTime"><!-- --></a><h3 class="helpHead3">getMaxGetTime()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the maximum time taken to get a key from the org cache, in
+      nanoseconds.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getMaxGetTime()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getMaxValueSize">
+<a name="apex_cache_Org_getMaxValueSize"><!-- --></a><h3 class="helpHead3">getMaxValueSize()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a><strong class="ph b">Deprecated and available only in API versions 49.0 and earlier.</strong>
+      Returns the maximum item size for keys in the org cache, in bytes.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getMaxValueSize()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getMissRate">
+<a name="apex_cache_Org_getMissRate"><!-- --></a><h3 class="helpHead3">getMissRate()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the miss rate in the org cache.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Double</span> getMissRate()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getName">
+<a name="apex_cache_Org_getName"><!-- --></a>
+  <h3 class="helpHead3">getName()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the name of the default cache partition.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getName()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The name of the default cache partition.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getNumKeys">
+<a name="apex_cache_Org_getNumKeys"><!-- --></a><h3 class="helpHead3">getNumKeys()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the total number of keys in the org cache.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Long</span> getNumKeys()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_getPartition">
+<a name="apex_cache_Org_getPartition"><!-- --></a>
+    <h3 class="helpHead3">getPartition(partitionName)</h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a partition from the org cache that corresponds to the
+            specified partition name.</span></div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> cache.OrgPartition getPartition(<span class="keyword">String</span>
+                    partitionName)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">
+<strong class="ph b"><var class="keyword varname">partitionName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A partition name that is qualified by the namespace, for example,
+                            <var class="keyword varname">namespace.partition</var>.</p>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_cache_OrgPartition.htm#apex_class_cache_OrgPartition" title="Contains methods to manage cache values in the org cache of a specific partition. Unlike the session cache, the org cache is not tied to any session. It’s available to the org across requests and to all users.">Cache.OrgPartition</a></p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+            
+            <p class="p">After you get the org partition, you can add and retrieve the partition’s cache
+                values.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get partition</span>
+Cache.OrgPartition orgPart = Cache.Org.getPartition(<span class="string">'myNs.myPartition'</span>);
+<span class="onelineComment">// Retrieve cache value from the partition</span>
+<span class="statement">if</span> (orgPart.contains(<span class="string">'BookTitle'</span>)) {
+    <span class="keyword">String</span> cachedTitle = (<span class="keyword">String</span>)orgPart.get(<span class="string">'BookTitle'</span>);
+}
+
+<span class="onelineComment">// Add cache value to the partition</span>
+orgPart.put(<span class="string">'OrderDate'</span>, <span class="keyword">Date</span>.today());
+
+<span class="onelineComment">// Or use dot notation to call partition methods</span>
+<span class="keyword">String</span> cachedAuthor = (<span class="keyword">String</span>)Cache.Org.getPartition(<span class="string">'myNs.myPartition'</span>).get(<span class="string">'BookAuthor'</span>);
+</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_put_4">
+<a name="apex_cache_Org_put_4"><!-- --></a>
+  <h3 class="helpHead3">put(key, value)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Stores the specified key/value pair as a cached entry in the org cache. The <samp class="codeph apex_code">put</samp> method can write only to the cache in your org’s
+    namespace.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> put(<span class="keyword">String</span> key, <span class="keyword">Object</span>
+        value)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type:</p>
+<p class="p">Object The value to store in the cache. The cached value must be serializable.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_put_3">
+<a name="apex_cache_Org_put_3"><!-- --></a>
+  <h3 class="helpHead3">put(key, value, visibility)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores the specified key/value pair as a cached entry in the org
+      cache and sets the cached value’s visibility.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> put(<span class="keyword">String</span> key, <span class="keyword">Object</span> value,
+          Cache.Visibility visibility)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type:</p>
+<p class="p">Object The value to store in the cache. The cached value must be serializable.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">visibility</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_cache_Visibility.htm" title="Use the Cache.Visibility enumeration in the Cache.Session or Cache.Org methods to indicate whether a cached value is visible only in the value’s namespace or in all namespaces.">Cache.Visibility</a></p>
+<p class="p">Indicates whether the cached value is available only to Apex code that is executing in
+            the same namespace or to Apex code executing from any namespace.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_put_2">
+<a name="apex_cache_Org_put_2"><!-- --></a>
+  <h3 class="helpHead3">put(key, value, ttlSecs)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores the specified key/value pair as a cached entry in the org
+      cache and sets the cached value’s lifetime.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> put(<span class="keyword">String</span> key, <span class="keyword">Object</span> value, <span class="keyword">Integer</span>
+          ttlSecs)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type:</p>
+<p class="p">Object The value to store in the cache. The cached value must be serializable.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">ttlSecs</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The amount of time, in seconds, to keep the cached value in the org cache. The maximum
+            is 172,800 seconds (48 hours). The minimum value is 300 seconds or 5 minutes. The
+            default value is 86,400 seconds (24 hours).</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_put">
+<a name="apex_cache_Org_put"><!-- --></a>
+  <h3 class="helpHead3">put(key, value, ttlSecs, visibility, immutable)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Stores the specified key/value pair as a cached entry in the org
+      cache. This method also sets the cached value’s lifetime, visibility, and whether it can be
+      overwritten by another namespace.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> put(<span class="keyword">String</span> key, <span class="keyword">Object</span> value, <span class="keyword">Integer</span>
+          ttlSecs, cache.Visibility visibility, <span class="keyword">Boolean</span> immutable)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type: Object <span class="ph" id="cache_value_descr"><a name="cache_value_descr"><!-- --></a>The value to store in the cache. The cached value must be
+              serializable.</span></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">ttlSecs</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a> <span class="ph" id="ttlsecs_descr"><a name="ttlsecs_descr"><!-- --></a>The amount of time, in seconds, to keep the cached value in the
+              org cache. The maximum is 172,800 seconds (48 hours). The minimum value is 300 seconds
+              or 5 minutes. The default value is 86,400 seconds (24 hours).</span></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">visibility</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_cache_Visibility.htm" title="Use the Cache.Visibility enumeration in the Cache.Session or Cache.Org methods to indicate whether a cached value is visible only in the value’s namespace or in all namespaces.">Cache.Visibility</a> <span class="ph" id="visibility_descr"><a name="visibility_descr"><!-- --></a>Indicates whether the cached value is available only to Apex
+              code that is executing in the same namespace or to Apex code executing from any
+              namespace.</span></p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">immutable</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Indicates whether the cached value can be overwritten by another namespace (<samp class="codeph apex_code"><span class="keyword">false</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">true</span></samp>).</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_remove">
+<a name="apex_cache_Org_remove"><!-- --></a>
+  <h3 class="helpHead3">remove(key)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Deletes the cached value corresponding to the specified key from the org
+    cache.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Boolean</span> remove(<span class="keyword">String</span> key)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that uniquely identifies a cached value. For information
+            about the format of the key name, see <a class="xref" href="#usage_section">Usage</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">true</span></samp> if the cache value was successfully removed.
+        Otherwise, <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_cache_Org_remove_2">
+<a name="apex_cache_Org_remove_2"><!-- --></a>
+  <h3 class="helpHead3">remove(cacheBuilder, key)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deletes the cached value corresponding to the specified key from the org
+    cache. Use this method if your cached value is a class that implements the
+    <samp class="codeph apex_code">CacheBuilder</samp> interface.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+          <span class="keyword">Boolean</span> remove(System.Type cacheBuilder, <span class="keyword">String</span>
+      key)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">cacheBuilder</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_methods_system_type" title="Contains methods for getting the Apex type that corresponds to an Apex class and for instantiating new types.">System.Type</a></p>
+<p class="p">The Apex class that implements the <samp class="codeph apex_code">CacheBuilder</samp> interface.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A case-sensitive string value that, combined with the class name corresponding to the
+              <var class="keyword varname">cacheBuilder</var> parameter, uniquely identifies a cached value.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">true</span></samp> if the cache value was successfully removed.
+        Otherwise, <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

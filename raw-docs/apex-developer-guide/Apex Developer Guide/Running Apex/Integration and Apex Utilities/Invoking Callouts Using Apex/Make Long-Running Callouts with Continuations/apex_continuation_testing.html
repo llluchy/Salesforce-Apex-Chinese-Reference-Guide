@@ -1,0 +1,89 @@
+<a name="apex_continuation_testing"><!-- --></a><h1 class="helpHead1">Testing Asynchronous Callouts</h1><div class="body conbody">
+<div class="shortdesc">Write tests to test your controller and meet code coverage requirements for deploying
+        or packaging Apex. Because Apex tests don’t support making callouts, you can simulate
+        callout requests and responses. When you’re simulating a callout, the request doesn’t get
+        sent to the external service, and a mock response is used.</div>
+
+        <p class="p">The following example shows how to invoke a mock asynchronous callout in a test for a Web
+            service call that uses <samp class="codeph apex_code">HTTPRequest</samp>. To simulate
+            callouts in continuations, call these methods of the <samp class="codeph apex_code">Test</samp> class: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm#apex_System_Test_setContinuationResponse" target="_blank">Test.setContinuationResponse()</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm#apex_System_Test_invokeContinuationMethod" target="_blank">Test.invokeContinuationMethod()</a>.</p>
+
+        <p class="p">The controller class to test is listed first, followed by the test class. The controller
+            class from <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_overview.htm" title="Use asynchronous callouts to make long-running requests from a Visualforce page or a Lightning component to an external Web service and process responses in callback methods.">Make Long-Running Callouts with Continuations</a> is reused here.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ContinuationController {
+    <span class="onelineComment">// Unique label corresponding to the continuation request</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel;
+    <span class="onelineComment">// Result of callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result {get;set;}
+    <span class="onelineComment">// Endpoint of long-running service</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL = 
+        <span class="string">'&lt;Insert your service URL&gt;'</span>;
+   
+   <span class="onelineComment">// Action method</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> startRequest() {
+      <span class="onelineComment">// Create continuation with a timeout</span>
+      Continuation con = <span class="keyword">new</span> Continuation(40);
+      <span class="onelineComment">// Set callback method</span>
+      con.continuationMethod=<span class="string">'processResponse'</span>;
+      
+      <span class="onelineComment">// Create callout request</span>
+      HttpRequest req = <span class="keyword">new</span> HttpRequest();
+      req.setMethod(<span class="string">'GET'</span>);
+      req.setEndpoint(LONG_RUNNING_SERVICE_URL);
+      
+      <span class="onelineComment">// Add callout request to continuation</span>
+      <span class="statement">this</span>.requestLabel = con.addHttpRequest(req);
+      
+      <span class="onelineComment">// Return the continuation</span>
+      <span class="statement">return</span> con;  
+    }
+    
+    <span class="onelineComment">// Callback method </span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> processResponse() {   
+      <span class="onelineComment">// Get the response by using the unique label</span>
+      HttpResponse response = Continuation.getResponse(<span class="statement">this</span>.requestLabel);
+      <span class="onelineComment">// Set the result variable that is displayed on the Visualforce page</span>
+      <span class="statement">this</span>.result = response.getBody();
+      
+      <span class="onelineComment">// Return null to re-render the original Visualforce page</span>
+      <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+        <p class="p">This example shows the test class corresponding to the controller. This test class
+            contains a test method for testing an asynchronous callout. In the test method, <samp class="codeph apex_code">Test.setContinuationResponse</samp> sets a mock response,
+            and <samp class="codeph apex_code">Test.invokeContinuationMethod</samp> causes the
+            callback method for the continuation to be executed. The test ensures that the callback
+            method processed the mock response by verifying that the controller’s result variable is
+            set to the expected response.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ContinuationTestingForHttpRequest {
+    <span class="keyword">public</span> <span class="keyword">static</span> testmethod <span class="keyword">void</span> testWebService() {
+        ContinuationController controller = <span class="keyword">new</span> ContinuationController();
+        <span class="onelineComment">// Invoke the continuation by calling the action method</span>
+        Continuation conti = (Continuation)controller.startRequest();
+        
+        <span class="onelineComment">// Verify that the continuation has the proper requests</span>
+        Map&lt;<span class="keyword">String</span>, HttpRequest&gt; requests = conti.getRequests();
+        system.assert(requests.size() == 1);
+        system.assert(requests.get(controller.requestLabel) != <span class="keyword">null</span>);
+        
+        <span class="onelineComment">// Perform mock callout </span>
+        <span class="onelineComment">// (i.e. skip the callout and call the callback method)</span>
+        HttpResponse response = <span class="keyword">new</span> HttpResponse();
+        response.setBody(<span class="string">'Mock response body'</span>);   
+        <span class="onelineComment">// Set the fake response for the continuation     </span>
+        Test.setContinuationResponse(controller.requestLabel, response);
+        <span class="onelineComment">// Invoke callback method</span>
+        <span class="keyword">Object</span> result = Test.invokeContinuationMethod(controller, conti);
+        <span class="onelineComment">// result is the return value of the callback</span>
+        System.assertEquals(<span class="keyword">null</span>, result);
+        <span class="onelineComment">// Verify that the controller's result variable</span>
+        <span class="onelineComment">//   is set to the mock response.</span>
+        System.assertEquals(<span class="string">'Mock response body'</span>, controller.result);
+    }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,722 @@
+<a name="apex_class_Auth_AuthProviderPluginClass"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1"><span class="ph" id="apex_class_Auth_AuthProviderPluginClass"><a name="apex_class_Auth_AuthProviderPluginClass"><!-- --></a>AuthProviderPluginClass Class</span></h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Contains methods to create a custom OAuth-based authentication provider plug-in for
+    single sign-on in to Salesforce. Use this class to create a custom authentication provider
+    plug-in if you can’t use one of the authentication providers that Salesforce
+    provides.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">To create a custom authentication provider for single sign-on, create a class that extends
+          <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp>. This class allows
+        you to store the custom configuration for your authentication provider and handle
+        authentication protocols when users log in to Salesforce with their login credentials for an
+        external service provider. In Salesforce, the class that implements this interface appears
+        in the <span class="keyword parmname">Provider Type</span> drop-down list in Auth. Providers in Setup. Make
+        sure that the user you specify to run the class has “Customize Application” and “Manage
+        Auth. Providers” permissions.</p>
+
+      <p class="p">As of API version 39.0, use the abstract class <samp class="codeph apex_code">AuthProviderPluginClass</samp> to create a custom external authentication provider.
+        This class replaces the <samp class="codeph apex_code">AuthProviderPlugin</samp>
+        interface. If you’ve already implemented a custom authentication provider plug-in using the
+        interface, it still works. However, use <samp class="codeph apex_code">AuthProviderPluginClass</samp> to extend your plug-in. If you haven’t created an
+        interface, create a custom authentication provider plug-in by extending this abstract class.
+        For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/authproviderplugin.htm" target="_blank">Create a Custom Authentication Provider Plug-in</a>.</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_methods">AuthProviderPluginClass Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_example">AuthProviderPluginClass Code Example</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_methods">
+<a name="apex_Auth_AuthProviderPluginClass_methods"><!-- --></a><h2 class="helpHead2">AuthProviderPluginClass Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The <samp class="codeph apex_code">AuthProviderPluginClass</samp> methods don’t
+        support DML options.</p>
+<p class="p">This class doesn't include a method for single logout. You can
+        easily configure single logout in Setup. For steps, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.security_auth_slo_oidc_rp_configuring.htm&amp;language=en_US" target="_blank">Configure OpenID Connect Single Logout with Salesforce as
+          the Relying Party</a> in <cite class="cite">Salesforce Help</cite>. Alternatively, create custom
+        methods for single logout.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_getCustomMetadataType">getCustomMetadataType()</a></strong><br>
+Returns the custom metadata type API name for a custom OAuth-based       authentication provider for single sign-on to Salesforce.   </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_getUserInfo">getUserInfo(authProviderConfiguration, response)</a></strong><br>
+Returns information from the custom authentication provider about       the current user. This information is used by the registration handler and in other       authentication provider flows.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_handleCallback">handleCallback(authProviderConfiguration, callbackState)</a></strong><br>
+Uses the authentication provider’s supported authentication protocol       to return an OAuth access token, OAuth secret or refresh token, and the state passed in when       the request for the current user was initiated.   </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_initiate">initiate(authProviderConfiguration, stateToPropagate)</a></strong><br>
+Returns the URL where the user is redirected for       authentication.   </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderPluginClass.htm#apex_Auth_AuthProviderPluginClass_refresh">refresh(authProviderConfiguration, refreshToken)</a></strong><br>
+Returns a new access token, which is used to update an expired       access token. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_getCustomMetadataType">
+<a name="apex_Auth_AuthProviderPluginClass_getCustomMetadataType"><!-- --></a>
+  <h3 class="helpHead3">getCustomMetadataType()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the custom metadata type API name for a custom OAuth-based
+      authentication provider for single sign-on to Salesforce.</span>
+  </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getCustomMetadataType()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The custom metadata type API name for the authentication provider.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The <samp class="codeph apex_code">getCustomMetatadaType()</samp> method returns only
+        custom metadata type names. It does not return custom metadata record names. As of API
+        version 39.0, use this method when extending <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp> to create a custom external authentication
+        provider.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_getUserInfo">
+<a name="apex_Auth_AuthProviderPluginClass_getUserInfo"><!-- --></a>
+  <h3 class="helpHead3">getUserInfo(authProviderConfiguration, response)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns information from the custom authentication provider about
+      the current user. This information is used by the registration handler and in other
+      authentication provider flows.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Auth.UserData getUserInfo(Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;
+          authProviderConfiguration, Auth.AuthProviderTokenResponse response)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">authProviderConfiguration</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The configuration for the custom authentication provider. When you create a custom
+            metadata type in Salesforce, the configuration populates it with the custom metadata
+            type default values. Or you can set the configuration with values that you enter when
+            you create the custom provider in Auth. Providers in Setup.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">response</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderTokenResponse.htm#apex_class_Auth_AuthProviderTokenResponse" title="Stores the response from the AuthProviderPlugin.handleCallback method.">Auth.AuthProviderTokenResponse</a></p>
+<p class="p">The OAuth access token, OAuth secret or refresh token, and state provided by the
+              authentication provider to authenticate the current user.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_UserData.htm#apex_Auth_UserData_ctor" title="Creates a new instance of the Auth.UserData class using the specified arguments.">Auth.UserData</a></p>
+
+      <p class="p">Creates a new instance of the <samp class="codeph apex_code">Auth.UserData</samp>
+        class.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">As of API version 39.0, use this method when extending <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp> to create a custom authentication provider.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_handleCallback">
+<a name="apex_Auth_AuthProviderPluginClass_handleCallback"><!-- --></a>
+  <h3 class="helpHead3">handleCallback(authProviderConfiguration, callbackState)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Uses the authentication provider’s supported authentication protocol
+      to return an OAuth access token, OAuth secret or refresh token, and the state passed in when
+      the request for the current user was initiated.</span>
+  </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Auth.AuthProviderTokenResponse
+          handleCallback(Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration,
+          Auth.AuthProviderCallbackState callbackState)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">authProviderConfiguration</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The configuration for the custom authentication provider. When you create a custom
+            metadata type in Salesforce, the
+            configuration populates with the custom metadata type default values. Or you can set the
+            configuration with values you enter when you create the custom provider in Auth.
+            Providers in Setup.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">callbackState</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderCallbackState.htm#apex_class_Auth_AuthProviderCallbackState" title="Provides request HTTP headers, body, and query parameters to the AuthProviderPlugin.handleCallback method for user authentication. This class allows you to group the information passed in rather than passing headers, body, and query parameters individually.">Auth.AuthProviderCallbackState</a></p>
+<p class="p">The class that contains the HTTP headers, body, and queryParams of the authentication
+            request.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_AuthProviderTokenResponse.htm#apex_class_Auth_AuthProviderTokenResponse" title="Stores the response from the AuthProviderPlugin.handleCallback method.">Auth.AuthProviderTokenResponse</a></p>
+
+      <p class="p">Creates an instance of the <samp class="codeph apex_code">AuthProviderTokenResponse</samp> class.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">As of API version 39.0, use this method when extending <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp> to create a custom authentication provider.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_initiate">
+<a name="apex_Auth_AuthProviderPluginClass_initiate"><!-- --></a>
+  <h3 class="helpHead3">initiate(authProviderConfiguration, stateToPropagate)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the URL where the user is redirected for
+      authentication.</span>
+  </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference
+          initiate(Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration, <span class="keyword">String</span>
+          stateToPropagate)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">authProviderConfiguration</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The configuration for the custom authentication provider. When you create a custom
+            metadata type in Salesforce, the
+            configuration populates with the custom metadata type default values. Or you can set the
+            configuration with values you enter when you create the custom provider in Auth.
+            Providers in Setup.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">stateToPropagate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The state passed in to initiate the authentication request for the user.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm#apex_system_pagereference" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+
+      <p class="p">The URL of the page where the user is redirected for authentication.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">As of API version 39.0, use this method when extending <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp> to create a custom authentication provider.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_refresh">
+<a name="apex_Auth_AuthProviderPluginClass_refresh"><!-- --></a>
+  <h3 class="helpHead3">refresh(authProviderConfiguration, refreshToken)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a new access token, which is used to update an expired
+      access token. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Auth.OAuthRefreshResult
+          refresh(Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration, <span class="keyword">String</span>
+        refreshToken)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">authProviderConfiguration</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The configuration for the custom authentication provider. When you create a custom
+            metadata type in Salesforce, the
+            configuration populates with the custom metadata type default values. Or you can set the
+            configuration with values you enter when you create the custom provider in Auth.
+            Providers in Setup.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">refreshToken</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The refresh token for the user who is logged in.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Auth.OAuthRefreshResult</p>
+
+      <p class="p">Returns the new access token, or an error message if an error occurs. </p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">A successful request returns a <samp class="codeph apex_code">Auth.OAuthRefreshResult</samp> with the access token and refresh token in the response.
+        If you receive an error, make sure that you set the error string to the error message. A
+          <samp class="codeph apex_code">NULL</samp> error string indicates no error. </p>
+
+      <p class="p">The refresh method works only with named credentials; it doesn’t respect the standard OAuth
+        refresh flow. The refresh method with named credentials works only if the earlier request
+        returns a 401. </p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_AuthProviderPluginClass_example">
+<a name="apex_Auth_AuthProviderPluginClass_example"><!-- --></a>
+    <h2 class="helpHead2">AuthProviderPluginClass Code Example</h2>
+
+    
+    <div class="body refbody">
+        <div class="section">
+            <p class="p">The following example demonstrates how to implement a custom Auth. provider plug-in
+                using the abstract class, <samp class="codeph apex_code">Auth.AuthProviderPluginClass</samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+          <span class="keyword">global</span> <span class="keyword">class</span> Concur <span class="keyword">extends</span> Auth.AuthProviderPluginClass {
+          
+          <span class="onelineComment">// Use this URL for the endpoint that the </span>
+          <span class="onelineComment">// authentication provider calls back to for configuration.</span>
+          <span class="keyword">public</span> <span class="keyword">String</span> redirectUrl; 
+          <span class="keyword">private</span> <span class="keyword">String</span> key;
+          <span class="keyword">private</span> <span class="keyword">String</span> secret;
+          
+          <span class="onelineComment">// Application redirection to the Concur website for </span>
+          <span class="onelineComment">// authentication and authorization.</span>
+          <span class="keyword">private</span> <span class="keyword">String</span> authUrl;  
+          
+          <span class="onelineComment">// URI to get the new access token from concur using the GET verb.</span>
+          <span class="keyword">private</span> <span class="keyword">String</span> accessTokenUrl; 
+          
+          <span class="onelineComment">// Api name for the custom metadata type created for this auth provider.</span>
+          <span class="keyword">private</span> <span class="keyword">String</span> customMetadataTypeApiName; 
+          
+          <span class="onelineComment">// Api URL to access the user in Concur</span>
+          <span class="keyword">private</span> <span class="keyword">String</span> userAPIUrl; 
+          
+          <span class="onelineComment">// Version of the user api URL to access data from Concur</span>
+          <span class="keyword">private</span> <span class="keyword">String</span> userAPIVersionUrl; 
+          
+          <span class="keyword">global</span> <span class="keyword">String</span> getCustomMetadataType() {
+              <span class="statement">return</span> customMetadataTypeApiName;
+          } 
+            
+          <span class="keyword">global</span> PageReference initiate(Map&lt;string,string&gt; 
+            authProviderConfiguration, <span class="keyword">String</span> stateToPropagate) 
+            { 
+                authUrl = authProviderConfiguration.get(<span class="string">'Auth_Url__c'</span>); 
+                key = authProviderConfiguration.get(<span class="string">'Key__c'</span>); 
+                
+                <span class="onelineComment">// Here the developer can build up a request of some sort. </span>
+                <span class="onelineComment">// Ultimately, they return a URL where we will redirect the user. </span>
+                <span class="keyword">String</span> url = authUrl + <span class="string">'?client_id='</span>+ key +<span class="string">'&amp;scope=USER,EXPRPT,LIST&amp;redirect_uri='</span>+ redirectUrl + <span class="string">'&amp;state='</span> + stateToPropagate; 
+                <span class="statement">return</span> <span class="keyword">new</span> PageReference(url); 
+            } 
+            
+            <span class="keyword">global</span> Auth.AuthProviderTokenResponse handleCallback(Map&lt;string,string&gt; 
+            authProviderConfiguration, Auth.AuthProviderCallbackState state ) 
+            { 
+                <span class="onelineComment">// Here, the developer will get the callback with actual protocol. </span>
+                <span class="onelineComment">// Their responsibility is to return a new object called </span>
+                <span class="onelineComment">// AuthProviderTokenResponse. </span>
+                <span class="onelineComment">// This will contain an optional accessToken and refreshToken </span>
+                key = authProviderConfiguration.get(<span class="string">'Key__c'</span>); 
+                secret = authProviderConfiguration.get(<span class="string">'Secret__c'</span>); 
+                accessTokenUrl = authProviderConfiguration.get(<span class="string">'Access_Token_Url__c'</span>); 
+            
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; queryParams = state.queryParameters; 
+                <span class="keyword">String</span> code = queryParams.get(<span class="string">'code'</span>); 
+                <span class="keyword">String</span> sfdcState = queryParams.get(<span class="string">'state'</span>); 
+            
+                HttpRequest req = <span class="keyword">new</span> HttpRequest(); 
+                <span class="keyword">String</span> url = accessTokenUrl+<span class="string">'?code='</span> + code + <span class="string">'&amp;client_id='</span> + key + 
+                <span class="string">'&amp;client_secret='</span> + secret; 
+                req.setEndpoint(url); 
+                req.setHeader(<span class="string">'Content-Type'</span>,<span class="string">'application/xml'</span>); 
+                req.setMethod(<span class="string">'GET'</span>); 
+            
+                Http http = <span class="keyword">new</span> Http(); 
+                HTTPResponse res = http.send(req); 
+                <span class="keyword">String</span> responseBody = res.getBody(); 
+                <span class="keyword">String</span> token = getTokenValueFromResponse(responseBody, <span class="string">'Token'</span>, <span class="keyword">null</span>); 
+            
+                <span class="statement">return</span> <span class="keyword">new</span> Auth.AuthProviderTokenResponse(<span class="string">'Concur'</span>, token, 
+                <span class="string">'refreshToken'</span>, sfdcState); 
+            } 
+                       
+            <span class="keyword">global</span> Auth.UserData getUserInfo(Map&lt;string,string&gt; 
+            authProviderConfiguration, 
+            Auth.AuthProviderTokenResponse response) 
+            { 
+                <span class="onelineComment">//Here the developer is responsible for constructing an </span>
+                <span class="onelineComment">//Auth.UserData object </span>
+                <span class="keyword">String</span> token = response.oauthToken; 
+                HttpRequest req = <span class="keyword">new</span> HttpRequest(); 
+                userAPIUrl = authProviderConfiguration.get(<span class="string">'API_User_Url__c'</span>);
+                userAPIVersionUrl = authProviderConfiguration.get
+                (<span class="string">'API_User_Version_Url__c'</span>); 
+                req.setHeader(<span class="string">'Authorization'</span>, <span class="string">'OAuth '</span> + token); 
+                req.setEndpoint(userAPIUrl); 
+                req.setHeader(<span class="string">'Content-Type'</span>,<span class="string">'application/xml'</span>); 
+                req.setMethod(<span class="string">'GET'</span>); 
+            
+                Http http = <span class="keyword">new</span> Http(); 
+                HTTPResponse res = http.send(req); 
+                <span class="keyword">String</span> responseBody = res.getBody(); 
+                <span class="keyword">String</span> id = getTokenValueFromResponse(responseBody, 
+                <span class="string">'LoginId'</span>,userAPIVersionUrl); 
+                <span class="keyword">String</span> fname = getTokenValueFromResponse(responseBody, 
+                <span class="string">'FirstName'</span>, userAPIVersionUrl); 
+                <span class="keyword">String</span> lname = getTokenValueFromResponse(responseBody, 
+                <span class="string">'LastName'</span>, userAPIVersionUrl); 
+                <span class="keyword">String</span> flname = fname + <span class="string">' '</span> + lname; 
+                <span class="keyword">String</span> uname = getTokenValueFromResponse(responseBody, 
+                <span class="string">'EmailAddress'</span>, userAPIVersionUrl); 
+                <span class="keyword">String</span> locale = getTokenValueFromResponse(responseBody, 
+                <span class="string">'LocaleName'</span>, userAPIVersionUrl); 
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; provMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;(); 
+                provMap.put(<span class="string">'what1'</span>, <span class="string">'noidea1'</span>); 
+                provMap.put(<span class="string">'what2'</span>, <span class="string">'noidea2'</span>); 
+                <span class="statement">return</span> <span class="keyword">new</span> Auth.UserData(id, fname, lname, flname, 
+                uname, <span class="string">'what'</span>, locale, <span class="keyword">null</span>, <span class="string">'Concur'</span>, <span class="keyword">null</span>, provMap); 
+            } 
+            
+            <span class="keyword">private</span> <span class="keyword">String</span> getTokenValueFromResponse(<span class="keyword">String</span> response, 
+            <span class="keyword">String</span> token, <span class="keyword">String</span> ns) 
+            { 
+                Dom.Document docx = <span class="keyword">new</span> Dom.Document(); 
+                docx.load(response); 
+                <span class="keyword">String</span> ret = <span class="keyword">null</span>; 
+            
+                dom.XmlNode xroot = docx.getrootelement() ; 
+                <span class="statement">if</span>(xroot != <span class="keyword">null</span>){ ret = xroot.getChildElement(token, ns).getText(); 
+                } 
+            <span class="statement">return</span> ret; 
+            } 
+            
+        }</pre></div>
+
+        </div>
+
+        <div class="section">
+<h3 class="helpHead3">Sample Test Classes</h3>
+
+            
+            <p class="p">The following example contains test classes for the Concur class.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+            <span class="keyword">@IsTest</span> 
+            <span class="keyword">public</span> <span class="keyword">class</span> ConcurTestClass { 
+            
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> OAUTH_TOKEN = <span class="string">'testToken'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> STATE = <span class="string">'mocktestState'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> REFRESH_TOKEN = <span class="string">'refreshToken'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LOGIN_ID = <span class="string">'testLoginId'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> USERNAME = <span class="string">'testUsername'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> FIRST_NAME = <span class="string">'testFirstName'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LAST_NAME = <span class="string">'testLastName'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> EMAIL_ADDRESS = <span class="string">'testEmailAddress'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LOCALE_NAME = <span class="string">'testLocalName'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> FULL_NAME = FIRST_NAME + <span class="string">' '</span> + LAST_NAME; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> PROVIDER = <span class="string">'Concur'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> REDIRECT_URL = 
+                <span class="string">'http://localhost/services/authcallback/orgId/Concur'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> KEY = <span class="string">'testKey'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> SECRET = <span class="string">'testSecret'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> STATE_TO_PROPOGATE = <span class="string">'testState'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> ACCESS_TOKEN_URL = 
+                <span class="string">'http://www.dummyhost.com/accessTokenUri'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> API_USER_VERSION_URL = 
+                <span class="string">'http://www.dummyhost.com/user/20/1'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> AUTH_URL = 
+                <span class="string">'http://www.dummy.com/authurl'</span>; 
+                <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> API_USER_URL = 
+                <span class="string">'www.concursolutions.com/user/api'</span>; 
+            
+            <span class="onelineComment">// In the real world scenario, the key and value would be read </span>
+            <span class="onelineComment">// from the (custom fields in) custom metadata type record. </span>
+            <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; setupAuthProviderConfig () 
+            { 
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;(); 
+                authProviderConfiguration.put(<span class="string">'Key__c'</span>, KEY); 
+                authProviderConfiguration.put(<span class="string">'Auth_Url__c'</span>, AUTH_URL); 
+                authProviderConfiguration.put(<span class="string">'Secret__c'</span>, SECRET); 
+                authProviderConfiguration.put(<span class="string">'Access_Token_Url__c'</span>, ACCESS_TOKEN_URL); 
+                authProviderConfiguration.put(<span class="string">'API_User_Url__c'</span>,API_USER_URL); 
+                authProviderConfiguration.put(<span class="string">'API_User_Version_Url__c'</span>,
+                API_USER_VERSION_URL); 
+                authProviderConfiguration.put(<span class="string">'Redirect_Url__c'</span>,REDIRECT_URL); 
+                <span class="statement">return</span> authProviderConfiguration; 
+            
+            } 
+            
+            <span class="keyword">static</span> testMethod <span class="keyword">void</span> testInitiateMethod() 
+            { 
+                <span class="keyword">String</span> stateToPropogate = <span class="string">'mocktestState'</span>; 
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = setupAuthProviderConfig(); 
+                Concur concurCls = <span class="keyword">new</span> Concur(); 
+                concurCls.redirectUrl = authProviderConfiguration.get(<span class="string">'Redirect_Url__c'</span>); 
+            PageReference expectedUrl = <span class="keyword">new</span> PageReference(authProviderConfiguration.get(<span class="string">'Auth_Url__c'</span>) + <span class="string">'?client_id='</span>+ 
+            authProviderConfiguration.get(<span class="string">'Key__c'</span>) +<span class="string">'&amp;scope=USER,EXPRPT,LIST&amp;redirect_uri='</span>+ 
+            authProviderConfiguration.get(<span class="string">'Redirect_Url__c'</span>) + <span class="string">'&amp;state='</span> + 
+            STATE_TO_PROPOGATE); 
+                PageReference actualUrl = concurCls.initiate(authProviderConfiguration, STATE_TO_PROPOGATE); 
+                System.assertEquals(expectedUrl.getUrl(), actualUrl.getUrl());
+            } 
+            
+            <span class="keyword">static</span> testMethod <span class="keyword">void</span> testHandleCallback() 
+            { 
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = 
+                setupAuthProviderConfig(); 
+                Concur concurCls = <span class="keyword">new</span> Concur(); 
+                concurCls.redirectUrl = authProviderConfiguration.get
+                (<span class="string">'Redirect_Url_c'</span>); 
+            
+                Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> 
+                ConcurMockHttpResponseGenerator()); 
+            
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; queryParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;(); 
+                queryParams.put(<span class="string">'code'</span>,<span class="string">'code'</span>); 
+                queryParams.put(<span class="string">'state'</span>,authProviderConfiguration.get(<span class="string">'State_c'</span>)); 
+                Auth.AuthProviderCallbackState cbState = 
+                <span class="keyword">new</span> Auth.AuthProviderCallbackState(<span class="keyword">null</span>,<span class="keyword">null</span>,queryParams); 
+                Auth.AuthProviderTokenResponse actualAuthProvResponse = 
+                concurCls.handleCallback(authProviderConfiguration, cbState); 
+                Auth.AuthProviderTokenResponse expectedAuthProvResponse = 
+                <span class="keyword">new</span> Auth.AuthProviderTokenResponse(
+                <span class="string">'Concur'</span>, OAUTH_TOKEN, REFRESH_TOKEN, <span class="keyword">null</span>); 
+            
+                System.assertEquals(expectedAuthProvResponse.provider, 
+                actualAuthProvResponse.provider); 
+                System.assertEquals(expectedAuthProvResponse.oauthToken, 
+                actualAuthProvResponse.oauthToken); 
+                System.assertEquals(expectedAuthProvResponse.oauthSecretOrRefreshToken, 
+                actualAuthProvResponse.oauthSecretOrRefreshToken); 
+                System.assertEquals(expectedAuthProvResponse.state, 
+                actualAuthProvResponse.state); 
+
+            } 
+             
+            <span class="keyword">static</span> testMethod <span class="keyword">void</span> testGetUserInfo() 
+            { 
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authProviderConfiguration = 
+                setupAuthProviderConfig(); 
+                Concur concurCls = <span class="keyword">new</span> Concur(); 
+            
+                Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> 
+                ConcurMockHttpResponseGenerator()); 
+            
+                Auth.AuthProviderTokenResponse response = 
+                <span class="keyword">new</span> Auth.AuthProviderTokenResponse(
+                PROVIDER, OAUTH_TOKEN ,<span class="string">'sampleOauthSecret'</span>, STATE); 
+                Auth.UserData actualUserData = concurCls.getUserInfo(
+                authProviderConfiguration, response) ; 
+            
+                Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; provMap = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;(); 
+                provMap.put(<span class="string">'key1'</span>, <span class="string">'value1'</span>); 
+                provMap.put(<span class="string">'key2'</span>, <span class="string">'value2'</span>); 
+            
+                Auth.UserData expectedUserData = <span class="keyword">new</span> Auth.UserData(LOGIN_ID, 
+                FIRST_NAME, LAST_NAME, FULL_NAME, EMAIL_ADDRESS, 
+                <span class="keyword">null</span>, LOCALE_NAME, <span class="keyword">null</span>, PROVIDER, <span class="keyword">null</span>, provMap); 
+            
+                System.assertNotEquals(expectedUserData,<span class="keyword">null</span>); 
+                System.assertEquals(expectedUserData.firstName, 
+                actualUserData.firstName); 
+                System.assertEquals(expectedUserData.lastName, 
+                actualUserData.lastName); 
+                System.assertEquals(expectedUserData.fullName, 
+                actualUserData.fullName); 
+                System.assertEquals(expectedUserData.email, 
+                actualUserData.email); 
+                System.assertEquals(expectedUserData.username, 
+                actualUserData.username); 
+                System.assertEquals(expectedUserData.locale, 
+                actualUserData.locale); 
+                System.assertEquals(expectedUserData.provider, 
+                actualUserData.provider); 
+                System.assertEquals(expectedUserData.siteLoginUrl, 
+                actualUserData.siteLoginUrl); 
+            } 
+            
+            
+            <span class="onelineComment">// Implement a mock http response generator for Concur. </span>
+            <span class="keyword">public</span> <span class="keyword">class</span> ConcurMockHttpResponseGenerator <span class="keyword">implements</span> HttpCalloutMock 
+            { 
+                <span class="keyword">public</span> HTTPResponse respond(HTTPRequest req) 
+                { 
+                    <span class="keyword">String</span> namespace = API_USER_VERSION_URL; 
+                    <span class="keyword">String</span> prefix = <span class="string">'mockPrefix'</span>; 
+            
+                    Dom.Document doc = <span class="keyword">new</span> Dom.Document(); 
+                    Dom.XmlNode xmlNode = doc.createRootElement(
+                    <span class="string">'mockRootNodeName'</span>, namespace, prefix); 
+                    xmlNode.addChildElement(<span class="string">'LoginId'</span>, namespace, prefix)
+                    .addTextNode(LOGIN_ID); 
+                    xmlNode.addChildElement(<span class="string">'FirstName'</span>, namespace, prefix)
+                    .addTextNode(FIRST_NAME); 
+                    xmlNode.addChildElement(<span class="string">'LastName'</span>, namespace, prefix)
+                    .addTextNode(LAST_NAME); 
+                    xmlNode.addChildElement(<span class="string">'EmailAddress'</span>, namespace, prefix)
+                    .addTextNode(EMAIL_ADDRESS); 
+                    xmlNode.addChildElement(<span class="string">'LocaleName'</span>, namespace, prefix)
+                    .addTextNode(LOCALE_NAME); 
+                    xmlNode.addChildElement(<span class="string">'Token'</span>, <span class="keyword">null</span>, <span class="keyword">null</span>)
+                    .addTextNode(OAUTH_TOKEN); 
+                    System.debug(doc.toXmlString()); 
+                    <span class="onelineComment">// Create a fake response </span>
+                    HttpResponse res = <span class="keyword">new</span> HttpResponse(); 
+                    res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/xml'</span>); 
+                    res.setBody(doc.toXmlString()); 
+                    res.setStatusCode(200); 
+                    <span class="statement">return</span> res; 
+                } 
+            
+            } 
+        }</pre></div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>

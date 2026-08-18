@@ -1,0 +1,180 @@
+<a name="apex_class_sfdc_enablement_LearningItemSerializeDeserializer"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">LearningItemSerializeDeserializer Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Serializes and deserializes the content associated with a custom exercise when migrating
+    an Enablement program from one org to another.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfdc_enablement.htm" title="The sfdc_enablement namespace provides classes for creating custom learning items to implement custom exercise types in Enablement programs. Lightning web components are used to render the custom exercises on Program Builder.">sfdc_enablement</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">The class contains methods to serialize and deserialize custom exercise content between
+        orgs when an Enablement program that includes a custom exercise is migrated from one org to
+        another through change sets or packaging. </p>
+
+      <p class="p">Extend the <samp class="codeph ">sfdc_enablement.LearningItemSerializeDeserializer</samp> Apex abstract class and add
+        the class name to the <samp class="codeph nolang">ApexSerializerDeserializer</samp> field
+        of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_learningitemtype.htm" target="_blank">LearningItemType metadata record</a>. If you don’t add
+        the class name to the LearningItemType metadata record, the <samp class="codeph ">customContent</samp> property for the custom exercise is empty in the destination org
+        and no corresponding LearningItem record is created for the exercise’s <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_enblprogramtaskdefinition.htm" target="_blank">EnblProgramTaskDefinition record</a>.</p>
+
+      <p class="p">The <a class="xref" href="#apex_sfdc_enablement_LearningItemSerializeDeserializer_serialize" title="Serializes the custom content associated with the specified learning item. The serialized string represents the metadata of the custom content and is used to recreate the custom content in the target Salesforce org during deployment.">serialize</a> method serializes the custom content of the learning item from the
+        source org. This method is called when you retrieve custom content from the source org.</p>
+
+      <p class="p">The <a class="xref" href="#apex_sfdc_enablement_LearningItemSerializeDeserializer_deserialize" title="Deserializes the provided custom content string and returns the record ID of the learning item.">deserialize</a> method is called during the deployment of a program. This method takes
+        the serialized custom content, recreates the custom object record in the target org, and
+        returns a new learning item record ID.</p>
+
+    </div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">The sample code serializes and deserializes the custom content for a given learning item of a
+        custom screen flow exercise in an Enablement program. For this example to work, make sure
+        the screen flow exists in the target org.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ScreenFlowSerializerDeserializer <span class="keyword">extends</span> Sfdc_enablement.LearningItemSerializeDeserializer {
+    <span class="onelineComment">// The serialize method returns the serialized output of the </span>
+    <span class="onelineComment">// learning item’s custom content.</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> <span class="keyword">String</span> serialize(<span class="keyword">String</span> learningItemId) {
+        <span class="onelineComment">// Get the screen flow record ID associated with the learning item.</span>
+        LearningItem learningItem = [SELECT ScreenFlow_Field__c from LearningItem where Id =: learningItemId LIMIT 1];
+        <span class="keyword">String</span> screenFlowRecordId = learningItem.ScreenFlow_Field__c;
+        
+        <span class="onelineComment">// Get the flow version ID associated with that screen flow.</span>
+        ScreenFlow_Object__c screenFlowRecord = [SELECT FlowVersionId__c from ScreenFlow_Object__c where Id =: screenFlowRecordId LIMIT 1];
+        <span class="keyword">String</span> flowVersionId = screenFlowRecord.FlowVersionId__c;
+
+        <span class="onelineComment">// Query the flow definition associated with that flow version.</span>
+        <span class="onelineComment">// Get the information you need to recreate the custom object</span>
+        <span class="onelineComment">// record in the destination org.</span>
+        <span class="onelineComment">// In this example, we're only getting the API name of the</span>
+        <span class="onelineComment">// flow version.</span>
+        FlowDefinitionView flowDefinitionView = [SELECT ApiName from FlowDefinitionView where ActiveVersionId =: flowVersionId LIMIT 1];
+        
+        <span class="onelineComment">// Return the serialized string.</span>
+        <span class="onelineComment">// In this example, we're only returning the API name of the flow</span>
+        <span class="onelineComment">// definition in the string.</span>
+        <span class="statement">return</span> flowDefinitionView.ApiName;
+    }
+
+    <span class="onelineComment">// The deserialize method deserializes the string containing the custom </span>
+    <span class="onelineComment">// content. In the method, you recreate the custom object record </span>
+    <span class="onelineComment">// for the destination org and populate it with the custom content. </span>
+    <span class="onelineComment">// Then insert the record in the destination org and return the new</span>
+    <span class="onelineComment">// custom object record ID.</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> <span class="keyword">String</span> deserialize(<span class="keyword">String</span> serializedOutput) {
+        <span class="onelineComment">// Find the flow active version ID of the same screen flow in the </span>
+        <span class="onelineComment">// destination org. </span>
+        FlowDefinitionView flowDefinitionView = [SELECT ActiveVersionId from FlowDefinitionView where ApiName =: serializedOutput LIMIT 1];
+        <span class="keyword">String</span> flowActiveVersionId = flowDefinitionView.ActiveVersionId;
+
+        <span class="onelineComment">// Create the screen flow custom object record using the </span>
+        <span class="onelineComment">// information you passed to the string in the serialize method.</span>
+        <span class="onelineComment">// In this example, we only passed the API name of the screen flow</span>
+        <span class="onelineComment">// to the string.</span>
+        ScreenFlow_Object__c screenFlowRecord = <span class="keyword">new</span> ScreenFlow_Object__c();
+        screenFlowRecord.Name = serializedOutput;
+        screenFlowRecord.FlowVersionId__c = flowActiveVersionId;
+
+        <span class="onelineComment">// Insert the custom object record into the destination org.</span>
+        <span class="statement">insert</span> screenFlowRecord;
+
+        <span class="onelineComment">// Return the new screen flow record ID for the new learning item </span>
+        <span class="onelineComment">// in the destination org.      </span>
+        <span class="statement">return</span> screenFlowRecord.Id;
+    }
+}</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_sfdc_enablement_LearningItemSerializeDeserializer.htm#apex_sfdc_enablement_LearningItemSerializeDeserializer_methods">LearningItemSerializeDeserializer Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfdc_enablement_LearningItemSerializeDeserializer_methods">
+<a name="apex_sfdc_enablement_LearningItemSerializeDeserializer_methods"><!-- --></a><h2 class="helpHead2">LearningItemSerializeDeserializer Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">LearningItemSerializeDeserializer</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_sfdc_enablement_LearningItemSerializeDeserializer.htm#apex_sfdc_enablement_LearningItemSerializeDeserializer_deserialize">deserialize(serializedOutput)</a></strong><br>
+Deserializes the provided custom content string and returns the record ID of the learning         item.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_sfdc_enablement_LearningItemSerializeDeserializer.htm#apex_sfdc_enablement_LearningItemSerializeDeserializer_serialize">serialize(learningItemId)</a></strong><br>
+Serializes the custom content associated with the specified learning item. The serialized                 string represents the metadata of the custom content and is used to recreate the                 custom content in the target Salesforce org during  deployment.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfdc_enablement_LearningItemSerializeDeserializer_deserialize">
+<a name="apex_sfdc_enablement_LearningItemSerializeDeserializer_deserialize"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">deserialize(serializedOutput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Deserializes the provided custom content string and returns the record ID of the learning
+        item.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String deserialize(String serializedOutput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">serializedOutput</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The serialized information of custom content associated with a learning item The <a class="xref" href="#apex_sfdc_enablement_LearningItemSerializeDeserializer_serialize" title="Serializes the custom content associated with the specified learning item. The serialized string represents the metadata of the custom content and is used to recreate the custom content in the target Salesforce org during deployment.">serialize(learningItemId)</a> method returns this information as a string that is less than or equal to
+                        250 characters.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <p class="p">The ID of the learning item created for the target org.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfdc_enablement_LearningItemSerializeDeserializer_serialize">
+<a name="apex_sfdc_enablement_LearningItemSerializeDeserializer_serialize"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">serialize(learningItemId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Serializes the custom content associated with the specified learning item. The serialized
+                string represents the metadata of the custom content and is used to recreate the
+                custom content in the target Salesforce org during  deployment.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String serialize(String learningItemId)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">learningItemId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID of the learning item associated with the custom content to be
+                                                serialized.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+            <p class="p">The serialized information of the custom content of the specified learning item. The
+                                format is a string that’s less than or equal to 250 characters
+                                long.</p>
+
+        </div>
+</div>
+</div>
+</div>
+</div>

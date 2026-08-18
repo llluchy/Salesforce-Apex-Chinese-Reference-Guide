@@ -1,0 +1,27 @@
+<a name="connectapi_examples_post_feed_element_mention"><!-- --></a><h1 class="helpHead1">Post a Feed Element with a Mention</h1><div class="body refbody">
+<div class="shortdesc">Call a method or use the ConnectApiHelper repository to post a feed.</div>
+
+                <div class="section"><div class="p">You can post feed elements with mentions two ways. Use the <a class="xref" href="https://github.com/forcedotcom/ConnectApiHelper" target="_blank" title="HTML (New Window)">ConnectApiHelper repository
+                                on GitHub</a> to write a single line of code, or use this
+                        example, which calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId,
+                        feedElement)</samp></a>.<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.MentionSegmentInput mentionSegmentInput = <span class="keyword">new</span> ConnectApi.MentionSegmentInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+mentionSegmentInput.id = <span class="string">'005RR000000Dme9'</span>;
+messageBodyInput.messageSegments.add(mentionSegmentInput);
+
+textSegmentInput.text = <span class="string">'Could you take a look?'</span>;
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+feedItemInput.body = messageBodyInput;
+feedItemInput.feedElementType = ConnectApi.FeedElementType.FeedItem;
+feedItemInput.subjectId = <span class="string">'0F9RR0000004CPw'</span>;
+
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+</div></div>
+
+        </div><div id="sfdc:seealso" class="related-links"></div>

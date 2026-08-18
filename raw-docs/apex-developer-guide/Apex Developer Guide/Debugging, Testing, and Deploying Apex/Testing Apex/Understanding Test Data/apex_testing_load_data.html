@@ -1,0 +1,85 @@
+<a name="apex_testing_load_data"><!-- --></a><h1 class="helpHead1">Loading Test Data</h1><div class="body conbody">
+<div class="shortdesc">Using the <samp class="codeph apex_code">Test.loadData</samp> method, you can populate data in your test methods without having
+to write many lines of code.</div>
+
+<div class="p">Follow these steps:<ol class="ol enumList">
+                <li class="li">Add the data in a .csv file.</li>
+
+                <li class="li">Create a static resource for this file.</li>
+
+                <li class="li">Call <samp class="codeph apex_code">Test.loadData</samp> within your test
+                    method and passing it the sObject type token and the static resource name. </li>
+
+            </ol>
+For example, for Account records and a static resource name of
+                <kbd class="ph userinput">myResource</kbd>, make the following call:</div>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;sObject&gt; ls = Test.loadData(Account.sObjectType, <span class="string">'myResource'</span>);</pre></div>
+
+<p class="p">The <samp class="codeph apex_code">Test.loadData</samp> method
+returns a list of sObjects that correspond to each record inserted.</p>
+
+<p class="p">You must create the static resource prior to calling this method.
+The static resource is a comma-delimited file ending with a .csv extension.
+The file contains field names and values for the test records. The
+first line of the file must contain the field names and subsequent
+lines are the field values. To learn more about static resources,
+see “Defining Static Resources” in the Salesforce online help.</p>
+
+<p class="p">Once you create
+a static resource for your .csv file, the static resource will be
+assigned a MIME type. Supported MIME types are: </p>
+
+<div class="section" id="TestLoadDataExampleSection">
+<a name="TestLoadDataExampleSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="TestLoadDataExampleSectionTitle"><a name="TestLoadDataExampleSectionTitle"><!-- --></a><span class="titlecodeph">Test.loadData</span> Example</span></h2>
+<div class="p">The following are steps
+for creating a sample .csv file and a static resource, and calling <samp class="codeph apex_code">Test.loadData</samp> to insert the test records.<ol class="ol enumList">
+<li class="li">Create a .csv file that has the data for the test records. This sample .csv file has three
+                        account records. You can use this sample content to create your .csv
+                        file.<div class="codeSection nolang"><pre class="codeblock brush:plain">Name,Website,Phone,BillingStreet,BillingCity,BillingState,BillingPostalCode,BillingCountry
+sForceTest1,http://www.sforcetest1.com,(415) 901-7000,The Landmark @ One Market,San Francisco,CA,94105,US
+sForceTest2,http://www.sforcetest2.com,(415) 901-7000,The Landmark @ One Market Suite 300,San Francisco,CA,94105,US
+sForceTest3,http://www.sforcetest3.com,(415) 901-7000,1 Market St,San Francisco,CA,94105,US
+</pre></div>
+</li>
+
+<li class="li">Create a static resource for the .csv file:<ol class="ol enumList" type="a">
+                            <li class="li">From Setup, enter <kbd class="ph userinput">Static Resources</kbd> in the
+                                    <span class="keyword parmname">Quick Find</span> box, then select
+                                    <strong class="ph uicontrol">Static Resources</strong>.</li>
+
+                            <li class="li">Click <strong class="ph uicontrol">New</strong>.</li>
+
+                            <li class="li">Name your static resource <kbd class="ph userinput">testAccounts</kbd>.</li>
+
+                            <li class="li">Choose the file you created.</li>
+
+                            <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+                        </ol>
+</li>
+
+<li class="li">Call <samp class="codeph apex_code">Test.loadData</samp> in
+a test method to populate the test accounts.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span> 
+<span class="keyword">private</span> <span class="keyword">class</span> DataUtil {
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> testLoadData() {
+        <span class="onelineComment">// Load the test accounts from the static resource</span>
+        List&lt;sObject&gt; ls = Test.loadData(Account.sObjectType, <span class="string">'testAccounts'</span>);
+        <span class="onelineComment">// Verify that all 3 test accounts were created</span>
+        System.assert(ls.size() == 3);
+
+        <span class="onelineComment">// Get first test account</span>
+        Account a1 = (Account)ls[0];
+        <span class="keyword">String</span> acctName = a1.Name;
+        System.debug(acctName);
+
+        <span class="onelineComment">// Perform some testing using the test records</span>
+    }
+}</pre></div>
+</li>
+
+</ol>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

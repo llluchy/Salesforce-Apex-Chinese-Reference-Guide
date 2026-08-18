@@ -1,0 +1,116 @@
+<a name="apex_qs_class"><!-- --></a><h1 class="helpHead1">Add an Apex Class</h1><div class="body taskbody">
+<div class="shortdesc">In this step, you add an Apex class that contains a method for updating the book
+        price. This method is called by the trigger that you’ll be adding in the next
+        step.</div>
+
+        <div class="section prereq p"><div class="p">Prerequisites:<ul class="ul bulletList">
+                <li class="li">A Salesforce account in a sandbox Professional, Enterprise, Performance, or
+                    Unlimited Edition org, or an account in a Developer org.</li>
+
+                <li class="li">
+<a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_customobject.htm" title="In this step, you create a custom object called Book with one custom field called Price.">The Book
+                        custom object</a>.</li>
+
+            </ul>
+</div></div>
+
+        <ol class="ol steps enumList">
+            <li class="li step">
+                <span class="ph cmd">From Setup, enter “Apex Classes” in the <span class="keyword parmname">Quick Find</span> box,
+                    then select <strong class="ph uicontrol">Apex Classes</strong> and click
+                        <strong class="ph uicontrol">New</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">In the class editor, enter this class definition:</span>
+                <div class="itemgroup stepxmp">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyHelloWorld {
+
+}</pre></div>
+
+                </div>
+                <div class="itemgroup info">The previous code is the class definition to which you’ll be adding one method
+                    in the next step. Apex code is contained in <em class="ph i">classes.</em> This class is
+                    defined as <samp class="codeph apex_code"><span class="keyword">public</span></samp>, which means the
+                    class is available to other Apex classes and triggers. For more information, see
+                        <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes.htm" title="Apex classes are modeled on their counterparts in Java. You’ll define, instantiate, and extend classes, and you’ll work with interfaces, Apex class versions, properties, and other related class concepts.">Classes, Objects, and
+                        Interfaces</a>.</div>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">Add this method definition between the class opening and closing
+                    brackets.</span>
+                <div class="itemgroup stepxmp">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> applyDiscount(Book__c[] books) {
+   <span class="statement">for</span> (Book__c b :books){
+      b.Price__c *= 0.9;
+   }
+}
+</pre></div>
+
+                </div>
+                <div class="itemgroup info">
+                    <p class="p">This method is called <samp class="codeph apex_code">applyDiscount</samp>,
+                        and it’s both public and static. Because it’s a static method, you don't
+                        need to create an instance of the class to access the method—you can
+                        use the name of the class followed by a dot (.) and the name of the method.
+                        For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_static.htm" title="In Apex, you can have static methods, variables, and initialization code. However, Apex classes can't be static. You can also have instance methods, member variables, and initialization code, which have no modifiers, and local variables.">Static and Instance Methods, Variables, and Initialization
+                        Code</a>.</p>
+
+                    <p class="p">This method takes one parameter, a list of Book records, which is assigned to
+                        the variable <samp class="codeph apex_code">books</samp>. Notice the
+                            <samp class="codeph apex_code">__c</samp> in the object name <samp class="codeph apex_code">Book__c</samp>. This indicates that it’s a
+                            <dfn class="term">custom object</dfn> that you created. Standard objects that are
+                        provided in the Salesforce application, such as Account, don't end with this
+                        postfix.</p>
+
+                    <p class="p">The next section of code contains the rest of the method definition:</p>
+
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">for</span> (Book__c b :books){
+   b.Price__c *= 0.9;
+}
+</pre></div>
+
+                    <p class="p">Notice the <samp class="codeph apex_code">__c</samp> after the field name
+                            <samp class="codeph apex_code">Price__c</samp>. This indicates that
+                        it’s a <dfn class="term">custom field</dfn> that you created. Standard fields that are
+                        provided by default in Salesforce are accessed using the same type of dot
+                        notation but without the <samp class="codeph apex_code">__c</samp>, for
+                        example, <samp class="codeph apex_code">Name</samp> doesn't end with
+                            <samp class="codeph apex_code">__c</samp> in <samp class="codeph apex_code">Book__c.Name</samp>. The statement <samp class="codeph apex_code">b.Price__c *= 0.9;</samp> takes the old value
+                        of <samp class="codeph apex_code">b.Price__c</samp>, multiplies it by 0.9,
+                        which means its value is discounted by 10%, and then stores the new value
+                        into the <samp class="codeph apex_code">b.Price__c</samp> field. The
+                            <samp class="codeph apex_code">*=</samp> operator is a shortcut.
+                        Another way to write this statement is <samp class="codeph apex_code">b.Price__c = b.Price__c * 0.9;</samp>. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_expressions_operators_understanding.htm" title="Expressions can be joined to one another with operators to create compound expressions.">Expression Operators</a>.</p>
+
+                </div>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">Click <strong class="ph uicontrol">Save</strong> to save the new class. You now have this full
+                    class definition.</span>
+                <div class="itemgroup stepxmp">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyHelloWorld {
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> applyDiscount(Book__c[] books) {
+      <span class="statement">for</span> (Book__c b :books){
+         b.Price__c *= 0.9;
+      }
+   }
+}</pre></div>
+
+                </div>
+            </li>
+
+        </ol>
+
+        <div class="section result"><div class="p">You now have a class that contains some code that iterates over a list of books and
+            updates the Price field for each book. This code is part of the <samp class="codeph apex_code">applyDiscount</samp> static method called by the trigger
+            that you’ll create in the next step.</div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_customobject.htm" title="Create a Custom Object">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_trigger.htm" title="Add an Apex Trigger">Next →</a></li>
+</ul></div>
+</div>

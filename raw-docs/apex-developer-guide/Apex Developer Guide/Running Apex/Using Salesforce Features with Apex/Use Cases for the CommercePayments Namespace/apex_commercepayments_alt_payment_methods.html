@@ -1,0 +1,75 @@
+<a name="apex_commercepayments_alt_payment_methods"><!-- --></a><h1 class="helpHead1">Alternative Payment  Methods</h1><div class="body conbody">
+<div class="shortdesc">An alternative payment method allows customers to store and represent payment method
+  information not represented by another pre-defined payment method such as <samp class="codeph apex_code">CardPaymentMethod</samp> or <samp class="codeph apex_code">DigitalWallet</samp>. Common examples of alternative payment methods include CashOnDeliver,
+  Klarna, and Direct Debit. Alternative payment methods are available in API v51.0 and
+  later.</div>
+
+  
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+    <tbody class="tbody">
+     <tr>
+      <td class="subHead">Available in: Salesforce Spring '21 and later</td>
+
+     </tr>
+
+    </tbody>
+
+   </table>
+<br>
+</div>
+
+  <p class="p">Create a unique record type for each type of alternative payment method in your org. This way,
+   each of your alternative payment methods can show different picklist values and page layouts
+   based on the method provider and gateway provider’s requirements. For example, you could have one
+   alternative payment method record type for direct debit and a different record type for cash on
+   deliver.</p>
+
+  <p class="p">We also recommend creating a <samp class="codeph apex_code">GtwyProviderPaymentMethodType</samp>
+   for each of your unique alternative payment method record types.</p>
+
+  <p class="p">AlternativePaymentMethod has the private sharing model enabled as default for both internal and
+   external users. Only the record owner and users with higher ownership have Read, Edit, and Delete
+   access.</p>
+
+  <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">Let's say you wanted to make an alternative payment method for GiroPay. First, create an
+    <samp class="codeph apex_code">AlternativePaymentMethod</samp> record type.<div class="p">
+<strong class="ph b">New
+     RecordType</strong><div class="codeSection apex_code"><pre class="codeblock brush:apex">/services/data/v51.0/sobjects/RecordType</pre></div>
+</div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+ <span class="string">"Name"</span> : <span class="string">"Giro Pay"</span>,
+ <span class="string">"DeveloperName"</span> : <span class="string">"GiroPay"</span>,
+ <span class="string">"SobjectType"</span> : <span class="string">"AlternativePaymentMethod"</span>
+}</pre></div>
+<p class="p">Next,
+    create an alternative payment method record for the <samp class="codeph apex_code">AlternativePaymentMethod</samp> record type.</p>
+<p class="p"><strong class="ph b">New
+    AlternativePaymentMethod</strong></p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">/services/data/v51.0/sobjects/AlternativePaymentMethod</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+ <span class="string">"ProcessingMode"</span>: <span class="string">"External"</span>,
+ <span class="string">"status"</span>:<span class="string">"Active"</span>,
+ <span class="string">"GatewayToken"</span>:<span class="string">"mHkDsh0oIA3mnWjo9UL"</span>,
+<span class="string">"NickName"</span> : <span class="string">"MyGiroPay"</span>,
+<span class="string">"RecordTypeId"</span> : <span class="string">"{record_type_id}"</span>
+}</pre></div>
+<p class="p">You can also create a gateway provider payment
+    method type.</p>
+<div class="p">
+<strong class="ph b">New
+    GtwyProvPaymentMethodType</strong><div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+ <span class="string">"PaymentGatewayProviderId"</span>: <span class="string">"XXXXXXXXXXXXXXX"</span>,
+ <span class="string">"PaymentMethodType"</span>:<span class="string">"AlternativePaymentMethod"</span>,
+ <span class="string">"GtwyProviderPaymentMethodType"</span> : <span class="string">"PM_Giro"</span>,
+ <span class="string">"DeveloperName"</span> : <span class="string">"DevName"</span>,
+ <span class="string">"MasterLabel"</span> : <span class="string">"MasterLabel"</span>,
+ <span class="string">"RecordTypeId"</span> : <span class="string">"{record_type_id}"</span>
+}</pre></div>
+</div>
+</div></div>
+</div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

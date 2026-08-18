@@ -1,0 +1,64 @@
+<a name="apex_feedItem_triggers"><!-- --></a><h1 class="helpHead1">Moderate Feed Items with Triggers</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Write a trigger for FeedItem to automate the moderation of posts in
+      an org or Experience Cloud site. Use triggers to ensure that posts conform to your company’s
+      communication policies and don’t contain unwanted words or phrases.</span></div>
+
+    <div class="section">
+      
+<div class="data colSort">
+<table class="editionTable" border="0" summary="Salesforce editions needed for the documented functionality" width="100%">
+          <tbody class="tbody">
+            <tr>
+              <td class="subHead">Available in: <strong class="ph b">Enterprise</strong>, <strong class="ph b">Performance</strong>, <strong class="ph b">Unlimited</strong>, and
+                  <strong class="ph b">Developer</strong> Editions</td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+<br>
+</div>
+
+      
+<div class="data colSort"><table class="permTable sort_table" border="0" summary="Permissions needed for the documented functionality" width="100%">
+          
+          
+          <tbody class="tbody">
+            <tr>
+              <td class="permRowLeft">User permissions needed to save Apex triggers for FeedItem:</td>
+
+              <td class="permRowRight">Author Apex </td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p">Write an Apex <em class="ph i">before insert</em> trigger to review the feed item body and change the
+        status of the feed item if it contains a blocklisted phrase. To create a trigger for feed
+        items from Setup, enter <kbd class="ph userinput">FeedItem Triggers</kbd> in the <span class="keyword parmname">Quick
+          Find</span> box, then select <strong class="ph uicontrol">FeedItem Triggers</strong>. Alternatively,
+        you can create a trigger from the Developer Console by clicking <span class="ph menucascade"><strong class="ph uicontrol">File</strong> | <strong class="ph uicontrol">New</strong> | <strong class="ph uicontrol">Apex Trigger</strong></span> and selecting FeedItem from the <strong class="ph uicontrol">sObject</strong> drop-down
+        list.</p>
+
+      <p class="p">This example shows a <em class="ph i">before insert</em> trigger on FeedItem that is used to review each
+        new post. If the post contains the unwanted phrase, the trigger also sets the status of the
+        post to <samp class="codeph apex_code">PendingReview</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> ReviewFeedItem on FeedItem (before <span class="statement">insert</span>) {
+    <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i&lt;<span class="keyword">trigger</span>.<span class="keyword">new</span>.size(); i++) {
+
+        <span class="onelineComment">// We don't want to leak "test phrase" information.</span>
+
+        <span class="statement">if</span> (<span class="keyword">trigger</span>.<span class="keyword">new</span>[i].body.containsIgnoreCase(<span class="string">'test phrase'</span>)) {
+            <span class="keyword">trigger</span>.<span class="keyword">new</span>[i].status = <span class="string">'PendingReview'</span>; 
+            System.debug(<span class="string">'caught one for pendingReview'</span>);
+        }
+    }
+}</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

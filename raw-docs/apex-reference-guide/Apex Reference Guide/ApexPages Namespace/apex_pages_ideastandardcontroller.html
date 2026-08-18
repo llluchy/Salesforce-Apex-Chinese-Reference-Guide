@@ -1,0 +1,161 @@
+<a name="apex_pages_ideastandardcontroller"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">IdeaStandardController Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">
+<samp class="codeph apex_code">IdeaStandardController</samp> objects offer Ideas-specific functionality in addition to what is
+provided by the <samp class="codeph apex_code">StandardController</samp>.</div>
+
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_ApexPages.htm" title="The ApexPages namespace provides classes used in Visualforce controllers.">ApexPages</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">A method in the IdeaStandardController
+object is called by and operated on a particular instance of an IdeaStandardController.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code">IdeaStandardSetController</samp> and <samp class="codeph apex_code">IdeaStandardController</samp> classes are currently
+                available through a limited release program. For information on enabling these
+                classes for your organization, contact your Salesforce representative.</p>
+</div>
+</div></div></div></div>
+<p class="p">In addition to the methods listed
+in this class, the <samp class="codeph apex_code">IdeaStandardController</samp> class inherits all the methods associated with the <samp class="codeph apex_code">StandardController</samp> class.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+<div class="p">
+<p class="p">An IdeaStandardController
+object cannot be instantiated. An instance can be obtained through
+a constructor of a custom extension controller when using the standard
+ideas controller.</p>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">The following example shows how
+an IdeaStandardController object can be used in the constructor for
+a custom list controller. This example provides the framework for
+manipulating the comment list data before displaying it on a Visualforce page.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyIdeaExtension {
+    
+    <span class="keyword">private</span> <span class="keyword">final</span> ApexPages.IdeaStandardController ideaController;
+    
+    <span class="keyword">public</span> MyIdeaExtension(ApexPages.IdeaStandardController controller) {
+        ideaController = (ApexPages.IdeaStandardController)controller;
+    }
+    
+    <span class="keyword">public</span> List&lt;IdeaComment&gt; getModifiedComments() {
+        IdeaComment[] comments = ideaController.getCommentList();
+        <span class="onelineComment">// modify comments here</span>
+        <span class="statement">return</span> comments;
+    }
+    
+}</pre></div>
+</div>
+<div class="p">The following Visualforce markup shows how the IdeaStandardController example shown above
+can be used in a page. This page must be named <kbd class="ph userinput">detailPage</kbd> for this example to work.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For the Visualforce page to display the idea and its comments, in the following
+example you need to specify the ID of a specific idea (for example, <samp class="codeph nolang">/apex/detailPage?id=&lt;ideaID&gt;</samp>) whose
+comments you want to view.</p>
+</div>
+</div></div></div></div>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="multilineComment">&lt;!-- page named detailPage --&gt;</span>
+<span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Idea"</span><span class="attribute"> extensions=</span><span class="string">"MyIdeaExtension"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Idea Section"</span>&gt;
+        <span class="tag">&lt;ideas:detailOutputLink</span><span class="attribute"> page=</span><span class="string">"detailPage"</span><span class="attribute"> ideaId=</span><span class="string">"{!idea.id}"</span>&gt;<span class="formula">{!idea.title}</span>
+        <span class="tag">&lt;/ideas:detailOutputLink</span>&gt;
+        <span class="tag">&lt;br/</span>&gt;<span class="tag">&lt;br/</span>&gt;
+        <span class="tag">&lt;apex:outputText</span> &gt;<span class="formula">{!idea.body}</span><span class="tag">&lt;/apex:outputText</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Comments Section"</span>&gt;
+        <span class="tag">&lt;apex:dataList</span><span class="attribute"> var=</span><span class="string">"a"</span><span class="attribute"> value=</span><span class="string">"{!modifiedComments}"</span><span class="attribute"> id=</span><span class="string">"list"</span>&gt;
+            <span class="formula">{!a.commentBody}</span>
+        <span class="tag">&lt;/apex:dataList</span>&gt;
+        <span class="tag">&lt;ideas:detailOutputLink</span><span class="attribute"> page=</span><span class="string">"detailPage"</span><span class="attribute"> ideaId=</span><span class="string">"{!idea.id}"</span> 
+              <span class="attribute"> pageOffset=</span><span class="string">"-1"</span>&gt;Prev<span class="tag">&lt;/ideas:detailOutputLink</span>&gt;
+        | 
+        <span class="tag">&lt;ideas:detailOutputLink</span><span class="attribute"> page=</span><span class="string">"detailPage"</span><span class="attribute"> ideaId=</span><span class="string">"{!idea.id}"</span> 
+              <span class="attribute"> pageOffset=</span><span class="string">"1"</span>&gt;Next<span class="tag">&lt;/ideas:detailOutputLink</span>&gt;   
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_pages_standardcontroller.htm#apex_pages_standardcontroller" title="Use a StandardController when defining an extension for a standard controller.">StandardController Class</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ApexPages_IdeaStandardController_methods">
+<a name="apex_ApexPages_IdeaStandardController_methods"><!-- --></a>
+<h2 class="helpHead2">IdeaStandardController Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are instance methods for <samp class="codeph apex_code">IdeaStandardController</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_ideastandardcontroller.htm#apex_ApexPages_IdeaStandardController_getCommentList">getCommentList()</a></strong><br>
+Returns the list of read-only comments from the current page.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ApexPages_IdeaStandardController_getCommentList">
+<a name="apex_ApexPages_IdeaStandardController_getCommentList"><!-- --></a>
+<h3 class="helpHead3">getCommentList()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the list of read-only comments from the current
+page.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> IdeaComment[] getCommentList()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: IdeaComment[]</p>
+<div class="p">This method returns the following comment properties: <ul class="ul bulletList">
+<li class="li"><samp class="codeph apex_code">id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">commentBody</samp></li>
+
+<li class="li"><samp class="codeph apex_code">createdDate</samp></li>
+
+<li class="li"><samp class="codeph apex_code">createdBy.Id</samp></li>
+
+<li class="li"><samp class="codeph apex_code">createdBy.communityNickname</samp></li>
+
+</ul>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

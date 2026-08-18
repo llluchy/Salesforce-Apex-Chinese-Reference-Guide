@@ -1,0 +1,563 @@
+<a name="apex_ConnectAPI_Mentions_static_methods"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Mentions Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Access information about mentions. A mention is an “@”
+character followed by a user or group name. When a user or group is
+mentioned, they receive a notification.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Mentions_methods">
+<a name="apex_ConnectAPI_Mentions_methods"><!-- --></a>
+ <h2 class="helpHead2">Mentions Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These methods are for <samp class="codeph apex_code">Mentions</samp>. All methods are
+  static.</div>
+
+  <div class="section">
+   <p class="p">All methods in this class require Chatter and are subject to the per user, per namespace, per hour rate limit.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectAPI_Mentions_getMentionCompletions">getMentionCompletions(communityId, q, contextId)</a></strong><br>
+Get the first page of possible users and groups to mention in a feed item body or         comment body.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectAPI_Mentions_getMentionCompletions_2">getMentionCompletions(communityId, q, contextId, type, pageParam, pageSize)</a></strong><br>
+Get a page of possible mention proposals of the specified type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectAPI_Mentions_getMentionValidations">getMentionValidations(communityId, parentId, recordIds, visibility)</a></strong><br>
+Get information about whether the mentions are valid for the context user.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Mentions_getMentionCompletions">
+<a name="apex_ConnectAPI_Mentions_getMentionCompletions"><!-- --></a>
+    <h3 class="helpHead3"><span class="titlecodeph">getMentionCompletions(communityId, q,
+        contextId)</span></h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Get the first page of possible users and groups to mention in a feed item body or
+        comment body.</div>
+
+        <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+            
+            <p class="p">29.0</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+            
+            <p class="p">Yes</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.MentionCompletionPage
+                    getMentionCompletions (<span class="keyword">String</span> communityId, <span class="keyword">String</span> q, <span class="keyword">String</span>
+                contextId)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <dl class="dl detailList">
+                
+                    <dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+                    <dd class="dd">Type: String</dd>
+
+                    <dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+                
+                
+                    <dt class="dt dlterm"><var class="keyword varname">q</var></dt>
+
+                    <dd class="dd">Type: String</dd>
+
+                    <dd class="dd">A search term for matching user and group names. Searching for a group requires a minimum of 2 characters. Searching for a user doesn’t require a minimum number of characters. This parameter does not support wildcards.</dd>
+
+                
+                
+                    <dt class="dt dlterm"><var class="keyword varname">contextId</var></dt>
+
+                    <dd class="dd">Type: String</dd>
+
+                    <dd class="dd">A feed item ID (for a mention in a comment) or a feed subject ID (for a mention in a feed item) that narrows search results, with more useful results listed first. Use a group ID for groups that allow customers to ensure mention completion results include customers.</dd>
+
+                
+            </dl>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_mention_completion_page.htm" title="Paginated list of Mention Completion response bodies.">ConnectApi.​MentionCompletion​Page</a></samp></p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+            
+            <p class="p">Call this method to generate a page of proposed mentions that a user can choose from
+                when they enter characters after @ in a feed item body or a comment body.</p>
+
+            <p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectApi_Mentions_setTestGetMentionCompletions" title="Register a ConnectApi.MentionCompletionPage object to be returned when getMentionCompletions(String, String, String) is called in a test context.">setTestGetMentionCompletions(communityId, q, contextId, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Mentions_getMentionCompletions_2">
+<a name="apex_ConnectAPI_Mentions_getMentionCompletions_2"><!-- --></a>
+    <h3 class="helpHead3"><span class="titlecodeph">getMentionCompletions(communityId, q, contextId, type,
+            pageParam, pageSize)</span></h3>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Get a page of possible mention proposals of the specified type.</div>
+
+        <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+            
+            <p class="p">29.0</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+            
+            <p class="p">Yes</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+            
+            <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Mentions
+                    getMentionCompletions (<span class="keyword">String</span> communityId, <span class="keyword">String</span> q, <span class="keyword">String</span> contextId,
+                    ConnectApi.MentionCompletionType type, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span>
+                    pageSize)</samp></p>
+
+            
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+            
+            <p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">q</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">A search term for matching user and group names. Searching for a group requires a minimum of 2 characters. Searching for a user doesn’t require a minimum number of characters. This parameter does not support wildcards.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">contextId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">A feed item ID (for a mention in a comment) or a feed subject ID (for a mention in a feed item) that narrows search results, with more useful results listed first. Use a group ID for groups that allow customers to ensure mention completion results include customers.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">type</var></strong></p>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#MentionCompletionType_enum"><samp class="codeph apex_code">ConnectApi.MentionCompletionType</samp></a></p>
+
+      <p class="p">Type of mention completion.</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">All</samp>—All mention completions, regardless of the type of record to which the mention refers.</li>
+ <li class="li">
+<samp class="codeph apex_code">Group</samp>—Mention completions for groups.</li>
+ <li class="li">
+<samp class="codeph apex_code">User</samp>—Mention completions for users.</li>
+</ul>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageParam</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageSize</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_mention_completion_page.htm" title="Paginated list of Mention Completion response bodies.">ConnectApi.​MentionCompletion​Page</a></samp></p>
+
+        </div>
+
+        <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+            
+            <p class="p">Call this method to generate a page of proposed mentions that a user can choose from
+                when they enter characters after @ in a feed item body or a comment body.</p>
+
+            <p class="p">To test code that uses this method, use the matching set test method (prefix the method name with <samp class="codeph apex_code">setTest</samp>). Use the set test method with the same parameters or the code throws an exception.</p>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectApi_Mentions_setTestGetMentionCompletions_2" title="Register a ConnectApi.MentionCompletionPage object to be returned when getMentionCompletions(String, String, String, ConnectApi.MentionCompletionType, Integer, Integer) is called in a test context.">setTestGetMentionCompletions(communityId, q, contextId, type, pageParam, pageSize, result)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Mentions_getMentionValidations">
+<a name="apex_ConnectAPI_Mentions_getMentionValidations"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getMentionValidations(communityId, parentId, recordIds,
+      visibility)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Get information about whether the mentions are valid for the context user.</div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">29.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">Yes</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.Mentions
+          getMentionValidations(<span class="keyword">String</span> communityId, <span class="keyword">String</span> parentId, List&lt;<span class="keyword">String</span>&gt; recordIds,
+          ConnectApi.FeedItemVisibilityType visibility)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">parentId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">The feed item parent ID.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">recordIds</var></strong></p>
+
+      <p class="p">Type: List&lt;String&gt;</p>
+
+      <p class="p">A comma-separated list of IDs to be mentioned. The maximum value is 25.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">visibility</var></strong></p>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#FeedItemTypeVisEnum"><samp class="codeph apex_code">ConnectApi.FeedItemVisibilityType</samp></a></p>
+
+      <p class="p">Type of users who can see a feed item.</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">AllUsers</samp>—Visibility is not limited to internal users.</li>
+ <li class="li">
+<samp class="codeph apex_code">InternalUsers</samp>—Visibility is limited to internal users.</li>
+</ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_mentionValidations.htm" title="Information about whether a set of mentions is valid for the context user.">ConnectApi.​​Mention​Validations</a></samp></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Call this method to check whether the record IDs returned from a call to <samp class="codeph apex_code">ConnectApi.Mentions.getMentionCompletions</samp> are valid for
+        the context user. For example, the context users can’t mention private groups they
+        don’t belong to. If such a group were included in the list of mention validations,
+        the <samp class="codeph nolang">ConnectApi.MentionValidations.hasErrors</samp> property
+        would be <samp class="codeph nolang">true</samp> and the group would have a <samp class="codeph nolang">ConnectApi.MentionValidation.valdiationStatus</samp> of <samp class="codeph nolang">Disallowed</samp>.</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Mentions_setTest_methods">
+<a name="apex_ConnectAPI_Mentions_setTest_methods"><!-- --></a>
+ <h2 class="helpHead2">Mentions Test Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These test methods are for <samp class="codeph apex_code">Mentions</samp>. All methods
+  are static.</div>
+
+  <div class="section">
+   <p class="p">For information about using these methods to test your <samp class="codeph apex_code">ConnectApi</samp> code, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank">Testing ConnectApi Code</a>.</p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectApi_Mentions_setTestGetMentionCompletions">
+<a name="apex_ConnectApi_Mentions_setTestGetMentionCompletions"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetMentionCompletions(communityId, q, contextId,
+                  result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.MentionCompletionPage</samp>
+    object to be returned when <samp class="codeph apex_code">getMentionCompletions(<span class="keyword">String</span>, <span class="keyword">String</span>,
+      <span class="keyword">String</span>)</samp> is called in a test context.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetMentionCompletions
+(<span class="keyword">String</span> communityId, <span class="keyword">String</span> q, <span class="keyword">String</span> contextId, ConnectApi.MentionCompletionPage
+result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+
+<dt class="dt dlterm"><var class="keyword varname">communityId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">q</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">A search term for matching user and group names. Searching for a group requires a minimum of 2 characters. Searching for a user doesn’t require a minimum number of characters. This parameter does not support wildcards.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">contextId</var></dt>
+
+<dd class="dd">Type: String</dd>
+
+<dd class="dd">A feed item ID (for a mention in a comment) or a feed subject ID (for a mention in a feed item) that narrows search results, with more useful results listed first. Use a group ID for groups that allow customers to ensure mention completion results include customers.</dd>
+
+
+
+<dt class="dt dlterm"><var class="keyword varname">result</var></dt>
+
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_mention_completion_page.htm" title="Paginated list of Mention Completion response bodies.">ConnectApi.​MentionCompletion​Page</a></samp>
+</dd>
+
+<dd class="dd">A <samp class="codeph apex_code">ConnectApi.MentionCompletionPage</samp> object containing test data.</dd>
+
+
+</dl>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectAPI_Mentions_getMentionCompletions" title="Get the first page of possible users and groups to mention in a feed item body or comment body.">getMentionCompletions(communityId, q, contextId)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectApi_Mentions_setTestGetMentionCompletions_2">
+<a name="apex_ConnectApi_Mentions_setTestGetMentionCompletions_2"><!-- --></a>
+<h3 class="helpHead3"><span class="titlecodeph">setTestGetMentionCompletions(communityId, q, contextId, type,
+         pageParam, pageSize, result)</span></h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Register a <samp class="codeph apex_code">ConnectApi.MentionCompletionPage</samp>
+      object to be returned when <samp class="codeph apex_code">getMentionCompletions(<span class="keyword">String</span>,
+         <span class="keyword">String</span>, <span class="keyword">String</span>, ConnectApi.MentionCompletionType, <span class="keyword">Integer</span>, <span class="keyword">Integer</span>)</samp> is called in a
+      test context.</div>
+
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">29.0</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTestGetMentionCompletions
+(<span class="keyword">String</span> communityId, <span class="keyword">String</span> q, <span class="keyword">String</span> contextId, ConnectApi.MentionCompletionType
+type, <span class="keyword">Integer</span> pageParam, <span class="keyword">Integer</span> pageSize, ConnectApi.MentionCompletionPage
+result)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<p class="p"><strong class="ph b"><var class="keyword varname">communityId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">ID for an Experience Cloud site, <samp class="codeph apex_code">internal</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">q</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">A search term for matching user and group names. Searching for a group requires a minimum of 2 characters. Searching for a user doesn’t require a minimum number of characters. This parameter does not support wildcards.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">contextId</var></strong></p>
+
+      <p class="p">Type: String</p>
+
+      <p class="p">A feed item ID (for a mention in a comment) or a feed subject ID (for a mention in a feed item) that narrows search results, with more useful results listed first. Use a group ID for groups that allow customers to ensure mention completion results include customers.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">type</var></strong></p>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#MentionCompletionType_enum"><samp class="codeph apex_code">ConnectApi.MentionCompletionType</samp></a></p>
+
+      <p class="p">Type of mention completion.</p>
+
+      <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph apex_code">All</samp>—All mention completions, regardless of the type of record to which the mention refers.</li>
+ <li class="li">
+<samp class="codeph apex_code">Group</samp>—Mention completions for groups.</li>
+ <li class="li">
+<samp class="codeph apex_code">User</samp>—Mention completions for users.</li>
+</ul>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageParam</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Number of the page you want returned. Starts at 0. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp> or 0, the first page is returned.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">pageSize</var></strong></p>
+
+      <p class="p">Type: Integer</p>
+
+      <p class="p">Specifies the number of items per page. Valid values are from 1 through 100. If you pass in <samp class="codeph apex_code"><span class="keyword">null</span></samp>, the default size is 25.</p>
+
+      <p class="p"><strong class="ph b"><var class="keyword varname">result</var></strong></p>
+
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_mention_completion_page.htm" title="Paginated list of Mention Completion response bodies.">ConnectApi.​MentionCompletion​Page</a></samp></p>
+
+      <p class="p">A <samp class="codeph apex_code">ConnectApi.MentionCompletionPage</samp> object containing test data.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Mentions_static_methods.htm#apex_ConnectAPI_Mentions_getMentionCompletions_2" title="Get a page of possible mention proposals of the specified type.">getMentionCompletions(communityId, q, contextId, type, pageParam, pageSize)</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/connectAPI_TestingApex.htm" target="_blank" title="Apex Developer Guide: Testing ConnectApi Code - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Testing ConnectApi Code</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

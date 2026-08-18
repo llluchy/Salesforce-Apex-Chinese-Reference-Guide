@@ -1,0 +1,145 @@
+<a name="apex_interface_TxnSecurity_EventCondition"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">EventCondition Interface</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Allows an implementing class to specify whether to take action when
+      certain events occur based on a transaction security policy. This interface is only used for
+      Apex policies created in Real-Time Event Monitoring.</span></div>
+
+     <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">The <samp class="codeph apex_code">evaluate</samp> method is called upon the occurrence
+        of a real-time event monitored by a transaction security policy. A typical implementation
+        first selects the fields of interest from the event. Then the fields are tested to see if
+        they meet the conditions being monitored. If the conditions are met, the method returns
+          <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</p>
+
+      <p class="p">For example, imagine a transaction security policy that triggers when a user queries more
+        than 1,000 lead records. For each API event, the <samp class="codeph apex_code">evaluate</samp> method checks whether the <samp class="codeph apex_code">RowsProcessed</samp> value is greater than 1,000 and the <samp class="codeph apex_code">QueriedEntities</samp> value contains “Lead”. If so, <samp class="codeph nolang">true</samp> is returned.</p>
+
+      <p class="p"><span class="ph" id="txnsec_test_class_reqs"><a name="txnsec_test_class_reqs"><!-- --></a>We recommend having test classes for the policy condition
+          interface to ensure it works correctly. Testing is required regardless of whether the
+          policy is moved from a sandbox to production, with a change set, or some other way. For
+          example, test your policies in your development environment before moving the policies to
+          production.</span></p>
+
+      <p class="p">For more information about testing Apex transaction security policies, read <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.enhanced_transaction_security_apex_testing.htm&amp;type=5&amp;language=en_US" target="_blank">Transaction Security Apex Testing</a>.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_TxnSecurity_EventCondition.htm#apex_TxnSecurity_EventCondition_methods">EventCondition Methods</a></strong><br>
+The EventCondition interface has one method, evaluate(event).</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_TxnSecurity_EventCondition.htm#apex_interface_TxnSecurity_EventCondition_Example">EventCondition Example Implementation</a></strong><br>
+Use EventCondition to create a custom condition for Shield Platform         Encryption.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_TxnSecurity_EventCondition_methods">
+<a name="apex_TxnSecurity_EventCondition_methods"><!-- --></a>
+  <h2 class="helpHead2">EventCondition Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">The EventCondition interface has one method, evaluate(event).</div>
+
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">EventCondition</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_TxnSecurity_EventCondition.htm#apex_TxnSecurity_EventCondition_evaluate">evaluate(event)</a></strong><br>
+Evaluates an event against a transaction security policy created in       Real-Time Event Monitoring. If the event triggers the policy, the method returns         <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_TxnSecurity_EventCondition_evaluate">
+<a name="apex_TxnSecurity_EventCondition_evaluate"><!-- --></a><h3 class="helpHead3">evaluate(event)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Evaluates an event against a transaction security policy created in
+      Real-Time Event Monitoring. If the event triggers the policy, the method returns
+        <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> evaluate(SObject event)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">var1</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a></p>
+<p class="p">The event to check against the transaction security policy.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> when the policy is triggered. For
+        example, suppose that the policy is to limit users to a single login session. If a user
+        tries to log in a second time, the policy blocks the attempted login, and updates the
+        Status, PolicyId, and PolicyOutcome fields of that LoginEvent. The policy also sends an
+        email notification to the Salesforce admin. The <samp class="codeph nolang">evaluate</samp> method only checks the login event, and returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if it’s the user’s second login attempt.</p>
+
+      <p class="p">The system performs the action and notification, not the <samp class="codeph nolang">evaluate</samp> method.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_TxnSecurity_EventCondition_Example">
+<a name="apex_interface_TxnSecurity_EventCondition_Example"><!-- --></a>
+    <h2 class="helpHead2">EventCondition Example Implementation</h2>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Use EventCondition to create a custom condition for Shield Platform
+        Encryption.</div>
+
+        <div class="section">
+            <p class="p">This example shows an implementation of the <samp class="codeph apex_code">TxnSecurity.EventCondition</samp> interface. The transaction security policy
+                triggers when the user queries an Account object.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> boolean evaluate(ApiEvent event) {
+      <span class="statement">switch</span> on event {
+         when ApiEvent apiEvent {
+            <span class="statement">return</span> handleApiEvent(apiEvent);
+         }
+         when <span class="keyword">null</span> {
+         <span class="onelineComment">// Trigger action if event is null</span>
+            <span class="statement">return</span> <span class="keyword">true</span>;
+         }
+         when <span class="statement">else</span> {
+         <span class="onelineComment">// Trigger action for unhandled events</span>
+            <span class="statement">return</span> <span class="keyword">true</span>;
+         }
+      }
+   }
+
+   <span class="keyword">private</span> boolean handleApiEvent(ApiEvent apiEvent){
+      <span class="statement">if</span>(apiEvent.QueriedEntities.contains(<span class="string">'Account'</span>)){ 
+         <span class="statement">return</span> <span class="keyword">true</span>;
+      } 
+      <span class="statement">return</span> <span class="keyword">false</span>;
+   }
+}</pre></div>
+
+            <p class="p">For more examples, see <a class="xref" href="https://help.salesforce.com/articleView?id=enhanced_transaction_security_policy_apex_examples.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Enhanced Apex Transaction Security
+                    Implementation Examples</a>.</p>
+
+        </div>
+
+    </div>
+
+</div>
+</div>

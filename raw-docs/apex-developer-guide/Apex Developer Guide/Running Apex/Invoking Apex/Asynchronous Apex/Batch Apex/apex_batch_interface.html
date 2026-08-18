@@ -1,0 +1,1155 @@
+<a name="apex_batch_interface"><!-- --></a><h1 class="helpHead1">Use Batch Apex</h1><div class="body conbody">
+<div class="shortdesc">To use batch Apex, write an Apex class that implements the Salesforce-provided
+        interface <samp class="codeph apex_code">Database.Batchable</samp> and then invoke the
+        class programmatically. To monitor or stop the execution of the batch Apex job, from Setup,
+        enter <kbd class="ph userinput">Apex Jobs</kbd> in the Quick Find box and then select <strong class="ph uicontrol">Apex
+            Jobs</strong>.</div>
+
+        <div class="section" id="apex_batch_database_batchable">
+<a name="apex_batch_database_batchable"><!-- --></a><h2 class="helpHead2">Implement the <span class="titlecodeph">Database.Batchable</span>
+                    Interface</h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">Database.Batchable</samp> interface contains
+                three methods that must be implemented.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<samp class="codeph apex_code">start</samp>
+                        method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> (Database.QueryLocator | Iterable&lt;sObject&gt;) start(Database.BatchableContext <var class="keyword varname">bc</var>) {}</pre></div>
+<p class="p">The
+                            <samp class="codeph apex_code">start</samp> method is called at the
+                        beginning of a batch Apex job. In the <samp class="codeph apex_code">start</samp> method, you can include code that collects records or
+                        objects to pass to the interface method <samp class="codeph apex_code">execute</samp>. This method returns either a <samp class="codeph apex_code">Database.QueryLocator</samp> object or an
+                        iterable that contains the records or objects passed to the job.</p>
+<p class="p">When
+                        you’re using a simple query (<samp class="codeph apex_code">SELECT</samp>) to generate the scope of objects in the batch job, use the
+                            <samp class="codeph apex_code">Database.QueryLocator</samp> object. If
+                        you use a <samp class="codeph apex_code">QueryLocator</samp> object, the
+                        governor limit for the total number of records retrieved by SOQL queries is
+                        bypassed. For example, a batch Apex job for the Account object can return a
+                            <samp class="codeph apex_code">QueryLocator</samp> for all account
+                        records (up to 50 million records) in an org. Another example is a sharing
+                        recalculation for the Contact object that returns a <samp class="codeph apex_code">QueryLocator</samp> for all account records in
+                        an org.</p>
+<p class="p">Use the iterable to create a complex scope for the batch job.
+                        You can also use the iterable to create your own custom process for
+                        iterating through the list.</p>
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>If you use an
+                        iterable, the governor limit for the total number of records retrieved by
+                        SOQL queries is still enforced. For more information on using iterables for
+                        batch jobs, see <a class="xref" href="#batch_apex_bp_section">Batch Apex Considerations and Best Practices</a>. </p>
+</div>
+</div></div></div></div>
+</li>
+
+                <li class="li">
+<samp class="codeph apex_code">execute</samp>
+                        method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext <var class="keyword varname">bc</var>, list&lt;P&gt;){}</pre></div>
+<p class="p">The
+                            <samp class="codeph apex_code">execute</samp> method is called for
+                        each batch of records that you pass to it and takes these parameters.</p>
+<ul class="ul bulletList">
+                        <li class="li">A reference to the <samp class="codeph apex_code">Database.BatchableContext</samp> object.</li>
+
+                        <li class="li">A list of sObjects, such as <samp class="codeph apex_code">List&lt;sObject&gt;</samp>, or a list of parameterized types. If
+                            you’re using a <samp class="codeph apex_code">Database.QueryLocator</samp>, use the returned list.</li>
+
+                    </ul>
+<p class="p">Batches of records tend to execute in the order in which they’re
+                        received from the <samp class="codeph apex_code">start</samp> method.
+                        However, the order in which batches of records execute depends on various
+                        factors. The order of execution isn’t guaranteed.</p>
+</li>
+
+                <li class="li">
+<samp class="codeph apex_code">finish</samp>
+                        method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext <var class="keyword varname">bc</var>){}</pre></div>
+<p class="p">The
+                            <samp class="codeph apex_code">finish</samp> method is called after
+                        all batches are processed and can be used to send confirmation emails or
+                        execute post-processing operations.</p>
+</li>
+
+            </ul>
+
+            <p class="p">Each execution of a batch Apex job is considered a discrete transaction. For example,
+                a batch Apex job that contains 1,000 records and is executed without the optional
+                    <var class="keyword varname">scope</var> parameter from <samp class="codeph apex_code">Database.executeBatch</samp> is considered five transactions of 200 records
+                each. The Apex governor limits are reset for each transaction. If the first
+                transaction succeeds but the second fails, the database updates made in the first
+                transaction aren’t rolled back.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Use
+                Database.BatchableContext</h2>
+<div class="p">
+<p class="p">All
+                the methods in the <samp class="codeph apex_code">Database.Batchable</samp>
+                interface require a reference to a <samp class="codeph apex_code">Database.BatchableContext</samp> object. Use this object to track the
+                progress of the batch job. </p>
+<p class="p">The following is the instance method with the
+                    <samp class="codeph apex_code">Database.BatchableContext</samp> object:</p>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d7698e203">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d7698e206">Arguments</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d7698e209">Returns</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d7698e212">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d7698e203" data-title="Name"><samp class="codeph apex_code" id="getJobId"><a name="getJobId"><!-- --></a>getJobID</samp></td>
+
+                            <td class="entry" headers="d7698e206" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d7698e209" data-title="Returns">ID</td>
+
+                            <td class="entry" headers="d7698e212" data-title="Description">Returns the ID of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_asyncapexjob.htm" target="_blank" title="HTML (New Window)">AsyncApexJob</a>
+                                object associated with this batch job as a string. Use this method
+                                to track the progress of records in the batch job. You can also use
+                                this ID with the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm" target="_blank"><samp class="codeph apex_code">System.abortJob</samp></a> method.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+<p class="p">The following example uses the <samp class="codeph apex_code">Database.BatchableContext</samp> to query the <samp class="codeph apex_code">AsyncApexJob</samp> associated with the batch
+            job.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc){
+   <span class="onelineComment">// Get the ID of the AsyncApexJob representing this batch job</span>
+   <span class="onelineComment">// from Database.BatchableContext.</span>
+   <span class="onelineComment">// Query the AsyncApexJob object to retrieve the current job's information.</span>
+   AsyncApexJob a = [SELECT Id, Status, NumberOfErrors, JobItemsProcessed,
+      TotalJobItems, CreatedBy.Email
+      FROM AsyncApexJob WHERE Id =
+      :bc.getJobId() WITH USER_MODE];
+   <span class="onelineComment">// Send an email to the Apex job's submitter notifying of job completion.</span>
+   Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+   <span class="keyword">String</span>[] toAddresses = <span class="keyword">new</span> <span class="keyword">String</span>[] {a.CreatedBy.Email};
+   mail.setToAddresses(toAddresses);
+   mail.setSubject(<span class="string">'Apex Sharing Recalculation '</span> + a.Status);
+   mail.setPlainTextBody
+   (<span class="string">'The batch Apex job processed '</span> + a.TotalJobItems +
+   <span class="string">' batches with '</span>+ a.NumberOfErrors + <span class="string">' failures.'</span>);
+   Messaging.sendEmail(<span class="keyword">new</span> Messaging.SingleEmailMessage[] { mail });
+}</pre></div>
+</div>
+</div>
+
+        <div class="section" id="apex_batch_queryLocator">
+<a name="apex_batch_queryLocator"><!-- --></a><h2 class="helpHead2">Using Database.QueryLocator to Define
+                Scope</h2>
+<p class="p">The <samp class="codeph apex_code">start</samp> method can return
+                either a <samp class="codeph apex_code">Database.QueryLocator</samp> object that
+                contains the records to use in the batch job or an iterable.</p>
+<div class="p">The following example uses a <samp class="codeph apex_code">Database.QueryLocator</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> SearchAndReplace <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt;{
+
+   <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Query;
+   <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Entity;
+   <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Field;
+   <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Value;
+
+   <span class="keyword">public</span> SearchAndReplace(<span class="keyword">String</span> q, <span class="keyword">String</span> e, <span class="keyword">String</span> f, <span class="keyword">String</span> v){
+
+      Query=q; Entity=e; Field=f;Value=v;
+   }
+
+   <span class="keyword">public</span> Database.QueryLocator start(Database.BatchableContext bc){
+      <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+   }
+
+   <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; scope){
+     <span class="statement">for</span>(sobject s : scope){
+     s.put(Field,Value); 
+     }
+     <span class="statement">update</span> <span class="statement">as</span> user scope;
+    }
+
+   <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc){
+   }
+}</pre></div>
+</div>
+</div>
+
+        <div class="section" id="apex_batch_iterable">
+<a name="apex_batch_iterable"><!-- --></a><h2 class="helpHead2">Using an Iterable in Batch Apex to Define Scope</h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">start</samp> method can return either a <samp class="codeph apex_code">Database.QueryLocator</samp> object that contains the
+                records to use in the batch job or an iterable. Use an iterable to step through the
+                returned items more easily. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> BatchClass <span class="keyword">implements</span> Database.Batchable&lt;Account&gt; {
+  <span class="keyword">public</span> Iterable&lt;Account&gt; start(Database.BatchableContext info) {
+    <span class="statement">return</span> <span class="keyword">new</span> CustomAccountIterable();
+  }
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext info, List&lt;Account&gt; scope) {
+    List&lt;Account&gt; accsToUpdate = <span class="keyword">new</span> List&lt;Account&gt;();
+    <span class="statement">for</span> (Account a : scope) {
+      a.Name = <span class="string">'true'</span>;
+      a.NumberOfEmployees = 70;
+      accsToUpdate.add(a);
+    }
+    <span class="statement">update</span> <span class="statement">as</span> user accsToUpdate;
+  }
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext info) {
+  }
+}</pre></div>
+
+        </div>
+
+        <div class="section" id="apex_batch_executeBatch">
+<a name="apex_batch_executeBatch"><!-- --></a><h2 class="helpHead2">Using the <span class="titlecodeph">Database.executeBatch</span>
+                    Method to Submit Batch Jobs</h2>
+
+            
+            <div class="p">You can use the <samp class="codeph apex_code">Database.executeBatch</samp> method
+                to programmatically begin a batch job.<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p><span class="ph" id="schedule_system_resources"><a name="schedule_system_resources"><!-- --></a>When you call <samp class="codeph apex_code">Database.executeBatch</samp>, Salesforce adds the process to the
+                        queue. Actual execution can be delayed based on service
+                    availability.</span></p>
+</div>
+</div></div></div></div>
+</div>
+
+            <p class="p">The <samp class="codeph apex_code">Database.executeBatch</samp> method takes two
+                parameters:</p>
+
+            <a name="ul_znv_xs5_xhc"><!-- --></a><ul class="ul bulletList" id="ul_znv_xs5_xhc">
+                <li class="li">An instance of a class that implements the <samp class="codeph apex_code">Database.Batchable</samp> interface. </li>
+
+                <li class="li"><span class="ph" id="batch_apex_scope_parameter"><a name="batch_apex_scope_parameter"><!-- --></a>An optional parameter
+                            <var class="keyword varname">scope</var>. This parameter specifies the number of records
+                        to pass into the <samp class="codeph apex_code">execute</samp> method.
+                        Use this parameter when you have many operations for each record being
+                        passed in and are running into governor limits. By limiting the number of
+                        records, you’re limiting the operations per transaction. This value must be
+                        greater than zero. If the <samp class="codeph apex_code">start</samp>
+                        method of the batch class returns a QueryLocator, the optional scope
+                        parameter of <samp class="codeph apex_code">Database.executeBatch</samp>
+                        can have a maximum value of 2,000. If set to a higher value, Salesforce
+                        chunks the records returned by the QueryLocator into smaller batches of up
+                        to  records. If the <samp class="codeph apex_code">start</samp> method of
+                        the batch class returns an iterable, the scope parameter value has no upper
+                        limit. However, if you use a high number, you can run into other limits. The
+                        optimal scope size is a factor of 2000, for example, 100, 200, 400 and so
+                        on.</span></li>
+
+            </ul>
+
+            <div class="p">The <samp class="codeph apex_code">Database.executeBatch</samp> method returns the
+                ID of the AsyncApexJob object, which you can use to track the progress of the job.
+                For example:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">ID</span> batchprocessid = Database.executeBatch(reassign);
+
+AsyncApexJob aaj = [SELECT Id, Status, JobItemsProcessed, TotalJobItems, NumberOfErrors 
+                    FROM AsyncApexJob WHERE <span class="keyword">ID</span> = :batchprocessid WITH USER_MODE];
+</pre></div>
+</div>
+
+            <p class="p">You can also use this ID with the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm" target="_blank"><samp class="codeph apex_code">System.abortJob</samp></a> method. </p>
+
+            <p class="p">For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_asyncapexjob.htm" target="_blank" title="HTML (New Window)">AsyncApexJob</a> in the <cite class="cite">Object
+                    Reference for Salesforce.</cite></p>
+
+        </div>
+
+        <div class="section" id="Flex_Queue">
+<a name="Flex_Queue"><!-- --></a><h2 class="helpHead2">Holding Batch Jobs in the Apex Flex Queue</h2>
+<div class="p">
+<p class="p">With the
+                Apex flex queue, you can submit up to 100 batch jobs.</p>
+<div class="p" id="flexq_executeBatch">
+<a name="flexq_executeBatch"><!-- --></a>The outcome of <samp class="codeph apex_code">Database.executeBatch</samp> is as follows.<ul class="ul bulletList">
+                    <li class="li">The batch job is placed in the Apex flex queue, and its status is set to
+                            <samp class="codeph apex_code">Holding</samp>.</li>
+
+                    <li class="li">If the Apex flex queue has the maximum number of 100 jobs, <samp class="codeph apex_code">Database.executeBatch</samp> throws a <samp class="codeph apex_code">LimitException</samp> and doesn't add the job
+                        to the queue.</li>
+
+                    <li class="li">If your org doesn’t have Apex flex queue enabled, <samp class="codeph apex_code">Database.executeBatch</samp> adds the batch job
+                        to the batch job queue with the <samp class="codeph apex_code">Queued</samp> status. If the concurrent limit of queued or active
+                        batch jobs has been reached, a <samp class="codeph apex_code">LimitException</samp> is thrown, and the job isn’t queued.</li>
+
+                    <li class="li">It is possible that the number of jobs in the Apex flex queue sometimes
+                        exceeds the maximum limit, resulting from parallel requests to enqueue batch
+                        Apex jobs. Further attempts to enqueue batch jobs will encounter a <samp class="codeph ">LimitException</samp> until the queue size drops
+                        below the maximum limit.</li>
+
+                </ul>
+</div>
+<p class="p"><strong class="ph b">Reordering Jobs in the Apex Flex Queue</strong></p>
+<p class="p">While submitted jobs
+                have a status of <samp class="codeph apex_code">Holding</samp>, you can reorder
+                them in the Salesforce user interface to control which batch jobs are processed
+                first. To do so, from Setup, enter <kbd class="ph userinput">Apex Flex Queue</kbd> in the
+                    <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">Apex Flex
+                    Queue</strong>.</p>
+<p class="p">Alternatively, you can use Apex methods to reorder
+                batch jobs in the flex queue. To move a job to a new position, call one of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_flexqueue.htm" target="_blank"><samp class="codeph apex_code">System.FlexQueue</samp> methods</a>. Pass the method the job ID and,
+                if applicable, the ID of the job next to the moved job’s new position. For
+                example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Boolean</span> isSuccess = System.FlexQueue.moveBeforeJob(jobToMoveId, jobInQueueId);
+</pre></div>
+You can reorder jobs in the Apex flex queue to prioritize jobs. For
+            example, you can move a batch job up to the first position in the holding queue to be
+            processed first when resources become available. Otherwise, jobs are processed
+            “first-in, first-out”—in the order in which they’re submitted.<p class="p">When system
+                resources become available, the system picks up the next job from the top of the
+                Apex flex queue and moves it to the batch job queue. The system can process up to
+                five queued or active jobs simultaneously for each organization. The status of these
+                moved jobs changes from <samp class="codeph apex_code">Holding</samp> to <samp class="codeph apex_code">Queued</samp>. Queued jobs get executed when the system
+                is ready to process new jobs. You can monitor queued jobs on the Apex Jobs
+            page.</p>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Batch Job Statuses</h2>
+
+            
+            <p class="p">The following table lists all possible statuses for a batch job along with a
+                description of each.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d7698e478">Status</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d7698e481">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Holding </td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job has been submitted and is held in the Apex flex queue until
+                                system resources become available to queue the job for
+                                processing.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Queued</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job is awaiting execution.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Preparing</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">The <samp class="codeph apex_code">start</samp> method of the
+                                job has been invoked. This status can last a few minutes depending
+                                on the size of the batch of records.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Processing</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job is being processed.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Aborted</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job aborted by a user.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Completed</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job completed with or without failure.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d7698e478" data-title="Status">Failed</td>
+
+                            <td class="entry" headers="d7698e481" data-title="Description">Job experienced a system failure.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section" id="apex_batch_scheduleBatch_section">
+<a name="apex_batch_scheduleBatch_section"><!-- --></a><h2 class="helpHead2">Using the <span class="titlecodeph">System.scheduleBatch</span> Method</h2>
+
+            
+            <p class="p">You can use the <samp class="codeph apex_code">System.scheduleBatch</samp> method
+                to schedule a batch job to run once at a future time.</p>
+
+            <div class="p" id="scheduleBatch_parameters">
+<a name="scheduleBatch_parameters"><!-- --></a>The <samp class="codeph apex_code">System.scheduleBatch</samp> method takes these parameters.<ul class="ul bulletList">
+                    <li class="li">An instance of a class that implements the <samp class="codeph apex_code">Database.Batchable</samp> interface.</li>
+
+                    <li class="li">The job name.</li>
+
+                    <li class="li">The time interval, in minutes, after which the job starts executing.</li>
+
+                    <li class="li">An optional scope value. This parameter specifies the number of records to
+                        pass into the <samp class="codeph apex_code">execute</samp> method.
+                            Use this parameter when you have many operations for each record
+                            being passed in and are running into governor limits. By limiting the
+                            number of records, you’re limiting the operations per transaction. This
+                            value must be greater than zero.If the <samp class="codeph apex_code">start</samp> method of the batch class
+                            returns a QueryLocator, the optional scope parameter of <samp class="codeph apex_code">Database.executeBatch</samp> can have a
+                            maximum value of . If set to a higher value, Salesforce chunks the
+                            records returned by the QueryLocator into smaller batches of up to
+                                2,000 records. If the <samp class="codeph apex_code">start</samp> method of the batch class returns an iterable, the
+                            scope parameter value has no upper limit. However, if you use a high
+                            number, you can run into other limits. The optimal scope size is a
+                            factor of 2000, for example, 100, 200, 400 and so on.</li>
+
+                </ul>
+</div>
+
+            <p class="p" id="scheduleBatch_returnValue"><a name="scheduleBatch_returnValue"><!-- --></a>The <samp class="codeph apex_code">System.scheduleBatch</samp> method returns the scheduled job ID (CronTrigger
+                ID).</p>
+
+            <div class="p" id="scheduleBatch_example">
+<a name="scheduleBatch_example"><!-- --></a>This example schedules a batch job to run 60 minutes from
+                now by calling <samp class="codeph apex_code">System.scheduleBatch</samp>. The
+                example passes this method an instance of a batch class (the <samp class="codeph apex_code">reassign</samp> variable), a job name, and a time
+                interval of 60 minutes. The optional <var class="keyword varname">scope</var> parameter has been
+                omitted. The method returns the scheduled job ID, which is used to query CronTrigger
+                to get the status of the corresponding scheduled
+                job.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> cronID = System.scheduleBatch(reassign, <span class="string">'job example'</span>, 60);
+
+CronTrigger ct = [SELECT Id, TimesTriggered, NextFireTime
+                FROM CronTrigger WHERE Id = :cronID WITH USER_MODE];
+
+<span class="onelineComment">// TimesTriggered should be 0 because the job hasn't started yet.</span>
+Assert.areEqual(0, ct.TimesTriggered);
+System.debug(<span class="string">'Next fire time: '</span> + ct.NextFireTime); 
+<span class="onelineComment">// For example:</span>
+<span class="onelineComment">// Next fire time: 2013-06-03 13:31:23</span>
+
+</pre></div>
+</div>
+
+            <p class="p">For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_crontrigger.htm" target="_blank" title="HTML (New Window)">CronTrigger</a> in the <cite class="cite">Object
+                    Reference for Salesforce.</cite></p>
+
+            <div class="box message info" id="scheduleBatch_notes">
+<a name="scheduleBatch_notes"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Some things to note about <samp class="codeph apex_code">System.scheduleBatch</samp>:<ul class="ul bulletList">
+                    <li class="li">When you call <samp class="codeph apex_code">System.scheduleBatch</samp>,
+                        Salesforce schedules the job for execution at the specified time. Actual
+                        execution occurs at or after that time, depending on service
+                        availability.</li>
+
+                    <li class="li">The scheduler runs as system—all classes are executed, whether the
+                        user has permission to execute the class or not.</li>
+
+                    <li class="li">When the job’s schedule is triggered, the system queues the batch job for
+                        processing. If Apex flex queue is enabled in your org, the batch job is
+                        added at the end of the flex queue. For more information, see <a class="xref" href="#Flex_Queue">Holding Batch Jobs in
+                            the Apex Flex Queue</a>.</li>
+
+                    <li class="li"><span class="ph" id="scheduleBatch_limits"><a name="scheduleBatch_limits"><!-- --></a>All scheduled Apex limits apply for batch jobs
+                            scheduled using <samp class="codeph apex_code">System.scheduleBatch</samp>. After the batch job is queued (with
+                            a status of <samp class="codeph apex_code">Holding</samp> or <samp class="codeph apex_code">Queued</samp>), all batch job limits apply
+                            and the job no longer counts toward scheduled Apex limits.</span></li>
+
+                    <li class="li">After calling this method and before the batch job starts, you can use the
+                        returned scheduled job ID to abort the scheduled job using the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm" target="_blank"><samp class="codeph apex_code">System.abortJob</samp></a> method.</li>
+
+                </ul>
+</p>
+</div>
+</div></div></div>
+</div>
+
+        </div>
+
+        <div class="section" id="batch_apex_examples_section">
+<a name="batch_apex_examples_section"><!-- --></a><h2 class="helpHead2">Batch Apex Examples</h2>
+
+            
+            <div class="p">The following example uses a <samp class="codeph apex_code">Database.QueryLocator</samp>:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> UpdateAccountFields <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt; {
+  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Query;
+  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Entity;
+  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Field;
+  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Value;
+
+  <span class="keyword">public</span> UpdateAccountFields(<span class="keyword">String</span> q, <span class="keyword">String</span> e, <span class="keyword">String</span> f, <span class="keyword">String</span> v) {
+    Query = q;
+    Entity = e;
+    Field = f;
+    Value = v;
+  }
+
+  <span class="keyword">public</span> Database.QueryLocator start(Database.BatchableContext bc) {
+    <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; scope) {
+    <span class="statement">for</span> (Sobject s : scope) {
+      s.put(Field, Value);
+    }
+    <span class="statement">update</span> <span class="statement">as</span> user scope;
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc) {
+  }
+}</pre></div>
+</div>
+
+            <div class="p">You can use this code to call the previous
+                class.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Query for 10 accounts</span>
+<span class="keyword">String</span> q = <span class="string">'SELECT Industry FROM Account LIMIT 10'</span>;
+<span class="keyword">String</span> e = <span class="string">'Account'</span>;
+<span class="keyword">String</span> f = <span class="string">'Industry'</span>;
+<span class="keyword">String</span> v = <span class="string">'Consulting'</span>;
+Id batchInstanceId = Database.executeBatch(<span class="keyword">new</span> UpdateAccountFields(q,e,f,v), 5); </pre></div>
+</div>
+
+            <div class="p">To exclude accounts or invoices that were deleted but are still in the Recycle Bin,
+                include <samp class="codeph apex_code">isDeleted=<span class="keyword">false</span></samp> in the SOQL query
+                WHERE clause, as shown in these modified
+                samples.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Query for accounts that aren't in the Recycle Bin</span>
+<span class="keyword">String</span> q = <span class="string">'SELECT Industry FROM Account WHERE isDeleted=false LIMIT 10'</span>;
+<span class="keyword">String</span> e = <span class="string">'Account'</span>;
+<span class="keyword">String</span> f = <span class="string">'Industry'</span>;
+<span class="keyword">String</span> v = <span class="string">'Consulting'</span>;
+Id batchInstanceId = Database.executeBatch(<span class="keyword">new</span> UpdateAccountFields(q,e,f,v), 5); </pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Query for invoices that aren't in the Recycle Bin</span>
+<span class="keyword">String</span> q = 
+  <span class="string">'SELECT Description__c FROM Invoice_Statement__c WHERE isDeleted=false LIMIT 10'</span>;
+<span class="keyword">String</span> e = <span class="string">'Invoice_Statement__c'</span>;
+<span class="keyword">String</span> f = <span class="string">'Description__c'</span>;
+<span class="keyword">String</span> v = <span class="string">'Updated description'</span>;
+Id batchInstanceId = Database.executeBatch(<span class="keyword">new</span> UpdateInvoiceFields(q,e,f,v), 5); </pre></div>
+</div>
+
+            <div class="p">The following class uses batch Apex to reassign all accounts owned by a specific user
+                to a different user.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> OwnerReassignment <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt; {
+  <span class="keyword">public</span> <span class="keyword">String</span> query;
+  <span class="keyword">public</span> <span class="keyword">String</span> email;
+  <span class="keyword">public</span> Id toUserId;
+  <span class="keyword">public</span> Id fromUserId;
+
+  <span class="keyword">public</span> Database.querylocator start(Database.BatchableContext bc) {
+    <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; scope) {
+    List&lt;Account&gt; accns = <span class="keyword">new</span> List&lt;Account&gt;();
+
+    <span class="statement">for</span> (sObject s : scope) {
+      Account a = (Account) s;
+      <span class="statement">if</span> (a.OwnerId == fromUserId) {
+        a.OwnerId = toUserId;
+        accns.add(a);
+      }
+    }
+
+    <span class="statement">update</span> <span class="statement">as</span> user accns;
+  }
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc) {
+    Messaging.SingleEmailMessage mail = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+
+    mail.setToAddresses(<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{ email });
+    mail.setReplyTo(<span class="string">'batch@acme.com'</span>);
+    mail.setSenderDisplayName(<span class="string">'Batch Processing'</span>);
+    mail.setSubject(<span class="string">'Batch Process Completed'</span>);
+    mail.setPlainTextBody(<span class="string">'Batch Process has completed'</span>);
+
+    Messaging.sendEmail(<span class="keyword">new</span> List&lt;Messaging.SingleEmailMessage&gt;{ mail });
+  }
+}
+</pre></div>
+</div>
+
+            <div class="p">Use this code to execute the <samp class="codeph apex_code">OwnerReassignment</samp> class in the previous
+                example.<div class="codeSection apex_code"><pre class="codeblock brush:apex">OwnerReassignment reassign = <span class="keyword">new</span> OwnerReassignment();
+reassign.query = <span class="string">'SELECT Id, Name, Ownerid FROM Account '</span> + 
+                <span class="string">'WHERE ownerid=\''</span> + u.id + <span class="string">'\''</span>;
+reassign.email=<span class="string">'admin@acme.com'</span>;
+reassign.fromUserId = u;
+reassign.toUserId = u2;
+<span class="keyword">ID</span> batchprocessid = Database.executeBatch(reassign);
+</pre></div>
+</div>
+
+            <div class="p">The following is an example of a batch Apex class for deleting
+                records.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> BatchDelete <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt; {
+  <span class="keyword">public</span> <span class="keyword">String</span> query;
+
+  <span class="keyword">public</span> Database.QueryLocator start(Database.BatchableContext bc) {
+    <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; scope) {
+    <span class="statement">delete</span> <span class="statement">as</span> user scope;
+    DataBase.emptyRecycleBin(scope);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc) {
+  }
+}</pre></div>
+</div>
+
+            <div class="p">This code calls the <samp class="codeph apex_code">BatchDelete</samp> batch Apex
+                class to delete old documents. The specified query selects documents to delete for
+                all documents that are in a specified folder and that are older than a specified
+                date. Next, the sample invokes the batch
+                job.<div class="codeSection apex_code"><pre class="codeblock brush:apex">BatchDelete BDel = <span class="keyword">new</span> BatchDelete();
+<span class="keyword">Datetime</span> d = <span class="keyword">Datetime</span>.now();
+d = d.addDays(-1);
+<span class="onelineComment">// Replace this value with the folder ID that contains</span>
+<span class="onelineComment">// the documents to delete.</span>
+<span class="keyword">String</span> folderId = <span class="string">'00lD000000116lD'</span>;
+<span class="onelineComment">// Query for selecting the documents to delete</span>
+BDel.query = <span class="string">'SELECT Id FROM Document WHERE FolderId=\''</span> + folderId + 
+    <span class="string">'\' AND CreatedDate &lt; '</span>+d.format(<span class="string">'yyyy-MM-dd'</span>)+<span class="string">'T'</span>+
+    d.format(<span class="string">'HH:mm'</span>)+<span class="string">':00.000Z'</span>;
+<span class="onelineComment">// Invoke the batch job.</span>
+<span class="keyword">ID</span> batchprocessid = Database.executeBatch(BDel);
+System.debug(<span class="string">'Returned batch process ID: '</span> + batchProcessId);
+</pre></div>
+</div>
+
+        </div>
+
+        <div class="section" id="apex_batch_callouts">
+<a name="apex_batch_callouts"><!-- --></a><h2 class="helpHead2">Using Callouts in Batch Apex</h2>
+
+            
+            <div class="p">To use a <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts.htm">callout</a> in batch Apex, specify <samp class="codeph apex_code">Database.AllowsCallouts</samp> in the class
+                definition. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> SearchAndReplace <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt;, 
+   Database.AllowsCallouts{
+}</pre></div>
+</div>
+
+            <p class="p">Callouts include HTTP requests and methods defined with the <samp class="codeph apex_code">webservice</samp> keyword.</p>
+
+        </div>
+
+        <div class="section" id="apex_batch_maintain_state">
+<a name="apex_batch_maintain_state"><!-- --></a><h2 class="helpHead2">Using State in Batch Apex</h2>
+
+            
+            <p class="p">Each execution of a batch Apex job is considered a discrete transaction. For example,
+                a batch Apex job that contains 1,000 records and is executed without the optional
+                    <var class="keyword varname">scope</var> parameter is considered five transactions of 200
+                records each.</p>
+
+            <p class="p">If you specify <samp class="codeph apex_code">Database.Stateful</samp> in the
+                class definition, you can maintain state across these transactions. When using
+                    <samp class="codeph apex_code">Database.Stateful</samp>, only instance member
+                variables retain their values between transactions. Static member variables don’t
+                retain their values and are reset between transactions. Maintaining state is useful
+                for counting or summarizing records as they’re processed. For example, suppose your
+                job processes opportunity records. You can define a method in <samp class="codeph apex_code">execute</samp> to aggregate the totals of the
+                opportunity amounts as they are processed.</p>
+
+            <p class="p">If you don’t specify <samp class="codeph apex_code">Database.Stateful</samp>, all
+                static and instance member variables are set back to their original values.</p>
+
+            <div class="p">The following example summarizes a custom field <span class="keyword parmname">total__c</span> as the
+                records are
+                processed.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> SummarizeAccountTotal <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt;, Database.Stateful {
+  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">String</span> Query;
+  <span class="keyword">public</span> integer Summary;
+
+  <span class="keyword">public</span> SummarizeAccountTotal(<span class="keyword">String</span> q) {
+    Query = q;
+    Summary = 0;
+  }
+
+  <span class="keyword">public</span> Database.QueryLocator start(Database.BatchableContext bc) {
+    <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; scope) {
+    <span class="statement">for</span> (sObject s : scope) {
+      Summary = <span class="keyword">Integer</span>.valueOf(s.get(<span class="string">'total__c'</span>)) + Summary;
+    }
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc) {
+  }
+}</pre></div>
+</div>
+
+            <div class="p">In addition, you can specify a variable to access the initial state of the class. You
+                can use this variable to share the initial state with all instances of the <samp class="codeph apex_code">Database.Batchable</samp> methods. For
+                example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Implement the interface using a list of Account sObjects</span>
+<span class="onelineComment">// Note that the initialState variable is declared as final</span>
+
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> MyBatchable <span class="keyword">implements</span> Database.Batchable&lt;sObject&gt; {
+  <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">String</span> initialState;
+  <span class="keyword">String</span> query;
+
+  <span class="keyword">public</span> MyBatchable(<span class="keyword">String</span> intialState) {
+    <span class="statement">this</span>.initialState = initialState;
+  }
+
+  <span class="keyword">public</span> Database.QueryLocator start(Database.BatchableContext bc) {
+    <span class="onelineComment">// Access initialState here</span>
+
+    <span class="statement">return</span> Database.getQueryLocator(query, AccessLevel.USER_MODE);
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> execute(Database.BatchableContext bc, List&lt;sObject&gt; batch) {
+    <span class="onelineComment">// Access initialState here</span>
+  }
+
+  <span class="keyword">public</span> <span class="keyword">void</span> finish(Database.BatchableContext bc) {
+    <span class="onelineComment">// Access initialState here</span>
+  }
+}</pre></div>
+</div>
+
+            <p class="p">The <samp class="codeph apex_code">initialState</samp> stores only the
+                    <em class="ph i">initial</em> state of the class. You can’t use it to pass information between
+                instances of the class during execution of the batch job. For example, if you change
+                the value of <samp class="codeph apex_code">initialState</samp> in <samp class="codeph apex_code">execute</samp>, the second chunk of processed records
+                can’t access the new value. Only the initial value is accessible.</p>
+
+        </div>
+
+        <div class="section" id="apex_batch_testing">
+<a name="apex_batch_testing"><!-- --></a><h2 class="helpHead2">Testing Batch Apex</h2>
+
+            
+            <p class="p"><span class="ph" id="apex_batch_testing_query_limits"><a name="apex_batch_testing_query_limits"><!-- --></a>When testing your batch Apex, you can test
+                    only one execution of the <samp class="codeph apex_code">execute</samp>
+                    method. Use the <var class="keyword varname">scope</var> parameter of the <samp class="codeph apex_code">executeBatch</samp> method to limit the number of
+                    records passed into the <samp class="codeph apex_code">execute</samp> method
+                    to ensure that you aren’t running into governor limits.</span></p>
+
+            <p class="p"><span class="ph" id="apex_batch_start_stop_test"><a name="apex_batch_start_stop_test"><!-- --></a>The <samp class="codeph apex_code">executeBatch</samp> method starts an asynchronous process. When you test
+                    batch Apex, make certain that the asynchronously processed batch job is finished
+                    before testing against the results. Use the Test methods <samp class="codeph apex_code">startTest</samp> and <samp class="codeph apex_code">stopTest</samp> around the <samp class="codeph apex_code">executeBatch</samp> method to ensure that it finishes before continuing
+                    your test.</span> All asynchronous calls made after the <samp class="codeph apex_code">startTest</samp> method are collected by the system.
+                When <samp class="codeph apex_code">stopTest</samp> is executed, all asynchronous
+                processes are run synchronously. If you don’t include the <samp class="codeph apex_code">executeBatch</samp> method within the <samp class="codeph apex_code">startTest</samp> and <samp class="codeph apex_code">stopTest</samp> methods, the batch job executes at the end of your test
+                method. This execution order applies for Apex saved using API version 25.0 and
+                later, but not for earlier versions.</p>
+
+            <div class="p">
+<span class="ph" id="ExceptionsThrownBatchTest"><a name="ExceptionsThrownBatchTest"><!-- --></a>For Apex saved using API version 22.0 and later,
+                    exceptions that occur during the execution of a batch Apex job invoked by a test
+                    method are passed to the calling test method. As a result, these exceptions
+                    cause the test method to fail. If you want to handle exceptions in the test
+                    method, enclose the code in <samp class="codeph apex_code"><span class="statement">try</span></samp> and
+                        <samp class="codeph apex_code"><span class="statement">catch</span></samp> statements. Place the <samp class="codeph apex_code"><span class="statement">catch</span></samp> block after the <samp class="codeph apex_code">stopTest</samp> method. However, with Apex saved
+                    using Apex version 21.0 and earlier, such exceptions don’t get passed to the
+                    test method and don’t cause test methods to fail.</span><div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Asynchronous calls,
+                    such as <samp class="codeph apex_code"><span class="keyword">@future</span></samp> or <samp class="codeph apex_code">executeBatch</samp>, called in a <samp class="codeph apex_code">startTest</samp>, <samp class="codeph apex_code">stopTest</samp> block, don’t count against your limits for the number of
+                    queued jobs. </p>
+</div>
+</div></div></div></div>
+</div>
+
+            <div class="p">The following example tests the <samp class="codeph apex_code">OwnerReassignment</samp> class.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> OwnerReassignmentTest {
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testBatch() {
+    user u = [
+      SELECT <span class="keyword">ID</span>, UserName
+      FROM User
+      WHERE username = <span class="string">'testuser1@acme.com'</span>
+      WITH USER_MODE
+    ];
+    user u2 = [
+      SELECT <span class="keyword">ID</span>, UserName
+      FROM User
+      WHERE username = <span class="string">'testuser2@acme.com'</span>
+      WITH USER_MODE
+    ];
+    <span class="keyword">String</span> u2id = u2.id;
+    <span class="onelineComment">// Create 200 test accounts - this simulates one execute.</span>
+    <span class="onelineComment">// Important - the Salesforce test framework only allows you to</span>
+    <span class="onelineComment">// test one execute.</span>
+
+    List&lt;Account&gt; accns = <span class="keyword">new</span> List&lt;Account&gt;();
+    <span class="statement">for</span> (integer i = 0; i &lt; 200; i++) {
+      Account a = <span class="keyword">new</span> Account(Name = <span class="string">'testAccount'</span> + i, Ownerid = u.<span class="keyword">ID</span>);
+      accns.add(a);
+    }
+
+    <span class="statement">insert</span> <span class="statement">as</span> user accns;
+
+    Test.StartTest();
+    OwnerReassignment reassign = <span class="keyword">new</span> OwnerReassignment();
+    reassign.query =
+      <span class="string">'SELECT ID, Name, Ownerid '</span> +
+      <span class="string">'FROM Account '</span> +
+      <span class="string">'WHERE OwnerId=\''</span> +
+      u.Id +
+      <span class="string">'\''</span> +
+      <span class="string">' LIMIT 200'</span>;
+    reassign.email = <span class="string">'admin@acme.com'</span>;
+    reassign.fromUserId = u.Id;
+    reassign.toUserId = u2.Id;
+    <span class="keyword">ID</span> batchprocessid = Database.executeBatch(reassign);
+    Test.StopTest();
+
+    Assert.areEqual(
+      Database.countquery(
+        <span class="string">'SELECT COUNT()'</span> + <span class="string">' FROM Account WHERE OwnerId=\''</span> + u2.Id + <span class="string">'\''</span>,
+        AccessLevel.USER_MODE
+      ),
+      200
+    );
+  }
+}</pre></div>
+</div>
+
+            <p class="p">Use the <samp class="codeph apex_code">System.Test.enqueueBatchJobs</samp> and
+                    <samp class="codeph apex_code">System.Test.getFlexQueueOrder</samp> methods to
+                enqueue and reorder no-operation jobs within the context of tests.</p>
+
+        </div>
+
+        <div class="section" id="BatchApexLimitsSection">
+<a name="BatchApexLimitsSection"><!-- --></a><h2 class="helpHead2">Batch Apex Limitations</h2>
+
+            
+            <div class="p" id="BatchApexLimits">
+<a name="BatchApexLimits"><!-- --></a>Keep in mind these governor limits and other limitations for
+                batch Apex.<ul class="ul bulletList">
+                    <li class="li">Up to 5 batch jobs can be queued or active concurrently.</li>
+
+                    <li class="li">Up to 100 <samp class="codeph apex_code">Holding</samp> batch jobs can be
+                        held in the Apex flex queue.</li>
+
+                    <li class="li">In a running test, you can submit a maximum of 5 batch jobs.</li>
+
+                    <li class="li">The maximum number of batch Apex method executions per 24-hour period is 250,000, or the number of user licenses in your org multiplied by 200—whichever
+                        is greater. Method executions include executions of the <samp class="codeph apex_code">start</samp>, <samp class="codeph apex_code">execute</samp>, and <samp class="codeph apex_code">finish</samp>
+                        methods. This limit is for your entire org and is shared with all
+                        asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future
+                        methods. To check how many asynchronous Apex executions are available, make
+                        a request to REST API <samp class="codeph nolang">limits</samp> resource.
+                        See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/dome_limits.htm" target="_blank" title="HTML (New Window)">List Organization Limits</a> in the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/" target="_blank" title="HTML (New Window)">REST API Developer Guide</a>. If the number of
+                        asynchronous Apex executions needed by a job exceeds the available number
+                        that’s calculated using the 24-hour rolling limit, an exception is thrown.
+                        Batch Apex preemptively checks the required asynchronous job capacity when
+                            <samp class="codeph apex_code">Database.executeBatch</samp> is called
+                        and the <samp class="codeph apex_code">start</samp> method has returned
+                        the workload. The batch won’t start unless there is sufficient capacity for
+                        the entire job available. For example, if the batch requires 10,000
+                        executions and the remaining asynchronous limit is 9,500 executions, an
+                            <samp class="ph systemoutput">AsyncApexExecutions Limit exceeded</samp>
+                        exception is thrown, and the remaining executions are left unchanged. The
+                        license types that count toward this limit include full Salesforce and
+                        Salesforce Platform user licenses, App Subscription user licenses, Chatter
+                        Only users, Identity users, and Company Communities users.</li>
+
+                    <li class="li">A maximum of <span class="ph" id="QLocatorMaxRecords"><a name="QLocatorMaxRecords"><!-- --></a>50 million</span> records can be
+                        returned in the <samp class="codeph apex_code">Database.QueryLocator</samp> object. If more than 50 million records
+                        are returned, the batch job is immediately terminated and marked as
+                        Failed.</li>
+
+                    <li class="li"><span class="ph" id="ScopeValueLimitText"><a name="ScopeValueLimitText"><!-- --></a>If the <samp class="codeph apex_code">start</samp> method of the batch class returns a QueryLocator,
+                            the optional scope parameter of <samp class="codeph apex_code">Database.executeBatch</samp> can have a maximum value of 2,000.
+                            If set to a higher value, Salesforce chunks the records returned by the
+                            QueryLocator into smaller batches of up to 2,000 records. If the <samp class="codeph apex_code">start</samp> method of the batch class
+                            returns an iterable, the scope parameter value has no upper limit.
+                            However, if you use a high number, you can run into other limits. The
+                            optimal scope size is a factor of 2000, for example, 100, 200, 400 and
+                            so on.</span></li>
+
+                    <li class="li">If no size is specified with the optional <var class="keyword varname">scope</var> parameter
+                        of <samp class="codeph apex_code">Database.executeBatch</samp>,
+                        Salesforce chunks the records returned by the <samp class="codeph apex_code">start</samp> method into batches of <span class="ph" id="BatchDefaultSize"><a name="BatchDefaultSize"><!-- --></a>200</span> records. The system then passes each batch to the <samp class="codeph apex_code">execute</samp> method. Apex governor limits
+                        are reset for each execution of <samp class="codeph apex_code">execute</samp>.</li>
+
+                    <li class="li">The <samp class="codeph apex_code">start</samp>, <samp class="codeph apex_code">execute</samp>, and <samp class="codeph apex_code">finish</samp> methods can implement up to 100
+                        callouts each.</li>
+
+                    <li class="li">Only one batch Apex job's <samp class="codeph apex_code">start</samp>
+                        method can run at a time in an org. Batch jobs that haven’t started
+                        yet remain in the queue until they're started. This limit doesn’t
+                        cause any batch job to fail and <samp class="codeph apex_code">execute</samp> methods of batch Apex jobs still run in parallel if
+                        more than one job is running.</li>
+
+                    <li class="li">Enqueued batch Apex jobs are processed when system resources become
+                        available. There’s no guarantee on how long it takes to start, execute, and
+                        finish the queued jobs. You can use the Apex flex queue to prioritize
+                        jobs.</li>
+
+                    <li class="li">Using <samp class="codeph apex_code">FOR UPDATE</samp> in SOQL queries to
+                        lock records during update isn’t applicable to Batch Apex. </li>
+
+                    <li class="li">
+<samp class="codeph apex_code">Database.QueryLocator</samp> objects and
+                        related query results are available for 2 days, including results in nested
+                        queries. For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.salesforce_app_limits_cheatsheet.meta/salesforce_app_limits_cheatsheet/salesforce_app_limits_platform_apicursors.htm" target="_blank">API Query Cursor Limits</a>.</li>
+
+                </ul>
+</div>
+
+        </div>
+
+        <div class="section" id="batch_apex_bp_section">
+<a name="batch_apex_bp_section"><!-- --></a><h2 class="helpHead2">Batch Apex Considerations and Best Practices</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">Use extreme caution if you’re planning to invoke a batch job from a trigger. You
+                    must be able to guarantee that the trigger doesn’t add more batch jobs than the
+                    limit. In particular, consider API bulk updates, import wizards, mass record
+                    changes through the user interface, and all cases where more than one record can
+                    be updated at a time.</li>
+
+                <li class="li">When you call <samp class="codeph apex_code">Database.executeBatch</samp>,
+                    Salesforce only places the job in the queue. Actual execution can be delayed
+                    based on service availability and flex queue priority.</li>
+
+                <li class="li">When testing your batch Apex, you can test only one execution of the <samp class="codeph apex_code">execute</samp> method. Use the
+                        <var class="keyword varname">scope</var> parameter of the <samp class="codeph apex_code">executeBatch</samp> method to limit the number of records passed into the
+                        <samp class="codeph apex_code">execute</samp> method to ensure that you
+                    aren’t running into governor limits.</li>
+
+                <li class="li">The <samp class="codeph apex_code">executeBatch</samp> method starts an
+                    asynchronous process. When you test batch Apex, make certain that the
+                    asynchronously processed batch job is finished before testing against the
+                    results. Use the Test methods <samp class="codeph apex_code">startTest</samp>
+                    and <samp class="codeph apex_code">stopTest</samp> around the <samp class="codeph apex_code">executeBatch</samp> method to ensure that it
+                    finishes before continuing your test.</li>
+
+                <li class="li">Use <samp class="codeph apex_code">Database.Stateful</samp> with the class
+                    definition if you want to share instance member variables or data across job
+                    transactions. Otherwise, all member variables are reset to their initial state
+                    at the start of each transaction. </li>
+
+                <li class="li">Methods declared as <samp class="codeph apex_code">future</samp> aren’t
+                    allowed in classes that implement the <samp class="codeph apex_code">Database.Batchable</samp> interface.</li>
+
+                <li class="li">Methods declared as <samp class="codeph apex_code">future</samp> can’t be
+                    called from a batch Apex class.</li>
+
+                <li class="li">When a batch Apex job is run, email notifications are sent to the user who
+                    submitted the batch job. If the code is included in a managed package and the
+                    subscribing org is running the batch job, notifications are sent to the
+                    recipient listed in the <span class="keyword parmname">Apex Exception Notification
+                        Recipient</span> field.</li>
+
+                <li class="li">Each method execution uses the standard governor limits anonymous block,
+                    Visualforce controller, or WSDL method.</li>
+
+                <li class="li">Each batch Apex invocation creates an <samp class="codeph apex_code">AsyncApexJob</samp> record. To construct a SOQL query to retrieve the
+                    job’s status, number of errors, progress, and submitter, use the <samp class="codeph apex_code">AsyncApexJob</samp> record’s ID. <span class="ph" id="AsyncApexJobDoc"><a name="AsyncApexJobDoc"><!-- --></a>For more information about the <samp class="codeph apex_code">AsyncApexJob</samp> object, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_asyncapexjob.htm" target="_blank" title="HTML (New Window)">AsyncApexJob</a> in the
+                            <cite class="cite">Object Reference for Salesforce.</cite></span>
+</li>
+
+                <li class="li">For each 10,000 <samp class="codeph apex_code">AsyncApexJob</samp> records,
+                    Apex creates an <samp class="codeph apex_code">AsyncApexJob</samp> record of
+                    type <samp class="codeph apex_code">BatchApexWorker</samp> for internal use.
+                    When querying for all <samp class="codeph apex_code">AsyncApexJob</samp>
+                    records, we recommend that you filter out records of type <samp class="codeph apex_code">BatchApexWorker</samp> using the <samp class="codeph apex_code">JobType</samp> field. Otherwise, the query returns
+                    one more record for every 10,000 <samp class="codeph apex_code">AsyncApexJob</samp> records. For more information about the <samp class="codeph apex_code">AsyncApexJob</samp> object, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_asyncapexjob.htm" target="_blank" title="HTML (New Window)">AsyncApexJob</a> in the
+                        <cite class="cite">Object Reference for Salesforce.</cite>
+</li>
+
+                <li class="li">All implemented <samp class="codeph apex_code">Database.Batchable</samp>
+                    interface methods must be defined as <samp class="codeph apex_code"><span class="keyword">public</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span></samp>.</li>
+
+                <li class="li">For a sharing recalculation, we recommend that the <samp class="codeph apex_code">execute</samp> method delete and then re-create
+                    all Apex managed sharing for the records in the batch. This process ensures that
+                    sharing is accurate and complete.</li>
+
+                <li class="li">Batch jobs queued before a Salesforce service maintenance downtime remain in the
+                    queue. After service downtime ends and when system resources become available,
+                    the queued batch jobs are executed. If a batch job is running when downtime
+                    occurred, the batch execution is rolled back and restarted after the service
+                    comes back up. Because execute methods can therefore run multiple times, any
+                    non-transactional operations, such as callouts, can be retried. All
+                    non-transactional operations must follow <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.integration_patterns_and_practices.meta/integration_patterns_and_practices/integ_pat_remote_process_invocation_state.htm#idempotent_design_header" target="_blank">Idempotent Design Considerations</a> to
+                    maintain data integrity.</li>
+
+                <li class="li">Minimize the number of batches, if possible. Salesforce uses a queue-based
+                    framework to handle asynchronous processes from such sources as future methods
+                    and batch Apex. This queue is used to balance request workload across
+                    organizations. If more than 2,000 unprocessed requests from a single
+                    organization are in the queue, any additional requests from the same
+                    organization are delayed while the queue handles requests from other
+                    organizations.</li>
+
+                <li class="li">Salesforce recommends that you design your asynchronous Apex jobs to handle
+                    variations in processing time. For example, to handle potential processing
+                    overlaps, consider <a class="xref" href="#batch_apex_chaining_section">chaining batch jobs</a> instead of scheduling jobs at fixed
+                    intervals.</li>
+
+                <li class="li">Ensure that batch jobs execute as fast as possible. To ensure fast execution of
+                    batch jobs, minimize Web service callout times and tune the queries used in your
+                    batch Apex code. The longer the batch job executes, the more likely other queued
+                    jobs are delayed when many jobs are in the queue.</li>
+
+                <li class="li">
+                    <p class="p">If you use batch Apex with <samp class="codeph apex_code">Database.QueryLocator</samp> to access external objects via an OData
+                        adapter for Salesforce
+                        Connect:</p>
+
+                    <a name="ul_q3h_5t5_xhc"><!-- --></a><ul class="ul bulletList" id="ul_q3h_5t5_xhc">
+                        <li class="li">Enable Request Row Counts on the external data source, and each response
+                            from the external system must include the total row count of the result
+                            set.</li>
+
+                        <li class="li">We recommend enabling Server-Driven Pagination on the external data
+                            source and having the external system determine page sizes and batch
+                            boundaries for large result sets. Typically, server-driven paging can
+                            adjust batch boundaries to accommodate changing datasets more
+                            effectively than client-driven paging.<p class="p">When Server-Driven Pagination
+                                is disabled on the external data source, the OData adapter controls
+                                the paging behavior (client-driven). If external object records are
+                                added to the external system while a job runs, other records can be
+                                processed twice. If external object records are deleted from the
+                                external system while a job runs, other records can be
+                            skipped.</p>
+</li>
+
+                        <li class="li">When Server-Driven Pagination is enabled on the external data source,
+                            the batch size at runtime is the smaller of these two sizes:<a name="ul_r3h_5t5_xhc"><!-- --></a><ul class="ul bulletList" id="ul_r3h_5t5_xhc">
+                                <li class="li">Batch size specified in the <samp class="codeph apex_code">scope</samp> parameter of <samp class="codeph apex_code">Database.executeBatch</samp>. The default is 200
+                                    records.</li>
+
+                                <li class="li">Page size returned by the external system. We recommend that you
+                                    set up your external system to return page sizes of 200 or fewer
+                                    records.</li>
+
+                            </ul>
+</li>
+
+                    </ul>
+
+                </li>
+
+                <li class="li">Batch Apex jobs run faster when the <samp class="codeph apex_code">start</samp> method returns a <samp class="codeph apex_code">QueryLocator</samp> object that doesn't include related records via a
+                    subquery. Avoiding relationship subqueries in a <samp class="codeph apex_code">QueryLocator</samp> allows batch jobs to run using a faster, chunked
+                    implementation. If the <samp class="codeph apex_code">start</samp> method
+                    returns an iterable or a <samp class="codeph apex_code">QueryLocator</samp>
+                    object with a relationship subquery, the batch job uses a slower, non-chunking,
+                    implementation. For example, if this query is used in the <samp class="codeph apex_code">QueryLocator</samp>, the batch job uses a slower
+                    implementation because of the relationship subquery:
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">SELECT Id, (SELECT id FROM Contacts) FROM Account</pre></div>
+
+                    A better strategy is to perform the subquery separately, from within the <samp class="codeph ">execute</samp> method, which allows the batch job to run
+                    using the faster, chunking implementation.</li>
+
+                <li class="li">To implement record locking as part of the batch job, you can requery records
+                    inside the <samp class="codeph apex_code">execute</samp> method, using FOR
+                    UPDATE. Requerying records in this manner ensures that conflicting updates
+                    aren’t overwritten by DML in the batch job. To requery records, simply select
+                    the <samp class="codeph ">Id</samp> field in the batch job's main query
+                    locator.</li>
+
+                <li class="li">The Salesforce Platform's flow control mechanism and fair-usage algorithm can
+                    cause a delay in running batch
+                    jobs.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section" id="batch_apex_chaining_section">
+<a name="batch_apex_chaining_section"><!-- --></a><h2 class="helpHead2">Chaining Batch Jobs</h2>
+<p class="p">Starting with API version 26.0, you can start another batch
+                job from an existing batch job to chain jobs together. Chaining enforces strict
+                sequential execution, ensuring that one job fully completes before the next one
+                starts. This sequencing prevents situations where multiple batch jobs attempt to
+                concurrently process the same records, which can lead to race conditions or data
+                inconsistencies. Use chained batch jobs if you require sequential execution and
+                batch processing, such as processing large data volumes. Otherwise, if batch
+                processing isn’t needed, consider using <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm" title="Take control of your asynchronous Apex processes by using the Queueable interface. Salesforce recommends that you use Queueable Apex instead of Apex future methods. Queueables have the same use cases as future methods but offer extra benefits, including job IDs, support for non-primitive types, and job chaining.">Queueable Apex</a>.</p>
+<p class="p">You can chain a batch job by calling
+                    <samp class="codeph apex_code">Database.executeBatch</samp> or <samp class="codeph apex_code">System.scheduleBatch</samp> from the <samp class="codeph apex_code">finish</samp> method of the current batch class. The
+                new batch job starts after the current batch job finishes.</p>
+<p class="p">A potential failure
+                point in chained batch jobs is an unhandled exception within the job’s <samp class="codeph apex_code">finish</samp> method. The unhandled exception prevents
+                the next job from being enqueued and breaks the sequence. To safeguard against this
+                point of failure, consider implementing a separate scheduled Apex job that
+                periodically checks the status of the chain. The scheduled job queries the <samp class="codeph apex_code">AsyncApexJob</samp> object for records where the
+                    <samp class="codeph apex_code">JobType</samp> is <samp class="codeph apex_code"><span class="string">'BatchApex'</span></samp> and the <samp class="codeph apex_code">ApexClass.Name</samp> matches the class expected to be
+                currently running or queued within the chain. If this query returns no results, the
+                expected job is neither running nor queued, which signifies that the chain has been
+                unexpectedly interrupted. The scheduled job then restarts the entire batch chain,
+                which prevents unprocessed records from accumulating and possibly reaching governor
+                limits.</p>
+<p class="p">When creating a long chain of batch jobs, account for workload
+                variations. If there's currently no further work to perform either in the current
+                job’s <samp class="codeph apex_code">finish</samp> method or because your business
+                is entering an off-peak period, use <samp class="codeph apex_code">System.scheduleBatch</samp> to add a delay before the execution of next
+                chained batch job. This delay optimizes the usage of available batch jobs and the
+                flex queue by preventing jobs that don't have any work from repeatedly starting.</p>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <p class="p">For API version 25.0 and earlier, you can’t call <samp class="codeph apex_code">Database.executeBatch</samp> or <samp class="codeph apex_code">System.scheduleBatch</samp> from any batch Apex method. </p>
+
+                <p class="p">The API version that’s used is the version of the running batch class that starts
+                    or schedules another batch job. If the <samp class="codeph apex_code">finish</samp> method in the running batch class calls a method in a
+                    helper class to start the next batch job, the API version of the helper class
+                    doesn’t matter.</p>
+
+            </p>
+</div>
+</div></div></div></div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_database_batchable.htm" target="_blank" title="Apex Reference Guide: Batchable Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Batchable Interface</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_FlexQueue.htm" target="_blank" title="Apex Reference Guide:FlexQueue Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:FlexQueue Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm" target="_blank" title="Apex Reference Guide: Test.enqueueBatchJobs() - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Test.enqueueBatchJobs()</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm" target="_blank" title="Apex Reference Guide: Test.getFlexQueueOrder() - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Test.getFlexQueueOrder()</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/articleView?id=odata_paging.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Client-driven and Server-driven Paging for
+                            Salesforce Connect—OData 2.0 and 4.0 Adapters - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Client-driven and Server-driven Paging for
+                            Salesforce Connect—OData 2.0 and 4.0 Adapters</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/articleView?id=platform_connect_add_external_data_source.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Define an External Data Source for
+                            Salesforce Connect—OData 2.0 or 4.0 Adapter - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Define an External Data Source for
+                            Salesforce Connect—OData 2.0 or 4.0 Adapter</a></div></li>
+</ul>
+</div>
+</div>

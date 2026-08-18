@@ -1,0 +1,134 @@
+<a name="apex_triggers_context_variables_considerations"><!-- --></a><h1 class="helpHead1">Context Variable Considerations</h1><div class="body">
+  <div class="p">Be aware of the following considerations for trigger context variables:<ul class="ul bulletList">
+    <li class="li">
+<samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> and <samp class="codeph apex_code"><span class="keyword">trigger</span>.old</samp> cannot be used in Apex DML operations.</li>
+
+    <li class="li">You can use an object to change its own field values using <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp>, but only in before triggers. In all after triggers, <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> is not saved, so a runtime exception is
+     thrown.</li>
+
+    <li class="li">
+<samp class="codeph apex_code"><span class="keyword">trigger</span>.old</samp> is always read-only.</li>
+
+    <li class="li">You cannot delete <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp>.</li>
+
+   </ul>
+</div>
+
+  <p class="p">The following table lists considerations about certain actions in different trigger events:</p>
+
+  
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+    
+    
+    
+    
+    <thead class="thead sorted" align="left">
+     <tr>
+      <th class="featureTableHeader vertical-align-top " id="d140412e94">Trigger Event</th>
+
+      <th class="featureTableHeader vertical-align-top " id="d140412e97">Can change fields using <samp class="ph codeph">trigger.new</samp>
+</th>
+
+      <th class="featureTableHeader vertical-align-top " id="d140412e102">Can update original object using an update DML operation</th>
+
+      <th class="featureTableHeader vertical-align-top " id="d140412e105">Can delete original object using a delete DML operation</th>
+
+     </tr>
+
+    </thead>
+
+    <tbody class="tbody">
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">before <span class="statement">insert</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Allowed.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation"><span class="ph" id="trigger_limit_NA"><a name="trigger_limit_NA"><!-- --></a>Not applicable. The original object has not been created;
+        nothing can reference it, so nothing can update it.</span></td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Not applicable. The original object has not been created; nothing can reference it, so
+       nothing can update it.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">after <span class="statement">insert</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Not allowed. A runtime error is thrown, as <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> is already saved.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Allowed.</td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Allowed, but unnecessary. The object is deleted immediately after being
+       inserted.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">before <span class="statement">update</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Allowed.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Not allowed. A runtime error is thrown.</td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Not allowed. A runtime error is thrown.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">after <span class="statement">update</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Not allowed. A runtime error is thrown, as <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> is already saved.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Allowed. Even though bad code could cause an infinite recursion doing this incorrectly,
+       the error would be found by the governor limits.</td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Allowed. The updates are saved before the object is deleted, so if the object is
+       undeleted, the updates become visible.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">before <span class="statement">delete</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Not allowed. A runtime error is thrown. <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> is not available in before delete triggers.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Allowed. The updates are saved before the object is deleted, so if the object is
+       undeleted, the updates become visible.</td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Not allowed. A runtime error is thrown. The deletion is already in progress. </td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">after <span class="statement">delete</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Not allowed. A runtime error is thrown. <samp class="codeph apex_code"><span class="keyword">trigger</span>.<span class="keyword">new</span></samp> is not available in after delete triggers.</td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Not applicable. The object has already been deleted. </td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Not applicable. The object has already been deleted. </td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d140412e94" data-title="Trigger Event"><samp class="codeph apex_code">after <span class="statement">undelete</span></samp></td>
+
+      <td class="entry" headers="d140412e97" data-title="Can change fields using trigger.new">Not allowed. A runtime error is thrown. </td>
+
+      <td class="entry" headers="d140412e102" data-title="Can update original object using an update DML operation">Allowed.</td>
+
+      <td class="entry" headers="d140412e105" data-title="Can delete original object using a delete DML operation">Allowed, but unnecessary. The object is deleted immediately after being
+       inserted.</td>
+
+     </tr>
+
+    </tbody>
+
+   </table></div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_context_variables.htm" title="Trigger Context Variables">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_bulk_idioms.htm" title="Common Bulk Trigger Idioms">Next →</a></li>
+</ul></div>
+</div>

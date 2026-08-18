@@ -1,0 +1,48 @@
+<a name="connectapi_examples_post_feed_element_content"><!-- --></a><h1 class="helpHead1">Post a Feed Element with Existing Files</h1><div class="body refbody">
+<div class="shortdesc">Call a method to post a feed element with already uploaded files.</div>
+
+  <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">postFeedElement(communityId,
+     feedElement)</samp></a> to post a feed item with files that have already been uploaded.
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Define the FeedItemInput object to pass to postFeedElement</span>
+ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+feedItemInput.subjectId = <span class="string">'me'</span>;
+
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+textSegmentInput.text = <span class="string">'Would you please review these docs?'</span>;
+
+<span class="onelineComment">// The MessageBodyInput object holds the text in the post</span>
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+messageBodyInput.messageSegments.add(textSegmentInput);
+feedItemInput.body = messageBodyInput;
+
+<span class="onelineComment">// The FeedElementCapabilitiesInput object holds the capabilities of the feed item.</span>
+<span class="onelineComment">// For this feed item, we define a files capability to hold the file(s).</span>
+
+List&lt;<span class="keyword">String</span>&gt; fileIds = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+fileIds.add(<span class="string">'069xx00000000QO'</span>);
+fileIds.add(<span class="string">'069xx00000000QT'</span>);
+fileIds.add(<span class="string">'069xx00000000Qn'</span>);
+fileIds.add(<span class="string">'069xx00000000Qi'</span>);
+fileIds.add(<span class="string">'069xx00000000Qd'</span>);
+
+ConnectApi.FilesCapabilityInput filesInput = <span class="keyword">new</span> ConnectApi.FilesCapabilityInput();
+filesInput.items = <span class="keyword">new</span> List&lt;ConnectApi.FileIdInput&gt;();
+
+<span class="statement">for</span> (<span class="keyword">String</span> fileId : fileIds) {
+    ConnectApi.FileIdInput idInput = <span class="keyword">new</span> ConnectApi.FileIdInput();
+    idInput.id = fileId;
+    filesInput.items.add(idInput);
+}
+
+ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+feedElementCapabilitiesInput.files = filesInput;
+
+feedItemInput.capabilities = feedElementCapabilitiesInput;
+
+<span class="onelineComment">// Post the feed item. </span>
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);
+</pre></div>
+</div></div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

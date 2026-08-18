@@ -1,0 +1,110 @@
+<a name="apex_classes_interfaces"><!-- --></a><h1 class="helpHead1">Interfaces</h1><div class="body">
+<div class="shortdesc">An <dfn class="term">interface</dfn> is like a class in which none of the methods have been
+        implemented—the method signatures are there, but the body of each method is empty. To
+        use an interface, another class must implement it by providing a body for all of the methods
+        contained in the interface. </div>
+
+        <p class="p">Interfaces can provide a layer of abstraction to your code. They separate the specific
+            implementation of a method from the declaration for that method. This way you can have
+            different implementations of a method based on your specific application. </p>
+
+        <p class="p">Defining an interface is similar to defining a new class. For example, a company can have
+            two types of purchase orders, ones that come from customers, and others that come from
+            their employees. Both are a type of purchase order. Suppose you needed a method to
+            provide a discount. The amount of the discount can depend on the type of purchase order. </p>
+
+        <p class="p">You can model the general concept of a purchase order as an interface and have specific
+            implementations for customers and employees. In the following example the focus is only
+            on the discount aspect of a purchase order.</p>
+
+        <p class="p">Here’s the definition of the <samp class="codeph apex_code">PurchaseOrder</samp>
+            interface.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// An interface that defines what a purchase order looks like in general</span>
+<span class="keyword">public</span> <span class="keyword">interface</span> PurchaseOrder {
+    <span class="onelineComment">// All other functionality excluded</span>
+    <span class="keyword">Double</span> discount();
+}
+</pre></div>
+
+        <p class="p">This class implements the <samp class="codeph apex_code">PurchaseOrder</samp> interface
+            for customer purchase orders.</p>
+
+        
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// One implementation of the interface for customers</span>
+<span class="keyword">public</span> <span class="keyword">class</span> CustomerPurchaseOrder <span class="keyword">implements</span> PurchaseOrder {
+    <span class="keyword">public</span> <span class="keyword">Double</span> discount() {
+        <span class="statement">return</span> .05;  <span class="onelineComment">// Flat 5% discount</span>
+    }
+}</pre></div>
+
+        <p class="p">This class implements the <samp class="codeph apex_code">PurchaseOrder</samp> interface
+            for employee purchase orders.</p>
+
+        
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Another implementation of the interface for employees</span>
+<span class="keyword">public</span> <span class="keyword">class</span> EmployeePurchaseOrder <span class="keyword">implements</span> PurchaseOrder {
+      <span class="keyword">public</span> <span class="keyword">Double</span> discount() {
+        <span class="statement">return</span> .10;  <span class="onelineComment">// It’s worth it being an employee! 10% discount</span>
+      } 
+}    </pre></div>
+
+        <div class="p">Note the following about the example:<ul class="ul bulletList">
+                <li class="li">The interface <samp class="codeph apex_code">PurchaseOrder</samp> is defined
+                    as a general prototype. Methods defined within an interface have no access
+                    modifiers and contain just their signature.</li>
+
+                <li class="li">The <samp class="codeph apex_code">CustomerPurchaseOrder</samp> class
+                    implements this interface; therefore, it must provide a definition for the
+                        <samp class="codeph apex_code">discount</samp> method. Any class that
+                    implements an interface must define all the methods contained in the interface.
+                </li>
+
+            </ul>
+</div>
+
+        <p class="p">When you define a new interface, you’re defining a new data type. You can use an
+            interface name in any place you can use another data type name. Any object assigned to a
+            variable of type interface must be an instance of a class that implements the interface,
+            or a sub-interface data type. </p>
+
+        <p class="p">See also <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_casting.htm" title="In general, all type information is available at run time. This means that Apex enables casting, that is, a data type of one class can be assigned to a data type of another class, but only if one class is a subclass of the other class. Use casting when you want to convert an object from one data type to another.">Classes and Casting</a>.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can’t add a method to a global interface after the class has been
+            uploaded in a Managed - Released package version.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 50.0 and later, scope and accessibility rules are enforced on Apex
+                variables, methods, inner classes, and interfaces that are annotated with <samp class="codeph apex_code">@namespaceAccessible</samp>. For accessibility
+                considerations, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm">NamespaceAccessible
+                    Annotation</a>. For more information on namespace-based visibility, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_unlocked_namespace_visibility.htm" target="_blank" title="HTML (New Window)">Namespace-Based Visibility
+                    for Apex Classes in Second-Generation Packages</a>.</p>
+
+            <p class="p">In API version 61.0 and later, private methods are no longer overridden by an
+                instance method with the same signature in a subclass. This change is versioned, so
+                to prevent the override, update your abstract or virtual classes that contain
+                private methods to API version 61.0 or later. In API version 60.0 and earlier, if a
+                subclass declares an instance method with the same signature as a private method in
+                one of its superclasses, the subclass method overrides the private method.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_iterable.htm">Custom Iterators</a><br>
+</li>
+</ol>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_understanding.htm" title="Classes">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords.htm" title="Keywords">Next →</a></li>
+</ul></div>
+</div>

@@ -1,0 +1,219 @@
+<a name="apex_commercepayments_rev_service_api"><!-- --></a><h1 class="helpHead1">Payment Authorization Reversal Service API</h1><div class="body conbody">
+<div class="shortdesc">An authorization reversal is a transaction that negates an authorization by releasing
+    the hold on funds in a customer’s payment method. Use the authorization reversal service to
+    provide users with the ability to reverse an outstanding payment authorization.</div>
+
+  <p class="p">Sometimes, a customer performs a payment authorization but then needs to cancel all or part of
+   the authorization later. For example, the customer bought three items, and then realized that the
+   first item is already in their stock. Commerce Payments API allows you to reverse all or part of
+   an outstanding payment authorization.</p>
+
+  <p class="p">After the customer payment gateway authorizes a payment, Commerce Payments creates a payment
+   authorization record to store information about the authorization. When a user or process
+   performs a reversal against the authorization, the authorization reversal service creates a
+   payment authorization adjustment to store information. The adjustment is related to the
+   authorization.</p>
+
+  <div class="p">If the payment authorization is associated with an order payment summary, then the reversal
+      amount is added to the order payment summary’s
+        <span class="keyword parmname">AuthorizationReversalAmount</span> and subtracted from its
+        <span class="keyword parmname">AvailableToCaptureAmount</span>. But the
+        <span class="keyword parmname">AvailableToCaptureAmount</span> is never below 0, even if a reversal makes its
+      calculation a negative amount.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For an authorization reversal, the payment gateway log’s
+          <span class="keyword parmname">OrderPaymentSummaryId</span> always defaults to null. If there’s an
+        associated order payment summary, your code can set the value.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  
+  <p class="p">Call the authorization reversal service by making a POST request to the following endpoint.</p>
+
+  <p class="p"><strong class="ph b">Endpoint</strong></p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex">/commerce/payments/authorizations/${*authorizationId*}/reversals</pre></div>
+
+  <p class="p">The service accepts one authorization reversal request per call. The following payment
+   authorization adjustment API parameters are accepted.</p>
+
+  
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Reversal Service Input Parameters</span></caption>
+    
+    
+    
+    <thead class="thead sorted" align="left">
+     <tr>
+      <th class="featureTableHeader  " id="d103614e85">Parameter</th>
+
+      <th class="featureTableHeader  " id="d103614e88">Required</th>
+
+      <th class="featureTableHeader  " id="d103614e91">Description</th>
+
+     </tr>
+
+    </thead>
+
+    <tbody class="tbody">
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">amount</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Required</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">
+       <p class="p">Amount to be reversed from the authorization. Must be greater than zero. </p>
+
+       <p class="p">Salesforce doesn't provide validations comparing <samp class="codeph nolang">PaymentAuthorizationAdjustment.Amount</samp> to <samp class="codeph nolang">PaymentAuthorization.Amount</samp>. </p>
+
+       <p class="p">If the payment gateway allows the reversal amount to be greater than the authorization
+        amount, the authorization's resulting balance can be negative. If your gateway supports
+        authorization balances below zero and you want to avoid gateway calls, configure your
+        adapter to query the authorization amount, balance, and total reversal amount, and don’t
+        call the endpoint if the balance is less than zero.</p>
+
+      </td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">accountId</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">Account ID to which this authorization reversal is linked.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">effectiveDate</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">The date that the reversal applies to the authorization.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">email</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">Fraud parameter</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">ipAddress</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">Fraud parameter</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">macAddress</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">Fraud parameter</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">phone</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">Fraud parameter</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d103614e85" data-title="Parameter"><span class="keyword parmname">comments</span></td>
+
+      <td class="entry" headers="d103614e88" data-title="Required">Optional</td>
+
+      <td class="entry" headers="d103614e91" data-title="Description">User-provided comments about the authorization reversal. Must be less than 1000
+       characters.</td>
+
+     </tr>
+
+    </tbody>
+
+   </table></div>
+
+  <div class="section">
+<h2 class="helpHead2">Sample Request and Response</h2>
+
+   
+   <p class="p">This request calls a $150 reversal against an authorization.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+  <span class="string">"accountId"</span>:<span class="string">""</span>,
+  <span class="string">"amount"</span>: <span class="string">"150"</span>,*  <span class="string">"comments"</span>: <span class="string">"authorization reversal request"</span>,
+  <span class="string">"effectiveDate"</span>:<span class="string">"2020-10-18T11:32:27.000Z"</span>,
+  <span class="string">"ipAddress"</span>: <span class="string">"202.95.77.70"</span>,
+  <span class="string">"macAddress"</span>: <span class="string">"00-14-22-01-23-45"</span>,
+  <span class="string">"phone"</span>: <span class="string">"100-456-67"</span>,
+  <span class="string">"email"</span>: <span class="string">"test@example.org"</span>,
+  <span class="string">"additionalData"</span>:{
+       <span class="onelineComment">//add additional parameters if needed</span>
+      <span class="string">"key1"</span>:<span class="string">"value1"</span>,
+      <span class="string">"key2"</span>:<span class="string">"value2"</span>,
+      <span class="string">"key3"</span>:<span class="string">"value3"</span>,
+      <span class="string">"key4"</span>:<span class="string">"value4"</span>,
+      <span class="string">"key5"</span>:<span class="string">"value5"</span>
+    }
+}</pre></div>
+
+   <p class="p"><strong class="ph b">Sample Response - Success</strong></p>
+
+   <p class="p">A successful authorization reversal response provides information about the gateway’s response
+    and the values to construct a payment authorization adjustment entity.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">HPP Status Code: 201
+{
+  <span class="string">"gatewayResponse"</span> : {
+    <span class="string">"gatewayDate"</span> : <span class="string">"2020-10-23T15:21:58.833Z"</span>,
+    <span class="string">"gatewayReferenceNumber"</span> : <span class="string">"439XXXXXXX"</span>,
+    <span class="string">"gatewayResultCode"</span> : <span class="string">"00"</span>,
+    <span class="string">"gatewayResultCodeDescription"</span> : <span class="string">"Transaction Normal"</span>,
+    <span class="string">"salesforceResultCode"</span> : <span class="string">"Success"</span>
+  },
+  <span class="string">"paymentAuthAdjustment"</span> : {
+    <span class="string">"amount"</span> : <span class="string">"150.0"</span>,
+    <span class="string">"currencyIsoCode"</span> : <span class="string">"USD"</span>,
+    <span class="string">"effectiveDate"</span> : <span class="string">"2020-10-18T11:32:27.000Z"</span>,
+    <span class="string">"id"</span> : <span class="string">"9tvR00000004Cf1MAE"</span>,
+    <span class="string">"paymentAuthAdjustmentNumber"</span> : <span class="string">"PAA-00XXXXXXX"</span>,
+    <span class="string">"requestDate"</span> : <span class="string">"2020-10-23T15:21:58.000Z"</span>,
+    <span class="string">"status"</span> : <span class="string">"Processed"</span>
+  },
+  <span class="string">"paymentGatewayLogs"</span> : [ {
+    <span class="string">"createdDate"</span> : <span class="string">"2020-10-23T15:21:58.000Z"</span>,
+    <span class="string">"gatewayResultCode"</span> : <span class="string">"00"</span>,
+    <span class="string">"id"</span> : <span class="string">"0XtXXXXXXXXXXXXXXX"</span>,
+    <span class="string">"interactionStatus"</span> : <span class="string">"Success"</span>
+  } ]
+}</pre></div>
+
+   <p class="p">The resulting payment authorization adjustment in Salesforce would look like this.</p>
+
+   
+   <p class="p">If an error is returned, the response contains the gateway's error code and error message.</p>
+
+   <p class="p"><strong class="ph b">Sample Response - Error</strong></p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+    <span class="string">"errorCode"</span>:<span class="string">""</span>,
+    <span class="string">"errorMessage"</span>:<span class="string">""</span>
+}</pre></div>
+
+  </div>
+
+  
+ </div><div id="sfdc:seealso" class="related-links"></div>

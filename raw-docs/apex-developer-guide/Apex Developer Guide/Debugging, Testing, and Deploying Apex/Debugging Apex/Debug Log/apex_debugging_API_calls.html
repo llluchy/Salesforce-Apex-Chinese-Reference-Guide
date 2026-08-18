@@ -1,0 +1,201 @@
+<a name="apex_debugging_API_calls"><!-- --></a><h1 class="helpHead1">Debugging Apex API Calls</h1><div class="body">
+                <p class="p">All API calls that invoke Apex support a debug facility that allows access to
+                        detailed information about the execution of the code, including any calls to
+                                <samp class="codeph apex_code">System.debug()</samp>. The
+                                <span class="keyword parmname">categories</span> field of a SOAP input header called
+                                <samp class="codeph apex_code">DebuggingHeader</samp> allows you
+                        to set the logging granularity according to the levels outlined in this
+                        table.</p>
+
+                
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                                
+                                
+                                
+                                <thead class="thead sorted" align="left">
+                                        <tr>
+                                                <th class="featureTableHeader vertical-align-top " id="d66995e54">Element Name</th>
+
+                                                <th class="featureTableHeader vertical-align-top " id="d66995e57">Type</th>
+
+                                                <th class="featureTableHeader vertical-align-top " id="d66995e60">Description</th>
+
+                                        </tr>
+
+                                </thead>
+
+                                <tbody class="tbody">
+                                        <tr>
+                                                <td class="entry" headers="d66995e54" data-title="Element Name"><span class="keyword parmname">category</span></td>
+
+                                                <td class="entry" headers="d66995e57" data-title="Type">LogCategory</td>
+
+                                                <td class="entry" headers="d66995e60" data-title="Description">Specify the type of information returned in
+                                                  the debug log. Valid values are:<ul class="ul bulletList">
+                                                  <li class="li"><samp class="codeph nolang">Db</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Workflow</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Validation</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Callout</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Apex_code</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Apex_profiling</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">Visualforce</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">System</samp></li>
+
+                                                  <li class="li"><samp class="codeph nolang">All</samp></li>
+
+                                                  </ul>
+</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e54" data-title="Element Name"><span class="keyword parmname">level</span></td>
+
+                                                <td class="entry" headers="d66995e57" data-title="Type">LogCategoryLevel</td>
+
+                                                <td class="entry" headers="d66995e60" data-title="Description">Specifies the level of detail returned in the
+                                                  debug log.<div class="p">Valid log levels are (listed from
+                                                  lowest to highest):<a name="debug_log_levels_list"><!-- --></a><ul class="ul bulletList" id="debug_log_levels_list">
+                                                  <li class="li"><samp class="codeph apex_code">NONE</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">ERROR</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">WARN</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">INFO</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">DEBUG</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">FINE</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">FINER</samp></li>
+
+                                                  <li class="li"><samp class="codeph apex_code">FINEST</samp></li>
+
+                                                  </ul>
+</div>
+</td>
+
+                                        </tr>
+
+                                </tbody>
+
+                        </table></div>
+
+                <p class="p">In addition, the following log levels are still supported as part of the <samp class="codeph apex_code">DebuggingHeader</samp> for backwards
+                        compatibility.</p>
+
+                
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                                
+                                
+                                <thead class="thead sorted" align="left">
+                                        <tr>
+                                                <th class="featureTableHeader vertical-align-top " id="d66995e190">Log Level</th>
+
+                                                <th class="featureTableHeader vertical-align-top " id="d66995e193">Description</th>
+
+                                        </tr>
+
+                                </thead>
+
+                                <tbody class="tbody">
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">NONE</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Does not include any log messages.</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">DEBUGONLY</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Includes lower-level messages, and messages
+                                                  generated by calls to the <samp class="codeph nolang">System.debug</samp>
+                                                  method.</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">DB</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Includes log messages generated by calls to
+                                                  the <samp class="codeph apex_code">System.debug</samp> method, and every data
+                                                  manipulation language (DML) statement or inline
+                                                  SOQL or SOSL query.</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">PROFILE</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Includes log messages generated by calls to
+                                                  the <samp class="codeph nolang">System.debug</samp> method, every DML statement
+                                                  or inline SOQL or SOSL query, and the entrance and
+                                                  exit of every user-defined method. In addition,
+                                                  the end of the debug log contains overall
+                                                  profiling information for the portions of the
+                                                  request that used the most resources. This
+                                                  profiling information is presented in terms of
+                                                  SOQL and SOSL statements, DML operations, and Apex
+                                                  method invocations. These three sections list the
+                                                  locations in the code that consumed the most time,
+                                                  in descending order of total cumulative time. Also
+                                                  listed is the number of times the categories
+                                                  executed.</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">CALLOUT</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Includes the request-response XML that the
+                                                  server is sending and receiving from an external
+                                                  web service. Useful when debugging issues related
+                                                  to using Lightning Platform web service API calls
+                                                  or troubleshooting user access to external objects
+                                                  via Salesforce Connect.</td>
+
+                                        </tr>
+
+                                        <tr>
+                                                <td class="entry" headers="d66995e190" data-title="Log Level"><samp class="codeph apex_code">DETAIL</samp></td>
+
+                                                <td class="entry" headers="d66995e193" data-title="Description">Includes all messages generated by the
+                                                  <samp class="codeph apex_code">PROFILE</samp>
+                                                  level and the following.<ul class="ul bulletList">
+                                                  <li class="li">Variable declaration statements</li>
+
+                                                  <li class="li">Start of loop executions</li>
+
+                                                  <li class="li">All loop controls, such as break and
+                                                  continue</li>
+
+                                                  <li class="li">Thrown exceptions * </li>
+
+                                                  <li class="li">Static and class initialization code * </li>
+
+                                                  <li class="li">Any changes in the <samp class="codeph apex_code">with sharing</samp>
+                                                  context </li>
+
+                                                  </ul>
+</td>
+
+                                        </tr>
+
+                                </tbody>
+
+                        </table></div>
+
+                <p class="p">The corresponding output header, <samp class="codeph apex_code">DebuggingInfo</samp>, contains the resulting debug log. For more
+                        information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_header_debuggingheader.htm" target="_blank" title="HTML (New Window)"><samp class="codeph nolang">DebuggingHeader</samp></a> in the
+                                <cite class="cite">SOAP API Developer Guide</cite>.</p>
+
+        </div><div id="sfdc:seealso" class="related-links"></div>

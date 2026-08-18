@@ -1,0 +1,126 @@
+<a name="apex_invoking_javascript_remoting"><!-- --></a><h1 class="helpHead1">JavaScript Remoting</h1><div class="body conbody">
+<div class="shortdesc">Use JavaScript remoting in Visualforce to call methods in Apex controllers from
+        JavaScript. Create pages with complex, dynamic behavior that isn’t possible with the
+        standard Visualforce AJAX components.</div>
+
+        <div class="p">Features implemented using JavaScript remoting require three elements:<ul class="ul bulletList">
+                <li class="li">The remote method invocation you add to the Visualforce page, written in
+                    JavaScript.</li>
+
+                <li class="li">The remote method definition in your Apex controller class. This method
+                    definition is written in Apex, but there are some important differences from
+                    normal action methods.</li>
+
+                <li class="li">The response handler callback function you add to or include in your Visualforce
+                    page, written in JavaScript.</li>
+
+            </ul>
+</div>
+
+        <div class="p">In your controller, your Apex method declaration is preceded with the <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> annotation like
+            this:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@RemoteAction</span>
+<span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> getItemId(<span class="keyword">String</span> objectName) { ... }</pre></div>
+Apex <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp> methods must be <samp class="codeph apex_code"><span class="keyword">static</span></samp> and either <samp class="codeph apex_code"><span class="keyword">global</span></samp> or <samp class="codeph apex_code"><span class="keyword">public</span></samp>.</div>
+
+        <div class="p">Add the Apex class as a custom controller or a controller extension to your
+                page.<div class="codeSection apex_code"><pre class="codeblock brush:apex">&lt;apex:page controller=<span class="string">"MyController"</span> extension=<span class="string">"MyExtension"</span>&gt;</pre></div>
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Adding a controller or controller extension grants access to all
+                    <samp class="codeph nolang">@RemoteAction</samp> methods in that Apex class,
+                even if those methods aren’t used in the page. Anyone who can view the page can
+                execute all <samp class="codeph nolang">@RemoteAction</samp> methods and provide
+                fake or malicious data to the controller.</p>
+</div>
+</div></div></div></div>
+Then, add the request as a
+            JavaScript function call. A simple JavaScript remoting invocation takes the following
+                form.<div class="codeSection javascript"><pre class="codeblock brush:js">[<var class="keyword varname">namespace</var>.]<var class="keyword varname">MyController</var>.<var class="keyword varname">method</var>(
+    [parameters...,]
+    <var class="keyword varname">callbackFunction</var>,
+    [configuration]
+);</pre></div>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Remote Request Elements</span></caption>
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader  " id="d133390e109">Element</th>
+
+                            <th class="featureTableHeader  " id="d133390e112">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element"><samp class="codeph nolang">namespace</samp></td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">The namespace of the controller class. The namespace element is
+                                required if your organization has a namespace defined, or if the
+                                class comes from an installed package.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element">
+<samp class="codeph nolang">MyController</samp>, <samp class="codeph nolang">MyExtension</samp>
+</td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">The name of your Apex controller or extension.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element"><samp class="codeph nolang">method</samp></td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">The name of the Apex method you’re calling.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element"><samp class="codeph nolang">parameters</samp></td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">A comma-separated list of parameters that your method
+                                takes.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element"><samp class="codeph nolang">callbackFunction</samp></td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">The name of the JavaScript function that handles the response
+                                from the controller. You can also declare an anonymous function
+                                inline. <samp class="codeph nolang">callbackFunction</samp>
+                                receives the status of the method call and the result as
+                                parameters.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d133390e109" data-title="Element"><samp class="codeph nolang">configuration</samp></td>
+
+                            <td class="entry" headers="d133390e112" data-title="Description">Configures the handling of the remote call and response. Use this
+                                element to change the behavior of a remoting call, such as whether
+                                or not to escape the Apex method’s response.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+</div>
+
+        <p class="p">For more information, see <cite class="cite">JavaScript Remoting for Apex Controllers</cite> in the
+                <cite class="cite">Visualforce Developer's Guide</cite>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_pages.htm" title="Visualforce Classes">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_and_ajax.htm" title="Apex in AJAX">Next →</a></li>
+</ul></div>
+</div>

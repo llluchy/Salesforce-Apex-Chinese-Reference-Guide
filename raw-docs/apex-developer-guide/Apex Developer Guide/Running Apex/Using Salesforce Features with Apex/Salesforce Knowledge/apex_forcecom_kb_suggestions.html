@@ -1,0 +1,150 @@
+<a name="apex_forcecom_kb_suggestions"><!-- --></a><h1 class="helpHead1">Suggest Salesforce Knowledge Articles</h1><div class="body conbody">
+<div class="shortdesc">Provide users with shortcuts to navigate to relevant articles before they perform a
+        search. Call <samp class="codeph apex_code">Search.suggest(searchText, objectType,
+            options)</samp> to return a list of Salesforce Knowledge articles whose titles match a
+        user’s search query string. </div>
+
+    <p class="p">To return suggestions, enable Salesforce Knowledge. </p>
+
+    <div class="p">This Visualforce page has an input field for searching articles or accounts. When the user
+            presses the Suggest button, suggested records are displayed. If there are more than five
+            results, the More results button appears. To display more results, click the button.
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"SuggestionDemoController"</span>&gt;
+    <span class="tag">&lt;apex:form</span> &gt;
+        <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> mode=</span><span class="string">"edit"</span><span class="attribute"> id=</span><span class="string">"block"</span>&gt;
+            <span class="tag">&lt;h1</span>&gt;Article and Record Suggestions<span class="tag">&lt;/h1</span>&gt;
+            <span class="tag">&lt;apex:pageBlockSection</span> &gt;
+                <span class="tag">&lt;apex:pageBlockSectionItem</span> &gt;
+                    <span class="tag">&lt;apex:outputPanel</span> &gt;
+                        <span class="tag">&lt;apex:panelGroup</span> &gt;
+                            <span class="tag">&lt;apex:selectList</span><span class="attribute"> value=</span><span class="string">"{!objectType}"</span><span class="attribute"> size=</span><span class="string">"1"</span>&gt;
+                                <span class="tag">&lt;apex:selectOption</span><span class="attribute"> itemLabel=</span><span class="string">"Account"</span><span class="attribute"> itemValue=</span><span class="string">"Account"</span> /&gt;
+                                <span class="tag">&lt;apex:selectOption</span><span class="attribute"> itemLabel=</span><span class="string">"Article"</span><span class="attribute"> itemValue=</span><span class="string">"KnowledgeArticleVersion"</span> /&gt;
+                                <span class="tag">&lt;apex:actionSupport</span><span class="attribute"> event=</span><span class="string">"onchange"</span><span class="attribute"> rerender=</span><span class="string">"block"</span>/&gt;
+                            <span class="tag">&lt;/apex:selectList</span>&gt;
+                        <span class="tag">&lt;/apex:panelGroup</span>&gt;
+                        <span class="tag">&lt;apex:panelGroup</span> &gt;
+                            <span class="tag">&lt;apex:inputHidden</span><span class="attribute"> id=</span><span class="string">"nbResult"</span><span class="attribute"> value=</span><span class="string">"{!nbResult}"</span> /&gt;
+                            <span class="tag">&lt;apex:outputLabel</span><span class="attribute"> for=</span><span class="string">"searchText"</span>&gt;Search Text<span class="tag">&lt;/apex:outputLabel</span>&gt;
+                            &amp;nbsp;
+                            <span class="tag">&lt;apex:inputText</span><span class="attribute"> id=</span><span class="string">"searchText"</span><span class="attribute"> value=</span><span class="string">"{!searchText}"</span>/&gt;
+                            <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"suggestButton"</span><span class="attribute"> value=</span><span class="string">"Suggest"</span><span class="attribute"> action=</span><span class="string">"{!doSuggest}"</span> 
+                                               <span class="attribute"> rerender=</span><span class="string">"block"</span>/&gt;
+                            <span class="tag">&lt;apex:commandButton</span><span class="attribute"> id=</span><span class="string">"suggestMoreButton"</span><span class="attribute"> value=</span><span class="string">"More results..."</span><span class="attribute"> action=</span><span class="string">"{!doSuggestMore}"</span> 
+                                               <span class="attribute"> rerender=</span><span class="string">"block"</span><span class="attribute"> style=</span><span class="string">"{!IF(hasMoreResults, '', 'display: none;')}"</span>/&gt;
+                        <span class="tag">&lt;/apex:panelGroup</span>&gt;
+                    <span class="tag">&lt;/apex:outputPanel</span>&gt;
+                <span class="tag">&lt;/apex:pageBlockSectionItem</span>&gt;
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+            <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> title=</span><span class="string">"Results"</span><span class="attribute"> id=</span><span class="string">"results"</span><span class="attribute"> columns=</span><span class="string">"1"</span><span class="attribute"> rendered=</span><span class="string">"{!results.size&gt;0}"</span>&gt;
+                <span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!results}"</span><span class="attribute"> var=</span><span class="string">"w"</span><span class="attribute"> type=</span><span class="string">"1"</span>&gt;
+                    Id: <span class="formula">{!w.SObject['Id']}</span>
+                    <span class="tag">&lt;br</span> /&gt;
+                    <span class="tag">&lt;apex:panelGroup</span><span class="attribute"> rendered=</span><span class="string">"{!objectType=='KnowledgeArticleVersion'}"</span>&gt;
+                        Title: <span class="formula">{!w.SObject['Title']}</span>
+                    <span class="tag">&lt;/apex:panelGroup</span>&gt;
+                    <span class="tag">&lt;apex:panelGroup</span><span class="attribute"> rendered=</span><span class="string">"{!objectType!='KnowledgeArticleVersion'}"</span>&gt;
+                        Name: <span class="formula">{!w.SObject['Name']}</span>
+                    <span class="tag">&lt;/apex:panelGroup</span>&gt;
+                    <span class="tag">&lt;hr</span> /&gt;
+                <span class="tag">&lt;/apex:dataList</span>&gt;
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+            <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> id=</span><span class="string">"noresults"</span><span class="attribute"> rendered=</span><span class="string">"{!results.size==0}"</span>&gt;
+                No results
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+            <span class="tag">&lt;apex:pageBlockSection</span><span class="attribute"> rendered=</span><span class="string">"{!LEN(searchText)&gt;0}"</span>&gt;
+                Search text: <span class="formula">{!searchText}</span>
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+        <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+</div>
+
+    <div class="p">This code is the custom Visualforce controller for the
+            page:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> SuggestionDemoController {
+    
+    <span class="keyword">public</span> <span class="keyword">String</span> searchText;
+    <span class="keyword">public</span> <span class="keyword">String</span> language = <span class="string">'en_US'</span>;
+    <span class="keyword">public</span> <span class="keyword">String</span> objectType = <span class="string">'Account'</span>;
+    <span class="keyword">public</span> <span class="keyword">Integer</span> nbResult = 5;
+    <span class="keyword">public</span> Transient Search.SuggestionResults suggestionResults;
+
+    <span class="keyword">public</span> <span class="keyword">String</span> getSearchText() {
+        <span class="statement">return</span> searchText;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> setSearchText(<span class="keyword">String</span> s) {
+        searchText = s;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">Integer</span> getNbResult() {
+        <span class="statement">return</span> nbResult;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">void</span> setNbResult(<span class="keyword">Integer</span> n) {
+        nbResult = n;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">String</span> getLanguage() {
+        <span class="statement">return</span> language;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setLanguage(<span class="keyword">String</span> language) {
+        <span class="statement">this</span>.language = language;
+    }
+            
+    <span class="keyword">public</span> <span class="keyword">String</span> getObjectType() {
+        <span class="statement">return</span> objectType;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> setObjectType(<span class="keyword">String</span> objectType) {
+        <span class="statement">this</span>.objectType = objectType;
+    }
+
+    <span class="keyword">public</span> List&lt;Search.SuggestionResult&gt; getResults() {
+        <span class="statement">if</span> (suggestionResults == <span class="keyword">null</span>) {
+            <span class="statement">return</span> <span class="keyword">new</span> List&lt;Search.SuggestionResult&gt;();
+        }
+        
+        <span class="statement">return</span> suggestionResults.getSuggestionResults();
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">Boolean</span> getHasMoreResults() {
+        <span class="statement">if</span> (suggestionResults == <span class="keyword">null</span>) {
+            <span class="statement">return</span> <span class="keyword">false</span>;
+        }
+        <span class="statement">return</span> suggestionResults.hasMoreResults();
+    }
+    
+    <span class="keyword">public</span> PageReference doSuggest() {
+        nbResult = 5;
+        suggestAccounts();
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    
+    <span class="keyword">public</span> PageReference doSuggestMore() {
+        nbResult += 5;
+        suggestAccounts();
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    
+    <span class="keyword">private</span> <span class="keyword">void</span> suggestAccounts() {
+        Search.SuggestionOption options = <span class="keyword">new</span> Search.SuggestionOption();
+        Search.KnowledgeSuggestionFilter filters = <span class="keyword">new</span> Search.KnowledgeSuggestionFilter();
+        <span class="statement">if</span> (objectType==<span class="string">'KnowledgeArticleVersion'</span>) {
+            filters.setLanguage(language);
+            filters.setPublishStatus(<span class="string">'Online'</span>);
+        }
+        options.setFilter(filters);
+        options.setLimit(nbResult);
+        suggestionResults = Search.suggest(searchText, objectType, options);
+    }
+}</pre></div>
+</div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_search.htm" target="_blank" title="Search.suggest(searchQuery,sObjectType,suggestions) - HTML (New Window)">Search.suggest(searchQuery,sObjectType,suggestions)</a></div></li></ul>
+</div>
+</div>

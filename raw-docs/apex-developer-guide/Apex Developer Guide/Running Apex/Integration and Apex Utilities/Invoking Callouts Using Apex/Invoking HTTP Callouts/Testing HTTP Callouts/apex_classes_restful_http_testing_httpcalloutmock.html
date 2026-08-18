@@ -1,0 +1,115 @@
+<a name="apex_classes_restful_http_testing_httpcalloutmock"><!-- --></a><h1 class="helpHead1">Testing HTTP Callouts by Implementing the  HttpCalloutMock Interface</h1><div class="body refbody">
+        <div class="section">
+            <p class="p">Provide an implementation for the <samp class="codeph apex_code">HttpCalloutMock</samp> interface to specify the response sent in the <samp class="codeph apex_code">respond</samp> method, which the Apex runtime calls to
+                send a response for a callout.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> <var class="keyword varname">YourHttpCalloutMockImpl</var> <strong class="ph b">implements HttpCalloutMock</strong> {
+    <span class="keyword">public</span> HTTPResponse respond(HTTPRequest req) {
+        <span class="onelineComment">// Create a fake response.</span>
+        <span class="onelineComment">// Set response values, and </span>
+        <span class="onelineComment">// return response.</span>
+    }
+}</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+                <ul class="ul bulletList">
+                    <li class="li">The class that implements the <samp class="codeph apex_code">HttpCalloutMock</samp> interface can be either global or public.</li>
+
+                    <li class="li">You can annotate this class with <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_isTest.htm" title="Use the @IsTest annotation to define classes and methods that only contain code used for testing your app."><samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp></a> since it will be used only in test context.
+                        In this way, you can exclude it from your organization’s code size limit of
+                        6 MB.</li>
+
+                </ul>
+
+            </p>
+</div>
+</div></div></div></div>
+
+            <p class="p">Now that you have specified the values of the fake response, instruct the Apex
+                runtime to send this fake response by calling <samp class="codeph apex_code">Test.setMock</samp> in your test method. For the first argument, pass <samp class="codeph apex_code">HttpCalloutMock.<span class="keyword">class</span></samp>, and for the second
+                argument, pass a new instance of your interface implementation of <samp class="codeph apex_code">HttpCalloutMock</samp>, as follows:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> <var class="keyword varname">YourHttpCalloutMockImpl</var>());</pre></div>
+
+            <p class="p">After this point, if an HTTP callout is invoked in test context, the callout is not
+                made and you receive the mock response you specified in the
+                    <var class="keyword varname">respond</var> method implementation.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>To mock a callout if the code that performs the callout is in a managed package,
+                call <samp class="codeph apex_code">Test.setMock</samp> from a test method in the
+                same package with the same namespace.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">This is a full example that shows how to test an HTTP callout. The interface
+                implementation (<samp class="codeph apex_code">MockHttpResponseGenerator</samp>)
+                is listed first. It is followed by a class containing the test method and another
+                containing the method that the test calls. The <samp class="codeph apex_code">testCallout</samp> test method sets the mock callout mode by calling <samp class="codeph apex_code">Test.setMock</samp> before calling <samp class="codeph apex_code">getInfoFromExternalService</samp>. It then verifies
+                that the response returned is what the implemented <samp class="codeph apex_code">respond</samp> method sent. Save each class separately and run the test in
+                    <samp class="codeph apex_code">CalloutClassTest</samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MockHttpResponseGenerator <span class="keyword">implements</span> HttpCalloutMock {
+    <span class="onelineComment">// Implement this interface method</span>
+    <span class="keyword">public</span> HTTPResponse respond(HTTPRequest req) {
+        <span class="onelineComment">// Optionally, only send a mock response for a specific endpoint</span>
+        <span class="onelineComment">// and method.</span>
+        Assert.areEqual(<span class="string">'https://example.com/example/test'</span>, req.getEndpoint());
+        Assert.areEqual(<span class="string">'GET'</span>, req.getMethod());
+        
+        <span class="onelineComment">// Create a fake response</span>
+        HttpResponse res = <span class="keyword">new</span> HttpResponse();
+        res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+        res.setBody(<span class="string">'{"example":"test"}'</span>);
+        res.setStatusCode(200);
+        <span class="statement">return</span> res;
+    }
+}</pre></div>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CalloutClass {
+    <span class="keyword">public</span> <span class="keyword">static</span> HttpResponse getInfoFromExternalService() {
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(<span class="string">'https://example.com/example/test'</span>);
+        req.setMethod(<span class="string">'GET'</span>);
+        Http h = <span class="keyword">new</span> Http();
+        HttpResponse res = h.send(req);
+        <span class="statement">return</span> res;
+    }
+}</pre></div>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> CalloutClassTest {
+     <span class="keyword">@IsTest</span> <span class="keyword">static</span> <span class="keyword">void</span> testCallout() {
+        <span class="onelineComment">// Set mock callout class </span>
+        Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> MockHttpResponseGenerator());
+        
+        <span class="onelineComment">// Call method to test.</span>
+        <span class="onelineComment">// This causes a fake response to be sent</span>
+        <span class="onelineComment">// from the class that implements HttpCalloutMock. </span>
+        HttpResponse res = CalloutClass.getInfoFromExternalService();
+        
+        <span class="onelineComment">// Verify response received contains fake values</span>
+        Assert.areEqual(<span class="string">'application/json'</span>, res.getHeader(<span class="string">'Content-Type'</span>));
+        Assert.areEqual(<span class="string">'{"example":"test"}'</span>, res.getBody());
+        Assert.areEqual(200, res.getStatusCode());
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_httpcalloutmock.htm" target="_blank" title="Apex Reference Guide: HttpCalloutMock Interface - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: HttpCalloutMock Interface</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm" target="_blank" title="Apex Reference Guide: Test Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Test Class</a></div></li>
+</ul>
+</div>
+</div>

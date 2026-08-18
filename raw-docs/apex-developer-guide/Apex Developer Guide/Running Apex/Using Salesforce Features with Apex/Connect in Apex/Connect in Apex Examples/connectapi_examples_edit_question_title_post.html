@@ -1,0 +1,41 @@
+<a name="connectapi_examples_edit_question_title_post"><!-- --></a><h1 class="helpHead1">Edit a Question Title and Post</h1><div class="body refbody">
+<div class="shortdesc">Call a method to edit a question title and post.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_updateFeedElement" target="_blank"><samp class="codeph apex_code">updateFeedElement(communityId,
+          feedElementId, feedElement)</samp></a> to edit a question title and post.
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityId = Network.getNetworkId();
+
+<span class="onelineComment">// Get the last feed item created by the context user.</span>
+List&lt;FeedItem&gt; feedItems = [SELECT Id FROM FeedItem WHERE CreatedById = :UserInfo.getUserId() ORDER BY CreatedDate DESC];
+<span class="statement">if</span> (feedItems.isEmpty()) {
+    <span class="onelineComment">// Return null within anonymous apex.</span>
+    <span class="statement">return</span> <span class="keyword">null</span>;
+}
+<span class="keyword">String</span> feedElementId = feedItems[0].id;
+
+ConnectApi.FeedEntityIsEditable isEditable = ConnectApi.ChatterFeeds.isFeedElementEditableByMe(communityId, feedElementId);
+
+<span class="statement">if</span> (isEditable.isEditableByMe == <span class="keyword">true</span>){
+
+    ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+    ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+    ConnectApi.QuestionAndAnswersCapabilityInput questionAndAnswersCapabilityInput = <span class="keyword">new</span> ConnectApi.QuestionAndAnswersCapabilityInput();
+    ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+    ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+    messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+    textSegmentInput.text = <span class="string">'This is my edited question.'</span>;
+    messageBodyInput.messageSegments.add(textSegmentInput);
+
+    feedItemInput.body = messageBodyInput;
+    feedItemInput.capabilities = feedElementCapabilitiesInput;
+
+    feedElementCapabilitiesInput.questionAndAnswers = questionAndAnswersCapabilityInput;
+    questionAndAnswersCapabilityInput.questionTitle = <span class="string">'Where is my edited question?'</span>;
+
+    ConnectApi.FeedElement editedFeedElement = ConnectApi.ChatterFeeds.updateFeedElement(communityId, feedElementId, feedItemInput);
+}</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

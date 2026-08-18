@@ -1,0 +1,431 @@
+<a name="apex_class_compression_zipwriter"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">ZipWriter Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains methods to add zip entries, generate a zipped archive, and return the result as
+    an Apex blob.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_compression.htm" title="The Compression namespace provides classes and methods to create and extract zip files.">Compression</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">This sample code compresses email attachments into a single
+        file.</p>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Compression.ZipWriter writer = new Compression.ZipWriter();
+
+List&lt;id&gt; contentDocumentIds = new List&lt;id&gt;();
+
+// Add IDs of documents to be compressed to contentDocumentIds 
+
+for ( ContentVersion cv : [SELECT PathOnClient, Versiondata
+                           FROM ContentVersion
+                           WHERE ContentDocumentId IN :contentDocumentIds]) 
+{
+      writer.addEntry(cv.PathOnClient, cv.versiondata);
+}
+
+blob zipAttachment = writer.getArchive();
+
+Messaging.EmailFileAttachment efa = new Messaging.EmailFileAttachment();
+efa.setFileName('attachments.zip');
+efa.setBody(zipAttachment);
+
+List&lt;Messaging.EmailFileAttachment&gt; fileAttachments = new List&lt;Messaging.EmailFileAttachment&gt;();
+fileAttachments.add(efa);
+
+Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+
+// Set all the other email fields, such as addresses, subject, and body
+
+email.setFileAttachments(fileAttachments);
+
+Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });  
+</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_constructors">ZipWriter Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_methods">ZipWriter Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_compression_zipwriter_constructors">
+<a name="apex_compression_zipwriter_constructors"><!-- --></a>
+ <h2 class="helpHead2">ZipWriter Constructors</h2>
+
+ 
+ <div class="body refbody">
+  <div class="section">
+   <p class="p">The following are constructors for <samp class="codeph apex_code">ZipWriter</samp>.</p>
+
+  </div>
+
+  
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_ctor">ZipWriter()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">ZipWriter</samp>   class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_ctor">
+<a name="apex_compression_zipwriter_ctor"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">ZipWriter()</span></h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">ZipWriter</samp>
+  class.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> ZipWriter()</samp></p>
+
+  </div>
+
+ </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_compression_zipwriter_methods">
+<a name="apex_compression_zipwriter_methods"><!-- --></a><h2 class="helpHead2">ZipWriter Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">ZipWriter</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_addEntry">addEntry(name, data)</a></strong><br>
+Adds an entry to the zip file with the specified name and content.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_addEntry_2">addEntry(prototype)</a></strong><br>
+Adds a copy of the specified prototype entry to the zip file and includes details such as     the zip entry name, comment, last modification time, and content.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_addEntry_3">addEntry(name, comment, modTime, method, data)</a></strong><br>
+Adds an entry to the zip file with the specified name, comment, last modification time,     compression method, and content. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getArchive">getArchive()</a></strong><br>
+Compresses the zip entries and generates a ZIP archive.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getEntries">getEntries()</a></strong><br>
+Gets a list of all the entries in the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getEntry">getEntry(name)</a></strong><br>
+Gets the entry with the specified name from the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getEntryNames">getEntryNames()</a></strong><br>
+Gets a set of all the zip entry names in the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getLevel">getLevel()</a></strong><br>
+Gets the compression level of the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_getMethod">getMethod()</a></strong><br>
+Gets the compression method of the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_removeEntry">removeEntry(name)</a></strong><br>
+Removes the entry with the specified name from the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_setLevel">setLevel(level)</a></strong><br>
+Sets the compression level of the zip file.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipwriter.htm#apex_compression_zipwriter_setMethod">setMethod(method)</a></strong><br>
+Sets the compression method for the zip file.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_addEntry">
+<a name="apex_compression_zipwriter_addEntry"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">addEntry(name, data)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Adds an entry to the zip file with the specified name and content.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.ZipEntry addEntry(string name, blob
+        data)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">string</a> The name of the zip entry.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">blob</a> The content of the zip entry.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a></p>
+<p class="p">Zip entry added to the zip file.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_addEntry_2">
+<a name="apex_compression_zipwriter_addEntry_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">addEntry(prototype)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Adds a copy of the specified prototype entry to the zip file and includes details such as
+    the zip entry name, comment, last modification time, and content.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.ZipEntry addEntry(compression.ZipEntry
+          prototype)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">prototype</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a> Details of the entry to be added to the zip file.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_addEntry_3">
+<a name="apex_compression_zipwriter_addEntry_3"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">addEntry(name, comment, modTime, method, data)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Adds an entry to the zip file with the specified name, comment, last modification time,
+    compression method, and content. </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public Compression.ZipEntry addEntry(String name, String comment,
+          Datetime modTime, Compression.Method method, Blob data)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The name of the zip entry.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">comment</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The comment about the zip entry.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">modTime</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a> The last modification timestamp of the zip entry.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_compression_Method.htm" title="Specifies the compression method for the zip entries.">Compression.Method</a> The compression method of the zip entry, which is either <samp class="codeph ">DEFLATED</samp> or <samp class="codeph ">STORED</samp>.</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">data</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a> The content of the zip entry.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a></p>
+
+      <p class="p">Zip entry added to the zip file.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getArchive">
+<a name="apex_compression_zipwriter_getArchive"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getArchive()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Compresses the zip entries and generates a ZIP archive.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public blob getArchive()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">blob</a></p>
+<p class="p">Apex blob that contains the bytes of the compression operation.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getEntries">
+<a name="apex_compression_zipwriter_getEntries"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getEntries()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets a list of all the entries in the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;Compression.ZipEntry&gt; getEntries()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getEntry">
+<a name="apex_compression_zipwriter_getEntry"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getEntry(name)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the entry with the specified name from the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public compression.ZipEntry getEntry(string name)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">string</a> Name of the zip entry to be retrieved.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_compression_zipentry.htm#apex_class_compression_zipentry" title="Contains methods to get and set information about a zip file entry.">Compression.ZipEntry</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getEntryNames">
+<a name="apex_compression_zipwriter_getEntryNames"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">getEntryNames()</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Gets a set of all the zip entry names in the zip file.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public Set&lt;String&gt; getEntryNames()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set&lt;String&gt;</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getLevel">
+<a name="apex_compression_zipwriter_getLevel"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getLevel()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the compression level of the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.Level getLevel()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_compression_Level.htm" title="Specifies the compression level for creating a zip file.">Compression.Level</a></p>
+<p class="p">Uses the <samp class="codeph apex_code">Level</samp> enum values to indicate the compression
+        level as <samp class="codeph ">BEST_COMPRESSION</samp>, <samp class="codeph ">BEST_SPEED</samp>, <samp class="codeph ">DEFAULT_LEVEL</samp>, or <samp class="codeph ">NO_COMPRESSION</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_getMethod">
+<a name="apex_compression_zipwriter_getMethod"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getMethod()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Gets the compression method of the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.Method getMethod()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_compression_Method.htm" title="Specifies the compression method for the zip entries.">Compression.Method</a></p>
+<p class="p">Uses the <samp class="codeph apex_code">Method</samp> enum values to indicate the compression
+        method as <samp class="codeph ">DEFLATED</samp> or <samp class="codeph ">STORED</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_removeEntry">
+<a name="apex_compression_zipwriter_removeEntry"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">removeEntry(name)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Removes the entry with the specified name from the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Void removeEntry(string name)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">string</a> Name of the zip entry to be removed. If an entry with this name isn’t found, the method throws a
+              <samp class="codeph apex_code">ZipException</samp> exception.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_setLevel">
+<a name="apex_compression_zipwriter_setLevel"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setLevel(level)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the compression level of the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.ZipWriter setLevel(compression.Level
+        value)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_compression_Level.htm" title="Specifies the compression level for creating a zip file.">Compression.Level</a> Uses the <samp class="codeph apex_code">Level</samp> enum to set the compression level.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_compression_zipwriter" title="Contains methods to add zip entries, generate a zipped archive, and return the result as an Apex blob.">Compression.ZipWriter</a></p>
+<p class="p">Returns the zip file set with the specified compression level.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_compression_zipwriter_setMethod">
+<a name="apex_compression_zipwriter_setMethod"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">setMethod(method)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the compression method for the zip file.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Compression.ZipWriter setMethod(compression.Method
+          value)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_compression_Method.htm" title="Specifies the compression method for the zip entries.">Compression.Method</a> Uses the <samp class="codeph apex_code">Method</samp> enum to set the compression method.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_compression_zipwriter" title="Contains methods to add zip entries, generate a zipped archive, and return the result as an Apex blob.">Compression.ZipWriter</a></p>
+<p class="p">Returns the zip file set with the specified compression method.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,66 @@
+<a name="connectapi_features_action_links_use_cases"><!-- --></a><h1 class="helpHead1">Action Links Use Case</h1><div class="body conbody">
+<div class="shortdesc">Use action links to integrate Salesforce and third-party services with a feed. An
+    action link can make an HTTP request to a Salesforce or third-party API. An action link can also
+    download a file or open a web page. This topic contains an example use case.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Start a Video Chat from the Feed</h2>
+
+      
+      <p class="p">Suppose that you work as a Salesforce developer for a company that has a Salesforce org and
+        an account with a fictional company called “VideoChat.” Users have been saying they want to
+        do more from their mobile devices. You’re asked to create an app that lets users create and
+        join video chats directly from their mobile device. </p>
+
+      <div class="p">When a user opens the VideoChat app in Salesforce, they’re asked to name the video chat
+        room and invite either a group or individual users to the video chat room. When the user
+        clicks <strong class="ph uicontrol">OK</strong>, the VideoChat app launches the video chat room and posts a
+        feed item to the selected group or users asking them to <strong class="ph uicontrol">Please join the video
+          chat</strong> by clicking an action link labeled <strong class="ph uicontrol">Join</strong>. When an
+        invitee clicks <strong class="ph uicontrol">Join</strong>, the action link opens a web page containing the
+        video chat room.<div class="fig fignone">
+          <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_join.png&folder=apexcode" alt="Approve and Reject action links"></span></div>
+        </div>
+</div>
+
+      <div class="p">As a developer thinking about how to create the action link URL, you come up with these
+        requirements: <ol class="ol enumList">
+          <li class="li">When a user clicks <strong class="ph uicontrol">Join</strong>, the action link URL has to open the
+            video chat room they were invited to.</li>
+
+          <li class="li">The action link URL has to tell the video chat room who’s joining.</li>
+
+        </ol>
+ To dynamically create the action link URLs, you create an action link template in
+        Setup.</div>
+
+      <p class="p">For the first requirement, you create a <samp class="codeph nolang">{!Bindings.roomId}</samp> binding variable in the <span class="keyword parmname">Action URL</span>
+        template field. When the user clicks <strong class="ph uicontrol">OK</strong> to create the video chat
+        room, your Apex code generates a unique room ID. The Apex code uses that unique room ID as
+        the binding variable value when it instantiates the action link group, associates it with
+        the feed item, and posts the feed item.</p>
+
+      <p class="p">For the second requirement, the action link must include the user ID. Action links support
+        a predefined set of context variables. When an action link is invoked, Salesforce
+        substitutes the variables with values. Context variables include information about who
+        clicked the action link and in what context it was invoked. You decide to include a <samp class="codeph nolang">{!userId}</samp> context variable in the <span class="keyword parmname">Action
+          URL</span> so that when a user clicks the action link in the feed, Salesforce
+        substitutes the user’s ID and the video chat room knows who’s entering.</p>
+
+      <p class="p">This is the action link template for the <strong class="ph uicontrol">Join</strong> action link.<div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_join_template.png&folder=apexcode" alt="Context variable and binding variables in Action URL field in Setup. "></span></div></p>
+
+      <p class="p">Every action link must be associated with an action link group. The group defines
+        properties shared by all the action links associated with it. Even if you’re using a single
+        action link (as in this example) it must be associated with a group. The first field of the
+        action link template is <span class="keyword parmname">Action Link Group Template</span>, which in this case
+        is <strong class="ph uicontrol">Video Chat</strong>, which is the action link group template the action
+        link template is associated with.<div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_join_group_template.png&folder=apexcode" alt="action link group template"></span></div>.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/connectapi_features_action_links_overview.htm" title="Learn about Apex action links security, authentication, labels, and errors.">Action Links Overview, Authentication, and Security</a></div></li></ul>
+</div>
+</div>

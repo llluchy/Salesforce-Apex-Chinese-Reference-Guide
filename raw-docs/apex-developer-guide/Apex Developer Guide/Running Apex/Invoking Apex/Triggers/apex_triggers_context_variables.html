@@ -1,0 +1,267 @@
+<a name="apex_triggers_context_variables"><!-- --></a><h1 class="helpHead1">Trigger Context Variables</h1><div class="body conbody">
+<div class="shortdesc">All triggers define implicit variables that allow developers to access run-time
+        context. These variables are contained in the <samp class="codeph nolang">System.Trigger</samp> class.</div>
+
+        <p class="p" id="trigger_variables_intro"><a name="trigger_variables_intro"><!-- --></a>Here are the trigger context variables.</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <thead class="thead sorted" align="left">
+                    <tr>
+                        <th class="featureTableHeader vertical-align-top " id="d139416e49">Variable</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d139416e52">Usage</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isExecuting</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the current
+                            context for the Apex code is a trigger, not a Visualforce page, a web
+                            service, or an <samp class="codeph nolang">executeanonymous()</samp>
+                            API call.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isInsert</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired due to an insert operation, from the Salesforce user
+                            interface, Apex, or the API.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isUpdate</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired due to an update operation, from the Salesforce user
+                            interface, Apex, or the API.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isDelete</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired due to a delete operation, from the Salesforce user interface,
+                            Apex, or the API.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isBefore</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired before any record was saved.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isAfter</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired after all records were saved.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">isUndelete</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if this trigger
+                            was fired after a record is recovered from the Recycle Bin. This
+                            recovery can occur after an undelete operation from the Salesforce user
+                            interface, Apex, or the API.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code"><span class="keyword">new</span></samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns a list of the new versions of the sObject records.<p class="p">This
+                                sObject list is only available in <samp class="codeph nolang">insert</samp>, <samp class="codeph nolang">update</samp>,
+                                and <samp class="codeph nolang">undelete</samp> triggers, and the
+                                records can only be modified in <samp class="codeph nolang">before</samp> triggers.</p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">newMap</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">A map of IDs to the new versions of the sObject records.<p class="p">This map
+                                is only available in <samp class="codeph nolang">before
+                                    update</samp>, <samp class="codeph nolang">after
+                                    insert</samp>, <samp class="codeph nolang">after
+                                    update</samp>, and <samp class="codeph nolang">after
+                                    undelete</samp> triggers. </p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">old</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns a list of the old versions of the sObject records.<p class="p">This
+                                sObject list is only available in <samp class="codeph nolang">update</samp> and <samp class="codeph nolang">delete</samp>
+                                triggers.</p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">oldMap</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">A map of IDs to the old versions of the sObject records.<p class="p">This map
+                                is only available in <samp class="codeph nolang">update</samp> and
+                                    <samp class="codeph nolang">delete</samp> triggers.
+                            </p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">operationType</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">Returns an enum of type <samp class="codeph nolang">System.TriggerOperation</samp> corresponding to the current
+                                operation.<p class="p">Possible values of the System.TriggerOperation enum
+                                are: <samp class="codeph nolang">BEFORE_INSERT</samp>, <samp class="codeph nolang">BEFORE_UPDATE</samp>, <samp class="codeph nolang">BEFORE_DELETE</samp>,<samp class="codeph nolang">AFTER_INSERT</samp>, <samp class="codeph nolang">AFTER_UPDATE</samp>, <samp class="codeph nolang">AFTER_DELETE</samp>, and <samp class="codeph nolang">AFTER_UNDELETE</samp>. If you vary your
+                                programming logic based on different trigger types, consider using
+                                the <samp class="codeph apex_code"><span class="statement">switch</span></samp> statement with
+                                different permutations of unique trigger execution enum
+                            states.</p>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d139416e49" data-title="Variable"><samp class="codeph apex_code">size</samp></td>
+
+                        <td class="entry" headers="d139416e52" data-title="Usage">The number of records processed in a trigger invocation. DML
+                            operations that include over 200 records are processed in batches, and
+                            the trigger is invoked for each batch. <samp class="codeph apex_code">Trigger.size</samp> includes only the number of records in the
+                            current batch, not the total number of records in the DML
+                            operation.</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <div class="box message info" id="trigger_variables_note">
+<a name="trigger_variables_note"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The record firing a trigger can include an invalid field
+            value, such as a formula that divides by zero. In this case, the field value is set to
+                <samp class="codeph apex_code"><span class="keyword">null</span></samp> in these variables: <ul class="ul bulletList">
+                <li class="li"><samp class="codeph nolang">new</samp></li>
+
+                <li class="li"><samp class="codeph apex_code">newMap</samp></li>
+
+                <li class="li"><samp class="codeph apex_code">old</samp></li>
+
+                <li class="li"><samp class="codeph apex_code">oldMap</samp></li>
+
+            </ul>
+</p>
+</div>
+</div></div></div>
+</div>
+
+        <p class="p" id="trigger_variables_ex_intro"><a name="trigger_variables_ex_intro"><!-- --></a>For example, in this simple trigger, <samp class="codeph nolang">Trigger.new</samp> is a list of sObjects and can be iterated
+            over in a <samp class="codeph nolang">for</samp> loop. It can also be used as a bind
+            variable in the <samp class="codeph apex_code">IN</samp> clause of a SOQL query.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="trigger_variables_ex"><a name="trigger_variables_ex"><!-- --></a><span class="keyword">trigger</span> SimpleTrigger on Account(after <span class="statement">insert</span>) {
+  <span class="statement">for</span> (Account a : Trigger.<span class="keyword">new</span>) {
+    <span class="onelineComment">// Iterate over each sObject</span>
+  }
+
+  <span class="onelineComment">// This single query finds every contact that is associated with any of the</span>
+  <span class="onelineComment">// triggering accounts. Note that although Trigger.new is a collection of</span>
+  <span class="onelineComment">// records, when used as a bind variable in a SOQL query, Apex automatically</span>
+  <span class="onelineComment">// transforms the list of records into a list of corresponding Ids.</span>
+  Contact[] cons = [
+    SELECT LastName
+    FROM Contact
+    WHERE AccountId IN :Trigger.<span class="keyword">new</span>
+    WITH USER_MODE
+  ];
+}</pre></div>
+
+        <p class="p" id="trigger_variables_ex2_intro"><a name="trigger_variables_ex2_intro"><!-- --></a>This trigger uses Boolean context variables such as
+                <samp class="codeph apex_code">Trigger.isBefore</samp> and <samp class="codeph apex_code">Trigger.isDelete</samp> to define code that only executes
+            for specific trigger conditions:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="trigger_variables_ex2"><a name="trigger_variables_ex2"><!-- --></a><span class="keyword">trigger</span> MyAccountTrigger on Account(
+  before <span class="statement">delete</span>,
+  before <span class="statement">insert</span>,
+  before <span class="statement">update</span>,
+  after <span class="statement">delete</span>,
+  after <span class="statement">insert</span>,
+  after <span class="statement">update</span>
+) {
+  <span class="statement">if</span> (Trigger.isBefore) {
+    <span class="statement">if</span> (Trigger.isDelete) {
+      <span class="onelineComment">// In a before delete trigger, the trigger accesses the records that will be</span>
+      <span class="onelineComment">// deleted with the Trigger.old list.</span>
+      <span class="statement">for</span> (Account a : Trigger.old) {
+        <span class="statement">if</span> (a.name != <span class="string">'okToDelete'</span>) {
+          a.addError(<span class="string">'You can\'t delete this record!'</span>);
+        }
+      }
+    } <span class="statement">else</span> {
+      <span class="onelineComment">// In before insert or before update triggers, the trigger accesses the new records</span>
+      <span class="onelineComment">// with the Trigger.new list.</span>
+      <span class="statement">for</span> (Account a : Trigger.<span class="keyword">new</span>) {
+        <span class="statement">if</span> (a.name == <span class="string">'bad'</span>) {
+          a.name.addError(<span class="string">'Bad name'</span>);
+        }
+      }
+      <span class="statement">if</span> (Trigger.isInsert) {
+        <span class="statement">for</span> (Account a : Trigger.<span class="keyword">new</span>) {
+          Assert.areEqual(<span class="string">'xxx'</span>, a.accountNumber);
+          Assert.areEqual(<span class="string">'industry'</span>, a.industry);
+          Assert.areEqual(100, a.numberofemployees);
+          Assert.areEqual(100.0, a.annualrevenue);
+          a.accountNumber = <span class="string">'yyy'</span>;
+        }
+
+        <span class="onelineComment">// If the trigger is not a before trigger, it must be an after trigger.</span>
+      } <span class="statement">else</span> {
+        <span class="statement">if</span> (Trigger.isInsert) {
+          List&lt;Contact&gt; contacts = <span class="keyword">new</span> List&lt;Contact&gt;();
+          <span class="statement">for</span> (Account a : Trigger.<span class="keyword">new</span>) {
+            <span class="statement">if</span> (a.Name == <span class="string">'makeContact'</span>) {
+              contacts.add(<span class="keyword">new</span> Contact(LastName = a.Name, AccountId = a.Id));
+            }
+          }
+          <span class="statement">insert</span> <span class="statement">as</span> user contacts;
+        }
+      }
+    }
+  }
+}</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_syntax.htm" title="Trigger Syntax">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_context_variables_considerations.htm" title="Context Variable Considerations">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_enum_System_TriggerOperation.htm" target="_blank" title="Apex Reference Guide: TriggerOperation Enum - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: TriggerOperation Enum</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_switch.htm" title="Apex provides a switch statement that tests whether an expression matches one of several values and branches accordingly.">Switch Statements</a></div></li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,140 @@
+<a name="apex_continuation_process"><!-- --></a><h1 class="helpHead1">Process for Using Asynchronous Callouts</h1><div class="body conbody">
+<div class="shortdesc">To use asynchronous callouts, create a <samp class="codeph apex_code">Continuation</samp> object in an action method of a controller, and implement a callback
+    method.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Invoking an Asynchronous Callout in an Action Method</h2>
+
+      
+      <p class="p">To invoke an asynchronous callout, call the external service by using a <samp class="codeph apex_code">Continuation</samp> instance in your Visualforce action method.
+        When you create a continuation, you can specify a timeout value and the name of the callback
+        method. For example, the following creates a continuation with a 60-second timeout and a
+        callback method name of <span class="keyword parmname">processResponse</span>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Continuation cont = <span class="keyword">new</span> Continuation(60);
+cont.continuationMethod = <span class="string">'processResponse'</span>;</pre></div>
+
+      <p class="p">Next, associate the <samp class="codeph apex_code">Continuation</samp> object to an
+        external callout. To do so, create the HTTP request, and then add this request to the
+        continuation as follows:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> requestLabel = cont.addHttpRequest(request);</pre></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This process is based on making callouts with the HttpRequest class. For an example that
+        uses a WSDL-based class, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_callout_soap.htm" title="In addition to HttpRequest-based callouts, asynchronous callouts are supported in Web service calls that are made from WSDL-generated classes. The process of making asynchronous callouts from a WSDL-generated class is similar to the process for using the HttpRequest class.">Making an Asynchronous Callout from an Imported WSDL</a>.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">The method that invokes the callout (the action method) must return the <samp class="codeph apex_code">Continuation</samp> object to instruct Visualforce to suspend the
+        current request after the system sends the callout and waits for the callout response. The
+          <samp class="codeph apex_code">Continuation</samp> object holds the details of the
+        callout to be executed.</p>
+
+      <p class="p">This is the signature of the method that invokes the callout. The Object return type
+        represents a <samp class="codeph apex_code">Continuation</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">Object</span> <var class="keyword varname">calloutActionMethodName</var>()</pre></div>
+
+    </div>
+
+  <div class="section">
+<h2 class="helpHead2">Defining a Callback Method</h2>
+
+      
+      <p class="p">The response is returned after the external service finishes processing the callout. You
+        can specify a callback method for asynchronous execution after the callout returns. This
+        callback method must be defined in the controller class where the callout invocation method
+        is defined. You can define a callback method to process the returned response, such as
+        retrieving the response for display on a Visualforce page.</p>
+
+      <p class="p">The callback method doesn’t take any arguments and has this signature.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">Object</span> <var class="keyword varname">callbackMethodName</var>()</pre></div>
+
+      <p class="p">The Object return type represents a <samp class="codeph apex_code">Continuation</samp>, a
+          <samp class="codeph apex_code">PageReference</samp>, or <samp class="codeph apex_code"><span class="keyword">null</span></samp>. To render the original Visualforce page and finish the Visualforce
+        request, return <samp class="codeph apex_code"><span class="keyword">null</span></samp> in the callback method.</p>
+
+      <p class="p">If the action method uses JavaScript remoting (is annotated with <samp class="codeph apex_code"><span class="keyword">@RemoteAction</span></samp>), the callback method must be static and has
+        the following supported signatures.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Object</span> <var class="keyword varname">callbackMethodName</var>(List&lt; <span class="keyword">String</span>&gt; <var class="keyword varname">labels</var>, <span class="keyword">Object</span> <var class="keyword varname">state</var>)</pre></div>
+
+      <p class="p">Or:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Object</span> <var class="keyword varname">callbackMethodName</var>(<span class="keyword">Object</span> <var class="keyword varname">state</var>)</pre></div>
+
+      <p class="p">The <var class="keyword varname">labels</var> parameter is supplied by the system when it invokes the
+        callback method and holds the labels associated with the callout requests made. The
+          <var class="keyword varname">state</var> parameter is supplied by setting the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Continuation.htm#apex_System_Continuation_state" target="_blank">Continuation.state</a> property in the controller.</p>
+
+      <p class="p">This table lists the return values for the callback method. Each return value corresponds
+        to a different behavior.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Possible Return Values for the Callback Method</span></caption>
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d22045e194">Callback Method Return Value</th>
+
+              <th class="featureTableHeader  " id="d22045e197">Request Lifecycle and Outcome</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d22045e194" data-title="Callback Method Return Value"><samp class="codeph apex_code"><span class="keyword">null</span></samp></td>
+
+              <td class="entry" headers="d22045e197" data-title="Request Lifecycle and Outcome">The system finishes the Visualforce page request and renders the original
+                Visualforce page (or a portion of it).</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d22045e194" data-title="Callback Method Return Value"><samp class="codeph apex_code">PageReference</samp></td>
+
+              <td class="entry" headers="d22045e197" data-title="Request Lifecycle and Outcome">The system finishes the Visualforce page request and redirects to a new
+                Visualforce page.<p class="p">(Use query parameters in the <samp class="codeph apex_code">PageReference</samp> to pass the results of the <samp class="codeph apex_code">Continuation</samp> to the new page.)</p>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d22045e194" data-title="Callback Method Return Value"><samp class="codeph apex_code">Continuation</samp></td>
+
+              <td class="entry" headers="d22045e197" data-title="Request Lifecycle and Outcome">The system suspends the Visualforce request again and waits for the response of
+                a new callout. Return a new <samp class="codeph apex_code">Continuation</samp> in
+                the callback method to chain asynchronous callouts.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <div class="box message info" id="omitting_callback_method">
+<a name="omitting_callback_method"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If the <samp class="codeph apex_code">continuationMethod</samp> property isn’t set for a continuation, the same action method
+        that made the callout is called again when the callout response returns.</p>
+</div>
+</div></div></div>
+</div>
+
+    </div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Continuation.htm" target="_blank" title="Apex Reference Guide: Continuation Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Continuation Class</a></div></li></ul>
+</div>
+</div>

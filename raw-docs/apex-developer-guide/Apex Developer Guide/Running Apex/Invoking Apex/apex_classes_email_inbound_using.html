@@ -1,0 +1,262 @@
+<a name="apex_classes_email_inbound_using"><!-- --></a><h1 class="helpHead1">Using the InboundEmail Object</h1><div class="body">
+<div class="shortdesc">For every email the Apex email service domain receives, Salesforce creates a separate
+        InboundEmail object that contains the contents and attachments of that email. You can use
+        Apex classes that implement the <samp class="codeph apex_code">Messaging.InboundEmailHandler</samp> interface to handle an inbound email message.
+        Using the <samp class="codeph apex_code">handleInboundEmail</samp> method in that class,
+        you can access an InboundEmail object to retrieve the contents, headers, and attachments of
+        inbound email messages, as well as perform many functions.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example 1: Create Tasks for Contacts</h2>
+
+            
+            <p class="p">The following is an example of how you can look up a contact based on the inbound
+                email address and create a new task.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CreateTaskEmailExample <span class="keyword">implements</span> Messaging.InboundEmailHandler {
+ 
+  <span class="keyword">public</span> Messaging.InboundEmailResult handleInboundEmail(Messaging.inboundEmail email, 
+                                                       Messaging.InboundEnvelope env){
+ 
+    <span class="onelineComment">// Create an InboundEmailResult object for returning the result of the </span>
+    <span class="onelineComment">// Apex Email Service</span>
+    Messaging.InboundEmailResult result = <span class="keyword">new</span> Messaging.InboundEmailResult();
+  
+    <span class="keyword">String</span> myPlainText= <span class="string">''</span>;
+    
+    <span class="onelineComment">// Add the email plain text into the local variable </span>
+    myPlainText = email.plainTextBody;
+   
+    <span class="onelineComment">// New Task object to be created</span>
+    Task[] newTask = <span class="keyword">new</span> Task[0];
+   
+    <span class="onelineComment">// Try to look up any contacts based on the email from address</span>
+    <span class="onelineComment">// If there is more than one contact with the same email address,</span>
+    <span class="onelineComment">// an exception will be thrown and the catch statement will be called.</span>
+    <span class="statement">try</span> {
+      Contact vCon = [SELECT Id, Name, Email
+        FROM Contact
+        WHERE Email = :email.fromAddress
+        WITH USER_MODE
+        LIMIT 1];
+      
+      <span class="onelineComment">// Add a new Task to the contact record we just found above.</span>
+      newTask.add(<span class="keyword">new</span> Task(Description =  myPlainText,
+           Priority = <span class="string">'Normal'</span>,
+           Status = <span class="string">'Inbound Email'</span>,
+           Subject = email.subject,
+           IsReminderSet = <span class="keyword">true</span>,
+           ReminderDateTime = System.now()+1,
+           WhoId =  vCon.Id));
+     
+     <span class="onelineComment">// Insert the new Task </span>
+     <span class="statement">insert</span> <span class="statement">as</span> user newTask;    
+     
+     System.debug(<span class="string">'New Task Object: '</span> + newTask );   
+    }
+    <span class="onelineComment">// If an exception occurs when the query accesses </span>
+    <span class="onelineComment">// the contact record, a QueryException is called.</span>
+    <span class="onelineComment">// The exception is written to the Apex debug log.</span>
+   <span class="statement">catch</span> (QueryException e) {
+       System.debug(<span class="string">'Query Issue: '</span> + e);
+   }
+   
+   <span class="onelineComment">// Set the result to true. No need to send an email back to the user </span>
+   <span class="onelineComment">// with an error message</span>
+   result.success = <span class="keyword">true</span>;
+   
+   <span class="onelineComment">// Return the result for the Apex Email Service</span>
+   <span class="statement">return</span> result;
+  }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example 2: Handle Unsubscribe Email</h2>
+
+            
+            <p class="p">Companies that send marketing email to their customers and prospects must provide a
+                way to let the recipients unsubscribe. The following is an example of how an email
+                service can process unsubscribe requests. The code searches the subject line of
+                inbound email for the word “unsubscribe.” If the word is found, the
+                code finds all contacts and leads that match the From email address and sets the
+                    <span class="keyword parmname">Email Opt Out</span> field (<samp class="codeph apex_code">HasOptedOutOfEmail</samp>) to True. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> unsubscribe <span class="keyword">implements</span> Messaging.inboundEmailHandler{
+
+    <span class="keyword">public</span> Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, 
+                         Messaging.InboundEnvelope env ) {
+    
+        <span class="onelineComment">// Create an inboundEmailResult object for returning </span>
+        <span class="onelineComment">// the result of the email service.</span>
+        Messaging.InboundEmailResult result = <span class="keyword">new</span> Messaging.InboundEmailResult();
+         
+        <span class="onelineComment">// Create contact and lead lists to hold all the updated records.</span>
+        List&lt;Contact&gt; lc = <span class="keyword">new</span> List &lt;contact&gt;();
+        List&lt;Lead&gt; ll = <span class="keyword">new</span> List &lt;lead&gt;();
+         
+        <span class="onelineComment">// Convert the subject line to lower case so the program can match on lower case.</span>
+        <span class="keyword">String</span> mySubject = email.subject.toLowerCase();
+        <span class="onelineComment">// The search string used in the subject line.</span>
+        <span class="keyword">String</span> s = <span class="string">'unsubscribe'</span>;
+         
+        <span class="onelineComment">// Check the variable to see if the word "unsubscribe" was found in the subject line. </span>
+        <span class="keyword">Boolean</span> unsubMe;
+        <span class="onelineComment">// Look for the word "unsubcribe" in the subject line. </span>
+        <span class="onelineComment">// If it is found, return true; otherwise, return false.</span>
+        unsubMe = mySubject.contains(s);
+         
+         <span class="onelineComment">// If unsubscribe is found in the subject line, enter the IF statement.</span>
+         
+        <span class="statement">if</span> (unsubMe == <span class="keyword">true</span>) {
+            
+            <span class="statement">try</span> {
+               
+            <span class="onelineComment">// Look up all contacts with a matching email address.</span>
+               
+            <span class="statement">for</span> (Contact c : [SELECT Id, Name, Email, HasOptedOutOfEmail
+                          FROM Contact
+                          WHERE Email = :env.fromAddress
+                          AND hasOptedOutOfEmail = <span class="keyword">false</span>
+                          WITH USER_MODE
+                          LIMIT 100]) {
+                          
+                <span class="onelineComment">// Add all the matching contacts into the list.   </span>
+                c.hasOptedOutOfEmail = <span class="keyword">true</span>;
+                lc.add(c);
+            }
+            <span class="onelineComment">// Update all of the contact records.</span>
+            <span class="statement">update</span> <span class="statement">as</span> user lc;
+        }
+        <span class="statement">catch</span> (System.QueryException e) {
+            System.debug(<span class="string">'Contact Query Issue: '</span> + e);
+        }   
+        
+        <span class="statement">try</span> {
+            <span class="onelineComment">// Look up all leads matching the email address.</span>
+            <span class="statement">for</span> (Lead l : [SELECT Id, Name, Email, HasOptedOutOfEmail
+                     FROM Lead
+                     WHERE Email = :env.fromAddress
+                     AND isConverted = <span class="keyword">false</span>
+                     AND hasOptedOutOfEmail = <span class="keyword">false</span>
+                     WITH USER_MODE
+                     LIMIT 100]) {
+                <span class="onelineComment">// Add all the leads to the list.       </span>
+                l.hasOptedOutOfEmail = <span class="keyword">true</span>;
+                ll.add(l);
+                   
+                System.debug(<span class="string">'Lead Object: '</span> + l);   
+            } 
+            <span class="onelineComment">// Update all lead records in the query.</span>
+            <span class="statement">update</span> <span class="statement">as</span> user ll;
+        }
+        
+        <span class="statement">catch</span> (System.QueryException e) {
+            System.debug(<span class="string">'Lead Query Issue: '</span> + e);
+        }   
+        
+        System.debug(<span class="string">'Found the unsubscribe word in the subject line.'</span>);
+         } 
+         <span class="statement">else</span> {
+            System.debug(<span class="string">'No Unsuscribe word found in the subject line.'</span> );
+         }
+        <span class="onelineComment">// Return True and exit.</span>
+        <span class="onelineComment">// True confirms program is complete and no emails </span>
+        <span class="onelineComment">// should be sent to the sender of the unsubscribe request. </span>
+        result.success = <span class="keyword">true</span>;
+        <span class="statement">return</span> result;
+    }   
+}</pre></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> unsubscribeTest {
+    <span class="onelineComment">// The following test methods provide adequate code coverage </span>
+    <span class="onelineComment">// for the unsubscribe email class.</span>
+    <span class="onelineComment">// There are two methods, one that does the testing</span>
+    <span class="onelineComment">// with a valid "unsubcribe" in the subject line</span>
+    <span class="onelineComment">// and one the does not contain "unsubscribe" in the</span>
+    <span class="onelineComment">// subject line.        </span>
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testUnsubscribe() {
+    
+       <span class="onelineComment">// Create a new email and envelope object.</span>
+       Messaging.InboundEmail email = <span class="keyword">new</span> Messaging.InboundEmail() ;
+       Messaging.InboundEnvelope env    = <span class="keyword">new</span> Messaging.InboundEnvelope();
+    
+       <span class="onelineComment">// Create a new test lead and insert it in the test method.</span>
+       Lead l = <span class="keyword">new</span> lead(firstName=<span class="string">'John'</span>, 
+                lastName=<span class="string">'Smith'</span>,
+                Company=<span class="string">'Salesforce'</span>, 
+                Email=<span class="string">'user@acme.com'</span>, 
+                HasOptedOutOfEmail=<span class="keyword">false</span>);
+       <span class="statement">insert</span> l;
+    
+       <span class="onelineComment">// Create a new test contact and insert it in the test method.</span>
+       Contact c = <span class="keyword">new</span> Contact(firstName=<span class="string">'john'</span>, 
+                    lastName=<span class="string">'smith'</span>, 
+                    Email=<span class="string">'user@acme.com'</span>, 
+                    HasOptedOutOfEmail=<span class="keyword">false</span>);
+       <span class="statement">insert</span> c;
+       
+       <span class="onelineComment">// Test with the subject that matches the unsubscribe statement.</span>
+       email.subject = <span class="string">'test unsubscribe test'</span>;
+       env.fromAddress = <span class="string">'user@acme.com'</span>;
+       
+       <span class="onelineComment">// Call the class and test it with the data in the testMethod.</span>
+       unsubscribe unsubscribeObj = <span class="keyword">new</span> unsubscribe();
+       unsubscribeObj.handleInboundEmail(email, env );
+                            
+    }
+     
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testUnsubscribe2() {
+    
+       <span class="onelineComment">// Create a new email and envelope object.</span>
+       Messaging.InboundEmail email = <span class="keyword">new</span> Messaging.InboundEmail();
+       Messaging.InboundEnvelope env = <span class="keyword">new</span> Messaging.InboundEnvelope();
+    
+       <span class="onelineComment">// Create a new test lead and insert it in the test method.        </span>
+       Lead l = <span class="keyword">new</span> lead(firstName=<span class="string">'john'</span>, 
+                lastName=<span class="string">'smith'</span>,
+                Company=<span class="string">'Salesforce'</span>, 
+                Email=<span class="string">'user@acme.com'</span>, 
+                HasOptedOutOfEmail=<span class="keyword">false</span>);
+       <span class="statement">insert</span> l;
+    
+       <span class="onelineComment">// Create a new test contact and insert it in the test method.    </span>
+       Contact c = <span class="keyword">new</span> Contact(firstName=<span class="string">'john'</span>, 
+                    lastName=<span class="string">'smith'</span>, 
+                    Email=<span class="string">'user@acme.com'</span>, 
+                    HasOptedOutOfEmail=<span class="keyword">false</span>);
+       <span class="statement">insert</span> c;
+       
+       <span class="onelineComment">// Test with a subject that does not contain "unsubscribe."</span>
+       email.subject = <span class="string">'test'</span>;
+       env.fromAddress = <span class="string">'user@acme.com'</span>;
+    
+       <span class="onelineComment">// Call the class and test it with the data in the test method.</span>
+       unsubscribe unsubscribeObj = <span class="keyword">new</span> unsubscribe();
+       unsubscribeObj.handleInboundEmail(email, env );                      
+       <span class="onelineComment">// Assert that the Lead and Contact have been unsubscribed</span>
+       Lead updatedLead = [Select Id, HasOptedOutOfEmail from Lead where Id = :l.Id];
+       Contact updatedContact = [Select Id, HasOptedOutOfEmail from Contact where Id = :c.Id];
+       Assert.isTrue(l.HasOptedOutOfEmail);
+       Assert.isTrue(c.HasOptedOutOfEmail);
+    }     
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_email_inbound_what_is.htm" title="Apex Email Service">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_pages.htm" title="Visualforce Classes">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_email_inbound_inbound.htm" target="_blank" title="Apex Reference Guide: InboundEmail Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: InboundEmail Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_email_inbound_envelope.htm" target="_blank" title="Apex Reference Guide: InboundEnvelope Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: InboundEnvelope Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_email_inbound_result.htm" target="_blank" title="Apex Reference Guide: InboundEmailResult Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: InboundEmailResult Class</a></div></li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,513 @@
+<a name="apex_ConnectAPI_Payments_static_methods"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">Payments Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Authorize a payment, capture an authorized payment, and refund an authorized
+    payment.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+    </div>
+
+  </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_methods">
+<a name="apex_ConnectAPI_Payments_methods"><!-- --></a>
+ <h2 class="helpHead2">Payments Methods</h2>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">These methods are for <samp class="codeph apex_code">Payments</samp>. All methods are
+  static.</div>
+
+  <div class="section">
+   <p class="p">To access Payments methods, you need these permissions.</p>
+
+   <ul class="ul bulletList">
+    <li class="li">Salesforce Order Management License</li>
+
+    <li class="li">PaymentsAPIUser user permission. This permission is available with the Salesforce Order
+     Management License. Your Salesforce admin assigns it to your profile.</li>
+
+   </ul>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_authorize_1">authorize(authorizePayment)</a></strong><br>
+Authorize a payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_postAuth_1">postAuth(postAuthorizePayment)</a></strong><br>
+Confirms that the merchant is ready to capture payment of an existing       pre-authorized transaction.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_reverseAuthorization_1">reverseAuthorization(AuthReversalInput, authorizationId)</a></strong><br>
+Reverses a payment authorization.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_capture_1">capture(AuthCaptureInput, authorizationId)</a></strong><br>
+Capture an authorized payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_refund_1">refund(ReferencedRefundInput, paymentId)</a></strong><br>
+Refund an authorized payment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_sale_1">sale(sale)</a></strong><br>
+Captures a payment without any prior authorization and creates a       payment entity. The payment sale transaction is a combination of an <a class="xref" href="#apex_ConnectAPI_Payments_authorize_1" title="Authorize a payment.">Authorize</a>       transaction and <a class="xref" href="#apex_ConnectAPI_Payments_capture_1" title="Capture an authorized payment.">Capture</a> transaction. This payment sale method allows merchants to request that the       funds are transferred to the merchant account in a single command, with no further action       (such as charging a credit card) from the merchant.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_Payments_static_methods.htm#apex_ConnectAPI_Payments_tokenizePaymentMethod_1">tokenizePaymentMethod(tokenizePaymentMethodInput)</a></strong><br>
+Method to take the input parameters of the payment method you want to       tokenize and then pass them to the payment gateway's tokenization service. The results of the       tokenization request are returned as a response from the payment gateway.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_authorize_1">
+<a name="apex_ConnectAPI_Payments_authorize_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">authorize(authorizePayment)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Authorize a payment.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">51.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.AuthorizationResponse
+          authorize(ConnectApi.AuthorizationRequest authorizePayment)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">authorizePayment</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_authorization.htm" title="Payment Authorization input consumed by the Payment Authorization service.">ConnectApi.AuthorizationRequest</a></samp>
+</dd>
+
+          <dd class="dd">Represents a payment authorization.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_authorization_output.htm" title="Payment Authorization output representation.">ConnectApi.AuthorizationResponse</a></samp></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_postAuth_1">
+<a name="apex_ConnectAPI_Payments_postAuth_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">postAuth(postAuthorizePayment)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Confirms that the merchant is ready to capture payment of an existing
+      pre-authorized transaction.</span></div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">54.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.PostAuthorizationResponse
+          postAuth(ConnectApi.PostAuthRequest postAuthorizePayment)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">postAuthorizePayment</var></dt>
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_post_auth.htm" title="Payment post authorization input consumed by the payment post authorization service.">ConnectApi.PostAuthRequest</a></samp>
+</dd>
+<dd class="dd">Information about the payment, payment method, and payment gateway from the original payment
+            authorization.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_post_auth_output.htm" title="Gateway response following a post authorization request.">ConnectApi.PostAuthorizationResponse</a></samp></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_reverseAuthorization_1">
+<a name="apex_ConnectAPI_Payments_reverseAuthorization_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">reverseAuthorization(AuthReversalInput,
+      authorizationId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Reverses a payment authorization.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">51.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.AuthorizationReversalResponse
+          reverseAuthorization(ConnectApi.AuthorizationReversalRequest AuthReversalInput, <span class="keyword">String</span>
+          authorizationId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">AuthReversalInput</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_auth_reversal.htm" title="Authorization reversal input consumed by authorization reversal service.">ConnectApi.AuthorizationReversalRequest</a></samp>
+</dd>
+
+          <dd class="dd">Input information for the payment authorization reversal.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">authorizationId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">The ID of the payment authorization to be reversed.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_auth_reversal_output.htm" title="Authorization Reversal output representation."><samp class="codeph apex_code">ConnectApi.AuthorizationReversalResponse</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_capture_1">
+<a name="apex_ConnectAPI_Payments_capture_1"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">capture(AuthCaptureInput, authorizationId)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Capture an authorized payment.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">50.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.CaptureResponse
+          capture(ConnectApi.CaptureRequest AuthCaptureInput, <span class="keyword">String</span> authorizationId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">AuthCaptureInput</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_capture.htm" title="Payment capture input consumed by the payment capture service."><samp class="codeph apex_code">ConnectApi.CaptureRequest</samp></a>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.CaptureRequest</samp> object with
+            information about the payment capture.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">authorizationId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the payment authorization. Required.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_capture_output.htm" title="Capture output."><samp class="codeph apex_code">ConnectApi.CaptureResponse</samp></a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_refund_1">
+<a name="apex_ConnectAPI_Payments_refund_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">refund(ReferencedRefundInput, paymentId)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Refund an authorized payment.</span></div>
+
+    <div class="section">
+      <p class="p">To access Payments methods, you need these permissions.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Salesforce Order Management License</li>
+
+        <li class="li">PaymentsAPIUser user permission. This permission is available with the Salesforce Order
+          Management License. Your Salesforce admin assigns it to your profile.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">50.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.ReferencedRefundResponse
+          refund(ConnectApi.ReferencedRefundRequest ReferencedRefundInput, <span class="keyword">String</span>
+          paymentId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">ReferencedRefundInput</var></dt>
+
+          <dd class="dd">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_referenced_refund.htm" title="Referenced refund input."><samp class="codeph apex_code">ConnectApi.ReferencedRefundRequest</samp></a>
+</dd>
+
+          <dd class="dd">A <samp class="codeph apex_code">ConnectApi.ReferencedRefundRequest</samp> object
+            with information about the refund.</dd>
+
+        
+        
+          <dt class="dt dlterm"><var class="keyword varname">paymentId</var></dt>
+
+          <dd class="dd">Type: String</dd>
+
+          <dd class="dd">ID of the payment to be refunded. Required.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_refund_service_output.htm" title="Refund comprehensive output."><samp class="codeph apex_code">ConnectApi.ReferencedRefundResponse</samp></a></p>
+
+    </div>
+
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_sale_1">
+<a name="apex_ConnectAPI_Payments_sale_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">sale(sale)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Captures a payment without any prior authorization and creates a
+      payment entity. The payment sale transaction is a combination of an <a class="xref" href="#apex_ConnectAPI_Payments_authorize_1" title="Authorize a payment.">Authorize</a>
+      transaction and <a class="xref" href="#apex_ConnectAPI_Payments_capture_1" title="Capture an authorized payment.">Capture</a> transaction. This payment sale method allows merchants to request that the
+      funds are transferred to the merchant account in a single command, with no further action
+      (such as charging a credit card) from the merchant.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+      
+      <p class="p">54.0</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+      
+      <p class="p">No</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.SaleResponse
+          sale(ConnectApi.SaleRequest sale)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <dl class="dl detailList">
+        
+          <dt class="dt dlterm"><var class="keyword varname">sale</var></dt>
+
+          <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_sale.htm" title="Payment sale input consumed by the payment sale service.">ConnectApi.SaleRequest</a></samp>
+</dd>
+
+          <dd class="dd">Payment sale input class.</dd>
+
+        
+      </dl>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_sale_output.htm" title="Payment sale response.">ConnectApi.SaleResponse</a></samp></p>
+
+    </div>
+
+    
+  </div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_Payments_tokenizePaymentMethod_1">
+<a name="apex_ConnectAPI_Payments_tokenizePaymentMethod_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">tokenizePaymentMethod(tokenizePaymentMethodInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Method to take the input parameters of the payment method you want to
+      tokenize and then pass them to the payment gateway's tokenization service. The results of the
+      tokenization request are returned as a response from the payment gateway.</span></div>
+<div class="section">
+<h4 class="helpHead4">API Version</h4>
+<p class="p">52.0</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+<p class="p">No</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">static</span> ConnectApi.PaymentMethodTokenizationResponse
+          tokenizePaymentMethod(ConnectApi.PaymentMethodTokenizationRequest
+          tokenizePaymentMethodInput)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<dl class="dl detailList">
+<dt class="dt dlterm"><var class="keyword varname">tokenizePaymentMethodInput</var></dt>
+<dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_payment_method_tokenization.htm" title="Payment method tokenization input consumed by the payment tokenization service.">ConnectApi.PaymentMethodTokenizationRequest</a></samp>
+</dd>
+<dd class="dd">Information about the payment method to be tokenized.</dd>
+</dl>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_payment_method_tokenization_output.htm" title="Payment method tokenization output representation.">ConnectApi.PaymentMethodTokenizationResponse</a></samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Accepts input parameters representing a payment method and passes them in a tokenization request
+                to the payment gateway. The results of the tokenization request are returned as a
+                response from the payment gateway. If the tokenization was successful, the response
+                contains the tokenized value and details about the tokenization process. Otherwise,
+                the response contains an error message and details about the error.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="p">
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.PaymentMethodTokenizationRequest request = <span class="keyword">new</span> ConnectApi.PaymentMethodTokenizationRequest();
+request.paymentGatewayId = ‘0b0xx0000001Ja5AAE’;
+ConnectApi.CardPaymentMethodRequest cpmRequest = <span class="keyword">new</span> ConnectApi.CardPaymentMethodRequest();
+cpmRequest.cardHolderName = ‘Jo Manager’;
+cpmRequest.expiryMonth = 11;
+cpmRequest.expiryYear = 2222;
+cpmRequest.cardNumber = ‘4111111111111111’;
+cpmRequest.cvv = ‘111’;
+cpmRequest.cardCategory = ConnectApi.CardCategory.CreditCard;
+cpmRequest.cardType = ConnectApi.CardType.Visa.name();
+request.cardPaymentMethod = cpmRequest;
+ConnectApi.PaymentMethodTokenizationResponse response = ConnectApi.Payments.tokenizePaymentMethod(request);</pre></div>
+
+      </div>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,84 @@
+<a name="apex_and_ajax"><!-- --></a><h1 class="helpHead1">Apex in AJAX</h1><div class="body">
+<div class="shortdesc">The AJAX toolkit includes built-in support for invoking Apex through anonymous blocks
+        or public <samp class="codeph apex_code">webservice</samp> methods.</div>
+
+        <p class="p">To invoke Apex through anonymous blocks or public <samp class="codeph apex_code">webservice</samp> methods, include the following lines in your AJAX code:</p>
+
+        <div class="codeSection javascript"><pre class="codeblock brush:js">&lt;script src=<span class="string">"/soap/ajax/</span>67.0/connection.js<span class="string">" type="</span>text/javascript<span class="string">"&gt;&lt;/script&gt;
+</span>&lt;script src=<span class="string">"/soap/ajax/</span>67.0/apex.js<span class="string">" type="</span>text/javascript<span class="string">"&gt;&lt;/script&gt;</span></pre></div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For AJAX buttons, use the alternate forms of these includes.</p>
+</div>
+</div></div></div></div>
+
+        <div class="p">To invoke Apex, use one of the following two methods:<ul class="ul bulletList">
+                <li class="li">Execute anonymously via <samp class="codeph apex_code">sforce.apex.executeAnonymous (<var class="keyword varname">script</var>)</samp>. This
+                    method returns a result similar to the API's result type, but as a JavaScript
+                    structure.</li>
+
+                <li class="li">Use a class WSDL. For example, you can call the following Apex
+                        class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> myClass { 
+  webservice <span class="keyword">static</span> Id makeContact(<span class="keyword">String</span> lastName, Account a) { 
+        Contact c = <span class="keyword">new</span> Contact(LastName = lastName, AccountId = a.Id); 
+        <span class="statement">return</span> c.id; 
+    }
+}</pre></div>
+<p class="p">By using the following JavaScript
+                        code:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">var account = sforce.sObject(<span class="string">"Account"</span>);
+var id = sforce.apex.execute(<span class="string">"myClass"</span>,<span class="string">"makeContact"</span>,
+                             {lastName:<span class="string">"Smith"</span>,
+                              a:account});</pre></div>
+<p class="p">The <samp class="codeph apex_code">execute</samp> method takes primitive data
+                        types, sObjects, and lists of primitives or sObjects. </p>
+<p class="p">To call a
+                        webservice method with no parameters, use <samp class="codeph apex_code">{}</samp> as the third parameter for <samp class="codeph apex_code">sforce.apex.execute</samp>. For example, to call the following Apex
+                        class:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> myClass{ 
+   webservice <span class="keyword">static</span> <span class="keyword">String</span> getContextUserName() {
+        <span class="statement">return</span> UserInfo.getFirstName();
+   }
+}
+</pre></div>
+<p class="p">Use the following JavaScript
+                        code:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">var contextUser = sforce.apex.execute(<span class="string">"myClass"</span>, <span class="string">"getContextUserName"</span>, {});
+</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If a namespace has been defined for your
+                        organization, you must include it in the JavaScript code when you invoke the
+                        class. For example, to call the <var class="keyword varname">myClass</var> class, the
+                        JavaScript code from above would be rewritten as
+                            follows:<div class="codeSection apex_code"><pre class="codeblock brush:apex">var contextUser = sforce.apex.execute(<span class="string">"myNamespace.myClass"</span>, <span class="string">"getContextUserName"</span>, {});
+</pre></div>
+<p class="p">To verify whether your organization has a namespace, log
+                            in to your Salesforce organization and from Setup, enter
+                                <kbd class="ph userinput">Packages</kbd> in the <span class="keyword parmname">Quick
+                                Find</span> box, then select <strong class="ph uicontrol">Packages</strong>. If
+                            a namespace is defined, it’s listed under Developer
+                        Settings.</p>
+</p>
+</div>
+</div></div></div></div>
+<p class="p">For more information on the return datatypes, see
+                            <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.ajax.meta/ajax/sforce_api_ajax_datatypes.htm" target="_blank">Data Types in AJAX
+                            Toolkit</a></p>
+</li>
+
+            </ul>
+</div>
+
+        <p class="p">Use the following line to display a window with debugging information:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">sforce.debug.trace=<span class="keyword">true</span>;</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_invoking_javascript_remoting.htm" title="JavaScript Remoting">← Previous</a></li>
+</ul></div>
+</div>

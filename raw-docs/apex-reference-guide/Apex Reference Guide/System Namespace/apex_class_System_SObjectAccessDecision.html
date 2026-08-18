@@ -1,0 +1,173 @@
+<a name="apex_class_System_SObjectAccessDecision"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SObjectAccessDecision Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains the results of a call to the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible" title="Creates a list of sObjects from the source records, which are stripped of fields that fail the field-level security checks for the current user. The method also provides an option to enforce an object-level access check.">Security.stripInaccessible</a> method and methods to retrieve those results.
+    </span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_System_SObjectAccessDecision_methods">SObjectAccessDecision Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_SObjectAccessDecision_methods">
+<a name="apex_System_SObjectAccessDecision_methods"><!-- --></a><h2 class="helpHead2">SObjectAccessDecision Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SObjectAccessDecision</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_System_SObjectAccessDecision_getModifiedIndexes">getModifiedIndexes()</a></strong><br>
+Returns the indexes of sObjects that are modified by the stripInaccessible method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_System_SObjectAccessDecision_getRecords">getRecords()</a></strong><br>
+Returns a list of new sObjects that are identical to the source       records, except that they are stripped of fields that fail the field-level security check for       the current user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SObjectAccessDecision.htm#apex_System_SObjectAccessDecision_getRemovedFields">getRemovedFields()</a></strong><br>
+Returns a map of sObject types to their corresponding inaccessible             fields. The map key is a string representation of the sObject type. The map value is a             set of strings, which denote the fields names that are inaccessible.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SObjectAccessDecision_getModifiedIndexes">
+<a name="apex_System_SObjectAccessDecision_getModifiedIndexes"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getModifiedIndexes()</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the indexes of sObjects that are modified by the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible" title="Creates a list of sObjects from the source records, which are stripped of fields that fail the field-level security checks for the current user. The method also provides an option to enforce an object-level access check.">stripInaccessible</a> method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Set&lt;<span class="keyword">Integer</span>&gt; getModifiedIndexes()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set&lt;Integer&gt;</a></p>
+<p class="p">A set of unsigned integers that represent the row indexes of the modified sObjects.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+            <p class="p">In this example, the user doesn’t have permission to update the <samp class="codeph apex_code">AnnualRevenue</samp> field of an Account.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>, AnnualRevenue=1000),
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account2'</span>)
+};
+
+<span class="onelineComment">// Strip fields that are not updatable</span>
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.UPDATABLE,
+    accounts);
+
+<span class="onelineComment">// Print stripped records</span>
+<span class="statement">for</span> (SObject strippedAccount : decision.getRecords()) {
+    System.debug(strippedAccount);
+}
+
+<span class="onelineComment">// Print modified indexes</span>
+System.debug(decision.getModifiedIndexes());</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SObjectAccessDecision_getRecords">
+<a name="apex_System_SObjectAccessDecision_getRecords"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">getRecords()</span></h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a list of new sObjects that are identical to the source
+      records, except that they are stripped of fields that fail the field-level security check for
+      the current user.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible" title="Creates a list of sObjects from the source records, which are stripped of fields that fail the field-level security checks for the current user. The method also provides an option to enforce an object-level access check.">stripInaccessible</a> method performs field-level access
+                check for the source records in the context of the current user’s operation. The
+                    <samp class="codeph apex_code">getRecords()</samp> method returns the new
+                records that contain only the fields that the current user has access to.</p>
+
+    </div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;SObject&gt; getRecords()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">List&lt;SObject&gt;</a></p>
+<p class="p">Even if the result list contains only one sObject, the return type is still a list (of size
+        one).</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">In this example, the user doesn’t have permission to update the <samp class="codeph apex_code">AnnualRevenue</samp> field of an Account.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>, AnnualRevenue=1000),
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account2'</span>)
+};
+
+<span class="onelineComment">// Strip fields that are not updatable</span>
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.UPDATABLE,
+    accounts);
+
+<span class="onelineComment">// Print stripped records</span>
+<span class="statement">for</span> (SObject strippedAccount : decision.getRecords()) {
+    System.debug(strippedAccount);
+}</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SObjectAccessDecision_getRemovedFields">
+<a name="apex_System_SObjectAccessDecision_getRemovedFields"><!-- --></a><h3 class="helpHead3">getRemovedFields()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a map of sObject types to their corresponding inaccessible
+            fields. The map key is a string representation of the sObject type. The map value is a
+            set of strings, which denote the fields names that are inaccessible.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,Set&lt;<span class="keyword">String</span>&gt;&gt; getRemovedFields()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map&lt;String,Set&lt;String&gt;&gt;</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+            <p class="p">In this example, the user doesn’t have permission to update the <samp class="codeph apex_code">AnnualRevenue</samp> field of an Account.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accounts = <span class="keyword">new</span> List&lt;Account&gt;{
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>, AnnualRevenue=1000),
+    <span class="keyword">new</span> Account(Name=<span class="string">'Account2'</span>)
+};
+
+<span class="onelineComment">// Strip fields that are not updatable</span>
+SObjectAccessDecision decision = Security.stripInaccessible(
+    AccessType.UPDATABLE,
+    accounts);
+
+<span class="onelineComment">// Print stripped records</span>
+<span class="statement">for</span> (SObject strippedAccount : decision.getRecords()) {
+    System.debug(strippedAccount);
+}
+<span class="onelineComment">// Print removed fields</span>
+System.debug(decision.getRemovedFields());</pre></div>
+
+    </div>
+</div>
+</div>
+</div>
+</div>

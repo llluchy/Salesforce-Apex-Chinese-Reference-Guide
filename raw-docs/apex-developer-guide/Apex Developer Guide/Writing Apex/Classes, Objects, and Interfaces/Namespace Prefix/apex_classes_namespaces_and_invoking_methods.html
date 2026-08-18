@@ -1,0 +1,72 @@
+<a name="apex_classes_namespaces_and_invoking_methods"><!-- --></a><h1 class="helpHead1">Using the System Namespace</h1><div class="body conbody">
+<p class="p">The <samp class="codeph apex_code">System</samp> namespace is
+the default namespace in Apex. This means that you can omit the namespace when creating a new
+instance of a system class or when calling a system method. For example,
+because the built-in URL class is in the <samp class="codeph apex_code">System</samp> namespace, both of these statements to create an
+instance of the <samp class="codeph apex_code">URL</samp> class
+are equivalent:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.URL url1 = <span class="keyword">new</span> System.URL(<span class="string">'https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/<span class="string">');
+</span></pre></div>
+
+<p class="p">And:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">URL url1 = <span class="keyword">new</span> URL(<span class="string">'https://</span><var class="keyword varname">MyDomainName</var>.my.salesforce.com/<span class="string">');
+</span></pre></div>
+
+<p class="p">Similarly, to call a static method on the <samp class="codeph apex_code">URL</samp> class, you can write either of
+the following:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">System.URL.getCurrentRequestUrl();</pre></div>
+
+<p class="p">Or:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">URL.getCurrentRequestUrl();</pre></div>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>In addition to the <samp class="codeph apex_code">System</samp> namespace, there is a built-in <samp class="codeph apex_code">System</samp> class in the <samp class="codeph apex_code">System</samp> namespace,
+which provides methods like <samp class="codeph apex_code">assertEquals</samp> and <samp class="codeph apex_code">debug</samp>. Don’t
+get confused by the fact that both the namespace and the class have
+the same name in this case. The <samp class="codeph apex_code">System.debug(<span class="string">'debug
+</span>message<span class="string">');</span></samp> and <samp class="codeph apex_code">System.System.debug(<span class="string">'debug
+</span>message<span class="string">');</span></samp> statements are equivalent.</p>
+</div>
+</div></div></div></div>
+
+<div class="section">
+<h2 class="helpHead2">Using the System Namespace for Disambiguation</h2>
+<p class="p">It is easier to not include the <samp class="codeph apex_code">System</samp> namespace when calling static methods of system classes,
+but there are situations where you must include the <samp class="codeph apex_code">System</samp> namespace to differentiate
+the built-in Apex classes from custom Apex classes with the same name. If your organization contains Apex classes that you’ve defined with the same name as a built-in
+class, the Apex runtime defaults to your custom class and calls the methods in your
+class. Let’s take a look at the following example.</p>
+<div class="p">Create
+this custom Apex class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> Database {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> query() {
+       <span class="statement">return</span> <span class="string">'wherefore art thou namespace?'</span>;
+    }
+}</pre></div>
+</div>
+<p class="p">Execute this statement in the Developer Console:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sObject[] acct = Database.query(<span class="string">'SELECT Name FROM Account LIMIT 1'</span>);
+System.debug(acct[0].get(<span class="string">'Name'</span>));</pre></div>
+<p class="p">When the <samp class="codeph apex_code">Database.query</samp> statement executes, Apex looks up the query method on the custom <samp class="codeph apex_code">Database</samp> class first. However, the query method in this
+class doesn’t take any parameters and no match is found, hence
+you get an error. The custom <samp class="codeph apex_code">Database</samp> class overrides the built-in <samp class="codeph apex_code">Database</samp> class in the <samp class="codeph apex_code">System</samp> namespace.
+To solve this problem, add the <samp class="codeph apex_code">System</samp> namespace prefix to the class name to explicitly instruct the Apex runtime to call the query method on the built-in Database class
+in the <samp class="codeph apex_code">System</samp> namespace:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sObject[] acct = <strong class="ph b">System.</strong>Database.query(<span class="string">'SELECT Name FROM Account LIMIT 1'</span>);
+System.debug(acct[0].get(<span class="string">'Name'</span>));</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_schema_namespace_using.htm" title="Using the Schema Namespace">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_schema_namespace_using.htm" title="The Schema namespace provides classes and methods for working with schema metadata information. We implicitly import Schema.*, but you must fully qualify your uses of Schema namespace elements when they have naming conflicts with items in your unmanaged code. If your org contains an Apex class that has the same name as an sObject, add the Schema namespace prefix to the sObject name in your code.">Using the Schema Namespace</a></div></li></ul>
+</div>
+</div>

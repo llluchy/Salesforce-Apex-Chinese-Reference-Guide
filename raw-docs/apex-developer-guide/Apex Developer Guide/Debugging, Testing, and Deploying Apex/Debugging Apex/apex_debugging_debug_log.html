@@ -1,0 +1,384 @@
+<a name="apex_debugging_debug_log"><!-- --></a><h1 class="helpHead1">Debug Log</h1><div class="body">
+    <p class="p">A debug log can record database operations, system processes, and errors that occur when
+      executing a transaction or running unit tests. Debug logs can contain information about:</p>
+
+    <ul class="ul bulletList">
+      <li class="li">Database changes</li>
+
+      <li class="li">HTTP callouts</li>
+
+      <li class="li">Apex errors</li>
+
+      <li class="li">Resources used by Apex</li>
+
+      <li class="li">Automated workflow processes, such as:<ul class="ul bulletList">
+          <li class="li">Workflow rules</li>
+
+          <li class="li">Assignment rules</li>
+
+          <li class="li">Approval processes</li>
+
+          <li class="li">Validation rules</li>
+
+        </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The debug log doesn’t include information from actions triggered by time-based
+          workflows. It also doesn’t include information from standard or custom controllers used in
+          Visualforce email templates.</p>
+</div>
+</div></div></div></div>
+</li>
+
+    </ul>
+
+    <p class="p">You can retain and manage debug logs for specific users, including yourself, and for classes
+      and triggers. Setting class and trigger trace flags doesn’t cause logs to be generated or
+      saved. Class and trigger trace flags override other logging levels, including logging levels
+      set by user trace flags, but they don’t cause logging to occur. If logging is enabled when
+      classes or triggers execute, logs are generated at the time of execution.</p>
+
+    <p class="p">To view a debug log from Setup, enter <kbd class="ph userinput">Debug Logs</kbd> in the
+        <span class="keyword parmname">Quick Find</span> box, then select <strong class="ph uicontrol">Debug Logs</strong>. Then
+      click <strong class="ph uicontrol">View</strong> next to the debug log that you want to examine. Click
+        <strong class="ph uicontrol">Download</strong> to download the debug log as a log file.</p>
+
+    <div class="section">
+<h2 class="helpHead2">Debug Log Limits</h2>
+<p class="p">Debug logs have the following
+    limits.</p>
+<a name="d712e86-d730e30"><!-- --></a><ul class="ul bulletList" id="d712e86-d730e30">
+    <li class="li">Each debug log must be 20 MB or smaller. Debug logs that are larger than 20 MB are reduced
+     in size by removing older log lines, such as log lines for earlier <samp class="codeph apex_code">System.debug</samp> statements. The log lines can be removed from any
+     location, not just the start of the debug log.</li>
+
+    <li class="li">System debug logs are retained for 24 hours. Monitoring debug logs are retained for seven
+     days.</li>
+
+    <li class="li">If you generate more than 1,000 MB of debug logs in a 15-minute window, your trace flags are
+     disabled. We send an email to the users who last modified the trace flags, informing them that
+     they can re-enable the trace flag in 15 minutes. <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>If the debug log trace
+      flag is enabled on a frequently accessed Apex class or for a user executing requests often,
+      the request can result in failure, regardless of the time window and the size of the debug
+      logs.</p>
+</div>
+</div></div></div></div>
+</li>
+
+    <li class="li">When your org accumulates more than 1,000 MB of debug logs, we prevent users in the org from
+     adding or editing trace flags. To add or edit trace flags so that you can generate more logs
+     after you reach the limit, delete some debug logs.</li>
+
+   </ul>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="DebugLogDetailsTitle"><a name="DebugLogDetailsTitle"><!-- --></a>Inspecting the Debug Log Sections</span></h2>
+
+      
+      <p class="p">After you generate a debug log, the type and amount of information listed depends on the
+        filter values you set for the user. However, the format for a debug log is always the same. </p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Session IDs are replaced with "SESSION_ID_REMOVED" in Apex debug logs</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">A debug log has the following sections.</p>
+<ul class="ul bulletList">
+          <li class="li">
+<strong class="ph b">Header</strong>: The header contains the following information.<ul class="ul bulletList">
+                <li class="li">The version of the API used during the transaction.</li>
+
+                <li class="li">The log category and level used to generate the log. For example: </li>
+
+              </ul>
+ The following is an example of a
+                header.<div class="codeSection nolang"><pre class="codeblock brush:plain">67.0 APEX_CODE,DEBUG;APEX_PROFILING,INFO;CALLOUT,INFO;DB,INFO;SYSTEM,DEBUG;VALIDATION,INFO;VISUALFORCE,INFO;
+WORKFLOW,INFO
+</pre></div>
+<div class="p">In this example, the API version is 67.0, and the following debug log categories and levels have been set.
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <tbody class="tbody">
+                      <tr>
+                        <td class="entry">Apex Code</td>
+
+                        <td class="entry">DEBUG</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Apex Profiling</td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Callout</td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Database</td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">System</td>
+
+                        <td class="entry">DEBUG</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Validation</td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Visualforce </td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                      <tr>
+                        <td class="entry">Workflow</td>
+
+                        <td class="entry">INFO</td>
+
+                      </tr>
+
+                    </tbody>
+
+                  </table></div>
+</div>
+<div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p> If the Apex Code log level is set to FINEST, the
+                debug log includes details of all Apex variable assignments. Ensure that the Apex
+                Code being traced doesn’t handle sensitive data. Before enabling FINEST log level,
+                be sure to understand the level of sensitive data your organization's Apex handles.
+                Be careful with processes such as community users self-registration where user
+                passwords can be assigned to an Apex string variable.</p>
+</div>
+</div></div></div></div>
+</li>
+
+          <li class="li">
+<strong class="ph b">Execution Units</strong>: An execution unit is equivalent to a transaction. It contains everything that
+              occurred within the transaction. <samp class="codeph nolang">EXECUTION_STARTED</samp> and <samp class="codeph nolang">EXECUTION_FINISHED</samp> delimit an execution unit.</li>
+
+          <li class="li">
+<strong class="ph b">Code Units</strong>: A code unit is a discrete unit of work within a transaction. For example, a trigger
+              is one unit of code, as is a <samp class="codeph apex_code">webservice</samp> method
+              or a validation rule. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>A class isn’t a discrete unit of code. </p>
+</div>
+</div></div></div></div>
+ <samp class="codeph nolang">CODE_UNIT_STARTED</samp> and <samp class="codeph nolang">CODE_UNIT_FINISHED</samp> delimit units of code. Units of work
+              can embed other units of work. For example:
+              <div class="codeSection nolang"><pre class="codeblock brush:plain">EXECUTION_STARTED
+CODE_UNIT_STARTED|[EXTERNAL]execute_anonymous_apex
+CODE_UNIT_STARTED|[EXTERNAL]MyTrigger on Account trigger event BeforeInsert for [new]|__sfdc_trigger/MyTrigger
+CODE_UNIT_FINISHED &lt;-- The trigger ends
+CODE_UNIT_FINISHED &lt;-- The executeAnonymous ends
+EXECUTION_FINISHED</pre></div>
+ Units of code include, but aren’t limited to, the following:<ul class="ul bulletList">
+                <li class="li">Triggers</li>
+
+                <li class="li">Workflow invocations and time-based workflow</li>
+
+                <li class="li">Validation rules</li>
+
+                <li class="li">Approval processes</li>
+
+                <li class="li">Apex lead convert</li>
+
+                <li class="li">
+<samp class="codeph apex_code"><span class="keyword">@future</span></samp> method invocations</li>
+
+                <li class="li">Web service invocations</li>
+
+                <li class="li">
+<samp class="codeph nolang">executeAnonymous</samp> calls </li>
+
+                <li class="li">Visualforce property access on Apex controllers</li>
+
+                <li class="li">Visualforce actions on Apex controllers</li>
+
+                <li class="li">Execution of the batch Apex <samp class="codeph apex_code">start</samp> and
+                    <samp class="codeph apex_code">finish</samp> methods, and each execution of
+                  the <samp class="codeph apex_code">execute</samp> method</li>
+
+                <li class="li">Execution of the Apex <samp class="codeph apex_code">System.Schedule
+                    execute</samp> method</li>
+
+                <li class="li">Incoming email handling</li>
+
+              </ul>
+</li>
+
+          <li class="li">
+<strong class="ph b">Log Lines</strong>: Log lines are included inside units of code and indicate which code or rules are
+              being executed. Log lines can also be messages written to the debug log. Log lines are made up of a set of fields, delimited by a pipe (<samp class="codeph nolang">|</samp>). The format is:<ul class="ul bulletList">
+                <li class="li">
+<dfn class="term">timestamp</dfn>: Consists of the time when the event occurred and a value
+                  between parentheses. The time is in the user’s time zone and in the format
+                    <var class="keyword varname">HH:mm:ss.SSS</var>. The value in parentheses represents the time
+                  elapsed in nanoseconds since the start of the request. The elapsed time value is
+                  excluded from logs reviewed in the Developer Console when you use the Execution
+                  Log view. However, you can see the elapsed time when you use the Raw Log view. To
+                  open the Raw Log view, from the Developer Console’s Logs tab, right-click the name
+                  of a log and select <strong class="ph uicontrol">Open Raw Log</strong>.</li>
+
+                <li class="li">
+<dfn class="term">event identifier</dfn>: Specifies the event that triggered the debug log
+                  entry (such as <samp class="codeph nolang">SAVEPOINT_RESET</samp> or <samp class="codeph nolang">VALIDATION_RULE</samp>).<p class="p">Also includes additional
+                    information logged with that event, such as the method name or the line and
+                    character number where the code was executed. If a line number can’t be located,
+                      <samp class="codeph nolang">[EXTERNAL]</samp> is logged instead. For
+                    example, <samp class="codeph nolang">[EXTERNAL]</samp> is logged for built-in
+                    Apex classes or code that’s in a managed package.</p>
+<p class="p">For some events (<samp class="codeph apex_code">CODE_UNIT_STARTED</samp>, <samp class="codeph apex_code">CODE_UNIT_FINISHED</samp>, <samp class="codeph apex_code">VF_APEX_CALL_START</samp>, <samp class="codeph apex_code">VF_APEX_CALL_END</samp>, <samp class="codeph apex_code">CONSTRUCTOR_ENTRY</samp>, and <samp class="codeph apex_code">CONSTRUCTOR_EXIT</samp>), the end of the event
+                    identifier includes a pipe (<samp class="codeph nolang">|</samp>) followed by
+                    a typeRef for an Apex class or trigger. </p>
+<p class="p">For a trigger, the typeRef begins
+                    with the SFDC trigger prefix <samp class="codeph nolang">__sfdc_trigger/</samp>. For example, <samp class="codeph nolang">__sfdc_trigger/<var class="keyword varname">YourTriggerName</var></samp> or <samp class="codeph nolang">__sfdc_trigger/<var class="keyword varname">YourNamespace</var>/<var class="keyword varname">YourTriggerName</var></samp>.</p>
+<p class="p">For
+                    a class, the typeRef uses the format <samp class="codeph nolang"><var class="keyword varname">YourClass</var></samp>, <samp class="codeph nolang"><var class="keyword varname">YourClass</var>$<var class="keyword varname">YourInnerClass,</var></samp>,
+                    or <samp class="codeph nolang"><var class="keyword varname">YourNamespace</var>/<var class="keyword varname">YourClass</var>$<var class="keyword varname">YourInnerClass</var></samp>.</p>
+</li>
+
+              </ul>
+</li>
+
+          <li class="li">
+<strong class="ph b">More Log Data</strong>: In addition, the log contains the following information.<ul class="ul bulletList">
+                <li class="li">Cumulative resource usage is logged at the end of many code units. Among these
+                  code units are triggers, <samp class="codeph apex_code">executeAnonymous</samp>,
+                  batch Apex message processing, <samp class="codeph apex_code"><span class="keyword">@future</span></samp>
+                  methods, Apex test methods, Apex web service methods, and Apex lead convert.</li>
+
+                <li class="li">Cumulative profiling information is logged once at the end of the transaction
+                  and contains information about DML invocations, expensive queries, and so on.
+                  “Expensive” queries use resources heavily.</li>
+
+                <li class="li">Heap usage is accurately reported in the debug log and an exception is thrown
+                  whenever an Apex Heap Size error occurs. At other times, the heap size shown in
+                  the debug log is the largest heap size that was calculated during the transaction.
+                  To reduce the overhead on small transactions, minimal heap usage doesn’t warrant
+                  an accurate calculation and is reported as 0(zero).</li>
+
+              </ul>
+</li>
+
+        </ul>
+
+      <div class="p">The following is an example debug
+        log.<div class="codeSection nolang"><pre class="codeblock brush:plain">37.0 APEX_CODE,FINEST;APEX_PROFILING,INFO;CALLOUT,INFO;DB,INFO;SYSTEM,DEBUG;
+    VALIDATION,INFO;VISUALFORCE,INFO;WORKFLOW,INFO
+Execute Anonymous: System.debug('Hello World!');
+16:06:58.18 (18043585)|USER_INFO|[EXTERNAL]|005D0000001bYPN|devuser@example.org|
+    Pacific Standard Time|GMT-08:00
+16:06:58.18 (18348659)|EXECUTION_STARTED
+16:06:58.18 (18383790)|CODE_UNIT_STARTED|[EXTERNAL]|execute_anonymous_apex
+16:06:58.18 (23822880)|HEAP_ALLOCATE|[72]|Bytes:3
+16:06:58.18 (24271272)|HEAP_ALLOCATE|[77]|Bytes:152
+16:06:58.18 (24691098)|HEAP_ALLOCATE|[342]|Bytes:408
+16:06:58.18 (25306695)|HEAP_ALLOCATE|[355]|Bytes:408
+16:06:58.18 (25787912)|HEAP_ALLOCATE|[467]|Bytes:48
+16:06:58.18 (26415871)|HEAP_ALLOCATE|[139]|Bytes:6
+16:06:58.18 (26979574)|HEAP_ALLOCATE|[EXTERNAL]|Bytes:1
+16:06:58.18 (27384663)|STATEMENT_EXECUTE|[1]
+16:06:58.18 (27414067)|STATEMENT_EXECUTE|[1]
+16:06:58.18 (27458836)|HEAP_ALLOCATE|[1]|Bytes:12
+16:06:58.18 (27612700)|HEAP_ALLOCATE|[50]|Bytes:5
+16:06:58.18 (27768171)|HEAP_ALLOCATE|[56]|Bytes:5
+16:06:58.18 (27877126)|HEAP_ALLOCATE|[64]|Bytes:7
+16:06:58.18 (49244886)|USER_DEBUG|[1]|DEBUG|Hello World!
+16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE
+16:06:58.49 (49590539)|LIMIT_USAGE_FOR_NS|(default)|
+  Number of SOQL queries: 0 out of 100
+  Number of query rows: 0 out of 50000
+  Number of SOSL queries: 0 out of 20
+  Number of DML statements: 0 out of 150
+  Number of DML rows: 0 out of 10000
+  Maximum CPU time: 0 out of 10000
+  Maximum heap size: 0 out of 6000000
+  Number of callouts: 0 out of 100
+  Number of Email Invocations: 0 out of 10
+  Number of future calls: 0 out of 50
+  Number of queueable jobs added to the queue: 0 out of 50
+  Number of Mobile Apex push calls: 0 out of 10
+
+16:06:58.49 (49590539)|CUMULATIVE_LIMIT_USAGE_END
+
+16:06:58.18 (52417923)|CODE_UNIT_FINISHED|execute_anonymous_apex
+16:06:58.18 (54114689)|EXECUTION_FINISHED</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2" id="ClassFilteringSectionTitle">
+<a name="ClassFilteringSectionTitle"><!-- --></a>Setting Debug Log Filters for Apex Classes and
+        Triggers</h2>
+
+      
+    </div>
+
+    <p class="p">To debug complex Apex logic, you can set Apex class and trigger trace flags, also known as
+      debug log filters. For example, you can raise the log verbosity for a given class while
+      turning off logging for other classes or triggers. These trace flags have the debug log type
+        <samp class="codeph apex_code">CLASS_TRACING</samp> and override the debug log levels of
+      the <samp class="codeph apex_code">USER_DEBUG</samp> and <samp class="codeph apex_code">DEVELOPER_LOG</samp> trace flags.</p>
+
+    <p class="p">For an explanation and an example of how Apex class and trigger trace flags work, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.code_debug_log_classes.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Debug Log Filtering for Apex Classes and Apex Triggers</a> in
+        <cite class="cite">Salesforce Help</cite>.</p>
+
+    <p class="p">For concrete instructions about how to configure debug log filters, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.code_debug_log_classes_setup.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Set Up Apex Class and Trigger Trace Flags</a> in <cite class="cite">Salesforce
+        Help</cite>.</p>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_debugging_system_log_console.htm">Working with Logs in the Developer Console</a></strong><br>
+Use the Logs tab in the Developer Console to open debug logs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_debugging_API_calls.htm">Debugging Apex API Calls</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_debugging_debug_log_precedence.htm">Debug Log Order of Precedence</a></strong><br>
+Which events are logged depends on various factors. These factors include your trace   flags, the default logging levels, your API header, user-based system log enablement, and the log   levels set by your entry points.</li>
+</ul>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_exception_definition.htm" title="Exceptions in Apex">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_add_users_debug_log.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Set Up Debug Logging</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_viewing_log_details.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: View Debug Logs</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=code_debug_log_delete.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Delete Debug Logs</a></div></li>
+</ul>
+</div>
+</div>

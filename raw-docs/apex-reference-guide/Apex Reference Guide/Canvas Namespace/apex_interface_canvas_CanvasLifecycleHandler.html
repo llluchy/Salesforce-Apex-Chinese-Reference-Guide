@@ -1,0 +1,54 @@
+<a name="apex_interface_canvas_CanvasLifecycleHandler"><!-- --></a><h1 class="helpHead1">CanvasLifecycleHandler Interface</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Implement this interface to control
+context information and add custom behavior during the application
+render phase.</span></div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Canvas.htm" title="The Canvas namespace provides an interface and classes for canvas apps in Salesforce.">Canvas</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">Use this interface to specify what
+canvas context information is provided to your app by implementing
+the <samp class="codeph apex_code">excludeContextTypes()</samp> method.
+Use this interface to call custom code when the app is rendered by
+implementing the <samp class="codeph apex_code">onRender()</samp> method.</p>
+<p class="p">If you provide an implementation of this interface,
+you must implement <samp class="codeph apex_code">excludeContextTypes()</samp> and <samp class="codeph apex_code">onRender()</samp>.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example Implementation</h2>
+<div class="p">The following example
+shows a simple implementation of CanvasLifecycleHandler that specifies
+that organization context information will be excluded and prints
+a debug message when the app is rendered.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyCanvasListener 
+<span class="keyword">implements</span> Canvas.CanvasLifecycleHandler{
+    <span class="keyword">public</span> Set&lt;Canvas.ContextTypeEnum&gt; excludeContextTypes(){
+        Set&lt;Canvas.ContextTypeEnum&gt; excluded = <span class="keyword">new</span> Set&lt;Canvas.ContextTypeEnum&gt;();
+        excluded.add(Canvas.ContextTypeEnum.ORGANIZATION);
+        <span class="statement">return</span> excluded;
+    }
+    
+    <span class="keyword">public</span> <span class="keyword">void</span> onRender(Canvas.RenderContext renderContext){
+        System.debug(<span class="string">'Canvas lifecycle called.'</span>);
+    }
+}</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_canvas_CanvasLifecycleHandler_methods.htm">CanvasLifecycleHandler Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_connect.meta/platform_connect/canvas_customizing_app_lifecycle.htm" target="_blank" title="Canvas Developer Guide: Customizing Your App
+       Lifecycle - HTML (New Window)"><em class="ph i">Canvas Developer Guide</em>: Customizing Your App
+       Lifecycle</a></div></li></ul>
+</div>
+</div>

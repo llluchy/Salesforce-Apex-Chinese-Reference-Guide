@@ -1,0 +1,219 @@
+<a name="apex_commercepayments_tokenization_service_api"><!-- --></a><h1 class="helpHead1">Tokenization Service API</h1><div class="body conbody">
+<div class="shortdesc">The credit card tokenization process replaces sensitive customer information with a
+  one-time algorithmically generated number, called a token, to use during the payment transaction.
+  Salesforce stores the token and then uses that token as a representation of the credit card used
+  for transactions. The token stores information about the credit card without storing sensitive
+  customer data such as credit card numbers. To add tokenization capabilities to your payment
+  services, implement our Tokenization API.</div>
+
+  <p class="p">In a typical tokenization process, the payments platform accepts customer payment method data
+   and passes it  to a remote token service server on the payment gateway, outside of Salesforce.
+   The server provides the tokenized value for storage on the platform. For example, a customer
+   provides a credit card number of <var class="keyword varname">4111 1111 1111 1234</var>. The token server stores
+   this value, associates it with a token of <var class="keyword varname">2537446225198291</var>, and sends that
+   token for storage on the platform.</p>
+
+  <p class="p">During communication with the merchant, the merchant sends the
+    <var class="keyword varname">2537446225198291</var> token to the token server. The token server confirms that it
+   matches the customer’s token, and authorizes the merchant to perform the transaction against the
+   customer’s card.</p>
+
+  <p class="p">The Commerce Payments Tokenization API accepts credit card information and uses the external
+   payment gateway configured through the customer's Salesforce org to tokenize the card
+   information. It then returns the tokenization representation. The API then saves the token in
+    <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_cardpaymentmethod.htm" target="_blank">CardPaymentMethod</a></samp>.</p>
+
+  
+  <p class="p">Call the tokenization service by making a POST request to this endpoint.</p>
+
+  <div class="codeSection apex_code"><pre class="codeblock brush:apex">/commerce/payments/payment-methods</pre></div>
+
+  <p class="p">The Tokenization Service accepts these request parameters from payment and related
+   entities.</p>
+
+  
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+    
+    
+    
+    <thead class="thead sorted" align="left">
+     <tr>
+      <th class="featureTableHeader  " id="d105353e78">Parameter</th>
+
+      <th class="featureTableHeader  " id="d105353e81">Required or Optional</th>
+
+      <th class="featureTableHeader  " id="d105353e84">Details</th>
+
+     </tr>
+
+    </thead>
+
+    <tbody class="tbody">
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">cardPaymentMethod</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Some of the related fields for this parameter, shown in the sample request of this
+       topic, are required. See <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_cardpaymentmethod.htm" target="_blank">CardPaymentMethod</a></samp>
+</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Details of the credit card to be tokenized. For Type, see <samp class="codeph nolang"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_cardpaymentmethod.htm" target="_blank">CardPaymentMethod</a></samp>
+</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">accountId</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Salesforce Account ID of the card owner.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">address</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Address information of the customer who owns the credit card payment method being
+       tokenized.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">paymentGatewayId</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Required</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">The external payment gateway related to the tokenization server.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">email</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Fraud parameter.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">ipAddress</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Fraud parameter.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">macAddress</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Fraud parameter.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">phone</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Fraud parameter.</td>
+
+     </tr>
+
+     <tr>
+      <td class="entry" headers="d105353e78" data-title="Parameter"><span class="keyword parmname">additionalData</span></td>
+
+      <td class="entry" headers="d105353e81" data-title="Required or Optional">Optional</td>
+
+      <td class="entry" headers="d105353e84" data-title="Details">Any additional data required by the gateway to tokenize a credit card payment
+       method.</td>
+
+     </tr>
+
+    </tbody>
+
+   </table></div>
+
+  <div class="section">
+<h2 class="helpHead2">Sample Request and Response</h2>
+
+   
+   <p class="p">This sample request provides a customer's credit card information for tokenization. Some
+    optional parameters are left blank.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+    <span class="string">"cardPaymentMethod"</span>: {
+        <span class="string">"cardHolderName"</span>:<span class="string">"Carol Smith"</span>,
+        <span class="string">"expiryMonth"</span>: <span class="string">"05"</span>,
+        <span class="string">"expiryYear"</span>: <span class="string">"2025"</span>, 
+        <span class="string">"startMonth"</span>: <span class="string">""</span>,
+        <span class="string">"startYear"</span>: <span class="string">""</span>,
+        <span class="string">"cvv"</span>: <span class="string">"000"</span>,
+        <span class="string">"cardNumber"</span>: <span class="string">"4111111111111111"</span>,
+        <span class="string">"cardCategory"</span>: <span class="string">"Credit"</span>,
+        <span class="string">"cardType"</span>: <span class="string">"Visa"</span>,
+        <span class="string">"nickName"</span>: <span class="string">""</span>,
+        <span class="string">"cardHolderFirstName"</span>: <span class="string">"Carol"</span>,
+        <span class="string">"cardHolderLastName"</span>: <span class="string">"Smith"</span>,
+        <span class="string">"email"</span> : <span class="string">"csmith@example.com"</span>,
+        <span class="string">"comments"</span> : <span class="string">""</span>,
+        <span class="string">"accountId"</span>: <span class="string">"000XXXXXXXX"</span>
+    },
+    <span class="string">"address"</span>:{
+        <span class="string">"street"</span>: <span class="string">"128 1st Street"</span>,
+        <span class="string">"city"</span>: <span class="string">"San Francisco"</span>,
+        <span class="string">"state"</span>: <span class="string">"CA"</span>,
+        <span class="string">"country"</span>: <span class="string">"USA"</span>,
+        <span class="string">"postalCode"</span>: <span class="string">"94015"</span>,
+        <span class="string">"companyName"</span>: <span class="string">"Salesforce"</span>
+    },
+    <span class="string">"paymentGatewayId"</span> : <span class="string">"000XXXXXXXX"</span>,
+    <span class="string">"email"</span>: <span class="string">""</span>
+    <span class="string">"ipAddress"</span>: <span class="string">""</span>,
+    <span class="string">"macAddress"</span>: <span class="string">""</span>,
+    <span class="string">"phone"</span>: <span class="string">""</span>,
+   
+    <span class="string">"additionalData"</span>:{
+         <span class="onelineComment">//add additional information if needed</span>
+        <span class="string">"key1"</span>:<span class="string">"value1"</span>,
+        <span class="string">"key2"</span>:<span class="string">"value2"</span>,
+        <span class="string">"key3"</span>:<span class="string">"value3"</span>,
+        <span class="string">"key4"</span>:<span class="string">"value4"</span>,
+        <span class="string">"key5"</span>:<span class="string">"value5"</span>
+    }
+}</pre></div>
+
+   <p class="p">A successful tokenization response updates the payment method and provides information about
+    the gateway response and any payment gateway logs.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+  <span class="string">"paymentMethod"</span>: {
+    <span class="string">"id"</span>: <span class="string">"03OR0000000xxxxxxx"</span>,
+    <span class="string">"accountId"</span> : <span class="string">"001xx000000xxxxxxx"</span>,
+    <span class="string">"status"</span> : <span class="string">"Active"</span>
+  },
+  <span class="string">"gatewayResponse"</span> : {
+    <span class="string">"gatewayResultCode"</span>: <span class="string">"00"</span>,
+    <span class="string">"gatewayResultCodeDescription"</span>: <span class="string">"Transaction Normal"</span>,
+    <span class="string">"gatewayDate"</span>: <span class="string">"2020-12-08T04:03:20.000Z"</span>,
+    <span class="string">"gatewayAvsCode"</span> : <span class="string">"7638788018713617"</span>,
+    <span class="string">"gatewayMessage"</span> : <span class="string">"8313990738208498"</span>,
+    <span class="string">"salesforceResultCode"</span>: <span class="string">"Success"</span>,
+    <span class="string">"gatewayTokenEncrypted"</span> : <span class="string">"SF701252"</span>
+  }
+  <span class="string">"paymentGatewayLogs"</span> : [ {
+    <span class="string">"createdDate"</span> : <span class="string">"2020-12-08T04:03:20.000Z"</span>,
+    <span class="string">"gatewayResultCode"</span> : <span class="string">"00"</span>,
+    <span class="string">"id"</span> : <span class="string">"0XtR0000000xxxxxxx"</span>,
+    <span class="string">"interactionStatus"</span> : <span class="string">"NoOp"</span>
+  } ],
+}</pre></div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

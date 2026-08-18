@@ -1,0 +1,546 @@
+<a name="apex_class_Messaging_CustomNotification"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">CustomNotification Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a><samp class="codeph apex_code">CustomNotification</samp> is used to
+            create, configure, and send custom notifications from Apex code.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Messaging.htm" title="The Messaging namespace provides classes and methods for Salesforce notifications and email functionality.">Messaging</a></p>
+</div>
+<div class="section" id="custom_notification_usage">
+<a name="custom_notification_usage"><!-- --></a><h2 class="helpHead2">Usage</h2>
+
+            
+            <div class="p">
+<samp class="codeph apex_code">CustomNotification</samp> allows two approaches to
+                creating and configuring a custom notification.<ul class="ul bulletList">
+                    
+                    
+                    <li class="li">Create an instance with the
+                        default constructor, and then set notification attributes using the various
+                        setter methods.</li>
+
+                    <li class="li">Create an instance and configure notification parameters at the same time
+                        using the parameterized constructor.</li>
+
+                </ul>
+Once the custom notification is configured, call <a class="xref" href="#apex_Messaging_CustomNotification_send" title="Sends a custom notification to the specified users."><samp class="codeph apex_code">send()</samp></a> to send the notification.</div>
+
+            <p class="p"><strong class="ph b">Notification Target</strong></p>
+
+            <p class="p">The <dfn class="term">notification target</dfn> is used by the receiving client application to
+                navigate to an appropriate record or page when a user responds to a notification.
+                For example, when a user is notified that a record was updated, responding to the
+                notification can open the relevant record.</p>
+
+            <p class="p">You must specify a target for a notification. The target can be specified using
+                either the <span class="keyword parmname">targetID</span> or the <span class="keyword parmname">targetPageRef</span>
+                attribute. Neither attribute is required, but if both are omitted, <samp class="codeph apex_code">send()</samp> throws an exception. If there’s no
+                natural target for a notification, set the <span class="keyword parmname">targetID</span> to a dummy
+                value, such as <kbd class="ph userinput">000000000000000AAA</kbd>. A dummy value prevents the
+                exception, and also prevents automatic navigation when responding to the
+                notification in the client app.</p>
+
+            <div class="p">You can set both <span class="keyword parmname">targetID</span> and <span class="keyword parmname">targetPageRef</span>
+                in the same notification. The client app that receives the notification determines
+                which target, if any, to use when responding to the notification.<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Before Winter ’21 you could set only a target record
+                        (<span class="keyword parmname">targetID</span>) for a notification. Most client applications
+                    expect to find a <span class="keyword parmname">targetID</span> in the notification payload. If
+                    you can’t update a client app to handle notifications that include only a
+                        <span class="keyword parmname">targetPageRef</span>, set the <span class="keyword parmname">targetID</span> to
+                    a dummy value.</p>
+</div>
+</div></div></div></div>
+</div>
+
+            <p class="p"><strong class="ph b">Execution Context and Notification Permissions</strong></p>
+
+            <p class="p">By default, Apex code executes in user mode, which means that user permissions on
+                objects and field-level security are respected. A user cannot run code that tries to
+                access fields or objects that are hidden from the user. Therefore, to send
+                notifications with <samp class="codeph apex_code">CustomNotification</samp>, you
+                must have the Send Custom Notifications user permission. If you don’t have the
+                required permission, the <samp class="codeph apex_code">send()</samp> method
+                fails.</p>
+
+        </div>
+<div class="section" id="custom_notification_example_code">
+<a name="custom_notification_example_code"><!-- --></a><h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example Apex class provides a static method for sending a custom notification to
+                a recipient list. Call this method from a trigger, flow, or wherever you want to
+                send a custom notification from Apex.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> without sharing <span class="keyword">class</span> CustomNotificationFromApex {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> notifyUsers(Set&lt;<span class="keyword">String</span>&gt; recipientsIds, <span class="keyword">String</span> targetId, <span class="keyword">String</span> actionGroupId) {
+        <span class="onelineComment">// Get the Id for our custom notification type</span>
+        CustomNotificationType notificationType = 
+            [SELECT Id, DeveloperName 
+             FROM CustomNotificationType 
+             WHERE DeveloperName=<span class="string">'Custom_Notification'</span> 
+             WITH USER_MODE
+             LIMIT 1];
+
+        <span class="onelineComment">// Create a new custom notification</span>
+        Messaging.CustomNotification notification = <span class="keyword">new</span> Messaging.CustomNotification();
+
+        <span class="onelineComment">// Set the contents for the notification</span>
+        notification.setTitle(<span class="string">'Apex Custom Notification'</span>);
+        notification.setBody(<span class="string">'The notifications are coming from INSIDE the Apex!'</span>);
+
+        <span class="onelineComment">// Set the notification type and target</span>
+        notification.setNotificationTypeId(notificationType.Id);
+        notification.setTargetId(targetId);
+
+        <span class="onelineComment">// Set the Action Group (This makes the notification actionable)</span>
+        <span class="statement">if</span> (<span class="keyword">String</span>.isNotBlank(actionGroupId)) {
+            notification.setActionGroupId(actionGroupId);
+        }
+
+        <span class="onelineComment">// Actually send the notification</span>
+        <span class="statement">try</span> {
+            notification.send(recipientsIds);
+        }
+        <span class="statement">catch</span> (Exception e) {
+            System.debug(<span class="string">'Problem sending notification: '</span> + e.getMessage());
+        }
+    }
+}</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This example uses a custom notification type with the <samp class="codeph soql">DeveloperName</samp> (API name) <kbd class="ph userinput">Custom_Notification</kbd>. You can create a custom notification type using <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.notif_builder.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">Notification Builder in Setup</a> or <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_tooling.meta/api_tooling/tooling_api_objects_customnotificationtype.htm" target="_blank" title="HTML (New Window)">Tooling API</a>. Then, use your notification type’s <samp class="codeph soql">DeveloperName</samp> (API name) in the query to find the ID of the notification type.<p class="p"><a class="xref" href="#apex_Messaging_CustomNotification_send" title="Sends a custom notification to the specified users."><samp class="codeph apex_code">CustomNotification.send()</samp></a> can throw an exception, which
+                    is handled minimally in this example. Add more substantial error handling to
+                    code you plan to use in production.</p>
+</p>
+</div>
+</div></div></div></div>
+
+        </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_constructors">CustomNotification Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_methods">CustomNotification Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://help.salesforce.com/articleView?id=notif_builder_custom.htm&amp;language=en_US" target="_blank" title="Salesforce Help: Send Custom Notifications - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Send Custom Notifications</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_action.meta/api_action/actions_obj_custom_notification.htm" target="_blank" title="Actions Developer Guide: Custom Notification Actions - HTML (New Window)"><em class="ph i">Actions Developer Guide</em>: Custom Notification Actions</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_meta.meta/api_meta/meta_customnotificationtype.htm" target="_blank" title="Metadata API Developer Guide: CustomNotificationType - HTML (New Window)"><em class="ph i">Metadata API Developer Guide</em>: CustomNotificationType</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_constructors">
+<a name="apex_Messaging_CustomNotification_constructors"><!-- --></a><h2 class="helpHead2">CustomNotification Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">CustomNotification</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_ctor_2">CustomNotification()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Messaging.CustomNotification</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_ctor">CustomNotification(typeId, sender, title, body, targetId, targetPageRef)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">Messaging.CustomNotification</samp> class using the specified parameters. When you use       this constructor, you don’t need to call the various setter methods to define the custom       notification attributes.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_ctor_2">
+<a name="apex_Messaging_CustomNotification_ctor_2"><!-- --></a><h3 class="helpHead3">CustomNotification()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates a new instance of the <samp class="codeph apex_code">Messaging.CustomNotification</samp> class.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomNotification()</samp></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_ctor">
+<a name="apex_Messaging_CustomNotification_ctor"><!-- --></a><h3 class="helpHead3">CustomNotification(typeId, sender, title, body, targetId, targetPageRef)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an instance of the <samp class="codeph apex_code">Messaging.CustomNotification</samp> class using the specified parameters. When you use
+      this constructor, you don’t need to call the various setter methods to define the custom
+      notification attributes.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomNotification(<span class="keyword">String</span> typeId, <span class="keyword">String</span> sender,
+          <span class="keyword">String</span> title, <span class="keyword">String</span> body, <span class="keyword">String</span> targetId, <span class="keyword">String</span> targetPageRef)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">typeId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID of the Custom Notification Type being used for the notification.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">sender</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The User ID of the sender of the notification.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">title</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The title of the notification. Maximum characters: 250.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The body of the notification. Maximum characters: 750.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">targetId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The Record ID for the target record of the notification.</p>
+<p class="p">You must specify either a
+                <span class="keyword parmname">targetID</span> or a <span class="keyword parmname">targetPageRef</span>. See <a class="xref" href="#custom_notification_usage">Custom Notification
+                Usage</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">targetPageRef</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The <samp class="codeph nolang">PageReference</samp> for the navigation target of
+            the notification. To see how to specify the target using JSON, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.lightning.meta/lightning/components_navigation_page_definitions.htm" target="_blank" title="HTML (New Window)">pageReference Types</a>.</p>
+<p class="p">You must specify
+              either a <span class="keyword parmname">targetID</span> or a <span class="keyword parmname">targetPageRe</span>. See
+                <a class="xref" href="#custom_notification_usage">Custom Notification
+                Usage</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">A client may see a truncated notification title or body depending on the delivery channel
+        or app, and how the Connect API notification parameters are configured. For more information
+        on the <samp class="codeph nolang">trimMessages</samp> query parameter, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_notifications_list.htm" target="_blank" title="HTML (New Window)">Notification </a>.</p>
+
+    </div>
+
+  </div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_methods">
+<a name="apex_Messaging_CustomNotification_methods"><!-- --></a><h2 class="helpHead2">CustomNotification Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">CustomNotification</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_send">send(users)</a></strong><br>
+Sends a custom notification to the specified users.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setNotificationTypeId">setNotificationTypeId(id)</a></strong><br>
+Sets the type of the custom notification.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setTitle">setTitle(title)</a></strong><br>
+Sets the title of the custom notification.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setBody">setBody(body)</a></strong><br>
+Sets the body of the custom notification.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setSenderId">setSenderId(id)</a></strong><br>
+Sets the sender of the custom notification.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setTargetId">setTargetId(targetId)</a></strong><br>
+Sets the target record of the custom notification.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Messaging_CustomNotification.htm#apex_Messaging_CustomNotification_setTargetPageRef">setTargetPageRef(pageRef)</a></strong><br>
+Sets the target page of the custom notification.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_send">
+<a name="apex_Messaging_CustomNotification_send"><!-- --></a><h3 class="helpHead3">send(users)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sends a custom notification to the specified users.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> send(Set&lt;<span class="keyword">String</span>&gt; users)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">users</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt; Required.</p>
+<p class="p">A set of recipient IDs. Each recipient ID corresponds to a recipient or recipient type
+            that the notification should be sent to. Valid recipient or recipient type values are:</p>
+<ul class="ul bulletList">
+              <li class="li">
+<span class="keyword parmname">UserId</span> — The notification is sent to this user, if this user
+                is active.</li>
+
+              <li class="li">
+<span class="keyword parmname">AccountId</span> — The notification is sent to all active users who
+                are members of this account’s Account Team.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> This recipient type is valid if
+                  account teams are enabled for your org.</p>
+</div>
+</div></div></div></div>
+</li>
+
+              <li class="li">
+<span class="keyword parmname">OpportunityId</span> — The notification is sent to all active users
+                who are members of this opportunity’s Opportunity Team.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This recipient type is
+                  valid if team selling is enabled for your org.</p>
+</div>
+</div></div></div></div>
+</li>
+
+              <li class="li">
+<span class="keyword parmname">GroupId</span> — The notification is sent to all active users who
+                are members of this group.</li>
+
+              <li class="li">
+<span class="keyword parmname">QueueId</span> — The notification is sent to all active users who
+                are members of this queue.</li>
+
+            </ul>
+<p class="p">Values can be combined in a set, up to the maximum of 500 values.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setNotificationTypeId">
+<a name="apex_Messaging_CustomNotification_setNotificationTypeId"><!-- --></a><h3 class="helpHead3">setNotificationTypeId(id)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the type of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setNotificationTypeId(<span class="keyword">String</span> id)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">id</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The ID of the Custom Notification Type being used for the notification. A notification type is required to send a custom notification. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setTitle">
+<a name="apex_Messaging_CustomNotification_setTitle"><!-- --></a><h3 class="helpHead3">setTitle(title)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the title of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setTitle(<span class="keyword">String</span> title)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">title</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The title of the notification, as it will be seen by recipients. Maximum characters: 250. A title is required to send a custom notification. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setBody">
+<a name="apex_Messaging_CustomNotification_setBody"><!-- --></a><h3 class="helpHead3">setBody(body)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the body of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setBody(<span class="keyword">String</span> body)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The body of the notification, as it will be seen by recipients. Maximum characters: 750. A body is required to send a custom notification. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setSenderId">
+<a name="apex_Messaging_CustomNotification_setSenderId"><!-- --></a><h3 class="helpHead3">setSenderId(id)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the sender of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setSenderId(<span class="keyword">String</span> id)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">id</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The User ID of the sender of the notification. Setting a sender is optional. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setTargetId">
+<a name="apex_Messaging_CustomNotification_setTargetId"><!-- --></a><h3 class="helpHead3">setTargetId(targetId)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the target record of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setTargetId(<span class="keyword">String</span> targetId)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">targetId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The Record ID for the target record of the notification. Either a <span class="keyword parmname">targetID</span> or a <span class="keyword parmname">targetPageRef</span> is
+            required to send a custom notification. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Messaging_CustomNotification_setTargetPageRef">
+<a name="apex_Messaging_CustomNotification_setTargetPageRef"><!-- --></a><h3 class="helpHead3">setTargetPageRef(pageRef)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the target page of the custom notification.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setTargetPageRef(<span class="keyword">String</span> pageRef)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">pageRef</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The <samp class="codeph nolang">PageReference</samp> for the navigation target of the
+            notification. Either a <span class="keyword parmname">targetID</span> or a <span class="keyword parmname">targetPageRef</span> is
+            required to send a custom notification. See <a class="xref" href="#custom_notification_usage">Custom Notification
+              Usage</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">See the <a class="xref" href="#custom_notification_example_code">Custom Notification Example</a>.</p>
+
+    </div>
+</div>
+</div>
+</div>
+</div>

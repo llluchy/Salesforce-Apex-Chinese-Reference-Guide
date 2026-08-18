@@ -1,0 +1,89 @@
+<a name="DataWeaveInApex_impl"><!-- --></a><h1 class="helpHead1">Implementing DataWeave in Apex</h1><div class="body conbody">
+<div class="shortdesc"> Create DataWeave scripts as metadata and invoke them directly from Apex. Use class
+        methods and exceptions in the DataWeave namespace to load and execute the scripts. </div>
+
+        <div class="section">
+<h2 class="helpHead2">DataWeave Namespace</h2>
+
+            
+            <p class="p">The DataWeave namespace provides classes and methods to support the invocation of
+                DataWeave scripts from Apex. The <samp class="codeph ">Script</samp> class
+                contains the <samp class="codeph ">createScript()</samp> method to load
+                DataWeave scripts from <samp class="codeph ">.dwl</samp> metadata files that
+                have been deployed to an org. The resulting script can then be run with a payload
+                using the <samp class="codeph ">execute()</samp> method to obtain script
+                output in a <samp class="codeph ">DataWeave.Result</samp> object. The <samp class="codeph ">Result</samp> class contains methods to retrieve script
+                output using <samp class="codeph ">Script</samp> class methods. For more
+                information on these classes and methods, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_namespace_DataWeave.htm" target="_blank" title="HTML (New Window)">DataWeave
+                Namespace</a>.</p>
+
+            <p class="p">For every DataWeave script, an inner class of type <samp class="codeph ">DataWeaveScriptResource.ScriptName</samp> is generated. The inner class
+                extends the <samp class="codeph nolang">DataWeave.Script</samp> class. You can use
+                the generated <samp class="codeph ">DataWeaveScriptResource.ScriptName</samp>
+                class instead of using the actual script name via the <samp class="codeph ">createScript()</samp> method. DataWeave scripts that are currently being
+                referenced via this inner class can't be deleted. To make the generated
+                DataWeaveScriptResource class global, set the <samp class="codeph ">isGlobal</samp> field in the <samp class="codeph ">DataWeaveResource</samp> metadata object.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;DataWeaveResource xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
+&lt;apiVersion&gt;58.0&lt;/apiVersion&gt;
+&lt;isGlobal&gt;true&lt;/isGlobal&gt;
+&lt;/DataWeaveResource&gt;</pre></div>
+
+            <p class="p">The catchable <samp class="codeph ">System.DataWeaveScriptException</samp>
+                exception is available for error handling. Runtime script exceptions that occur
+                within DataWeave are exposed to Apex with this exception type.</p>
+
+            <p class="p">DataWeave scripts support logging using the <samp class="codeph ">log(string,
+                    value)</samp> function. Log messages that originate from DataWeave are
+                reflected in Apex debug logs as <samp class="codeph ">DATAWEAVE_USER_DEBUG</samp> events, under the Apex Code log category at the
+                DEBUG log level.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Supporting Information</h2>
+
+            
+            <p class="p">These tools support the development of DataWeave scripts. </p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<a class="xref" href="https://sfdc.co/dwlangfun" target="_blank" title="HTML (New Window)">DataWeave Interactive Learning</a> is an online
+                    interactive playground that you can use to test your DataWeave scripts. </li>
+
+                <li class="li">
+<a class="xref" href="https://marketplace.visualstudio.com/items?itemName=MuleSoftInc.dataweave" target="_blank" title="HTML (New Window)">DataWeave 2.0 VSCode
+                        marketplace extension</a> adds code highlighting and other feature
+                    support for editing DataWeave scripts.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section" id="section_xkq_s1x_1dc">
+<a name="section_xkq_s1x_1dc"><!-- --></a><h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">These versions of DataWeave script syntax are supported in Apex.</p>
+
+            <a name="ul_jnj_3bx_1dc"><!-- --></a><ul class="ul bulletList" id="ul_jnj_3bx_1dc">
+                <li class="li">API version 61.0 and earlier: <a class="xref" href="https://docs.mulesoft.com/dataweave/2.5/" target="_blank">DataWeave 2.5 </a>
+</li>
+
+                <li class="li">API version 62.0: <a class="xref" href="https://docs.mulesoft.com/dataweave/2.8/" target="_blank">DataWeave 2.8 </a>
+</li>
+
+                <li class="li">API version 63.0 and later: <a class="xref" href="https://docs.mulesoft.com/dataweave/2.9/" target="_blank">DataWeave 2.9 </a>
+</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataWeaveInApex_limitations.htm" target="_blank" title="Limitations of DataWeave in Apex - HTML (New Window)">Limitations of DataWeave in Apex</a></div></li></ul>
+</div>
+</div>

@@ -1,0 +1,843 @@
+<a name="apex_methods_system_custom_settings"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Custom Settings Methods</h1>
+
+    
+    
+    <div class="body">
+<div class="shortdesc">Custom settings are similar to custom objects and enable application developers to
+        create custom sets of data, as well as create and associate custom data for an organization,
+        profile, or specific user. All custom settings data is exposed in the application cache,
+        which enables efficient access without the cost of repeated queries to the database. This
+        data is then available for formula fields, validation rules, flows, Apex, and the SOAP
+        API.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">Custom settings methods are all instance methods, that is, they are called by and
+                operate on a specific instance of a custom setting. There are two types of custom
+                settings: hierarchy and list. There are two types of methods: methods that work with
+                list custom settings, and methods that work with hierarchy custom settings.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>All custom settings data is exposed in the application cache, which enables
+                efficient access without the cost of repeated queries to the database. However,
+                querying custom settings data using Standard Object Query Language (SOQL) doesn't
+                use the application cache and is similar to querying a custom object. To benefit
+                from caching, use other methods for accessing custom settings data such as the Apex
+                Custom Settings methods.</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">For more information on creating custom settings in the Salesforce user interface,
+                see “Create Custom Settings” in the Salesforce online help.</p>
+
+        </div>
+
+        <div class="section" id="custom_setting_examples">
+<a name="custom_setting_examples"><!-- --></a><h2 class="helpHead2">Custom Setting
+                Examples</h2>
+<div class="p">
+<p class="p">The following example uses a
+                list custom setting called <samp class="codeph apex_code">Games</samp>. The
+                    <samp class="codeph apex_code">Games</samp> setting has a field called
+                    <span class="keyword parmname">GameType</span>. This example determines if the value of the first
+                data set is equal to the string <samp class="codeph apex_code">PC</samp>.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Games__C&gt; mcs = Games__c.getall().values();
+<span class="keyword">Boolean</span> isPcGameType = <span class="keyword">false</span>;
+<span class="statement">if</span> (mcs[0].GameType__c == <span class="string">'PC'</span>) {
+  isPcGameType = <span class="keyword">true</span>;
+}
+Assert.isTrue(isPcGameType);</pre></div>
+<div class="p">The following example uses a custom
+                setting called <samp class="codeph apex_code">Foundation_Countries</samp>. This
+                example demonstrates that the <samp class="codeph apex_code">getValues</samp> and
+                    <samp class="codeph apex_code">getInstance</samp> methods return identical
+                values.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">Foundation_Countries__c myCS1 = Foundation_Countries__c.getValues(<span class="string">'United States'</span>);
+<span class="keyword">String</span> myCCVal = myCS1.Country_code__c;
+Foundation_Countries__c myCS2 = Foundation_Countries__c.getInstance(<span class="string">'United States'</span>);
+<span class="keyword">String</span> myCCInst = myCS2.Country_code__c;
+Assert.areEqual(myCCinst, myCCVal);</pre></div>
+</div>
+</div>
+</div>
+
+        <div class="section" id="hierarchy_setting_examples">
+<a name="hierarchy_setting_examples"><!-- --></a><h2 class="helpHead2">Hierarchy Custom Setting Examples</h2>
+<div class="p">
+            <p class="p">In the following example,
+                the hierarchy custom setting GamesSupport has a field called
+                    <span class="keyword parmname">Corporate_number</span>. The code returns the value for the
+                profile specified with <samp class="codeph apex_code">pid</samp>.
+            </p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">GamesSupport__c mhc = GamesSupport__c.getInstance(pid);
+string mPhone = mhc.Corporate_number__c;</pre></div>
+The example is identical if you
+            choose to use the <samp class="codeph apex_code">getValues</samp> method.<p class="p">The
+                following example shows how to use hierarchy custom settings methods. For <samp class="codeph apex_code">getInstance</samp>, the example shows how field values
+                that aren't set for a specific user or profile are returned from fields defined at
+                the next lowest level in the hierarchy. The example also shows how to use <samp class="codeph apex_code">getOrgDefaults</samp>.</p>
+<p class="p">Finally, the example
+                demonstrates how <samp class="codeph apex_code">getValues</samp> returns fields in
+                the custom setting record only for the specific user or profile, and doesn't merge
+                values from other levels of the hierarchy. Instead, <samp class="codeph apex_code">getValues</samp> returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> for any
+                fields that aren't set. This example uses a hierarchy custom setting called
+                Hierarchy. Hierarchy has two fields: <span class="keyword parmname">OverrideMe</span> and
+                    <span class="keyword parmname">DontOverrideMe</span>. In addition, a user named Robert has a
+                System Administrator profile. The organization, profile, and user settings for this
+                example are as follows:</p>
+<ul class="ul bulletList">
+                    <li class="li">
+<strong class="ph b">Organization settings</strong>: <span class="keyword parmname">OverrideMe</span>: Hello <span class="keyword parmname">DontOverrideMe</span>: World</li>
+
+                    <li class="li">
+<strong class="ph b">Profile settings</strong>: <span class="keyword parmname">OverrideMe</span>: Goodbye <span class="keyword parmname">DontOverrideMe</span> is not set.</li>
+
+                    <li class="li">
+<strong class="ph b">User settings</strong>: <span class="keyword parmname">OverrideMe</span>: Fluffy <span class="keyword parmname">DontOverrideMe</span> is not set.</li>
+
+                </ul>
+<div class="p">The following example demonstrates the result of the <samp class="codeph apex_code">getInstance</samp> method when Robert calls it in his
+                organization:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getInstance();
+Assert.areEqual(<span class="string">'Fluffy'</span>, CS.OverrideMe__c);
+Assert.areEqual(<span class="string">'World'</span>, CS.DontOverrideMe__c);</pre></div>
+</div>
+<div class="p">If Robert passes his user ID specified by <samp class="codeph apex_code">RobertId</samp> to
+                    <samp class="codeph apex_code">getInstance</samp>, the results are the same.
+                The identical results are because the lowest level of data in the custom setting is
+                specified at the user
+                level.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getInstance(RobertId);
+Assert.areEqual(<span class="string">'Fluffy'</span>, CS.OverrideMe__c);
+Assert.areEqual(<span class="string">'World'</span>, CS.DontOverrideMe__c);</pre></div>
+</div>
+<div class="p">If Robert passes the System Administrator profile ID specified by <samp class="codeph apex_code">SysAdminID</samp> to <samp class="codeph apex_code">getInstance</samp>, the
+                result is different. The data specified for the profile is
+                returned:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getInstance(SysAdminID);
+Assert.areEqual(<span class="string">'Goodbye'</span>, CS.OverrideMe__c);
+Assert.areEqual(<span class="string">'World'</span>, CS.DontOverrideMe__c);</pre></div>
+</div>
+<div class="p">When Robert tries to return the data set for the organization using <samp class="codeph apex_code">getOrgDefaults</samp>, the result
+                is:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getOrgDefaults();
+Assert.areEqual(<span class="string">'Hello'</span>, CS.OverrideMe__c);
+Assert.areEqual(<span class="string">'World'</span>, CS.DontOverrideMe__c);</pre></div>
+</div>
+<div class="p">By using the <samp class="codeph apex_code">getValues</samp> method, Robert can get the
+                hierarchy custom setting values specific to his user and profile settings. For
+                example, if Robert passes his user ID <samp class="codeph apex_code">RobertId</samp> to <samp class="codeph apex_code">getValues</samp>, the
+                result
+                is:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getValues(RobertId);
+Assert.areEqual(<span class="string">'Fluffy'</span>, CS.OverrideMe__c);
+<span class="onelineComment">// Note how this value is null, because you are returning</span>
+<span class="onelineComment">// data specific for the user</span>
+Assert.isNull(CS.DontOverrideMe__c);</pre></div>
+</div>
+<div class="p">If Robert passes his System Administrator profile ID <samp class="codeph apex_code">SysAdminID</samp> to <samp class="codeph apex_code">getValues</samp>, the
+                result
+                is:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Hierarchy__c CS = Hierarchy__c.getValues(SysAdminID);
+Assert.areEqual(<span class="string">'Goodbye'</span>, CS.OverrideMe__c);
+<span class="onelineComment">// Note how this value is null, because you are returning</span>
+<span class="onelineComment">// data specific for the profile</span>
+Assert.isNull(CS.DontOverrideMe__c);</pre></div>
+</div>
+</div>
+</div>
+
+        <div class="section" id="cs_country_example">
+<a name="cs_country_example"><!-- --></a><h2 class="helpHead2"><span class="ph" id="cs_country_example_title"><a name="cs_country_example_title"><!-- --></a>Country and State Code Custom Settings
+                    Example</span></h2>
+
+            
+            <p class="p">This example illustrates using two custom setting objects for storing related
+                information, and a Visualforce page to display the data in a set of related
+                picklists. </p>
+
+            <p class="p">In the following example, country and state codes are stored in two different custom
+                settings: Foundation_Countries and Foundation_States. </p>
+
+            <div class="p">The Foundation_Countries custom setting is a list type custom setting and has a
+                single field, <span class="keyword parmname">Country_Code</span>. <div class="fig fignone">
+                    <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fcustom_setting_country_example.png&folder=apexref" alt="Custom Setting Countries Example"></span>
+                </div>
+</div>
+
+            <p class="p">The Foundation_States custom setting is also a List type of custom setting and has
+                the following fields:</p>
+<ul class="ul bulletList">
+                    <li class="li"><span class="keyword parmname">Country Code</span></li>
+
+                    <li class="li"><span class="keyword parmname">State Code</span></li>
+
+                    <li class="li"><span class="keyword parmname">State Name</span></li>
+
+                </ul>
+<div class="fig fignone">
+                    <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fcustom_setting_state_example.png&folder=apexref" alt="Custom Settings State Example"></span>
+                </div>
+
+            <div class="p">The Visualforce page shows two picklists: one for country and one for state.<div class="fig fignone">
+                    <span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fcustom_setting_VF_example.png&folder=apexref" alt="Custom Settings Visualforce Page"></span>
+                </div>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"CountryStatePicker"</span>&gt;
+   <span class="tag">&lt;apex:form</span> &gt;
+      <span class="tag">&lt;apex:actionFunction</span><span class="attribute"> name=</span><span class="string">"rerenderStates"</span><span class="attribute"> rerender=</span><span class="string">"statesSelectList"</span> &gt;
+          <span class="tag">&lt;apex:param</span><span class="attribute"> name=</span><span class="string">"firstParam"</span><span class="attribute"> assignTo=</span><span class="string">"{!country}"</span><span class="attribute"> value=</span><span class="string">""</span> /&gt;
+      <span class="tag">&lt;/apex:actionFunction</span>&gt;
+
+   <span class="tag">&lt;table</span>&gt;<span class="tag">&lt;tbody</span>&gt;
+      <span class="tag">&lt;tr</span>&gt;
+        <span class="tag">&lt;th</span>&gt;Country<span class="tag">&lt;/th</span>&gt;
+          <span class="tag">&lt;td</span>&gt;
+             <span class="tag">&lt;apex:selectList</span><span class="attribute"> id=</span><span class="string">"country"</span><span class="attribute"> styleclass=</span><span class="string">"std"</span><span class="attribute"> size=</span><span class="string">"1"</span> 
+               <span class="attribute"> value=</span><span class="string">"{!country}"</span><span class="attribute"> onChange=</span><span class="string">"rerenderStates(this.value)"</span>&gt;
+                    <span class="tag">&lt;apex:selectOptions</span><span class="attribute"> value=</span><span class="string">"{!countriesSelectList}"</span>/&gt;
+             <span class="tag">&lt;/apex:selectList</span>&gt;
+          <span class="tag">&lt;/td</span>&gt;
+      <span class="tag">&lt;/tr</span>&gt;
+      <span class="tag">&lt;tr</span><span class="attribute"> id=</span><span class="string">"state_input"</span>&gt;
+        <span class="tag">&lt;th</span>&gt;State/Province<span class="tag">&lt;/th</span>&gt;
+          <span class="tag">&lt;td</span>&gt;
+            <span class="tag">&lt;apex:selectList</span><span class="attribute"> id=</span><span class="string">"statesSelectList"</span><span class="attribute"> styleclass=</span><span class="string">"std"</span><span class="attribute"> size=</span><span class="string">"1"</span> 
+                <span class="attribute"> value=</span><span class="string">"{!state}"</span>&gt;
+                   <span class="tag">&lt;apex:selectOptions</span><span class="attribute"> value=</span><span class="string">"{!statesSelectList}"</span>/&gt;
+            <span class="tag">&lt;/apex:selectList</span>&gt;
+          <span class="tag">&lt;/td</span>&gt;
+      <span class="tag">&lt;/tr</span>&gt;
+   <span class="tag">&lt;/tbody</span>&gt;<span class="tag">&lt;/table</span>&gt;
+   <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+</div>
+
+            <div class="p">The Apex controller <samp class="codeph apex_code">CountryStatePicker</samp> finds
+                the values entered into the custom settings, then returns them to the Visualforce
+                page.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CountryStatePicker {
+
+<span class="onelineComment">// Variables to store country and state selected by user</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> state { get; set; }
+    <span class="keyword">public</span> <span class="keyword">String</span> country {get; set;}   
+
+    <span class="onelineComment">// Generates country dropdown from country settings</span>
+    <span class="keyword">public</span> List&lt;SelectOption&gt; getCountriesSelectList() {
+        List&lt;SelectOption&gt; options = <span class="keyword">new</span> List&lt;SelectOption&gt;();
+        options.add(<span class="keyword">new</span> SelectOption(<span class="string">''</span>, <span class="string">'-- Select One --'</span>));        
+
+        <span class="onelineComment">// Find all the countries in the custom setting</span>
+        Map&lt;<span class="keyword">String</span>, Foundation_Countries__c&gt; countries = Foundation_Countries__c.getAll();
+        
+        <span class="onelineComment">// Sort them by name</span>
+        List&lt;<span class="keyword">String</span>&gt; countryNames = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+        countryNames.addAll(countries.keySet());
+        countryNames.sort();
+        
+        <span class="onelineComment">// Create the Select Options.</span>
+        <span class="statement">for</span> (<span class="keyword">String</span> countryName : countryNames) {
+            Foundation_Countries__c country = countries.get(countryName);
+            options.add(<span class="keyword">new</span> SelectOption(country.country_code__c, country.Name));
+        }
+        <span class="statement">return</span> options;
+    }
+    
+    <span class="onelineComment">// To generate the states picklist based on the country selected by user.</span>
+    <span class="keyword">public</span> List&lt;SelectOption&gt; getStatesSelectList() {
+        List&lt;SelectOption&gt; options = <span class="keyword">new</span> List&lt;SelectOption&gt;();
+        <span class="onelineComment">// Find all the states we have in custom settings.</span>
+        Map&lt;<span class="keyword">String</span>, Foundation_States__c&gt; allstates = Foundation_States__c.getAll();
+
+        <span class="onelineComment">// Filter states that belong to the selected country</span>
+        Map&lt;<span class="keyword">String</span>, Foundation_States__c&gt; states = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, Foundation_States__c&gt;();
+        <span class="statement">for</span>(Foundation_States__c state : allstates.values()) {
+            <span class="statement">if</span> (state.country_code__c == <span class="statement">this</span>.country) {
+                states.put(state.name, state);
+            }
+        }
+        
+        <span class="onelineComment">// Sort the states based on their names</span>
+        List&lt;<span class="keyword">String</span>&gt; stateNames = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+        stateNames.addAll(states.keySet());
+        stateNames.sort();
+        
+        <span class="onelineComment">// Generate the Select Options based on the final sorted list</span>
+        <span class="statement">for</span> (<span class="keyword">String</span> stateName : stateNames) {
+            Foundation_States__c state = states.get(stateName);
+            options.add(<span class="keyword">new</span> SelectOption(state.state_code__c, state.state_name__c));
+        }
+        
+        <span class="onelineComment">// If no states are found, just say not required in the dropdown.</span>
+        <span class="statement">if</span> (options.size() &gt; 0) {
+            options.add(0, <span class="keyword">new</span> SelectOption(<span class="string">''</span>, <span class="string">'-- Select One --'</span>));
+        } <span class="statement">else</span> {
+            options.add(<span class="keyword">new</span> SelectOption(<span class="string">''</span>, <span class="string">'Not Required'</span>));
+        }
+        <span class="statement">return</span> options;
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_ListCustomSetting_instance_methods">List Custom Setting Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_instance_methods">Hierarchy Custom Setting Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_customsettings.htm" target="_blank" title="Apex Developer Guide: Custom Settings - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Custom Settings</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_ListCustomSetting_instance_methods">
+<a name="apex_System_ListCustomSetting_instance_methods"><!-- --></a>
+<h2 class="helpHead2">List Custom Setting Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are instance methods for list custom settings.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_ListCustomSetting_getAll">getAll()</a></strong><br>
+Returns a map of the data sets defined for the custom setting.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_ListCustomSetting_getInstance">getInstance(dataSetName)</a></strong><br>
+Returns the custom setting data set record for the specified data set name. This method     returns the exact same object as <samp class="codeph apex_code">getValues(<var class="keyword varname">dataSetName</var>)</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_ListCustomSetting_getValues">getValues(dataSetName)</a></strong><br>
+Returns the custom setting data set record for the specified data set name. This method     returns the exact same object as <samp class="codeph apex_code">getInstance(<var class="keyword varname">dataSetName</var>)</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_ListCustomSetting_getAll">
+<a name="apex_System_ListCustomSetting_getAll"><!-- --></a>
+ <h3 class="helpHead3">getAll()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a map of the data sets defined for the custom setting.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>, CustomSetting__c&gt; getAll()</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>, <a class="xref" href="#apex_methods_system_custom_settings" title="Custom settings are similar to custom objects and enable application developers to create custom sets of data, as well as create and associate custom data for an organization, profile, or specific user. All custom settings data is exposed in the application cache, which enables efficient access without the cost of repeated queries to the database. This data is then available for formula fields, validation rules, flows, Apex, and the SOAP API.">CustomSetting__c</a>&gt;</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If no data set is defined, this method returns an empty map.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For Apex saved using Salesforce API version 20.0 or earlier, the data set names, which are
+    the keys in the returned map, are converted to lower case. For Apex saved using Salesforce API
+    version 21.0 and later, the case of the data set names in the returned map keys is not changed
+    and the original case is preserved.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_ListCustomSetting_getInstance">
+<a name="apex_System_ListCustomSetting_getInstance"><!-- --></a>
+<h3 class="helpHead3">getInstance(dataSetName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the specified data set name. This method
+    returns the exact same object as <samp class="codeph apex_code">getValues(<var class="keyword varname">dataSetName</var>)</samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getInstance(<span class="keyword">String</span>
+        dataSetName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dataSetName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: CustomSetting__c</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p" id="NoDataListMethods"><a name="NoDataListMethods"><!-- --></a>If
+no data is defined for the specified data set, this method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_ListCustomSetting_getValues">
+<a name="apex_System_ListCustomSetting_getValues"><!-- --></a>
+<h3 class="helpHead3">getValues(dataSetName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the specified data set name. This method
+    returns the exact same object as <samp class="codeph apex_code">getInstance(<var class="keyword varname">dataSetName</var>)</samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getValues(<span class="keyword">String</span> dataSetName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dataSetName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: CustomSetting__c</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If no data is defined for
+the specified data set, this method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_instance_methods">
+<a name="apex_System_HierarchyCustomSetting_instance_methods"><!-- --></a>
+<h2 class="helpHead2">Hierarchy Custom Setting Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+   <p class="p">The following are instance methods for hierarchy custom settings.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+    <ul class="ul bulletList">
+     <li class="li">In API version 41.0 and below, each method in an Apex test class, including <samp class="codeph apex_code">testSetup</samp> methods, are able to insert hierarchy custom
+      setting values. This behavior is true even when the methods have the same <samp class="codeph apex_code">SetupOwnerId</samp> value as a hierarchy custom setting record
+      inserted in a different test method. </li>
+
+     <li class="li">In API version 42.0 and later, if a hierarchy custom setting is inserted in a <samp class="codeph apex_code">testSetup</samp> method, inserting a hierarchy custom setting record
+      with the same <samp class="codeph apex_code">SetupOwnerId</samp> in a test method throws a
+       <samp class="codeph apex_code">DUPLICATE_VALUE</samp> exception.</li>
+
+    </ul>
+
+   </p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getInstance">getInstance()</a></strong><br>
+Returns a custom setting data set record for the current user. The fields returned in   the custom setting record are merged based on the lowest level fields that are defined in the   hierarchy.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getInstance_2">getInstance(userId)</a></strong><br>
+Returns the custom setting data set record for the specified user ID. The lowest level   custom setting record and fields are returned. Use this when you want to explicitly retrieve data   for the custom setting at the user level.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getInstance_3">getInstance(profileId)</a></strong><br>
+Returns the custom setting data set record for the specified profile ID. The lowest   level custom setting record and fields are returned. Use this when you want to explicitly retrieve   data for the custom setting at the profile level.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getOrgDefaults">getOrgDefaults()</a></strong><br>
+Returns the custom setting data set record for the organization.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getValues">getValues(userId)</a></strong><br>
+Returns the custom setting data set record for the specified user ID.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_getValues_2">getValues(profileId)</a></strong><br>
+Returns the custom setting data set for the specified profile ID.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getInstance">
+<a name="apex_System_HierarchyCustomSetting_getInstance"><!-- --></a>
+ <h3 class="helpHead3">getInstance()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns a custom setting data set record for the current user. The fields returned in
+  the custom setting record are merged based on the lowest level fields that are defined in the
+  hierarchy.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getInstance()</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: CustomSetting__c</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">If no custom setting data is defined for the user, this
+   method returns a new custom setting object. The new custom setting object contains an ID set to
+    <samp class="codeph apex_code"><span class="keyword">null</span></samp> and merged fields from higher in the hierarchy. You
+   can add this new custom setting record for the user by using <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_insert"><samp class="codeph apex_code"><span class="statement">insert</span></samp></a> or <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_upsert"><samp class="codeph apex_code"><span class="statement">upsert</span></samp></a>. If no custom setting data is defined in the
+   hierarchy, the returned custom setting has empty fields, except for the
+    <span class="keyword parmname">SetupOwnerId</span> field which contains the user ID.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For Apex saved using
+    Salesforce API version 21.0 or earlier, this method returns the custom setting data set record
+    with fields merged from field values defined at the lowest hierarchy level, starting with the
+    user. Also, if no custom setting data is defined in the hierarchy, this method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+</div>
+</div></div></div></div>
+<p class="p">This method is equivalent to a method call to
+     <samp class="codeph apex_code">getInstance(User_Id)</samp> for the current
+   user.</p>
+</div>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">Custom setting data set defined for the user: If you have a custom setting data set defined
+     for the user “Uriel Jones,” for the profile “System Administrator,”
+     and for the organization as a whole, and the user running the code is Uriel Jones, this method
+     returns the custom setting record defined for Uriel Jones.</li>
+
+    <li class="li">Merged fields: If you have a custom setting data set with fields A and B for the user
+     “Uriel Jones” and for the profile “System Administrator,” and field
+     A is defined for Uriel Jones, field B is <samp class="codeph apex_code"><span class="keyword">null</span></samp> but is
+     defined for the System Adminitrator profile, this method returns the custom setting record for
+     Uriel Jones with field A for Uriel Jones and field B from the System Administrator
+     profile.</li>
+
+    <li class="li">No custom setting data set record defined for the user: If the current user is
+     “Barbara Mahonie,” who also shares the “System Administrator”
+     profile, but no data is defined for Barbara as a user, this method returns a new custom setting
+     record with the ID set to <samp class="codeph apex_code"><span class="keyword">null</span></samp> and with fields merged
+     based on the fields defined in the lowest level in the hierarchy.</li>
+
+   </ul>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getInstance_2">
+<a name="apex_System_HierarchyCustomSetting_getInstance_2"><!-- --></a>
+ <h3 class="helpHead3">getInstance(userId)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the specified user ID. The lowest level
+  custom setting record and fields are returned. Use this when you want to explicitly retrieve data
+  for the custom setting at the user level.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getInstance(<span class="keyword">ID</span> userId)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: CustomSetting__c</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If no custom setting data is defined for the user, this method returns a new custom setting
+    object. The new custom setting object contains an ID set to <samp class="codeph apex_code"><span class="keyword">null</span></samp> and merged fields from higher in the hierarchy. You can add this new custom
+    setting record for the user by using <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_insert"><samp class="codeph apex_code"><span class="statement">insert</span></samp></a> or <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_upsert"><samp class="codeph apex_code"><span class="statement">upsert</span></samp></a>. If no custom setting data is defined in the hierarchy, the returned
+    custom setting has empty fields, except for the <span class="keyword parmname">SetupOwnerId</span> field which
+    contains the user ID.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For Apex saved using Salesforce API version 21.0 or earlier, this method returns the custom
+    setting data set record with fields merged from field values defined at the lowest hierarchy
+    level, starting with the user. Also, if no custom setting data is defined in the hierarchy, this
+    method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getInstance_3">
+<a name="apex_System_HierarchyCustomSetting_getInstance_3"><!-- --></a>
+ <h3 class="helpHead3">getInstance(profileId)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the specified profile ID. The lowest
+  level custom setting record and fields are returned. Use this when you want to explicitly retrieve
+  data for the custom setting at the profile level.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getInstance(<span class="keyword">ID</span> profileId)</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">profileId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: CustomSetting__c</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If no custom setting data is defined for the profile, this method returns a new custom setting
+    record. The new custom setting object contains an ID set to <samp class="codeph apex_code"><span class="keyword">null</span></samp> and with merged fields from your organization's default values. You can add this
+    new custom setting for the profile by using <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_insert"><samp class="codeph apex_code"><span class="statement">insert</span></samp></a> or <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_dml_section.htm#apex_dml_upsert"><samp class="codeph apex_code"><span class="statement">upsert</span></samp></a>. If no custom setting data is defined in the
+    hierarchy, the returned custom setting has empty fields, except for the
+     <span class="keyword parmname">SetupOwnerId</span> field which contains the profile ID.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For Apex saved using SalesforceAPI version 21.0 or earlier, this method returns the custom
+    setting data set record with fields merged from field values defined at the lowest hierarchy
+    level, starting with the profile. Also, if no custom setting data is defined in the hierarchy,
+    this method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getOrgDefaults">
+<a name="apex_System_HierarchyCustomSetting_getOrgDefaults"><!-- --></a>
+ <h3 class="helpHead3">getOrgDefaults()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the organization.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getOrgDefaults()</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: CustomSetting__c</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If no custom setting data is defined for the organization, this method returns an empty custom
+    setting object.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For Apex saved using Salesforce API version 21.0 or earlier, this method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if no custom setting data is defined for the
+    organization.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getValues">
+<a name="apex_System_HierarchyCustomSetting_getValues"><!-- --></a>
+<h3 class="helpHead3">getValues(userId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set record for the specified
+user ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getValues(<span class="keyword">ID</span> userId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: CustomSetting__c</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Use this if you only want the subset of custom setting data that has been defined at the user
+    level. For example, suppose you have a custom setting field that has been assigned a value of
+    "alpha" at the organizational level, but has no value assigned at the user or profile level.
+    Using <samp class="codeph apex_code">getValues(<var class="keyword varname">UserId</var>)</samp> returns
+     <samp class="codeph apex_code"><span class="keyword">null</span></samp> for this custom setting field.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HierarchyCustomSetting_getValues_2">
+<a name="apex_System_HierarchyCustomSetting_getValues_2"><!-- --></a>
+<h3 class="helpHead3">getValues(profileId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the custom setting data set for the specified profile
+ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> CustomSetting__c getValues(<span class="keyword">ID</span> profileId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">profileId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: CustomSetting__c</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Use this if you only want the subset of custom setting data that has been defined at the profile
+                level. For example, suppose you have a custom setting field that has been assigned a
+                value of "alpha" at the organizational level, but has no value assigned at the user
+                or profile level. Using <samp class="codeph apex_code">getValues(ProfileId)</samp>
+                returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> for this custom setting
+                field.</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

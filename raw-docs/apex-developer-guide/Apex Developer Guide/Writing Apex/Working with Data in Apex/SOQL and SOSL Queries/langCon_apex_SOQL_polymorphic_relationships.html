@@ -1,0 +1,83 @@
+<a name="langCon_apex_SOQL_polymorphic_relationships"><!-- --></a><h1 class="helpHead1">Working with Polymorphic Relationships in SOQL Queries</h1><div class="body conbody">
+<div class="shortdesc">A polymorphic relationship is a relationship between objects where a referenced
+        object can be one of several different types. For example, the <samp class="codeph nolang">Who</samp> relationship field of a Task can be a Contact or a Lead.</div>
+
+        <p class="p">The following describes how to use SOQL queries with polymorphic relationships in Apex.
+            If you want more general information on polymorphic relationships, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_relationships_and_polymorph_keys.htm" target="_blank" title="HTML (New Window)">Understanding Relationship Fields and
+                Polymorphic Fields</a> in the SOQL and SOSL Reference.</p>
+
+        <div class="p">You can use SOQL queries that reference polymorphic fields in Apex to get results that
+            depend on the object type referenced by the polymorphic field. One approach is to filter
+            your results using the <span class="keyword parmname">Type</span> qualifier. This example queries Events
+            that are related to an Account or Opportunity via the What
+            field.<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Event&gt; events = [SELECT Description FROM Event WHERE What.Type IN (<span class="string">'Account'</span>, <span class="string">'Opportunity'</span>)];</pre></div>
+Another
+            approach would be to use the <samp class="codeph soql">TYPEOF</samp> clause in the
+            SOQL <samp class="codeph soql">SELECT</samp> statement. This example also queries
+            Events that are related to an Account or Opportunity via the What
+            field.<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Event&gt; events = [SELECT TYPEOF What WHEN Account THEN Phone WHEN Opportunity THEN Amount END FROM Event];</pre></div>
+These
+            queries return a list of sObjects where the relationship field references the desired
+            object types.</div>
+
+        <div class="p">If you need to access the referenced object in a polymorphic relationship, you can use
+            the <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm">instanceof</a> keyword to
+            determine the object type. The following example uses <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> to determine whether an Account or Opportunity is related to an
+            Event.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Event myEvent = eventFromQuery;
+<span class="statement">if</span> (myEvent.What <span class="statement">instanceof</span> Account) {
+    <span class="onelineComment">// myEvent.What references an Account, so process accordingly</span>
+} <span class="statement">else</span> <span class="statement">if</span> (myEvent.What <span class="statement">instanceof</span> Opportunity) {
+    <span class="onelineComment">// myEvent.What references an Opportunity, so process accordingly</span>
+}</pre></div>
+Note that you must assign the referenced sObject that the query returns to
+            a variable of the appropriate type before you can pass it to another method. The
+            following example<ol class="ol enumList">
+                <li class="li">Queries for User or Group owners of Merchandise__c custom objects using a SOQL
+                    query with a <samp class="codeph soql">TYPEOF</samp> clause</li>
+
+                <li class="li">Uses <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> to determine the owner
+                    type</li>
+
+                <li class="li">Assigns the owner objects to User or Group type variables before passing them to
+                    utility methods</li>
+
+            </ol>
+<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public class PolymorphismExampleClass {
+
+    // Utility method for a User
+    public static void processUser(User theUser) {
+        System.debug('Processed User');
+    }
+    
+    // Utility method for a Group
+    public static void processGroup(Group theGroup) {
+        System.debug('Processed Group');
+    }
+
+    public static void processOwnersOfMerchandise() {
+        // Select records based on the Owner polymorphic relationship field
+        List&lt;Merchandise__c&gt; merchandiseList = [SELECT TYPEOF Owner WHEN User THEN LastName WHEN Group THEN Email END FROM Merchandise__c];	
+        // We now have a list of Merchandise__c records owned by either a User or Group
+        for (Merchandise__c merch: merchandiseList) {
+            // We can use instanceof to check the polymorphic relationship type
+            // Note that we have to assign the polymorphic reference to the appropriate
+            // sObject type before passing to a method
+            if (merch.Owner instanceof User) {
+                User userOwner = merch.Owner;
+                processUser(userOwner);
+            } else if (merch.Owner instanceof Group) {
+                Group groupOwner = merch.Owner;
+                processGroup(groupOwner);
+            }
+        }
+    }
+}
+</pre></div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_filtering_nulls.htm" title="Improve Performance by Avoiding Null Values">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_SOQL_variables.htm" title="Using Apex Variables in SOQL and SOSL Queries">Next →</a></li>
+</ul></div>
+</div>

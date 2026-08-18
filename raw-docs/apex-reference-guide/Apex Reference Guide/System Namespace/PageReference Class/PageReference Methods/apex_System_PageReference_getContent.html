@@ -1,0 +1,59 @@
+<a name="apex_System_PageReference_getContent"><!-- --></a><h1 class="helpHead1">getContent()</h1><div class="body refbody">
+<div class="shortdesc">Returns the output of the page, as displayed to a user in a web browser.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Blob</span> getContent()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">The content of the returned Blob depends on how the page is rendered.
+        If the page is rendered as a PDF file, it returns the PDF document. If
+        the page
+        isn’t
+        rendered as PDF, it returns HTML. To access the content of the returned
+        HTML as a string, use the <samp class="codeph apex_code">toString</samp> Blob
+        method.
+        If the Visualforce page has an error, an <samp class="codeph apex_code">ExecutionException</samp> is thrown.</p>
+
+      
+      <p class="p">You can’t use the <samp class="codeph apex_code">getContent</samp>
+        method in:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Triggers</li>
+
+        <li class="li">Test methods. If you use <samp class="codeph apex_code">getContent</samp> in a test method, the test method fails.
+            <samp class="codeph apex_code">getContent</samp> is treated as a
+          callout in API version 34.0 and later.</li>
+
+        <li class="li">Apex email services</li>
+
+      </ul>
+
+      <p class="p">You also can’t use the method to retrieve the output of a different
+        Visualforce page with the same controller and controller extensions.
+        Instead, pass the base URL of the destination page.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">new</span> PageReference(Site.getBaseUrl() + <span class="string">'/apex/</span><var class="keyword varname">VisualforcePageName</var><span class="string">').getContent();</span></pre></div>
+
+      
+      
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

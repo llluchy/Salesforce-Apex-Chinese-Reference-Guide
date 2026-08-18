@@ -1,0 +1,399 @@
+<a name="apex_ConnectAPI_LightningScheduler_static_methods"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">LightningScheduler Class</h1>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Create and update service appointments.</span></div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_connect_api.htm" title="The ConnectApi namespace (also called Connect in Apex) provides classes for accessing the same data available in Connect REST API. Use Connect in Apex to create custom experiences in Salesforce.">ConnectApi</a></p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_ConnectAPI_LightningScheduler_methods">
+<a name="apex_ConnectAPI_LightningScheduler_methods"><!-- --></a>
+ <h2 class="helpHead2">LightningScheduler Methods</h2>
+
+ <div class="shortdesc">These methods are for <samp class="codeph apex_code">LightningScheduler</samp>. All
+  methods are static.</div>
+
+ 
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_LightningScheduler_static_methods.htm#apex_ConnectAPI_LightningScheduler_createServiceAppointment_2">createServiceAppointment(createServiceAppointmentInput)</a></strong><br>
+Create a service appointment.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_ConnectAPI_LightningScheduler_static_methods.htm#apex_ConnectAPI_LightningScheduler_updateServiceAppointment_1">updateServiceAppointment(updateServiceAppointmentInput)</a></strong><br>
+Update a service appointment.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_LightningScheduler_createServiceAppointment_2">
+<a name="apex_ConnectAPI_LightningScheduler_createServiceAppointment_2"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">createServiceAppointment(createServiceAppointmentInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Create a service appointment.</div>
+
+      <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+         
+         <p class="p">53.0</p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+         
+         <p class="p">No</p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> ConnectApi.ServiceAppointmentOutput
+               createServiceAppointment(ConnectApi.CreateServiceAppointmentInput
+               createServiceAppointmentInput)</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+         
+         <dl class="dl detailList">
+            
+               <dt class="dt dlterm"><var class="keyword varname">createServiceAppointmentInput</var></dt>
+
+               <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_create_service_appointment.htm" title="Contains information to create a service appointment.">ConnectApi.CreateServiceAppointmentInput</a></samp>
+</dd>
+
+               <dd class="dd">Input parameters to create a service appointment.</dd>
+
+            
+         </dl>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_service_appointment_output.htm" title="Output of the create service appointment request.">ConnectApi.ServiceAppointmentOutput</a></samp></p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+         
+         <div class="p">Considerations for using engagement channel types with the <samp class="codeph nolang">service-appointments</samp> resource:<ul class="ul bulletList">
+               <li class="li">Enable <strong class="ph uicontrol">Schedule Appointments Using Engagement Channels</strong> in
+                  Salesforce Scheduler Settings in your Salesforce org.</li>
+
+               <li class="li">When you create or modify appointments, shifts must be defined in the scheduling
+                  policy. For more information on setting up shifts in the scheduling policy, see
+                     <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_use_shifts_to_determine_time_slots.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Define Shift Rules in
+                     Scheduling Policy</a>.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Engagement channel types are not supported with
+                     operating hours rules in the scheduling policy.</p>
+</div>
+</div></div></div></div>
+</li>
+
+               <li class="li">When you use engagement channel type and shifts to create a service appointment,
+                  Salesforce Scheduler considers the default value for the Appointment Type (if not
+                  specified). However, Salesforce Scheduler only considers the engagement channel
+                  type and Appointment Type is ignored.</li>
+
+            </ul>
+</div>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+         
+         <div class="p">For an account (existing user):<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+ConnectApi.ExtendedFieldInput extendedFieldEmail = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldEmail.name = <span class="string">'Email'</span>;
+extendedFieldEmail.value = <span class="string">'rachael.adams@salesforce.com'</span>;
+
+ConnectApi.ExtendedFieldInput extendedFieldPhone = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldPhone.name = <span class="string">'Phone'</span>;
+extendedFieldPhone.value = <span class="string">'1234567890'</span>;
+
+List&lt;ConnectApi.ExtendedFieldInput&gt; extendedFieldList = <span class="keyword">new</span> List&lt;ConnectApi.ExtendedFieldInput&gt;();
+extendedFieldList.add(extendedFieldEmail);
+extendedFieldList.add(extendedFieldPhone);
+
+ConnectApi.ServiceAppointmentInput serviceAppInput = <span class="keyword">new</span> ConnectApi.ServiceAppointmentInput();
+serviceAppInput.extendedFields = extendedFieldList;
+serviceAppInput.engagementChannelTypeId = <span class="string">'0eFRM00000000Bv2AI'</span>;
+serviceAppInput.serviceTerritoryId = <span class="string">'0Hhxx0000004C92CAE'</span>;
+serviceAppInput.workTypeId = <span class="string">'08qxx0000004C92AAE'</span>;
+serviceAppInput.parentRecordId = <span class="string">'001xx000003GYR1AAO'</span>;
+serviceAppInput.schedStartTime = DateTime.valueOf(<span class="string">'2021-05-28 12:15:00'</span>);
+serviceAppInput.schedEndTime = DateTime.valueOf(<span class="string">'2021-05-28 12:45:00'</span>);
+serviceAppInput.appointmentMode = <span class="string">'Group'</span>;
+serviceAppInput.attendeeLimit = 20;
+
+ConnectApi.AssignedResourcesInput asResourceInput = <span class="keyword">new</span> ConnectApi.AssignedResourcesInput();
+asResourceInput.serviceResourceId = <span class="string">'0Hnxx0000004CAiCAM'</span>;
+asResourceInput.isRequiredResource = <span class="keyword">true</span>;
+asResourceInput.isPrimaryResource = <span class="keyword">true</span>;
+
+List&lt;ConnectApi.AssignedResourcesInput&gt; asResourceInputList = <span class="keyword">new</span> List&lt;ConnectApi.AssignedResourcesInput&gt;();
+asResourceInputList.add(asResourceInput);
+
+ConnectApi.CreateServiceAppointmentInput createInput = <span class="keyword">new</span> ConnectApi.CreateServiceAppointmentInput();
+createInput.serviceAppointment = serviceAppInput;
+createInput.assignedResources = asResourceInputList;
+
+<span class="statement">try</span>{
+   ConnectApi.ServiceAppointmentOutput appointmentResult = ConnectApi.LightningScheduler.createServiceAppointment(createInput);
+   <span class="keyword">String</span> serviceAppointmentId = appointmentResult.result.serviceAppointmentId;
+   List&lt;<span class="keyword">String</span>&gt; assignedResourceIds = appointmentResult.result.assignedResourceIds;
+}<span class="statement">catch</span>(ConnectApi.ConnectApiException ex){
+   <span class="onelineComment">//Handle Exception</span>
+}</pre></div>
+</div>
+
+         <div class="p">For a lead (authenticated guest user):<div class="codeSection apex_code"><pre class="codeblock brush:apex">
+ConnectApi.LeadInput leadInput = <span class="keyword">new</span> ConnectApi.LeadInput();
+leadInput.firstName = <span class="string">'Rachel'</span>;
+leadInput.lastName = <span class="string">'Adams'</span>;
+leadInput.phone = <span class="string">'012-345-6789'</span>;
+leadInput.email = <span class="string">'rachel.adams@salesforce.com'</span>;
+leadInput.company = <span class="string">'Salesforce'</span>;
+
+ConnectApi.ExtendedFieldInput extendedFieldEmail = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldEmail.name = <span class="string">'Email'</span>;
+extendedFieldEmail.value = <span class="string">'rachael.adams@salesforce.com'</span>;
+
+ConnectApi.ExtendedFieldInput extendedFieldPhone = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldPhone.name = <span class="string">'Phone'</span>;
+extendedFieldPhone.value = <span class="string">'1234567890'</span>;
+
+List&lt;ConnectApi.ExtendedFieldInput&gt; extendedFieldList = <span class="keyword">new</span> List&lt;ConnectApi.ExtendedFieldInput&gt;();
+extendedFieldList.add(extendedFieldEmail);
+extendedFieldList.add(extendedFieldPhone);
+
+ConnectApi.ServiceAppointmentInput serviceAppInput = <span class="keyword">new</span> ConnectApi.ServiceAppointmentInput();
+serviceAppInput.extendedFields = extendedFieldList;
+serviceAppInput.engagementChannelTypeId = <span class="string">'0eFRM00000000Bv2AI'</span>;
+serviceAppInput.serviceTerritoryId = <span class="string">'0Hhxx0000004C92CAE'</span>;
+serviceAppInput.workTypeId = <span class="string">'08qxx0000004C92AAE'</span>;
+serviceAppInput.schedStartTime = DateTime.valueOf(<span class="string">'2021-05-28 12:15:00'</span>);
+serviceAppInput.schedEndTime = DateTime.valueOf(<span class="string">'2021-05-28 12:45:00'</span>);
+
+ConnectApi.AssignedResourcesInput asResourceInput = <span class="keyword">new</span> ConnectApi.AssignedResourcesInput();
+asResourceInput.serviceResourceId = <span class="string">'0Hnxx0000004CAiCAM'</span>;
+asResourceInput.isRequiredResource = <span class="keyword">true</span>;
+asResourceInput.isPrimaryResource = <span class="keyword">true</span>;
+
+List&lt;ConnectApi.AssignedResourcesInput&gt; asResourceInputList = <span class="keyword">new</span> List&lt;ConnectApi.AssignedResourcesInput&gt;();
+asResourceInputList.add(asResourceInput);
+
+ConnectApi.CreateServiceAppointmentInput createInput = <span class="keyword">new</span> ConnectApi.CreateServiceAppointmentInput();
+createInput.serviceAppointment = serviceAppInput;
+createInput.assignedResources = asResourceInputList;
+createInput.lead = leadInput;
+
+<span class="statement">try</span>{
+   ConnectApi.ServiceAppointmentOutput appointmentResult = ConnectApi.LightningScheduler.createServiceAppointment(createInput);
+   <span class="keyword">String</span> serviceAppointmentId = appointmentResult.result.serviceAppointmentId;
+   List&lt;<span class="keyword">String</span>&gt; assignedResourceIds = appointmentResult.result.assignedResourceIds;
+}<span class="statement">catch</span>(ConnectApi.ConnectApiException ex){
+   <span class="onelineComment">//Handle Exception</span>
+}</pre></div>
+</div>
+
+      </div>
+
+   </div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_service_appointments.htm" target="_blank" title="Service Appointments - HTML (New Window)">Service Appointments</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_ConnectAPI_LightningScheduler_updateServiceAppointment_1">
+<a name="apex_ConnectAPI_LightningScheduler_updateServiceAppointment_1"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">updateServiceAppointment(updateServiceAppointmentInput)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Update a service appointment.</div>
+
+                <div class="section">
+<h4 class="helpHead4">API Version</h4>
+
+                        
+                        <p class="p">53.0</p>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Requires Chatter</h4>
+
+                        
+                        <p class="p">No</p>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+                        
+                        <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span>
+                                        ConnectApi.ServiceAppointmentOutput
+                                        updateServiceAppointment(ConnectApi.UpdateServiceAppointmentInput
+                                        updateServiceAppointmentInput)</samp></p>
+
+                        
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+                        
+                        <dl class="dl detailList">
+                                
+                                        <dt class="dt dlterm"><var class="keyword varname">updateServiceAppointmentInput</var></dt>
+
+                                        <dd class="dd">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_update_service_appointment.htm" title="Contains information to update a service appointment.">ConnectApi.UpdateServiceAppointmentInput</a></samp>
+</dd>
+
+                                        <dd class="dd">Input parameters to update a service appointment.</dd>
+
+                                
+                        </dl>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+                        
+                        <p class="p">Type: <samp class="codeph apex_code"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_output_service_appointment_output.htm" title="Output of the create service appointment request.">ConnectApi.ServiceAppointmentOutput</a></samp></p>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+                        
+                        <div class="p">Considerations for using engagement channel types with the <samp class="codeph nolang">service-appointments</samp> resource:<ul class="ul bulletList">
+                                        <li class="li">Enable <strong class="ph uicontrol">Schedule Appointments Using Engagement
+                                                  Channels</strong> in Salesforce Scheduler
+                                                Settings in your Salesforce org.</li>
+
+                                        <li class="li">When you create or modify appointments, shifts must be
+                                                defined in the scheduling policy. For more
+                                                information on setting up shifts in the scheduling
+                                                policy, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.ls_use_shifts_to_determine_time_slots.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Define Shift Rules in
+                                                  Scheduling Policy</a>.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Engagement channel
+                                                  types are not supported with operating hours rules
+                                                  in the scheduling policy.</p>
+</div>
+</div></div></div></div>
+</li>
+
+                                        <li class="li">When you use engagement channel type and shifts to
+                                                modify an appointment, Salesforce Scheduler
+                                                considers the default value for the Appointment Type
+                                                (if not specified). However, Salesforce Scheduler
+                                                only considers the engagement channel type and
+                                                Appointment Type is ignored.</li>
+
+                                </ul>
+</div>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+                        
+                        <div class="p">
+                                <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+ConnectApi.ExtendedFieldInput extendedFieldEmail = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldEmail.name = <span class="string">'Email'</span>;
+extendedFieldEmail.value = <span class="string">'rachel.adams@salesforce.com.example'</span>;
+
+ConnectApi.ExtendedFieldInput extendedFieldPhone = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldPhone.name = <span class="string">'Phone'</span>;
+extendedFieldPhone.value = <span class="string">'0123456789'</span>;
+
+ConnectApi.ExtendedFieldInput extendedFieldStatus = <span class="keyword">new</span> ConnectApi.ExtendedFieldInput();
+extendedFieldStatus.name = <span class="string">'Status'</span>;
+extendedFieldStatus.value = <span class="string">'None'</span>;
+
+List&lt;ConnectApi.ExtendedFieldInput&gt; extendedFieldList = <span class="keyword">new</span> List&lt;ConnectApi.ExtendedFieldInput&gt;();
+extendedFieldList.add(extendedFieldEmail);
+extendedFieldList.add(extendedFieldPhone);
+extendedFieldList.add(extendedFieldStatus);
+
+ConnectApi.ServiceAppointmentInput serviceAppInput = <span class="keyword">new</span> ConnectApi.ServiceAppointmentInput();
+serviceAppInput.extendedFields = extendedFieldList;
+serviceAppInput.serviceTerritoryId = <span class="string">'0Hhxx0000004C92CAE'</span>;
+serviceAppInput.workTypeId = <span class="string">'08qxx0000004C92AAE'</span>;
+serviceAppInput.schedStartTime = DateTime.valueOf(<span class="string">'2021-05-28 12:15:00'</span>);
+serviceAppInput.schedEndTime = DateTime.valueOf(<span class="string">'2021-05-28 12:45:00'</span>);
+
+ConnectApi.AssignedResourcesInput asResourceInput = <span class="keyword">new</span> ConnectApi.AssignedResourcesInput();
+asResourceInput.serviceResourceId = <span class="string">'0Hnxx0000004CAiCAM'</span>;
+asResourceInput.isRequiredResource = <span class="keyword">true</span>;
+asResourceInput.isPrimaryResource = <span class="keyword">true</span>;
+
+<span class="onelineComment">//Multi-resource</span>
+ConnectApi.AssignedResourcesInput asResourceInputReq = <span class="keyword">new</span> ConnectApi.AssignedResourcesInput();
+asResourceInputReq.serviceResourceId = <span class="string">'0Hnxx0000004CAgCAM'</span>;
+asResourceInputReq.isRequiredResource = <span class="keyword">true</span>;
+asResourceInputReq.isPrimaryResource = <span class="keyword">false</span>;
+
+List&lt;ConnectApi.AssignedResourcesInput&gt; asResourceInputList = <span class="keyword">new</span> List&lt;ConnectApi.AssignedResourcesInput&gt;();
+asResourceInputList.add(asResourceInput);
+asResourceInputList.add(asResourceInputReq);
+
+ConnectApi.UpdateServiceAppointmentInput updateInput = <span class="keyword">new</span> ConnectApi.UpdateServiceAppointmentInput();
+updateInput.serviceAppointment = serviceAppInput;
+updateInput.assignedResources = asResourceInputList;
+updateInput.serviceAppointmentId = <span class="string">'08pxx0000004CYqAAM'</span>;
+
+<span class="statement">try</span>{
+   ConnectApi.ServiceAppointmentOutput appointmentResult = ConnectApi.LightningScheduler.updateServiceAppointment(updateInput);
+   <span class="keyword">String</span> serviceAppointmentId = appointmentResult.result.serviceAppointmentId;
+   List&lt;<span class="keyword">String</span>&gt; assignedResourceIds = appointmentResult.result.assignedResourceIds;
+}<span class="statement">catch</span>(ConnectApi.ConnectApiException ex){
+   <span class="onelineComment">//Handle Exception</span>
+}</pre></div>
+
+                        </div>
+
+                </div>
+
+        </div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.chatterapi.meta/chatterapi/connect_resources_service_appointments.htm" target="_blank" title="Service Appointments - HTML (New Window)">Service Appointments</a></div></li></ul>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,342 @@
+<a name="apex_bulk_sharing_understanding"><!-- --></a><h1 class="helpHead1">Understanding Sharing</h1><div class="body">
+<div class="shortdesc">
+<dfn class="term">Sharing</dfn> enables record-level access control for all custom objects, as
+        well as many standard objects (such as Account, Contact, Opportunity and Case).
+        Administrators first set an object’s organization-wide default sharing access level,
+        and then grant additional access based on record ownership, the role hierarchy, sharing
+        rules, and manual sharing. Developers can then use Apex managed sharing to grant additional
+        access programmatically with Apex.</div>
+
+        <p class="p">Most sharing for a record is maintained in a related sharing object, similar to an access
+            control list (ACL) found in other platforms.</p>
+
+        <div class="section" id="sharing_types_section">
+<a name="sharing_types_section"><!-- --></a><h2 class="helpHead2">Types of Sharing</h2>
+
+            
+            <p class="p">Salesforce has the following types of sharing:</p>
+
+            <ul class="ul bulletList">
+                    <li class="li">
+<strong class="ph b">Managed Sharing</strong>: Managed sharing involves sharing access granted by Lightning Platform
+                            based on record ownership, the role hierarchy, and sharing rules: <ul class="ul bulletList">
+                                    <li class="li">
+<strong class="ph b">Record Ownership</strong>: Each record is owned by a user or optionally a queue for
+                                            custom objects, cases and leads. The <dfn class="term">record
+                                                owner</dfn> is automatically granted Full Access,
+                                            allowing them to view, edit, transfer, share, and delete
+                                            the record.</li>
+
+                                    <li class="li">
+<strong class="ph b">Role Hierarchy</strong>: The <dfn class="term">role hierarchy</dfn> enables users above
+                                            another user in the hierarchy to have the same level of
+                                            access to records owned by or shared with users below.
+                                            Consequently, users above a record owner in the role
+                                            hierarchy are also implicitly granted Full Access to the
+                                            record, though this behavior can be disabled for
+                                            specific custom objects. The role hierarchy is not
+                                            maintained with sharing records. Instead, role hierarchy
+                                            access is derived at runtime. For more information, see
+                                            “Controlling Access Using Hierarchies” in
+                                            the Salesforce online help.</li>
+
+                                    <li class="li">
+<strong class="ph b">Sharing Rules</strong>: <dfn class="term">Sharing rules</dfn> are used by administrators to
+                                            automatically grant users within a given group or role
+                                            access to records owned by a specific group of users.
+                                                <span class="ph">Sharing rules cannot be added to a
+                                                package and cannot be used to support sharing logic
+                                                for apps installed from AppExchange.</span><p class="p">Sharing
+                                                rules can be based on record ownership or other
+                                                criteria. You can’t use Apex to create
+                                                criteria-based sharing rules. Also, criteria-based
+                                                sharing cannot be tested using Apex.</p>
+</li>
+
+                                </ul>
+<p class="p">All implicit sharing added by Force.com managed sharing cannot be
+                                altered directly using the Salesforce user interface, SOAP API, or
+                                Apex.</p>
+</li>
+
+                    <li class="li">
+<strong class="ph b">User Managed Sharing, also known as Manual Sharing</strong>: User managed sharing allows the record owner or any user with Full
+                            Access to a record to share the record with a user or group of users.
+                            This is generally done by an end user, for a single record. Only the
+                            record owner and users above the owner in the role hierarchy are granted
+                            Full Access to the record. It is not possible to grant other users Full
+                            Access. Users with the “Modify All Records” object-level
+                            permission for the given object or the “Modify All Data”
+                            permission can also manually share a record. User managed sharing is
+                            removed when the record owner changes or when the access granted in the
+                            sharing does not grant additional access beyond the object's
+                            organization-wide sharing default access level.</li>
+
+                    <li class="li">
+<strong class="ph b">Apex Managed Sharing</strong>: Apex managed sharing provides developers with
+                    the ability to support an application’s particular sharing requirements
+                    programmatically through Apex or the SOAP API. <span class="ph" id="apex_sharing_defn"><a name="apex_sharing_defn"><!-- --></a>This
+                        type of sharing is similar to managed sharing. Only users with “Modify All
+                        Data” permission can add or change Apex managed sharing on a record. Apex
+                        managed sharing is maintained when the record owner changes or is
+                        deactivated. </span>
+                    <div class="box message info" id="managed_sharing_CO_only">
+<a name="managed_sharing_CO_only"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Apex sharing reasons and Apex managed sharing
+                        recalculation are only available for custom objects.</p>
+</div>
+</div></div></div>
+</div>
+</li>
+
+                </ul>
+
+        </div>
+
+        <div class="section" id="sharing_reason_field">
+<a name="sharing_reason_field"><!-- --></a><h2 class="helpHead2">The Sharing Reason Field</h2>
+<p class="p">In the
+                Salesforce user interface, the <span class="keyword parmname">Reason</span> field on a custom object
+                specifies the type of sharing used for a record. This field is called <samp class="codeph apex_code">rowCause</samp> in Apex or the API.</p>
+<p class="p">Each of the
+                following list items is a type of sharing used for records. The tables show
+                    <span class="keyword parmname">Reason</span> field value, and the related <samp class="codeph apex_code">rowCause</samp> value.</p>
+<p class="p"><strong class="ph b">Managed Sharing</strong></p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d12090e135">
+<span class="keyword parmname">Reason Field</span> Value</th>
+
+                            <th class="featureTableHeader  " id="d12090e140">
+<samp class="ph codeph">rowCause</samp> Value (Used in
+                                Apex or the API)</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Account Sharing</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">ImplicitChild</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Associated record owner or sharing</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">ImplicitParent</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Owner</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">Owner</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Opportunity Team</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">Team</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Sharing Rule</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">Rule</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e135" data-title="Reason Field Value">Territory Assignment Rule</td>
+
+                            <td class="entry" headers="d12090e140" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">TerritoryRule</samp></td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <p class="p"><strong class="ph b">User Managed Sharing</strong></p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d12090e229">
+<span class="keyword parmname">Reason Field</span> Value</th>
+
+                            <th class="featureTableHeader  " id="d12090e234">
+<samp class="ph codeph">rowCause</samp> Value (Used in
+                                Apex or the API)</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d12090e229" data-title="Reason Field Value">Manual Sharing</td>
+
+                            <td class="entry" headers="d12090e234" data-title="rowCause Value (Used in Apex or the API)"><samp class="codeph apex_code">Manual</samp></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e229" data-title="Reason Field Value">Territory Manual</td>
+
+                            <td class="entry" headers="d12090e234" data-title="rowCause Value (Used in Apex or the API)">
+<samp class="codeph apex_code">TerritoryManual</samp><p class="p">With
+                                    Enterprise Territory Management in API version 45.0 and later,
+                                        <samp class="codeph nolang">Territory2AssociationManual</samp> replaces <samp class="codeph nolang">TerritoryManual</samp>.</p>
+</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+            <p class="p"><strong class="ph b">Apex Managed Sharing</strong></p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d12090e291">
+<span class="keyword parmname">Reason Field</span> Value</th>
+
+                            <th class="featureTableHeader  " id="d12090e296">
+<samp class="ph codeph">rowCause</samp> Value (Used in
+                                Apex or the API)</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d12090e291" data-title="Reason Field Value">Defined by developer</td>
+
+                            <td class="entry" headers="d12090e296" data-title="rowCause Value (Used in Apex or the API)">Defined by developer</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+<p class="p">The displayed reason for Apex managed sharing is defined by the developer.
+            </p>
+</div>
+
+        <div class="section" id="sharing_access_levels">
+<a name="sharing_access_levels"><!-- --></a><h2 class="helpHead2">Access Levels</h2>
+
+            
+            <p class="p">When determining a user’s access to a record, the most permissive level of access is
+                used. Most share objects support the following access levels:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d12090e341">Access Level</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d12090e344">API Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d12090e347">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d12090e341" data-title="Access Level">Private</td>
+
+                            <td class="entry" headers="d12090e344" data-title="API Name">None</td>
+
+                            <td class="entry" headers="d12090e347" data-title="Description">Only the record owner and users above the record owner in the
+                                role hierarchy can view and edit the record. This access level only
+                                applies to the AccountShare object.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e341" data-title="Access Level">Read Only</td>
+
+                            <td class="entry" headers="d12090e344" data-title="API Name">Read</td>
+
+                            <td class="entry" headers="d12090e347" data-title="Description">The specified user or group can view the record only.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e341" data-title="Access Level">Read/Write</td>
+
+                            <td class="entry" headers="d12090e344" data-title="API Name">Edit</td>
+
+                            <td class="entry" headers="d12090e347" data-title="Description">The specified user or group can view and edit the record.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d12090e341" data-title="Access Level">Full Access</td>
+
+                            <td class="entry" headers="d12090e344" data-title="API Name">All</td>
+
+                            <td class="entry" headers="d12090e347" data-title="Description">The specified user or group can view, edit, transfer, share, and
+                                delete the record. <p class="p">This access level can only be granted with
+                                    managed sharing.</p>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Sharing Considerations</h2>
+<p class="p">If a trigger changes the owner of a record,
+                the running user must have read access to the new owner’s user record, if the
+                trigger is started through</p>
+<ul class="ul bulletList">
+                <li class="li">API</li>
+
+                <li class="li">Standard user interface</li>
+
+                <li class="li">Standard Visualforce controller</li>
+
+                <li class="li">Class defined with the <samp class="codeph nolang">with sharing</samp>
+                    keyword</li>
+
+            </ul>
+<p class="p">If a trigger is started through a class that’s not defined with the <samp class="codeph nolang">with sharing</samp> keyword, the trigger runs in system
+                mode. In this case, the trigger doesn’t require the running user to have specific
+                access.</p>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

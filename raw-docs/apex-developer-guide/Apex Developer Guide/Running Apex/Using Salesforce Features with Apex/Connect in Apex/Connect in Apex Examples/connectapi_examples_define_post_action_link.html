@@ -1,0 +1,121 @@
+<a name="connectapi_examples_define_post_action_link"><!-- --></a><h1 class="helpHead1">Define an Action Link and Post with a Feed Element</h1><div class="body refbody">
+<div class="shortdesc">Create one action link in an action link group, associate the action link group with a
+    feed item, and post the feed item.</div>
+
+    <div class="section">
+<div class="fig fignone">
+        <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_task_intial.png&folder=apexcode" alt="Action link on a feed item in the feed."></span></div>
+      </div>
+<p class="p">When a user clicks the action link, the action link requests the Connect REST API
+        resource <samp class="codeph nolang">/chatter/feed-elements</samp>, which posts a feed
+        item to the user’s feed. After the user clicks the action link and it executes successfully,
+        its status changes to successful and the feed item UI is updated.</p>
+<div class="fig fignone">
+        <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_task_success.png&folder=apexcode" alt="Successfully executed action link."></span></div>
+      </div>
+<p class="p">Refresh the user’s feed to see the new post.</p>
+<div class="fig fignone">
+        <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Factionlinks_task_post.png&folder=apexcode" alt="Post created by an action link."></span></div>
+      </div>
+<p class="p">This simple example shows you how to use action links to call a Salesforce
+        resource.</p>
+<p class="p">Think of an action link as a button on a feed item. Like a button, an action
+        link definition includes a label (<samp class="codeph nolang">labelKey</samp>). An action
+        link group definition also includes other properties like a URL (<samp class="codeph nolang">actionUrl</samp>), an HTTP method (<samp class="codeph nolang">method</samp>), and an
+        optional request body (<samp class="codeph nolang">requestBody</samp>) and HTTP headers
+          (<samp class="codeph nolang">headers</samp>).</p>
+<p class="p">When a user clicks this action link,
+        an HTTP POST request is made to a Connect REST API resource, which posts a feed item to
+        Chatter. The <samp class="codeph nolang">requestBody</samp> property holds the request
+        body for the <samp class="codeph nolang">actionUrl</samp> resource, including the text of
+        the new feed item. In this example, the new feed item includes only text, but it could
+        include other capabilities such as a file attachment, a poll, or even action
+        links.</p>
+<p class="p">Just like radio buttons, action links must be nested in a group. Action links
+        within a group share the properties of the group and are mutually exclusive (you can click
+        only one action link within a group). Even if you define only one action link, it must be
+        part of an action link group.</p>
+<p class="p">This example calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ActionLinks_static_methods.htm#apex_ConnectAPI_ActionLinks_createActionLinkGroupDefinition_1" target="_blank"><samp class="codeph apex_code">ConnectApi.ActionLinks.createActionLinkGroupDefinition​(communityId,
+            actionLinkGroup)</samp></a> to create an action link group definition.</p>
+<p class="p">It
+        saves the action link group ID from that call and associates it with a feed element in a
+        call to <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElement_3" target="_blank"><samp class="codeph apex_code">ConnectApi.ChatterFeeds.postFeedElement(communityId,
+        feedElement)</samp></a>.</p>
+<p class="p">To use this code, substitute an OAuth value for your own
+        Salesforce org. Also, verify that the <samp class="codeph apex_code">expirationDate</samp>
+        is in the future. Look for the “To Do” comments in the
+        code.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">ConnectApi.ActionLinkGroupDefinitionInput actionLinkGroupDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkGroupDefinitionInput();
+ConnectApi.ActionLinkDefinitionInput actionLinkDefinitionInput = <span class="keyword">new</span> ConnectApi.ActionLinkDefinitionInput();
+ConnectApi.RequestHeaderInput requestHeaderInput1 = <span class="keyword">new</span> ConnectApi.RequestHeaderInput();
+ConnectApi.RequestHeaderInput requestHeaderInput2 = <span class="keyword">new</span> ConnectApi.RequestHeaderInput();
+
+<span class="onelineComment">// Create the action link group definition.</span>
+actionLinkGroupDefinitionInput.actionLinks = New List&lt;ConnectApi.ActionLinkDefinitionInput&gt;();
+actionLinkGroupDefinitionInput.executionsAllowed = ConnectApi.ActionLinkExecutionsAllowed.OncePerUser;
+actionLinkGroupDefinitionInput.category = ConnectApi.PlatformActionGroupCategory.Primary;
+<span class="onelineComment">// </span><strong class="ph b">To Do</strong>: Verify that the date <span class="statement">is</span> <span class="statement">in</span> the future.
+<span class="onelineComment">// Action link groups are removed from feed elements on the expiration date.</span>
+datetime myDate = datetime.newInstance(2016, 3, 1);
+actionLinkGroupDefinitionInput.expirationDate = myDate;
+
+<span class="onelineComment">// Create the action link definition.</span>
+actionLinkDefinitionInput.actionType = ConnectApi.ActionLinkType.Api;
+actionLinkDefinitionInput.actionUrl = <span class="string">'/services/data/v33.0/chatter/feed-elements'</span>;
+actionLinkDefinitionInput.headers = <span class="keyword">new</span> List&lt;ConnectApi.RequestHeaderInput&gt;();
+actionLinkDefinitionInput.labelKey = <span class="string">'Post'</span>;
+actionLinkDefinitionInput.method = ConnectApi.HttpRequestMethod.HttpPost;
+actionLinkDefinitionInput.requestBody = <span class="string">'{\"subjectId\": \"me\",\"feedElementType\": \"FeedItem\",\"body\": {\"messageSegments\": [{\"type\": \"Text\",\"text\": \"This is a test post created via an API action link.\"}]}}'</span>;
+actionLinkDefinitionInput.requiresConfirmation = <span class="keyword">true</span>;
+
+<span class="onelineComment">// </span><strong class="ph b">To Do</strong>: Substitute an OAuth value <span class="statement">for</span> your Salesforce org. 
+requestHeaderInput1.name = <span class="string">'Authorization'</span>;
+requestHeaderInput1.value = <span class="string">'OAuth </span><strong class="ph b">00DD00000007WNP!ARsAQCwoeV0zzAV847FTl4zF.85w.EwsPbUgXR4SAjsp</strong><span class="string">';
+</span>actionLinkDefinitionInput.headers.add(requestHeaderInput1);
+
+requestHeaderInput2.name = <span class="string">'Content-Type'</span>;
+requestHeaderInput2.value = <span class="string">'application/json'</span>;
+actionLinkDefinitionInput.headers.add(requestHeaderInput2);
+
+<span class="onelineComment">// Add the action link definition to the action link group definition.</span>
+actionLinkGroupDefinitionInput.actionLinks.add(actionLinkDefinitionInput);
+
+<span class="onelineComment">// Instantiate the action link group definition.</span>
+ConnectApi.ActionLinkGroupDefinition actionLinkGroupDefinition = ConnectApi.ActionLinks.createActionLinkGroupDefinition(Network.getNetworkId(), actionLinkGroupDefinitionInput);
+
+ConnectApi.FeedItemInput feedItemInput = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+ConnectApi.FeedElementCapabilitiesInput feedElementCapabilitiesInput = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+ConnectApi.AssociatedActionsCapabilityInput associatedActionsCapabilityInput = <span class="keyword">new</span> ConnectApi.AssociatedActionsCapabilityInput();
+ConnectApi.MessageBodyInput messageBodyInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegmentInput = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+
+<span class="onelineComment">// Set the properties of the feedItemInput object.</span>
+feedItemInput.body = messageBodyInput;
+feedItemInput.capabilities = feedElementCapabilitiesInput;
+feedItemInput.subjectId = <span class="string">'me'</span>;
+
+<span class="onelineComment">// Create the text for the post.</span>
+messageBodyInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+textSegmentInput.text = <span class="string">'Click to post a feed item.'</span>;  
+messageBodyInput.messageSegments.add(textSegmentInput);
+
+
+<span class="onelineComment">// The feedElementCapabilitiesInput object holds the capabilities of the feed item.</span>
+<span class="onelineComment">// Define an associated actions capability to hold the action link group.</span>
+<span class="onelineComment">// The action link group ID is returned from the call to create the action link group definition. </span>
+feedElementCapabilitiesInput.associatedActions = associatedActionsCapabilityInput;
+associatedActionsCapabilityInput.actionLinkGroupIds = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+associatedActionsCapabilityInput.actionLinkGroupIds.add(actionLinkGroupDefinition.id);
+
+<span class="onelineComment">// Post the feed item. </span>
+ConnectApi.FeedElement feedElement = ConnectApi.ChatterFeeds.postFeedElement(Network.getNetworkId(), feedItemInput);</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If
+        the post fails, check the OAuth ID.</p>
+</div>
+</div></div></div></div>
+</div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

@@ -1,0 +1,1096 @@
+<a name="apex_methods_system_map"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">Map Class</h1>
+
+ 
+ 
+ <div class="body">
+<div class="shortdesc">Contains methods for the Map collection type.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <p class="p">The Map methods are all instance methods, that is, they operate on a particular instance of a
+    map. The following are the instance methods for maps.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+    <ul class="ul bulletList">
+     <li class="li">Map keys and values can be of any data type—primitive types, collections, sObjects,
+      user-defined types, and built-in Apex types.</li>
+
+     <li class="li">
+<span class="ph" id="UniquessMapKeys"><a name="UniquessMapKeys"><!-- --></a>Uniqueness of map keys of user-defined types is determined by the
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_collections_maps_keys_userdefined.htm" target="_blank"><samp class="codeph apex_code">equals</samp> and
+                  <samp class="codeph apex_code">hashCode</samp> methods</a>, which you provide
+              in your classes. Uniqueness of keys of all other non-primitive types, such as sObject
+              keys, is determined by comparing the objects’ field values.</span> Use caution
+            when you use an sObject as a map key because when the sObject is changed, it no longer
+            maps to the same value. For information and examples, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_map_sobject_considerations.htm" target="_blank" title="HTML (New Window)">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_map_sobject_considerations.htm</a>
+</li>
+
+     <li class="li"><span class="ph" id="map_string_keys"><a name="map_string_keys"><!-- --></a>Map keys of type String are case-sensitive. Two keys that differ
+       only by the case are considered unique and have corresponding distinct Map entries.
+       Subsequently, the Map methods, including <samp class="codeph apex_code">put</samp>, <samp class="codeph apex_code">get</samp>, <samp class="codeph apex_code">containsKey</samp>,
+       and <samp class="codeph apex_code">remove</samp> treat these keys as distinct.</span></li>
+
+     <li class="li">With the <samp class="codeph ">keySet()</samp> method, the returned keySet is backed
+            by the map and reflects any changes made to the map, and vice versa.</li>
+
+    </ul>
+
+   </p>
+</div>
+</div></div></div></div>
+
+   <p class="p">For more information on maps, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_collections_maps.htm" target="_blank">Maps</a>.</p>
+
+  </div>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_constructors">Map Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_methods">Map Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Map_constructors">
+<a name="apex_System_Map_constructors"><!-- --></a>
+<h2 class="helpHead2">Map Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">Map</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_ctor_3">Map&lt;T1,T2&gt;()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Map</samp> class. T1 is the data type of the keys and T2 is the data type of the values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_ctor_2">Map&lt;T1,T2&gt;(mapToCopy)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Map</samp> class and initializes it by copying the entries from the specified map. T1 is the data type of the keys and T2 is the data type of the values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_ctor">Map&lt;ID,sObject&gt;(recordList)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Map</samp> class and populates it with the passed-in list of sObject records. The keys are populated with the sObject IDs and the values are the sObjects. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_ctor_3">
+<a name="apex_System_Map_ctor_3"><!-- --></a>
+<h3 class="helpHead3">Map&lt;T1,T2&gt;()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Map</samp> class. T1 is the data type of the keys and T2 is the
+data type of the values.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;T1,T2&gt;()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt; m1 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt;();
+m1.put(1, <span class="string">'First item'</span>);
+m1.put(2, <span class="string">'Second item'</span>);
+</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_ctor_2">
+<a name="apex_System_Map_ctor_2"><!-- --></a>
+<h3 class="helpHead3">Map&lt;T1,T2&gt;(mapToCopy)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Map</samp> class and initializes it by copying the entries from
+the specified map. T1 is the data type of the keys and T2 is the data
+type of the values.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;T1,T2&gt;(Map&lt;T1,T2&gt; mapToCopy)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">mapToCopy</var></strong>: Type: Map&lt;T1, T2&gt; The map to initialize this map with. T1 is the data type of the
+keys and T2 is the data type of the values. All map keys and values
+are copied to this map.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt; m1 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt;();
+m1.put(1, <span class="string">'First item'</span>);
+m1.put(2, <span class="string">'Second item'</span>);
+Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt; m2 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt;(m1);
+<span class="onelineComment">// The map elements of m2 are copied from m1</span>
+System.debug(m2);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_ctor">
+<a name="apex_System_Map_ctor"><!-- --></a>
+<h3 class="helpHead3">Map&lt;ID,sObject&gt;(recordList)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Map</samp> class and populates it with the passed-in list of sObject
+records. The keys are populated with the sObject IDs and the values
+are the sObjects. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">ID</span>,sObject&gt;(List&lt;sObject&gt;
+recordList)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">recordList</var></strong>: Type: List&lt;sObject&gt; The list of sObjects to populate the map with.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; ls = [select Id,Name from Account];
+Map&lt;Id, Account&gt; m = <span class="keyword">new</span> Map&lt;Id, Account&gt;(ls);</pre></div>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Map_methods">
+<a name="apex_System_Map_methods"><!-- --></a>
+<h2 class="helpHead2">Map Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Map</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_clear">clear()</a></strong><br>
+Removes all of the key-value mappings from the map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_clone">clone()</a></strong><br>
+Makes a duplicate copy of the map. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_containsKey">containsKey(key)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the map contains a mapping for   the specified key.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_deepClone">deepClone()</a></strong><br>
+Makes a duplicate copy of a map, including sObject records if this is a map with sObject record values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_equals">equals(map2)</a></strong><br>
+Compares this map with the specified map and returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if both maps are equal; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_get">get(key)</a></strong><br>
+Returns the value to which the specified key is mapped, or <samp class="codeph apex_code"><span class="keyword">null</span></samp> if the map contains no value for this key. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_getSObjectType">getSObjectType()</a></strong><br>
+Returns the token of the sObject type that makes up the map values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_hashCode">hashCode()</a></strong><br>
+Returns the hashcode corresponding to this map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_isEmpty">isEmpty()</a></strong><br>
+Returns true if the map has zero key-value pairs.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_keySet">keySet()</a></strong><br>
+Returns a set that contains all of the keys in the map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_put">put(key, value)</a></strong><br>
+Associates the specified value with the specified key in the map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_putAll">putAll(fromMap)</a></strong><br>
+Copies all of the mappings from the specified map to the original map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_putAll_2">putAll(sobjectArray)</a></strong><br>
+Adds the list of sObject records to a map declared as Map&lt;ID, sObject&gt; or Map&lt;String, sObject&gt;.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_remove">remove(key)</a></strong><br>
+Removes the mapping for the specified key from the map, if present, and returns the   corresponding value.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_size">size()</a></strong><br>
+Returns the number of key-value pairs in the map. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_toString">toString()</a></strong><br>
+Returns the string representation of the map.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_System_Map_values">values()</a></strong><br>
+Returns a list that contains all the values in the map.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_clear">
+<a name="apex_System_Map_clear"><!-- --></a>
+<h3 class="helpHead3">clear()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Removes all of the key-value mappings from the map.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void clear()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_clone">
+<a name="apex_System_Map_clone"><!-- --></a>
+<h3 class="helpHead3">clone()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Makes a duplicate copy of the map. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">Object</span>, <span class="keyword">Object</span>&gt; clone()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a> (of same
+type)</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If this is a map with sObject
+record values, the duplicate map will only be a  shallow copy of the
+map. That is, the duplicate will have references  to each sObject
+record, but the records themselves are not duplicated. For example:</p>
+<p class="p">To also copy the sObject records,  you must use the <samp class="codeph apex_code">deepClone</samp> method.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(
+   Name=<span class="string">'Acme'</span>, 
+   BillingCity=<span class="string">'New York'</span>);
+
+Map&lt;<span class="keyword">Integer</span>, Account&gt; map1 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, Account&gt; {};
+map1.put(1, a);
+
+Map&lt;<span class="keyword">Integer</span>, Account&gt; map2 = map1.clone();
+map1.get(1).BillingCity = 
+<span class="string">'San Francisco'</span>;
+
+System.assertEquals(
+   <span class="string">'San Francisco'</span>,
+   map1.get(1).BillingCity);
+
+System.assertEquals(
+   <span class="string">'San Francisco'</span>,
+   map2.get(1).BillingCity);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_containsKey">
+<a name="apex_System_Map_containsKey"><!-- --></a>
+ <h3 class="helpHead3">containsKey(key)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the map contains a mapping for
+  the specified key.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> containsKey(<span class="keyword">Object</span> key)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: Object</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If the key is a string, the key value is case-sensitive.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+<span class="keyword">Boolean</span> contains = colorCodes.containsKey(<span class="string">'Blue'</span>);
+System.assertEquals(<span class="keyword">true</span>, contains);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_deepClone">
+<a name="apex_System_Map_deepClone"><!-- --></a>
+<h3 class="helpHead3">deepClone()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Makes a duplicate copy of a map, including sObject records
+if this is a map with sObject record values.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">Object</span>, <span class="keyword">Object</span>&gt; deepClone()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a> (of the
+same type)</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">To make a shallow copy  of
+a map without duplicating the sObject records it contains, use  the <samp class="codeph apex_code">clone()</samp> method.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(
+   Name=<span class="string">'Acme'</span>, 
+   BillingCity=<span class="string">'New York'</span>);
+
+Map&lt;<span class="keyword">Integer</span>, Account&gt; map1 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, Account&gt; {};
+
+map1.put(1, a);
+
+Map&lt;<span class="keyword">Integer</span>, Account&gt; map2 = map1.deepClone();
+
+<span class="onelineComment">// Update the first entry of map1</span>
+map1.get(1).BillingCity = <span class="string">'San Francisco'</span>;
+<span class="onelineComment">// Verify that the BillingCity is updated in map1 but not in map2</span>
+System.assertEquals(<span class="string">'San Francisco'</span>, map1.get(1).BillingCity);
+System.assertEquals(<span class="string">'New York'</span>, map2.get(1).BillingCity);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_equals">
+<a name="apex_System_Map_equals"><!-- --></a>
+<h3 class="helpHead3">equals(map2)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Compares this map with the specified map and returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if both maps are equal; otherwise,
+returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> equals(Map map2)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">map2</var></strong>: Type: <a class="xref" href="#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a> The <var class="keyword varname">map2</var> argument is the map to compare this
+map with.</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Two maps are equal if their
+key/value pairs are identical, regardless of the order of those pairs.
+The <samp class="codeph apex_code">==</samp> operator is used to
+compare the map keys and values.</p>
+<p class="p">The <samp class="codeph apex_code">==</samp> operator is equivalent to calling
+the <samp class="codeph apex_code">equals</samp> method, so you
+can call <samp class="codeph apex_code">map1.equals(map2);</samp> instead of <samp class="codeph apex_code">map1 == map2;</samp>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_get">
+<a name="apex_System_Map_get"><!-- --></a>
+ <h3 class="helpHead3">get(key)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the value to which the specified key is mapped, or <samp class="codeph apex_code"><span class="keyword">null</span></samp> if the map contains no value for this key. </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> get(<span class="keyword">Object</span> key)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: Object</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Object</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If the key is a string, the key value is case-sensitive.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+<span class="keyword">String</span> code = colorCodes.get(<span class="string">'Blue'</span>);
+
+System.assertEquals(<span class="string">'0000A0'</span>, code);
+
+<span class="onelineComment">// The following is not a color in the map </span>
+<span class="keyword">String</span> code2 = colorCodes.get(<span class="string">'Magenta'</span>);
+System.assertEquals(<span class="keyword">null</span>, code2);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_getSObjectType">
+<a name="apex_System_Map_getSObjectType"><!-- --></a>
+<h3 class="helpHead3">getSObjectType()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the token of the sObject type that makes up the
+map values.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Schema.SObjectType getSObjectType()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_SObjectType.htm#apex_class_Schema_SObjectType" title="A Schema.sObjectType object is returned from the field describe result using the getReferenceTo method, or from the sObject describe result using the getSObjectType method.">Schema.SObjectType</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Use this method with describe
+information, to determine if a map contains sObjects of a particular
+type.</p>
+<p class="p">Note that this method can only be used with maps that
+ have sObject values.</p>
+<p class="p">For more information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dynamic_describe_objects_understanding.htm" target="_blank">Understanding Apex Describe Information</a>.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Create a generic sObject variable.</span>
+SObject sObj = Database.query(<span class="string">'SELECT Id FROM Account LIMIT 1'</span>);
+
+<span class="onelineComment">// Verify if that sObject variable is an Account token.</span>
+System.assertEquals(
+   Account.sObjectType, 
+   sObj.getSObjectType());
+
+<span class="onelineComment">// Create a map of generic sObjects </span>
+Map&lt;<span class="keyword">Integer</span>, Account&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, Account&gt;();
+
+<span class="onelineComment">// Verify if the map contains Account tokens.</span>
+System.assertEquals(
+   Account.sObjectType, 
+   m.getSObjectType());
+</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_hashCode">
+<a name="apex_System_Map_hashCode"><!-- --></a>
+<h3 class="helpHead3">hashCode()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the hashcode corresponding to this map.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> hashCode()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_isEmpty">
+<a name="apex_System_Map_isEmpty"><!-- --></a>
+<h3 class="helpHead3">isEmpty()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns true if the map has zero key-value pairs.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isEmpty()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+<span class="keyword">Boolean</span> empty = colorCodes.isEmpty();
+System.assertEquals(<span class="keyword">true</span>, empty);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_keySet">
+<a name="apex_System_Map_keySet"><!-- --></a>
+<h3 class="helpHead3">keySet()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a set that contains all of the keys in the map.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Set&lt;<span class="keyword">Object</span>&gt; keySet()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+            
+            <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set</a> (of key type)</p>
+
+            <p class="p">The returned keySet is backed by the map, so the keySet reflects any changes made to
+                the map, and vice-versa.</p>
+
+        </div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+Set &lt;<span class="keyword">String</span>&gt; colorSet = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;();
+colorSet = colorCodes.keySet();</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_put">
+<a name="apex_System_Map_put"><!-- --></a>
+ <h3 class="helpHead3">put(key, value)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Associates the specified value with the specified key in the map.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> put(<span class="keyword">Object</span> key, <span class="keyword">Object</span> value)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: Object</li>
+
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: Object</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Object</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If the map previously contained a mapping for this key, the old value is returned by the
+    method and then replaced. </p>
+
+   <p class="p">If the key is a string, the key value is case-sensitive.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'ff0000'</span>);
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'#FF0000'</span>);
+<span class="onelineComment">// Red is now #FF0000</span>
+</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_putAll">
+<a name="apex_System_Map_putAll"><!-- --></a>
+<h3 class="helpHead3">putAll(fromMap)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Copies all of the mappings from the specified map to the
+original map.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void putAll(Map fromMap)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">fromMap</var></strong>: Type: <a class="xref" href="#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The new mappings from <var class="keyword varname">fromMap</var> are merged with any mappings that existed
+        in the original map. If any of the keys match, the original map values are replaced by
+        corresponding values in the new mapping.</p>
+
+    </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; map1 = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+map1.put(<span class="string">'Red'</span>,<span class="string">'FF0000'</span>);
+Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; map2 = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+map2.put(<span class="string">'Blue'</span>,<span class="string">'0000FF'</span>);
+<span class="onelineComment">// Add map1 entries to map2</span>
+map2.putAll(map1);
+System.assertEquals(2, map2.size());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_putAll_2">
+<a name="apex_System_Map_putAll_2"><!-- --></a>
+<h3 class="helpHead3">putAll(sobjectArray)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Adds the list of sObject records to a map declared as Map&lt;ID,
+sObject&gt; or Map&lt;String, sObject&gt;.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void putAll(sObject[] sobjectArray)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sobjectArray</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">sObject</a>[]</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This method is similar to calling
+the Map constructor with the same input.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; accts = <span class="keyword">new</span> List&lt;Account&gt;();
+accts.add(<span class="keyword">new</span> Account(Name=<span class="string">'Account1'</span>));
+accts.add(<span class="keyword">new</span> Account(Name=<span class="string">'Account2'</span>));
+<span class="onelineComment">// Insert accounts so their IDs are populated.</span>
+<span class="statement">insert</span> accts;
+Map&lt;Id, Account&gt; m = <span class="keyword">new</span> Map&lt;Id, Account&gt;();
+<span class="onelineComment">// Add all the records to the map.</span>
+m.putAll(accts);
+System.assertEquals(2, m.size());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_remove">
+<a name="apex_System_Map_remove"><!-- --></a>
+ <h3 class="helpHead3">remove(key)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Removes the mapping for the specified key from the map, if present, and returns the
+  corresponding value.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> remove(Key key)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>: Type: Key</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Object</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">If the key is a string, the key value is case-sensitive.</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+<span class="keyword">String</span> myColor = colorCodes.remove(<span class="string">'Blue'</span>);
+<span class="keyword">String</span> code2 = colorCodes.get(<span class="string">'Blue'</span>);
+
+System.assertEquals(<span class="keyword">null</span>, code2);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_size">
+<a name="apex_System_Map_size"><!-- --></a>
+<h3 class="helpHead3">size()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the number of key-value pairs in the map. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> size()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+<span class="keyword">Integer</span> mSize = colorCodes.size();
+system.assertEquals(2, mSize);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_toString">
+<a name="apex_System_Map_toString"><!-- --></a>
+ <h3 class="helpHead3">toString()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the string representation of the map.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <div class="p">When used in cyclic references, the output is truncated to prevent infinite recursion. When
+    used with large collections, the output is truncated to avoid exceeding total heap size and
+    maximum CPU time.<ul class="ul bulletList">
+     <li class="li">Up to 10 items per collection are included in the output, followed by an ellipsis (…).</li>
+
+     <li class="li">If the same object is included multiple times in a collection, it’s shown in the output
+      only once; subsequent references are shown as <samp class="ph systemoutput">(already
+      output)</samp>.</li>
+
+    </ul>
+</div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Map_values">
+<a name="apex_System_Map_values"><!-- --></a>
+<h3 class="helpHead3">values()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a list that contains all the values in the map.</div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;<span class="keyword">Object</span>&gt; values()</samp></p>
+
+         
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;Object&gt;</p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+         
+         <p class="p">The order of map elements is deterministic. You can rely on the order being the same in
+            each subsequent execution of the same code. For example, suppose the <samp class="codeph apex_code">values()</samp> method returns a list containing <samp class="codeph apex_code">value1</samp> and index 0 and <samp class="codeph apex_code">value2</samp> and index 1. Subsequent runs of the same code result in those values
+            being returned in the same order.</p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+         
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; colorCodes = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+
+colorCodes.put(<span class="string">'Red'</span>, <span class="string">'FF0000'</span>);
+colorCodes.put(<span class="string">'Blue'</span>, <span class="string">'0000A0'</span>);
+
+List&lt;<span class="keyword">String</span>&gt; colors = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+colors = colorCodes.values();</pre></div>
+
+      </div>
+
+   </div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,75 @@
+<a name="apex_classes_annotation_future"><!-- --></a><h1 class="helpHead1">Future Annotation</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">Future</samp> annotation to identify methods
+    that run asynchronously. A future method runs when Salesforce has available
+    resources.</div>
+
+    <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Salesforce now recommends that you use Queueable Apex instead of Apex
+      future methods. Queueables have the same use cases as future methods but offer extra benefits,
+      including job IDs, support for non-primitive types, and job chaining.<p class="p">See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_queueing_jobs.htm" title="Take control of your asynchronous Apex processes by using the Queueable interface. Salesforce recommends that you use Queueable Apex instead of Apex future methods. Queueables have the same use cases as future methods but offer extra benefits, including job IDs, support for non-primitive types, and job chaining.">Queueable Apex</a>.</p>
+</p>
+</div>
+</div></div></div></div>
+
+    <p class="p">For example, you can use the <samp class="codeph apex_code">Future</samp> annotation when
+      making an asynchronous web service callout to an external service. Without the annotation, the
+      web service callout is made from the same thread that is running the Apex code. Then no
+      additional processing can occur until the callout is complete (synchronous processing). </p>
+
+    <p class="p" id="FutureMethodsRules"><a name="FutureMethodsRules"><!-- --></a>Methods with the <samp class="codeph apex_code">Future</samp>
+      annotation must be static methods, and can only return a void type. The specified parameters
+      must be primitive data types, arrays of primitive data types, or collections of primitive data
+      types. Methods with the <samp class="codeph apex_code">Future</samp> annotation can’t take
+      sObjects or objects as arguments.</p>
+
+    <p class="p">To make a method in a class execute asynchronously, define the method with the <samp class="codeph apex_code">Future</samp> annotation. For example:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MyFutureClass {
+
+    <span class="keyword">@Future</span> 
+    <span class="keyword">static</span> <span class="keyword">void</span> myMethod(<span class="keyword">String</span> a, <span class="keyword">Integer</span> i) {
+        System.debug(<span class="string">'Method called with: '</span> + a + <span class="string">' and '</span> + i);
+        <span class="onelineComment">// Perform long-running code</span>
+    }
+}
+</pre></div>
+
+    <p class="p">To allow callouts in a <samp class="codeph apex_code">Future</samp> method, specify <samp class="codeph apex_code">(<span class="keyword">callout</span>=<span class="keyword">true</span>)</samp>. The default is <samp class="codeph apex_code">(<span class="keyword">callout</span>=<span class="keyword">false</span>)</samp>, which prevents a method from making
+      callouts.</p>
+
+    <p class="p">The following snippet shows how to specify that a method executes a callout:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@Future</span> (<span class="keyword">callout</span>=<span class="keyword">true</span>)
+<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> doCalloutFromFuture() {
+    <span class="onelineComment">//Add code to perform callout</span>
+}</pre></div>
+
+    <div class="section">
+<h2 class="helpHead2">Future Method Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">Remember that any method that uses the <samp class="codeph apex_code">Future</samp>
+          annotation requires special consideration because the method doesn’t necessarily execute
+          in the same order that it’s called in.</li>
+
+        <li class="li"><span class="ph" id="no_vf_getset_for_future"><a name="no_vf_getset_for_future"><!-- --></a>Methods with the <samp class="codeph apex_code">Future</samp> annotation can’t be used in Visualforce controllers in either <samp class="codeph apex_code">get<var class="keyword varname">MethodName</var></samp> or <samp class="codeph apex_code">set<var class="keyword varname">MethodName</var></samp> methods, nor in the
+            constructor.</span></li>
+
+        <li class="li">You can’t call a method annotated with <samp class="codeph apex_code">Future</samp>
+          from a method that also has the <samp class="codeph apex_code">Future</samp>
+          annotation. Nor can you call a trigger from an annotated method that calls another
+          annotated method.</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_deprecated.htm" title="Deprecated Annotation">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_IntegrationTest.htm" title="IntegrationTest Annotation (Developer Preview)">Next →</a></li>
+</ul></div>
+</div>

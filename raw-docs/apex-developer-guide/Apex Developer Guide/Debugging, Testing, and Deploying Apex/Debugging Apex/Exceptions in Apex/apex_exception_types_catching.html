@@ -1,0 +1,79 @@
+<a name="apex_exception_types_catching"><!-- --></a><h1 class="helpHead1">Catching Different Exception Types</h1><div class="body">
+<p class="p">In the previous examples, we used the specific exception type in
+the catch block. We could have also just caught the generic Exception
+type in all examples, which catches all exception types. For example,
+try running this example that throws an SObjectException and has a
+catch statement with an argument type of Exception. The SObjectException
+gets caught in the catch block.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = [SELECT Name FROM Merchandise__c LIMIT 1];
+    <span class="onelineComment">// Causes an SObjectException because we didn't retrieve</span>
+    <span class="onelineComment">// the Total_Inventory__c field.</span>
+    <span class="keyword">Double</span> inventory = m.Total_Inventory__c;
+<strong class="ph b">} catch(Exception e) {</strong>
+    System.debug(<span class="string">'The following exception has occurred: '</span> + e.getMessage());    
+}
+</pre></div>
+
+<p class="p">Alternatively, you can have several catch blocks—a catch
+block for each exception type, and a final catch block that catches
+the generic Exception type. Look at this example. Notice that it has
+three catch blocks.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = [SELECT Name FROM Merchandise__c LIMIT 1];
+    <span class="onelineComment">// Causes an SObjectException because we didn't retrieve</span>
+    <span class="onelineComment">// the Total_Inventory__c field.</span>
+    <span class="keyword">Double</span> inventory = m.Total_Inventory__c;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'DmlException caught: '</span> + e.getMessage());    
+<strong class="ph b">} catch(SObjectException e) {</strong>
+    System.debug(<span class="string">'SObjectException caught: '</span> + e.getMessage());    
+} <span class="statement">catch</span>(Exception e) {
+    System.debug(<span class="string">'Exception caught: '</span> + e.getMessage());    
+}
+</pre></div>
+
+<div class="p">Remember that only one catch block gets executed and the remaining
+ones are bypassed. This example is similar to the previous one, except
+that it has a few more catch blocks. When you run this snippet, an
+SObjectException is thrown on this line: <samp class="codeph apex_code"><span class="keyword">Double</span> inventory = m.Total_Inventory__c;</samp>. Every catch block
+is examined in the order specified to find a match between the thrown
+exception and the exception type specified in the catch block argument:<ol class="ol enumList">
+<li class="li">The first catch block argument is of type DmlException, which
+doesn’t match the thrown exception (SObjectException.)</li>
+
+<li class="li">The second catch block argument is of type SObjectException, which
+matches our exception, so this block gets executed and the following
+message is written to the debug log: <samp class="codeph nolang">SObjectException
+caught: SObject row was retrieved via SOQL without querying the requested
+field: Merchandise__c.Total_Inventory__c</samp>.</li>
+
+<li class="li">The last catch block is ignored since one catch block has already
+executed.</li>
+
+</ol>
+</div>
+
+<p class="p">The last catch block is handy because it catches any exception
+type, and so catches any exception that was not caught in the previous
+catch blocks. Suppose we modified the code above to cause a NullPointerException
+to be thrown, this exception gets caught in the last catch block.
+Execute this modified example. You’ll see the following debug
+message: <samp class="codeph nolang">Exception caught: Attempt to
+de-reference a null object</samp>.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    <span class="keyword">String</span> s;
+    <span class="keyword">Boolean</span> b = s.contains(<span class="string">'abc'</span>); <span class="onelineComment">// Causes a NullPointerException</span>
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'DmlException caught: '</span> + e.getMessage());    
+} <span class="statement">catch</span>(SObjectException e) {
+    System.debug(<span class="string">'SObjectException caught: '</span> + e.getMessage());    
+<strong class="ph b">} catch(Exception e) {</strong>
+    System.debug(<span class="string">'Exception caught: '</span> + e.getMessage());    
+}
+</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

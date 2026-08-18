@@ -1,0 +1,27 @@
+<a name="apex_connector_filters_evaluating"><!-- --></a><h1 class="helpHead1">Evaluating Filters in the Apex Connector Framework</h1><div class="body conbody">
+<div class="shortdesc">A filter evaluates to true for a row if that row matches the conditions that the
+        filter describes.</div>
+
+        <p class="p">For example, suppose that a <samp class="codeph apex_code">DataSource.Filter</samp> has
+                <samp class="codeph apex_code">columnName</samp> set to <samp class="codeph apex_code">meaningOfLife</samp>, <samp class="codeph apex_code">columnValue</samp> set to <samp class="codeph nolang">42</samp>, and <samp class="codeph apex_code">type</samp> set to <samp class="codeph apex_code">EQUALS</samp>. Any row in the remote table whose <samp class="codeph apex_code">meaningOfLife</samp> column entry equals 42 is returned.</p>
+
+        <p class="p">Suppose, instead, that the filter has <samp class="codeph apex_code">type</samp> set to
+                <samp class="codeph apex_code">LESS_THAN</samp>, <samp class="codeph apex_code">columnValue</samp> set to <samp class="codeph nolang">3</samp>, and <samp class="codeph apex_code">columnName</samp> set to <samp class="codeph apex_code">numericCol</samp>. We’d construct a <samp class="codeph apex_code">DataSource.TableResult</samp> object that contains all the rows that have a
+                <samp class="codeph apex_code">numericCol</samp> value less than 3.</p>
+
+        <p class="p">To improve performance, do all the filtering in the external system. You can, for
+            example, translate the <samp class="codeph apex_code">Filter</samp> object into a SQL
+            or OData query, or map it to parameters on a SOAP query. If the external system returns
+            a large set of data, and you do the filtering in your Apex code, you quickly exceed your
+            governor limits.</p>
+
+        <p class="p">If you can’t do all the filtering in the external system, do as much as possible there
+            and return as little data as possible. Then filter the smaller collection of data in
+            your Apex code.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_DataSource_Filter.htm" target="_blank" title="Apex Reference Guide: Filter Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Filter Class</a></div></li></ul>
+</div>
+</div>

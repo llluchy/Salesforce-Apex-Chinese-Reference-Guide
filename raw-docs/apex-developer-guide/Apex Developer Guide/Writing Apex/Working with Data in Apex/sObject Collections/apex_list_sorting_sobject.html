@@ -1,0 +1,315 @@
+<a name="apex_list_sorting_sobject"><!-- --></a><h1 class="helpHead1">Sorting Lists of sObjects</h1><div class="body conbody">
+<div class="shortdesc">Using the <samp class="codeph apex_code">List.sort</samp> method, you can sort
+        lists of sObjects.</div>
+
+        <p class="p">For sObjects, sorting is in ascending order and uses a sequence of comparison steps
+            outlined in the next section. You can create a custom sort order for sObjects by
+            wrapping your sObject in an Apex class that implements the <samp class="codeph apex_code">Comparable</samp> interface. You can also create a custom
+            sort order by passing a class that implements <samp class="codeph apex_code">Comparator</samp> as a parameter to the sort method. See <a class="xref" href="#CustomSortSection">Custom Sort Order of sObjects</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Default Sort Order of sObjects</h2>
+
+            
+            <div class="p">The <samp class="codeph apex_code">List.sort</samp> method sorts sObjects in
+                ascending order and compares sObjects using an ordered sequence of steps that
+                specify the labels or fields used. The comparison starts with the first step in the
+                sequence and ends when two sObjects are sorted using specified labels or fields. The
+                following is the comparison sequence used:<ol class="ol enumList">
+                    <li class="li">The label of the sObject type.<p class="p">For example, an Account sObject appears
+                            before a Contact.</p>
+</li>
+
+                    <li class="li">The Name field, if applicable.<p class="p">For example, if the list contains two
+                            accounts named Alpha and Beta, account Alpha comes before account
+                            Beta.</p>
+</li>
+
+                    <li class="li">Standard fields, starting with the fields that come first in alphabetical
+                        order, except for the Id and Name fields.<p class="p">For example, if two accounts
+                            have the same name, the first standard field used for sorting is
+                            AccountNumber.</p>
+</li>
+
+                    <li class="li">Custom fields, starting with the fields that come first in alphabetical
+                            order.<p class="p">For example, suppose two accounts have the same name and
+                            identical standard fields, and there are two custom fields, FieldA and
+                            FieldB, the value of FieldA is used first for sorting.</p>
+</li>
+
+                </ol>
+</div>
+
+            <p class="p">Not all steps in this sequence are necessarily carried out. For example, a list
+                containing two sObjects of the same type and with unique Name values is sorted based
+                on the Name field and sorting stops at step 2. Otherwise, if the names are identical
+                or the sObject doesn’t have a Name field, sorting proceeds to step 3 to sort
+                by standard fields.</p>
+
+            <p class="p"><span class="ph" id="SortOrderNote"><a name="SortOrderNote"><!-- --></a>For text fields, the sort algorithm uses the Unicode sort
+                    order. Also, empty fields precede non-empty fields in the sort order.</span></p>
+
+            <p class="p">Here’s an example of sorting a list of Account sObjects. This example shows how the
+                Name field is used to place the Acme account ahead of the two sForce accounts in the
+                list. Since there are two accounts named sForce, the Industry field is used to sort
+                these remaining accounts because the Industry field comes before the Site field in
+                alphabetical order.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] acctList = <span class="keyword">new</span> List&lt;Account&gt;();        
+acctList.add( <span class="keyword">new</span> Account(
+    Name=<span class="string">'sForce'</span>,
+    Industry=<span class="string">'Biotechnology'</span>,
+    Site=<span class="string">'Austin'</span>));
+acctList.add(<span class="keyword">new</span> Account(
+    Name=<span class="string">'sForce'</span>,
+    Industry=<span class="string">'Agriculture'</span>,
+    Site=<span class="string">'New York'</span>));
+acctList.add(<span class="keyword">new</span> Account(
+    Name=<span class="string">'Acme'</span>));
+System.debug(acctList);
+
+acctList.sort();
+Assert.areEqual(<span class="string">'Acme'</span>, acctList[0].Name);
+Assert.areEqual(<span class="string">'sForce'</span>, acctList[1].Name);
+Assert.areEqual(<span class="string">'Agriculture'</span>, acctList[1].Industry);
+Assert.areEqual(<span class="string">'sForce'</span>, acctList[2].Name);
+Assert.areEqual(<span class="string">'Biotechnology'</span>, acctList[2].Industry);
+System.debug(acctList);</pre></div>
+
+            <p class="p">This example is similar to the previous one, except that it uses the Merchandise__c
+                custom object. This example shows how the Name field is used to place the Notebooks
+                merchandise ahead of Pens in the list. Because there are two merchandise sObjects
+                with the Name field value of Pens, the Description field is used to sort these
+                remaining merchandise items. The Description field is used for sorting because it
+                comes before the Price and Total_Inventory fields in alphabetical order.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Merchandise__c[] merchList = <span class="keyword">new</span> List&lt;Merchandise__c&gt;();        
+merchList.add( <span class="keyword">new</span> Merchandise__c(
+    Name=<span class="string">'Pens'</span>,
+    Description__c=<span class="string">'Red pens'</span>,
+    Price__c=2,
+    Total_Inventory__c=1000));
+merchList.add( <span class="keyword">new</span> Merchandise__c(
+    Name=<span class="string">'Notebooks'</span>,
+    Description__c=<span class="string">'Cool notebooks'</span>,
+    Price__c=3.50,
+    Total_Inventory__c=2000));
+merchList.add( <span class="keyword">new</span> Merchandise__c(
+    Name=<span class="string">'Pens'</span>,
+    Description__c=<span class="string">'Blue pens'</span>,
+    Price__c=1.75,
+    Total_Inventory__c=800));
+System.debug(merchList);
+
+merchList.sort();
+Assert.areEqual(<span class="string">'Notebooks'</span>, merchList[0].Name);
+Assert.areEqual(<span class="string">'Pens'</span>, merchList[1].Name);
+Assert.areEqual(<span class="string">'Blue pens'</span>, merchList[1].Description__c);
+Assert.areEqual(<span class="string">'Pens'</span>, merchList[2].Name);
+Assert.areEqual(<span class="string">'Red pens'</span>, merchList[2].Description__c);
+System.debug(merchList);</pre></div>
+
+        </div>
+
+        <div class="section" id="CustomSortSection">
+<a name="CustomSortSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="CustomSortSectionTitle"><a name="CustomSortSectionTitle"><!-- --></a>Custom Sort Order of sObjects</span></h2>
+
+            
+            <p class="p">To create a custom sort order for sObjects in lists,  implement  the <samp class="codeph apex_code">Comparator</samp> interface and pass it as a parameter
+                to the <samp class="codeph apex_code">List.sort</samp> method. </p>
+
+            <p class="p">Alternatively, create a wrapper class for the sObject and implement the <samp class="codeph apex_code">Comparable</samp> interface. The wrapper class contains
+                the sObject in question and implements the <samp class="codeph apex_code">Comparable.compareTo</samp> method in which you specify the sort logic. </p>
+
+        </div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+            <p class="p">This example implements the <samp class="codeph apex_code">Comparator</samp>
+                interface to compare two opportunities based on the Amount field.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public class OpportunityComparator implements Comparator&lt;Opportunity&gt; {
+    public Integer compare(Opportunity o1, Opportunity o2) {
+        // The return value of 0 indicates that both elements are equal.
+        Integer returnValue = 0;
+        
+        if(o1 == null &amp;&amp; o2 == null) {
+            returnValue = 0;
+        } else if(o1 == null) {
+            // nulls-first implementation
+            returnValue = -1; 
+        } else if(o2 == null) {
+            // nulls-first implementation
+            returnValue = 1;
+        } else if ((o1.Amount == null) &amp;&amp; (o2.Amount == null)) {
+            // both have null Amounts
+            returnValue = 0;
+        } else if (o1.Amount == null){
+            // nulls-first implementation
+            returnValue = -1;
+        } else if (o2.Amount == null){
+            // nulls-first implementation
+            returnValue = 1;
+        } else if (o1.Amount &lt; o2.Amount) {
+            // Set return value to a negative value.
+            returnValue = -1;
+        } else if (o1.Amount &gt; o2.Amount) {
+            // Set return value to a positive value.
+            returnValue = 1;
+        }
+        return returnValue;
+    }
+}</pre></div>
+
+            <p class="p">This test sorts a list of <samp class="codeph apex_code">Comparator</samp> objects
+                and verifies that the list elements are sorted by the opportunity amount.</p>
+
+            <div class="codeSection nolang"><pre class="codeblock brush:plain">@isTest
+private class OpportunityComparator_Test {
+ 
+    @isTest
+    static void sortViaComparator() {
+        // Add the opportunity wrapper objects to a list.
+        List&lt;Opportunity&gt; oppyList = new List&lt;Opportunity&gt;();
+        Date closeDate = Date.today().addDays(10);
+        oppyList.add( new Opportunity(
+            Name='Edge Installation',
+            CloseDate=closeDate,
+            StageName='Prospecting',
+            Amount=50000));
+        oppyList.add( new Opportunity(
+            Name='United Oil Installations',
+            CloseDate=closeDate,
+            StageName='Needs Analysis',
+            Amount=100000));
+        oppyList.add( new Opportunity(
+            Name='Grand Hotels SLA',
+            CloseDate=closeDate,
+            StageName='Prospecting',
+            Amount=25000));
+        oppyList.add(null);
+        
+        // Sort the objects using the Comparator implementation
+        oppyList.sort(new OpportunityComparator());
+        // Verify the sort order
+        Assert.isNull(oppyList[0]);
+        Assert.areEqual('Grand Hotels SLA', oppyList[1].Name);
+        Assert.areEqual(25000, oppyList[1].Amount);
+        Assert.areEqual('Edge Installation', oppyList[2].Name);
+        Assert.areEqual(50000, oppyList[2].Amount);
+        Assert.areEqual('United Oil Installations', oppyList[3].Name);
+        Assert.areEqual(100000, oppyList[3].Amount);
+        // Write the sorted list contents to the debug log.
+        System.debug(oppyList);
+    }
+}</pre></div>
+
+        </div>
+</div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+            <p class="p">This example shows how to create a wrapper <samp class="codeph apex_code">Comparable</samp> class for Opportunity. The implementation of the <samp class="codeph apex_code">compareTo</samp> method in this class compares two
+                opportunities based on the Amount field—the class member variable contained
+                in this instance, and the opportunity object passed into the method.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> OpportunityWrapper <span class="keyword">implements</span> Comparable {
+
+    <span class="keyword">public</span> Opportunity oppy;
+    
+    <span class="onelineComment">// Constructor</span>
+    <span class="keyword">public</span> OpportunityWrapper(Opportunity op) {
+    	<span class="onelineComment">// Guard against wrapping a null </span>
+    	<span class="statement">if</span>(op == <span class="keyword">null</span>) {
+    		Exception ex = <span class="keyword">new</span> NullPointerException();
+    		ex.setMessage(<span class="string">'Opportunity argument cannot be null'</span>); 
+    		<span class="statement">throw</span> ex;
+    	}
+        oppy = op;
+    }
+    
+    <span class="onelineComment">// Compare opportunities based on the opportunity amount.</span>
+    <span class="keyword">public</span> <span class="keyword">Integer</span> compareTo(<span class="keyword">Object</span> compareTo) {
+        <span class="onelineComment">// Cast argument to OpportunityWrapper</span>
+        OpportunityWrapper compareToOppy = (OpportunityWrapper)compareTo;
+        
+        <span class="onelineComment">// The return value of 0 indicates that both elements are equal.</span>
+        <span class="keyword">Integer</span> returnValue = 0;
+        <span class="statement">if</span> ((oppy.Amount == <span class="keyword">null</span>) &amp;&amp; (compareToOppy.oppy.Amount == <span class="keyword">null</span>)) {
+            <span class="onelineComment">// both wrappers have null Amounts</span>
+            returnValue = 0;
+        } <span class="statement">else</span> <span class="statement">if</span> ((oppy.Amount == <span class="keyword">null</span>) &amp;&amp; (compareToOppy.oppy.Amount != <span class="keyword">null</span>)){
+            <span class="onelineComment">// nulls-first implementation</span>
+            returnValue = -1;
+        } <span class="statement">else</span> <span class="statement">if</span> ((oppy.Amount != <span class="keyword">null</span>) &amp;&amp; (compareToOppy.oppy.Amount == <span class="keyword">null</span>)){
+            <span class="onelineComment">// nulls-first implementation</span>
+            returnValue = 1;
+        } <span class="statement">else</span> <span class="statement">if</span> (oppy.Amount &gt; compareToOppy.oppy.Amount) {
+            <span class="onelineComment">// Set return value to a positive value.</span>
+            returnValue = 1;
+        } <span class="statement">else</span> <span class="statement">if</span> (oppy.Amount &lt; compareToOppy.oppy.Amount) {
+            <span class="onelineComment">// Set return value to a negative value.</span>
+            returnValue = -1;
+        } 
+        <span class="statement">return</span> returnValue;
+    }
+}</pre></div>
+
+            <p class="p">This test sorts a list of <samp class="codeph apex_code">OpportunityWrapper</samp>
+                objects and verifies that the list elements are sorted by the opportunity
+                amount.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span> 
+<span class="keyword">private</span> <span class="keyword">class</span> OpportunityWrapperTest {
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test1() {
+        <span class="onelineComment">// Add the opportunity wrapper objects to a list.</span>
+        OpportunityWrapper[] oppyList = <span class="keyword">new</span> List&lt;OpportunityWrapper&gt;();
+        <span class="keyword">Date</span> closeDate = <span class="keyword">Date</span>.today().addDays(10);
+        oppyList.add( <span class="keyword">new</span> OpportunityWrapper(<span class="keyword">new</span> Opportunity(
+            Name=<span class="string">'Edge Installation'</span>,
+            CloseDate=closeDate,
+            StageName=<span class="string">'Prospecting'</span>,
+            Amount=50000)));
+        oppyList.add( <span class="keyword">new</span> OpportunityWrapper(<span class="keyword">new</span> Opportunity(
+            Name=<span class="string">'United Oil Installations'</span>,
+            CloseDate=closeDate,
+            StageName=<span class="string">'Needs Analysis'</span>,
+            Amount=100000)));
+        oppyList.add( <span class="keyword">new</span> OpportunityWrapper(<span class="keyword">new</span> Opportunity(
+            Name=<span class="string">'Grand Hotels SLA'</span>,
+            CloseDate=closeDate,
+            StageName=<span class="string">'Prospecting'</span>,
+            Amount=25000)));
+        
+        <span class="onelineComment">// Sort the wrapper objects using the implementation of the </span>
+        <span class="onelineComment">// compareTo method.</span>
+        oppyList.sort();
+        
+        <span class="onelineComment">// Verify the sort order</span>
+        Assert.areEqual(<span class="string">'Grand Hotels SLA'</span>, oppyList[0].oppy.Name);
+        Assert.areEqual(25000, oppyList[0].oppy.Amount);
+        Assert.areEqual(<span class="string">'Edge Installation'</span>, oppyList[1].oppy.Name);
+        Assert.areEqual(50000, oppyList[1].oppy.Amount);
+        Assert.areEqual(<span class="string">'United Oil Installations'</span>, oppyList[2].oppy.Name);
+        Assert.areEqual(100000, oppyList[2].oppy.Amount);
+        
+        <span class="onelineComment">// Write the sorted list contents to the debug log.</span>
+        System.debug(oppyList);
+    }
+}</pre></div>
+
+        </div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Collator.htm" target="_blank"><em class="ph i">Apex Reference Guide</em>: Collator Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_comparable.htm" target="_blank"><em class="ph i">Apex Reference Guide</em>: Comparable Interface</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_System_Comparator.htm" target="_blank"><em class="ph i">Apex Reference Guide</em>: Comparator Interface</a></div></li>
+</ul>
+</div>
+</div>

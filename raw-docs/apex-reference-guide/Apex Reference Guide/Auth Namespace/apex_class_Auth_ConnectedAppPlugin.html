@@ -1,0 +1,569 @@
+<a name="apex_class_Auth_ConnectedAppPlugin"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">ConnectedAppPlugin Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Contains methods for extending the behavior of a connected app, for example,
+    customizing how a connected app is invoked depending on the protocol used. This class gives you
+    more control over the interaction between Salesforce and your connected app.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">When you create a connected app, you specify general information about the app and settings
+        for OAuth, web apps, mobile apps, and canvas apps. To customize how the app is invoked,
+        create a connected app handler with this <samp class="codeph apex_code">ConnectedAppPlugin</samp> Apex class. For example, use this class to support new
+        authentication protocols or respond to user attributes in a way that benefits a business
+        process.</p>
+
+      <p class="p">When you create a connected app handler, you also configure the <samp class="codeph apex_code">ConnectedAppPlugin</samp> class to run as an execution user. The
+        execution user authorizes access for the connected app. For example, when you use the
+          <samp class="codeph apex_code">authorize</samp> method, the execution user authorizes
+        the connected app to access data.</p>
+
+      <p class="p">If you don't specify an execution user, the plug-in runs as an Automated Process User,
+        which is a system user that executes tasks behind the scenes. Most <samp class="codeph apex_code">ConnectedAppPlugin</samp> methods require that you specify an
+        execution user, with the exception of the <samp class="codeph apex_code">customAttributes</samp> method. For more information, see <a class="xref" href="https://help.salesforce.com/articleView?id=xcloud.connected_app_create_custom_handler.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Create a Custom Connected App
+          Handler</a>.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This example authorizes the connected app user to use the connected app if the context is
+        SAML and the user has reached the quota tracked in a custom field. It returns the user’s
+        permission set assignments. The example uses <samp class="codeph apex_code">Auth.InvocationContext</samp> to modify a SAML assertion before it’s sent to the
+        service provider. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> ConnectedAppPluginExample <span class="keyword">extends</span> Auth.ConnectedAppPlugin
+{
+    <span class="onelineComment">// Authorize the app if the user has achieved quota tracked in a custom field</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> <span class="keyword">Boolean</span> authorize(Id userId, Id connectedAppId, <span class="keyword">Boolean</span> isAdminApproved, Auth.InvocationContext context) 
+    {
+        <span class="onelineComment">// Create a custom boolean field HasAchievedQuota__c on the user record </span>
+        <span class="onelineComment">// and then uncomment the block below </span>
+        <span class="onelineComment">// User u = [select id, HasAchievedQuota__c from User where id =: userId].get(0);</span>
+        <span class="onelineComment">// return u.HasAchievedQuota__c;</span>
+        
+        <span class="statement">return</span> isAdminApproved;
+    }
+        
+    <span class="onelineComment">// Call a flow during refresh</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> <span class="keyword">void</span> refresh(Id userId, Id connectedAppId, Auth.InvocationContext context)
+    {
+       <span class="statement">try</span>
+       {
+          Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; inputVariables = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+          inputVariables.put(<span class="string">'userId'</span>, userId);
+          inputVariables.put(<span class="string">'connectedAppId'</span>, connectedAppId);
+            
+         <span class="onelineComment">// Create a custom trigger ready flow and uncomment the block below</span>
+         <span class="onelineComment">// Flow.Interview.MyCustomFlow interview = new Flow.Interview.MyCustomFlow(inputVariables);</span>
+         <span class="onelineComment">// interview.start();</span>
+        } <span class="statement">catch</span> ( Exception e ) {
+           System.debug(<span class="string">'FLOW Exception:'</span> + e);
+        }  
+    }
+        
+    <span class="onelineComment">// Return a user’s permission set assignments            </span>
+    <span class="keyword">global</span> <span class="keyword">override</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; customAttributes(Id userId, Id connectedAppId, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;
+        formulaDefinedAttributes, Auth.InvocationContext context)         
+    {  
+        List&lt;PermissionSetAssignment&gt; psas = [SELECT id, PermissionSet.Name FROM PermissionSetAssignment 
+        WHERE PermissionSet.IsOwnedByProfile = <span class="keyword">false</span> AND (AssigneeId = :userId)];
+        <span class="keyword">String</span> permsets = <span class="string">'['</span>;
+        <span class="statement">for</span> (PermissionSetAssignment psa :psas)
+        {
+            permsets += psa.PermissionSet.Name + <span class="string">';'</span>;
+        }
+        permsets += <span class="string">']'</span>;
+        formulaDefinedAttributes.put(<span class="string">'PermissionSets'</span>, permsets);
+        <span class="statement">return</span> formulaDefinedAttributes;     
+    } 
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_methods">ConnectedAppPlugin Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_methods">
+<a name="apex_Auth_ConnectedAppPlugin_methods"><!-- --></a><h2 class="helpHead2">ConnectedAppPlugin Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">ConnectedAppPlugin</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_authorize">authorize(userId, connectedAppId, isAdminApproved)</a></strong><br>
+Deprecated and available only in API versions 35.0 and 36.0. As of       version 37.0, use <samp class="codeph apex_code">authorize(userId, connectedAppId,         isAdminApproved, context)</samp> instead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_authorize_2">authorize(userId, connectedAppId, isAdminApproved, context)</a></strong><br>
+Authorizes the specified user to access the connected app. If the       connected app is set for users to self-authorize, this method isn’t invoked.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_customAttributes">customAttributes(userId, connectedAppId, formulaDefinedAttributes)</a></strong><br>
+Deprecated and available only in API versions 35.0 and 36.0. As of       version 37.0, use <samp class="codeph apex_code">customAttributes(userId, connectedAppId,         formulaDefinedAttributes, context)</samp> instead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_customAttributes_2">customAttributes(userId, connectedAppId, formulaDefinedAttributes, context)</a></strong><br>
+Sets new attributes for the specified user. When the connected app       gets the user’s attributes from the UserInfo endpoint or through a SAML assertion, use this       method to update the attribute values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_modifySAMLResponse">modifySAMLResponse(authSession, connectedAppId, samlResponse)</a></strong><br>
+Modifies the XML generated by the Salesforce SAML Identity       Provider (IDP) before it’s sent to the service provider.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_refresh">refresh(userId, connectedAppId)</a></strong><br>
+Deprecated and available only in API versions 35.0 and 36.0. As of       version 37.0, use <samp class="codeph apex_code">refresh(userId, connectedAppId,         context)</samp> instead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_ConnectedAppPlugin.htm#apex_Auth_ConnectedAppPlugin_refresh_2">refresh(userId, connectedAppId, context)</a></strong><br>
+Salesforce calls this method       during a refresh token exchange.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_authorize">
+<a name="apex_Auth_ConnectedAppPlugin_authorize"><!-- --></a>
+  <h3 class="helpHead3">authorize(userId, connectedAppId, isAdminApproved)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deprecated and available only in API versions 35.0 and 36.0. As of
+      version 37.0, use <samp class="codeph apex_code">authorize(userId, connectedAppId,
+        isAdminApproved, context)</samp> instead.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> authorize(Id userId, Id connectedAppId,
+          <span class="keyword">Boolean</span> isAdminApproved)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">isAdminApproved</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The approval state of the specified user when the connected app requires
+            approval.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p">If the connected app requires admin approval, a returned value of <samp class="codeph apex_code"><span class="keyword">true</span></samp> indicates that the current user is approved.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_authorize_2">
+<a name="apex_Auth_ConnectedAppPlugin_authorize_2"><!-- --></a>
+  <h3 class="helpHead3">authorize(userId, connectedAppId, isAdminApproved, context)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Authorizes the specified user to access the connected app. If the
+      connected app is set for users to self-authorize, this method isn’t invoked.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> authorize(Id userId, Id connectedAppId,
+          <span class="keyword">Boolean</span> isAdminApproved, Auth.InvocationContext context)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">isAdminApproved</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">The approval state of the specified user when the connected app requires
+            approval.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_InvocationContext.htm" title="The context in which the connected app is invoked, such as the protocol flow used and the token type issued, if any. Developers can use the context information to write code that is unique to the type of invocation.">InvocationContext</a></p>
+<p class="p">The context in which the connected app is invoked.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+      <p class="p">If the connected app requires admin approval, a returned value of <samp class="codeph apex_code"><span class="keyword">true</span></samp> indicates that the user is approved.</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code">ConnectedAppPlugin</samp> runs on behalf of the current
+        user. But the user must have permission to use the connected app for the plug-in to work.
+        Use this method to authorize the user.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_customAttributes">
+<a name="apex_Auth_ConnectedAppPlugin_customAttributes"><!-- --></a>
+  <h3 class="helpHead3">customAttributes(userId, connectedAppId, formulaDefinedAttributes)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deprecated and available only in API versions 35.0 and 36.0. As of
+      version 37.0, use <samp class="codeph apex_code">customAttributes(userId, connectedAppId,
+        formulaDefinedAttributes, context)</samp> instead.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; customAttributes(Id userId,
+          Id connectedAppId, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; formulaDefinedAttributes,)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">formulaDefinedAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A map of the new set of attributes from the UserInfo endpoint (OAuth) or from a SAML
+            assertion. For more information, see <a class="xref" href="https://help.salesforce.com/HTViewHelpDoc?id=remoteaccess_using_userinfo_endpoint.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">The UserInfo Endpoint</a> in
+            the online help.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+
+      <p class="p">A map of the updated set of attributes.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_customAttributes_2">
+<a name="apex_Auth_ConnectedAppPlugin_customAttributes_2"><!-- --></a>
+  <h3 class="helpHead3">customAttributes(userId, connectedAppId, formulaDefinedAttributes, context)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets new attributes for the specified user. When the connected app
+      gets the user’s attributes from the UserInfo endpoint or through a SAML assertion, use this
+      method to update the attribute values.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; customAttributes(Id userId,
+          Id connectedAppId, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; formulaDefinedAttributes,
+          Auth.InvocationContext context)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user attempting to use the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID for the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">formulaDefinedAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A map of the current set of attributes from the UserInfo endpoint (OAuth) or from a
+            SAML assertion. For more information, see <a class="xref" href="https://help.salesforce.com/HTViewHelpDoc?id=remoteaccess_using_userinfo_endpoint.htm&amp;language=en_US" target="_blank" title="HTML (New Window)">The UserInfo Endpoint</a> in
+            the online help.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_InvocationContext.htm" title="The context in which the connected app is invoked, such as the protocol flow used and the token type issued, if any. Developers can use the context information to write code that is unique to the type of invocation.">InvocationContext</a></p>
+<p class="p">The context in which the connected app is invoked.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+
+      <p class="p">A map of the updated set of attributes.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_modifySAMLResponse">
+<a name="apex_Auth_ConnectedAppPlugin_modifySAMLResponse"><!-- --></a>
+  <h3 class="helpHead3">modifySAMLResponse(authSession, connectedAppId, samlResponse)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Modifies the XML generated by the Salesforce SAML Identity
+      Provider (IDP) before it’s sent to the service provider.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> dom.XmlNode
+          modifySAMLResponse(Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; authSession, Id connectedAppId, dom.XmlNode
+          samlResponse)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">authSession</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">The attributes for the authorized user’s session. The map includes the 15-character ID
+            of the authorized user who’s accessing the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">samlResponse</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a></p>
+<p class="p">Contains the SAML XML response generated by the IDP.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm#apex_classes_xml_dom_xmlnode" title="Use the XmlNode class to work with a node in an XML document.">Dom.XmlNode</a></p>
+<p class="p">Returns an instance of Dom.XmlNode containing the modified SAML XML response.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Use this method to modify the XML SAML response to perform an action based on the context
+        of the SAML request before it’s verified, signed, and sent to the target service provider.
+        This method enables developers to extend the connected app plug-in to meet their specific
+        needs.</p>
+ 
+      <p class="p">The developer assumes full responsibility for changes made within the connected app
+        plug-in. The plug-in must include validation and error handling. If the plug-in throws an
+        exception, catch it, log it, and stop the process. Don’t send anything to the target service
+        provider.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_refresh">
+<a name="apex_Auth_ConnectedAppPlugin_refresh"><!-- --></a>
+  <h3 class="helpHead3">refresh(userId, connectedAppId)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deprecated and available only in API versions 35.0 and 36.0. As of
+      version 37.0, use <samp class="codeph apex_code">refresh(userId, connectedAppId,
+        context)</samp> instead.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> refresh(Id userId, Id
+        connectedAppId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user requesting the refresh token.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_ConnectedAppPlugin_refresh_2">
+<a name="apex_Auth_ConnectedAppPlugin_refresh_2"><!-- --></a>
+  <h3 class="helpHead3">refresh(userId, connectedAppId, context)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Salesforce calls this method
+      during a refresh token exchange.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> refresh(Id userId, Id connectedAppId,
+          Auth.InvocationContext context)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">userId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the user requesting the refresh token.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">connectedAppId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The 15-character ID of the connected app.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">context</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_InvocationContext.htm" title="The context in which the connected app is invoked, such as the protocol flow used and the token type issued, if any. Developers can use the context information to write code that is unique to the type of invocation.">InvocationContext</a></p>
+<p class="p">The context in which the connected app is invoked.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

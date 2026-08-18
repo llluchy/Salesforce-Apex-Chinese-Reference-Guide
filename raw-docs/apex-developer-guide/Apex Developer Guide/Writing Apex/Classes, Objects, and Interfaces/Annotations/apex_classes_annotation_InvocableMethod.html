@@ -1,0 +1,379 @@
+<a name="apex_classes_annotation_InvocableMethod"><!-- --></a><h1 class="helpHead1">
+<span class="titlecodeph">InvocableMethod</span> Annotation</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="invocablemethod_annotation_overview"><a name="invocablemethod_annotation_overview"><!-- --></a>Use the <samp class="codeph apex_code">InvocableMethod</samp> annotation to identify methods that can be run as invocable
+      actions.</span></div>
+
+    <div class="section">
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If a flow invokes Apex, the running user must have the corresponding Apex class security
+        set in their user profile or permission set.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">Invocable methods are called natively from REST, Apex, flows, Agentforce agents or AI bots
+        that interact with the external API source. Invocable methods have dynamic input and output
+        values and support <samp class="codeph nolang">describe</samp> calls.</p>
+
+      <p class="p">This code sample shows an invocable method with primitive data types.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> AccountQueryAction {
+  @InvocableMethod(
+    label=<span class="string">'Get Account Names'</span>
+    description=<span class="string">'Returns the list of account names corresponding to the specified account IDs.'</span>
+    category=<span class="string">'Account'</span>
+  )
+  <span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">String</span>&gt; getAccountNames(List&lt;<span class="keyword">ID</span>&gt; ids) {
+    List&lt;Account&gt; accounts = [
+      SELECT Name
+      FROM Account
+      WHERE Id IN :ids
+      WITH USER_MODE
+    ];
+    Map&lt;<span class="keyword">ID</span>, <span class="keyword">String</span>&gt; idToName = <span class="keyword">new</span> Map&lt;<span class="keyword">ID</span>, <span class="keyword">String</span>&gt;();
+    <span class="statement">for</span> (Account account : accounts) {
+      idToName.put(account.Id, account.Name);
+    }
+    <span class="onelineComment">// put each name in the output at the same position as the id in the input</span>
+    List&lt;<span class="keyword">String</span>&gt; accountNames = <span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;();
+    <span class="statement">for</span> (<span class="keyword">String</span> id : ids) {
+      accountNames.add(idToName.get(id));
+    }
+    <span class="statement">return</span> accountNames;
+  }
+}</pre></div>
+
+      <p class="p">This code sample shows an invocable method with a specific sObject data type.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> AccountInsertAction {
+  @InvocableMethod(
+    label=<span class="string">'Insert Accounts'</span>
+    description=<span class="string">'Inserts the accounts specified and returns the IDs of the new accounts or null if account is failed to create.'</span>
+    category=<span class="string">'Account'</span>
+  )
+  <span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">ID</span>&gt; insertAccounts(List&lt;Account&gt; accounts) {
+    Database.SaveResult[] results = Database.<span class="statement">insert</span>(
+      accounts,
+      <span class="keyword">false</span>,
+      AccessLevel.USER_MODE
+    );
+    List&lt;<span class="keyword">ID</span>&gt; accountIds = <span class="keyword">new</span> List&lt;<span class="keyword">ID</span>&gt;();
+
+    <span class="statement">for</span> (Database.SaveResult result : results) {
+      <span class="statement">if</span> (result.isSuccess()) {
+        accountIds.add(result.getId());
+      } <span class="statement">else</span> {
+        accountIds.add(<span class="keyword">null</span>);
+      }
+    }
+
+    <span class="statement">return</span> accountIds;
+  }
+}</pre></div>
+
+      <p class="p">This code sample shows an invocable method with the generic sObject data type.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> GetFirstFromCollection {
+  @InvocableMethod
+  <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Results&gt; execute(List&lt;Requests&gt; requestList) {
+    List&lt;Results&gt; results = <span class="keyword">new</span> List&lt;Results&gt;();
+    <span class="statement">for</span> (Requests request : requestList) {
+      List&lt;SObject&gt; inputCollection = request.inputCollection;
+      SObject outputMember = inputCollection[0];
+
+      <span class="onelineComment">//Create a Results object to hold the return values</span>
+      Results result = <span class="keyword">new</span> Results();
+
+      <span class="onelineComment">//Add the return values to the Results object</span>
+      result.outputMember = outputMember;
+
+      <span class="onelineComment">//Add Result to the results List at the same position as the request is in the requests List</span>
+      results.add(result);
+    }
+    <span class="statement">return</span> results;
+  }
+
+  <span class="keyword">public</span> with sharing <span class="keyword">class</span> Requests {
+    @InvocableVariable(
+      label=<span class="string">'Records for Input'</span>
+      description=<span class="string">'yourDescription'</span>
+      required=<span class="keyword">true</span>
+    )
+    <span class="keyword">public</span> List&lt;SObject&gt; inputCollection;
+  }
+
+  <span class="keyword">public</span> with sharing <span class="keyword">class</span> Results {
+    @InvocableVariable(
+      label=<span class="string">'Records for Output'</span>
+      description=<span class="string">'yourDescription'</span>
+      required=<span class="keyword">true</span>
+    )
+    <span class="keyword">public</span> SObject outputMember;
+  }
+}</pre></div>
+
+      <p class="p">This code sample shows an invocable method with a custom icon from an SVG file.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> CustomSvgIcon { 
+  @InvocableMethod(label=<span class="string">'myIcon'</span> iconName=<span class="string">'resource:myPackageNamespace__google:top'</span>)
+  <span class="keyword">global</span> <span class="keyword">static</span> List&lt;<span class="keyword">Integer</span>&gt; myMethod(List&lt;<span class="keyword">Integer</span>&gt; request) {
+    List&lt;<span class="keyword">Integer</span>&gt; results = <span class="keyword">new</span> List&lt;<span class="keyword">Integer</span>&gt;();
+    <span class="statement">for</span>(<span class="keyword">Integer</span> reqInt : request) { 
+       results.add(reqInt);
+    }
+    <span class="statement">return</span> results;
+  }
+}</pre></div>
+
+      <p class="p">This code sample shows an invocable method with a custom icon from the Salesforce Lightning
+        Design System (SLDS).</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CustomSldsIcon { 
+  
+  @InvocableMethod(iconName=<span class="string">'slds:standard:choice'</span>) 
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> run() {} 
+  
+  }</pre></div>
+
+      <p class="p">To handle exceptions within an invocable method, wrap the results in an Apex object that
+        reports failures. The execution of the invocable method must run and return the same number
+        of results as inputs received even if errors occur.</p>
+
+      <p class="p">For example, this code sample adjusts positive values by taking their square root and
+        multiplying by pi, setting a success flag to <samp class="codeph nolang">true</samp>. For
+        negative values, it sets the success flag to <samp class="codeph nolang">false</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> AdjustPositiveValuesAction {
+  @InvocableMethod(
+    label=<span class="string">'Adjust Positive Values'</span>
+    description=<span class="string">'Returns the list of adjusted values. If a number is negative, a failure is reported for that value.'</span>
+  )
+  <span class="keyword">public</span> <span class="keyword">static</span> List&lt;AdjustmentResult&gt; doAdjustment(List&lt;<span class="keyword">Double</span>&gt; values) {
+    List&lt;AdjustmentResult&gt; results = <span class="keyword">new</span> List&lt;AdjustmentResult&gt;();
+
+    <span class="statement">for</span> (<span class="keyword">Double</span> value : values) {
+      AdjustmentResult result = <span class="keyword">new</span> AdjustmentResult();
+
+      <span class="statement">try</span> {
+        <span class="onelineComment">// Adjust the value, scale by pi.</span>
+        <span class="onelineComment">// Note: If the value is negative, this operation throws an exception.</span>
+        result.adjustedValue = Math.sqrt(value) * Math.PI;
+        result.adjustmentSucceeded = <span class="keyword">true</span>;
+      } <span class="statement">catch</span> (Exception e) {
+        <span class="onelineComment">// If a negative value caused an exception, mark the adjustment as failed, and keep processing other values.</span>
+        result.adjustmentSucceeded = <span class="keyword">false</span>;
+      }
+
+      results.add(result);
+    }
+
+    <span class="statement">return</span> results;
+  }
+
+  <span class="keyword">global</span> with sharing <span class="keyword">class</span> AdjustmentResult {
+    @InvocableVariable(label=<span class="string">'True if adjustment succeeded'</span>)
+    <span class="keyword">global</span> boolean adjustmentSucceeded;
+
+    @InvocableVariable(
+      label=<span class="string">'Adjusted value, only valid if adjustment succeeded'</span>
+    )
+    <span class="keyword">global</span> <span class="keyword">Double</span> adjustedValue;
+  }
+}</pre></div>
+
+      <p class="p">This test method checks whether the value adjustments were successful and verifies the
+        calculated values for positive inputs.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Test class for AdjustPositiveValuesAction</span>
+<span class="keyword">@IsTest</span>
+<span class="keyword">private</span> with sharing <span class="keyword">class</span> AdjustPositiveValuesActionTest {
+  <span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> doTest() {
+    <span class="onelineComment">// Create a list of test values: 4, -1, 1</span>
+    List&lt;<span class="keyword">Double</span>&gt; values = <span class="keyword">new</span> List&lt;<span class="keyword">Double</span>&gt;();
+    values.add(4);
+    values.add(-1);
+    values.add(1);
+  
+    Test.startTest();
+ 
+     <span class="onelineComment">// Call the doAdjustment method with the test values.</span>
+    List&lt;AdjustPositiveValuesAction.AdjustmentResult&gt; results = AdjustPositiveValuesAction.doAdjustment(values);
+ 
+    Test.stopTest();
+ 
+    <span class="onelineComment">// Assertions to check if adjustments were successful or not for each input value.</span>
+    Assert.isTrue(results[0].adjustmentSucceeded);
+    Assert.isFalse(results[1].adjustmentSucceeded);
+    Assert.isTrue(results[2].adjustmentSucceeded);
+ 
+    <span class="onelineComment">// Assertions to check the calculated adjusted values for positive inputs.</span>
+    Assert.areEqual(2 * Math.PI, results[0].adjustedValue);
+    Assert.areEqual(Math.PI, results[2].adjustedValue);
+  }
+}</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Supported Modifiers</h2>
+
+      
+      <p class="p">All modifiers are optional.</p>
+<ul class="ul bulletList">
+          <li class="li">
+<strong class="ph b">label</strong>: The label for the method, which appears as the action name in Flow Builder. The
+              default is the method name, though we recommend that you provide a label.</li>
+
+          <li class="li">
+<strong class="ph b">description</strong>: The description for the method, which appears as the action description in Flow
+              Builder. The default is <samp class="codeph apex_code">Null</samp>.</li>
+
+          <li class="li">
+<strong class="ph b">callout</strong>: The callout modifier identifies whether the method calls to an external system. If
+              the method calls to an external system, add <samp class="codeph apex_code"><span class="keyword">callout</span>=<span class="keyword">true</span></samp>. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+
+          <li class="li">
+<strong class="ph b">capabilityType</strong>: The capability that integrates with the method. The valid format is
+                <var class="keyword varname">Name://Name</var>, for example: <samp class="codeph nolang">PromptTemplateType://SalesEmail</samp>
+</li>
+
+          <li class="li">
+<strong class="ph b">category</strong>: The category for the method, which appears as the action category in Flow Builder.
+              If no category is provided (by default), actions appear under Uncategorized.</li>
+
+          <li class="li">
+<strong class="ph b">configurationEditor</strong>: The custom property editor that is registered with the method and appears in Flow
+              Builder when an admin configures the action. If you don’t specify this modifier, Flow
+              Builder uses the standard property editor.</li>
+
+          <li class="li">
+<strong class="ph b">iconName</strong>: The name of the icon to use as a custom icon for the action in the Flow Builder
+              canvas. You can specify an SVG file that you uploaded as a static resource or a
+              Salesforce Lightning Design System standard icon.</li>
+
+        </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">InvocableMethod Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Implementation Notes</strong>: <ul class="ul bulletList">
+              <li class="li">The invocable method must be <samp class="codeph apex_code"><span class="keyword">static</span></samp> and
+                  <samp class="codeph apex_code"><span class="keyword">public</span></samp> or <samp class="codeph apex_code"><span class="keyword">global</span></samp>, and its class must be an outer class.</li>
+
+              <li class="li">Only one method in a class can have the <samp class="codeph apex_code">InvocableMethod</samp> annotation.</li>
+
+              <li class="li">The only annotation that can be used with the <samp class="codeph apex_code">InvocableMethod</samp> annotation is <samp class="codeph apex_code">Deprecated</samp>.</li>
+
+            </ul>
+</li>
+
+        <li class="li">
+<strong class="ph b">Inputs and Outputs</strong>: There can be at most one input parameter and its data type must be one of the following:<ul class="ul bulletList">
+              <li class="li">A list of a primitive data type or a list of lists of a primitive data type
+                – the generic <samp class="codeph apex_code"><span class="keyword">Object</span></samp> type isn’t
+                supported.</li>
+
+              <li class="li">A list of an sObject type or a list of lists of an sObject type.</li>
+
+              <li class="li">A list of the generic sObject type (<samp class="codeph nolang">List&lt;sObject&gt;</samp>) or a list of lists of the generic sObject type
+                  (<samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp>).</li>
+
+              <li class="li">A list of a user-defined type, containing variables of the supported types or
+                user-defined Apex types, with the <samp class="codeph apex_code">InvocableVariable</samp> annotation. To implement your data type, create a
+                custom global or public Apex class. The class must contain at least one member
+                variable with the invocable variable annotation.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><samp class="codeph apex_code">@InvocableVariable</samp> fields of type <samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp> are not supported in user-defined Apex
+                  classes and cause a runtime error. Use <samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp> only as a direct <samp class="codeph apex_code">@InvocableMethod</samp> return type.</p>
+</div>
+</div></div></div></div>
+</li>
+
+            </ul>
+If the return type isn’t <samp class="codeph apex_code">Null</samp>, the data
+            type returned by the method must be one of the following:<ul class="ul bulletList">
+              <li class="li">A list of a primitive data type or a list of lists of a primitive data type
+                – the generic <samp class="codeph apex_code"><span class="keyword">Object</span></samp> type isn’t
+                supported.</li>
+
+              <li class="li">A list of an sObject type or a list of lists of an sObject type.</li>
+
+              <li class="li">A list of the generic sObject type (<samp class="codeph nolang">List&lt;sObject&gt;</samp>) or a list of lists of the generic sObject type
+                  (<samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp>).</li>
+
+              <li class="li">A list of a user-defined type, containing variables of the supported types or
+                user-defined Apex types, with the <samp class="codeph apex_code">InvocableVariable</samp> annotation. To implement your data type, create a
+                custom global or public Apex class. The class must contain at least one member
+                variable with the invocable variable annotation.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><samp class="codeph apex_code">@InvocableVariable</samp> fields of type <samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp> are not supported in user-defined Apex
+                  classes and cause a runtime error. Use <samp class="codeph nolang">List&lt;List&lt;sObject&gt;&gt;</samp> only as a direct <samp class="codeph apex_code">@InvocableMethod</samp> return type.</p>
+</div>
+</div></div></div></div>
+</li>
+
+            </ul>
+For a correct bulkification implementation, the Inputs and Outputs must match on
+            both the size and the order. For example, the i-th Output entry must correspond to the
+            i-th Input entry. Matching entries are required for data correctness when your action is
+            in bulkified execution, such as when an apex action is used in a record trigger
+            flow.</li>
+
+        <li class="li">
+<strong class="ph b">Managed Packages</strong>: <ul class="ul bulletList">
+              <li class="li">You can use invocable methods in packages, but after you add an invocable method
+                you can’t remove it from later versions of the package.</li>
+
+              <li class="li">Public invocable methods can be referred to by flows and processes within the
+                managed package.</li>
+
+              <li class="li">Global invocable methods can be referred to anywhere in the subscriber org. Only
+                global invocable methods appear in Flow Builder and Process Builder in the
+                subscriber org. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_global_best_practices.htm" title="As an independent software vendor (ISV) developer, understand when and how to use global Apex in managed packages. Learn design patterns that maximize flexibility and comply with the strict manageability rules applied to global Apex after your managed package’s release. By following these best practices, you can improve the stability and maintainability of your API.">Best Practices for Using Global Apex in Managed Packages</a>.</li>
+
+            </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+      <p class="p">For more information about invocable actions, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_action.meta/api_action/actions_intro.htm" target="_blank" title="HTML (New Window)">Apex Actions</a> in the
+          <cite class="cite">Actions Developer Guide</cite>.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_IntegrationTest.htm" title="IntegrationTest Annotation (Developer Preview)">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="InvocableVariable Annotation">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation_InvocableVariable.htm" title="To identify variables used by invocable methods in custom classes, use the InvocableVariable annotation.">InvocableVariable Annotation</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_action.meta/api_action/actions_obj_apex.htm" target="_blank" title="Actions Developer Guide: Apex Actions  - HTML (New Window)"><em class="ph i">Actions Developer Guide</em>: Apex Actions </a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/resources_actions_invocable.htm" target="_blank" title="REST API Developer Guide: Invocable Actions  - HTML (New Window)"><em class="ph i">REST API Developer Guide</em>: Invocable Actions </a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=platform.flow_build_extend_apex_type_add_a_custom_icon.htm&amp;type=5&amp;language=en_US" target="_blank" title="Salesforce Help: Add a Custom Icon to an Apex-Defined
+                            Action - HTML (New Window)"><em class="ph i">Salesforce Help</em>: Add a Custom Icon to an Apex-Defined
+                            Action</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Invocable_Action.htm" target="_blank" title="Apex Reference Guide: Action Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Action Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.use_flow_custom_property_editor" target="_blank" title="Lightning Web Components Developer Guide: Develop Custom
+                            Property Editors for Flow Builder - HTML (New Window)"><em class="ph i">Lightning Web Components Developer Guide</em>: Develop Custom
+                            Property Editors for Flow Builder</a></div></li>
+<li><div><a class="link" href="https://help.salesforce.com/s/articleView?id=ai.prompt_builder_ground_apex.htm&amp;type=5&amp;language=en_US" target="_blank" title="Prompt Builder: Ground with Apex - HTML (New Window)"><em class="ph i">Prompt Builder</em>: Ground with Apex</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_forcecom_flow_invocable_action_callout.htm" title="When you define a method that runs as an invocable action in a screen flow and makes a callout to an external system, use the callout modifier.">Making Callouts to External Systems from Invocable Actions</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_forcecom_flow_invocable_action_extension_customize_input_order_example.htm" title="Simplify the configuration of Apex invocable actions in Flow Builder by using the InvocableActionExtension metadata file. Create partial custom property editors for one or more input parameters that don't require updates when you introduce new versions of your action. Define dynamic or static picklists for input parameters and control input parameter display order and grouping. You can also add a custom header to your property editor.">Extend Invocable Action Configuration in Flow Builder</a></div></li>
+</ul>
+</div>
+</div>

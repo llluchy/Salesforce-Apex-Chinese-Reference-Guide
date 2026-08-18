@@ -1,0 +1,167 @@
+<a name="apex_class_schema_describecolorresult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">DescribeColorResult Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="summary"><a name="summary"><!-- --></a>Contains color metadata information for
+a tab.</span></div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Schema.htm" title="The Schema namespace provides classes and methods for schema metadata information.">Schema</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">The <samp class="codeph apex_code">getColors</samp> method of the <samp class="codeph apex_code">Schema.DescribeTabResult</samp> class returns a list of <samp class="codeph apex_code">Schema.DescribeColorResult</samp> objects that describe colors used in a tab.</p>
+<p class="p">The methods in
+the <samp class="codeph apex_code">Schema.DescribeColorResult</samp> class can be called using their property counterparts. For each
+method starting with <samp class="codeph nolang">get</samp>, you
+can omit the <samp class="codeph nolang">get</samp> prefix and the
+ending parentheses <samp class="codeph nolang">()</samp> to call
+the property counterpart. For example, <samp class="codeph apex_code">colorResultObj.color</samp> is equivalent to <samp class="codeph apex_code">colorResultObj.getColor()</samp>.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">This sample shows how to get the
+color information in the Sales app for the first tab’s first
+color.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get tab set describes for each app</span>
+List&lt;Schema.DescribeTabSetResult&gt; tabSetDesc = Schema.DescribeTabs();
+
+<span class="onelineComment">// Iterate through each tab set describe for each app and display the info</span>
+<span class="statement">for</span>(Schema.DescribeTabSetResult tsr : tabSetDesc) {            
+    <span class="onelineComment">// Display tab info for the Sales app</span>
+    <span class="statement">if</span> (tsr.getLabel() == <span class="string">'Sales'</span>) {
+        <span class="onelineComment">// Get color information for the first tab</span>
+        List&lt;Schema.DescribeColorResult&gt; colorDesc = tsr.getTabs()[0].getColors();
+        <span class="onelineComment">// Display the icon color, theme, and context of the first color returned</span>
+        System.debug(<span class="string">'Color: '</span> + colorDesc[0].getColor());
+        System.debug(<span class="string">'Theme: '</span> + colorDesc[0].getTheme());
+        System.debug(<span class="string">'Context: '</span> + colorDesc[0].getContext());
+    }            
+}
+
+<span class="onelineComment">// Example debug statement output</span>
+<span class="onelineComment">// DEBUG|Color: 1797C0</span>
+<span class="onelineComment">// DEBUG|Theme: theme4</span>
+<span class="onelineComment">// DEBUG|Context: primary</span></pre></div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Schema_DescribeColorResult_methods">
+<a name="apex_Schema_DescribeColorResult_methods"><!-- --></a>
+<h2 class="helpHead2">DescribeColorResult Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DescribeColorResult</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describecolorresult.htm#apex_Schema_DescribeColorResult_getColor">getColor()</a></strong><br>
+Returns the Web RGB color code, such as <samp class="codeph apex_code">00FF00</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describecolorresult.htm#apex_Schema_DescribeColorResult_getContext">getContext()</a></strong><br>
+Returns the color context. The context determines whether the color is the main color for the tab or not.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_schema_describecolorresult.htm#apex_Schema_DescribeColorResult_getTheme">getTheme()</a></strong><br>
+Returns the color theme.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeColorResult_getColor">
+<a name="apex_Schema_DescribeColorResult_getColor"><!-- --></a>
+<h3 class="helpHead3">getColor()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the Web RGB color code, such as <samp class="codeph apex_code">00FF00</samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getColor()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeColorResult_getContext">
+<a name="apex_Schema_DescribeColorResult_getContext"><!-- --></a>
+<h3 class="helpHead3">getContext()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the color context. The context determines whether
+the color is the main color for the tab or not.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getContext()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Schema_DescribeColorResult_getTheme">
+<a name="apex_Schema_DescribeColorResult_getTheme"><!-- --></a>
+<h3 class="helpHead3">getTheme()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the color theme.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getTheme()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<div class="p">Possible theme values include <samp class="codeph nolang">theme3</samp>, <samp class="codeph nolang">theme4</samp>, and <samp class="codeph nolang">custom</samp>. <ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">theme3</samp> is the Salesforce
+theme introduced during Spring ‘10.</li>
+
+<li class="li">
+<samp class="codeph nolang">theme4</samp> is the Salesforce
+theme introduced in Winter ‘14 for the mobile touchscreen version
+of Salesforce.</li>
+
+<li class="li">
+<samp class="codeph nolang">custom</samp> is the theme name
+associated with a custom icon.</li>
+
+</ul>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

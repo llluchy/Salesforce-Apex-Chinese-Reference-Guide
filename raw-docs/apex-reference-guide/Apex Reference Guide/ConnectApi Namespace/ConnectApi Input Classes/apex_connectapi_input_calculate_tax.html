@@ -1,0 +1,158 @@
+<a name="apex_connectapi_input_calculate_tax"><!-- --></a><h1 class="helpHead1">ConnectApi.CalculateTaxRequest</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Request to sent through the tax adapter to the external tax engine.
+      Inputs with a <samp class="codeph nolang">TaxTransactionType</samp> of Debit represent a tax
+      calculation request. Inputs with a <samp class="codeph nolang">TaxTransactionType</samp> of
+      Credit represent a tax cancellation request.</span></div>
+<div class="section">
+      <p class="p">Subclass of <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_connectapi_input_tax_transaction.htm" title="Information about the tax transaction sent to the tax adapter as part of a tax calculation request.">ConnectApi.TaxTransactionRequest</a>.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader vertical-align-top " id="d1230031e53">Property</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d1230031e56">Type</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d1230031e59">Description</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d1230031e62">Required or Optional</th>
+
+              <th class="featureTableHeader vertical-align-top " id="d1230031e65">Available Version</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph apex_code">isCommit</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type">Boolean</td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">Commits the transaction for tax calculation.</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Required</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">55.0</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph apex_code">isHeaderTaxRequested</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type">Boolean</td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">Indicates whether header tax is enabled in the tax engine (<samp class="codeph nolang">true</samp>) or not (<samp class="codeph nolang">false</samp>).</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Optional</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">66.0</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph nolang">shouldVoidTax</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type">Boolean</td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">
+<p class="p">Indicates whether to void the tax transaction associated with a document
+                  that's mentioned as the <samp class="codeph nolang">referenceDocumentCode</samp>
+                  property value with <samp class="codeph nolang">taxType</samp>property value as
+                    <samp class="codeph nolang">Actual</samp> and <samp class="codeph nolang">isCommit</samp> property value set to <samp class="codeph nolang">true</samp>.</p>
+<p class="p">Keep these considerations in mind when you use this
+                  property.</p>
+
+                <a name="ul_o4y_xs2_2gc"><!-- --></a><ul class="ul bulletList" id="ul_o4y_xs2_2gc">
+                  <li class="li">If the <samp class="codeph nolang">shouldVoidTax</samp> property value is
+                    set to <samp class="codeph nolang">true</samp>, then the operation returns a
+                    response with <samp class="codeph nolang">documentCode</samp> property value
+                    updated to <samp class="codeph nolang">referenceDocumentCode</samp> property
+                    value that was originally sent in the request payload. The response also
+                    includes the <samp class="codeph nolang">taxTransactionType</samp> property
+                    value as <samp class="codeph nolang">Void</samp>. This indicates that the
+                    document specified in the <samp class="codeph nolang">referenceDocumentCode</samp> property value is voided.</li>
+
+                  <li class="li">If document is locked or you can't void the tax transaction for any reason,
+                    then you can use the Tax Calculation request to perform another transaction such
+                    as a Credit Tax request. In this scenario, the response includes the <samp class="codeph nolang">documentCode</samp> property value that was sent in the
+                    request payload.</li>
+
+                  <li class="li">If the document that's mentioned in the <samp class="codeph nolang">referenceDocumentCode</samp> property value isn't available in the tax
+                    engine, then an error response occurs with <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_commercetax_ResultCode.htm" title="Code that represents the results of a tax request made to the tax engine.">ResultCode</a> value as <samp class="codeph nolang">ReferenceDocumentCodeMissing</samp>.</li>
+
+                </ul>
+</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Optional</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">65.0</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph apex_code">taxEngineId</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type">String</td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">ID of the Salesforce tax engine entity used to represent the external tax
+                engine.</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Required</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">55.0</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph apex_code">taxTransactionType</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type"><a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#TaxTransactionTypeEnum"><samp class="codeph apex_code">ConnectApi.​TaxTransaction​Type</samp></a></td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">Type of tax transaction.
+                Values are:<ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">Credit</samp>—Transaction is a credit transaction.</li>
+ <li class="li">
+<samp class="codeph nolang">Debit</samp>—Transaction is a debit transaction.</li>
+ <li class="li">
+<samp class="codeph nolang">Void</samp>—Reserved for internal use in case of input. In case of output, this value specifies that the tax engine has voided the document that's mentioned as the <samp class="codeph nolang">referenceDocumentCode</samp> property value.</li>
+</ul>
+</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Required</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">55.0</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property"><samp class="codeph apex_code">taxType</samp></td>
+
+              <td class="entry" headers="d1230031e56" data-title="Type"><a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_enums.htm#CalculateTaxTypeEnum"><samp class="codeph apex_code">ConnectApi.​CalculateTax​Type</samp></a></td>
+
+              <td class="entry" headers="d1230031e59" data-title="Description">Type of tax calculation.
+                Values are:<ul class="ul bulletList">
+<li class="li">
+<samp class="codeph nolang">Actual</samp>—Calculated tax represents the final taxed amount for the transaction.</li>
+ <li class="li">
+<samp class="codeph nolang">Estimated</samp>—Calculated tax represents only an estimated value before the transaction is finalized.</li>
+</ul>
+</td>
+
+              <td class="entry" headers="d1230031e62" data-title="Required or Optional">Required</td>
+
+              <td class="entry" headers="d1230031e53 d1230031e65" data-title="Property">55.0</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+</div>
+</div>

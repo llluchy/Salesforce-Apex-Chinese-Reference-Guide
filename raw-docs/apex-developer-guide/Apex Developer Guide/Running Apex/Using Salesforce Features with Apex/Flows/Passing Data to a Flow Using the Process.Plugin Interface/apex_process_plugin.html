@@ -1,0 +1,155 @@
+<a name="apex_process_plugin"><!-- --></a><h1 class="helpHead1">Implementing the <span class="titlecodeph">Process.Plugin</span> Interface</h1><div class="body refbody">
+<div class="shortdesc">
+<samp class="codeph apex_code">Process.Plugin</samp> is a built-in interface that
+        allows you to pass data between your organization and a specified flow.</div>
+
+        <div class="section">
+            <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>We recommend using the <samp class="codeph apex_code">@InvocableMethod</samp> annotation instead of the <samp class="codeph apex_code">Process.Plugin</samp> interface.<ul class="ul bulletList">
+          <li class="li">The interface doesn’t support Blob, Collection, and sObject, data types, and it
+            doesn’t support bulk operations. After you implement the interface on a class, the class
+            can be referenced only from flows.</li>
+
+          <li class="li"> The annotation supports all data types and bulk operations. After you implement the
+            annotation on a class, the class can be referenced from flows, processes, and the Custom
+            Invocable Actions REST API endpoint.</li>
+
+          <li class="li">Legacy Apex actions aren’t supported in auto-layout in Flow Builder. Legacy Apex
+            actions are only available to be added in free-form in Flow Builder. Existing actions
+            can be edited in both auto-layout and free-form mode.</li>
+
+          <li class="li">You can customize how invocable actions created with <samp class="codeph apex_code">@InvocableMethod</samp> appear in Flow Builder by using the
+            InvocableActionExtension metadata file. Control parameter order, add picklists, create
+            custom headers, and build partial custom property editors.</li>
+
+        </ul>
+</p>
+</div>
+</div></div></div></div>
+
+            <p class="p">The class that implements the <samp class="codeph apex_code">Process.Plugin</samp>
+                interface must call these methods.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d120197e104">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d120197e107">Arguments</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d120197e110">Return Type</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d120197e113">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d120197e104" data-title="Name"><samp class="codeph apex_code">describe</samp></td>
+
+                            <td class="entry" headers="d120197e107" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d120197e110" data-title="Return Type"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_describe_result.htm#apex_plugin_describe_result" title="Use the Process.Plugin interface describe method to dynamically provide both input and output parameters for the flow. This method returns the Process.PluginDescribeResult class."><samp class="codeph apex_code">Process.PluginDescribeResult</samp></a></td>
+
+                            <td class="entry" headers="d120197e113" data-title="Description">Returns a <samp class="codeph apex_code">Process.PluginDescribeResult</samp> object that describes this
+                                method call. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d120197e104" data-title="Name"><samp class="codeph apex_code">invoke</samp></td>
+
+                            <td class="entry" headers="d120197e107" data-title="Arguments"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_request.htm#apex_plugin_request" title="The Process.PluginRequest class passes input parameters from the class that implements the interface to the flow."><samp class="codeph apex_code">Process.PluginRequest</samp></a></td>
+
+                            <td class="entry" headers="d120197e110" data-title="Return Type"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_plugin_result.htm#apex_plugin_result" title="The Process.PluginResult class returns output parameters from the class that implements the interface to the flow."><samp class="codeph apex_code">Process.PluginResult</samp></a></td>
+
+                            <td class="entry" headers="d120197e113" data-title="Description">Primary method that the system invokes when the class that implements
+                                the interface is instantiated. </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example Implementation</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> flowChat <span class="keyword">implements</span> Process.Plugin { 
+
+<span class="onelineComment">// The main method to be implemented. The Flow calls this at runtime.</span>
+<span class="keyword">global</span> Process.PluginResult invoke(Process.PluginRequest request) { 
+        <span class="onelineComment">// Get the subject of the Chatter post from the flow</span>
+        <span class="keyword">String</span> subject = (<span class="keyword">String</span>) request.inputParameters.get(<span class="string">'subject'</span>);
+        
+        <span class="onelineComment">// Use the Chatter APIs to post it to the current user's feed</span>
+        FeedItem fItem = <span class="keyword">new</span> FeedItem(); 
+        fItem.ParentId = UserInfo.getUserId(); 
+        fItem.Body = <span class="string">'Flow Update: '</span> + subject; 
+        <span class="statement">insert</span> fItem; 
+
+        <span class="onelineComment">// return to Flow</span>
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; result = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;(); 
+        <span class="statement">return</span> <span class="keyword">new</span> Process.PluginResult(result); 
+    } 
+
+    <span class="onelineComment">// Returns the describe information for the interface</span>
+    <span class="keyword">global</span> Process.PluginDescribeResult describe() { 
+        Process.PluginDescribeResult result = <span class="keyword">new</span> Process.PluginDescribeResult(); 
+        result.Name = <span class="string">'flowchatplugin'</span>;
+        result.Tag = <span class="string">'chat'</span>;
+        result.inputParameters = <span class="keyword">new</span> 
+           List&lt;Process.PluginDescribeResult.InputParameter&gt;{ 
+               <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(<span class="string">'subject'</span>, 
+               Process.PluginDescribeResult.ParameterType.STRING, <span class="keyword">true</span>) 
+            }; 
+        result.outputParameters = <span class="keyword">new</span> 
+           List&lt;Process.PluginDescribeResult.OutputParameter&gt;{ }; 
+        <span class="statement">return</span> result; 
+    }
+}
+
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Test Class </h2>
+
+            
+            <p class="p">The following is a test class for the preceding class. </p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> flowChatTest {
+
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> flowChatTests() {
+      
+        flowChat plugin = <span class="keyword">new</span> flowChat();
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; inputParams = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+
+        string feedSubject = <span class="string">'Flow is alive'</span>;
+        InputParams.put(<span class="string">'subject'</span>, feedSubject);
+
+        Process.PluginRequest request = <span class="keyword">new</span> Process.PluginRequest(inputParams);           
+        
+        plugin.invoke(request);
+    } 
+}
+
+</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

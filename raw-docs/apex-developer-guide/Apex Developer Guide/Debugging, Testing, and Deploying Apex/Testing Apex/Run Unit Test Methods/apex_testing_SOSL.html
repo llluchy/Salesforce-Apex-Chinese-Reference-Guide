@@ -1,0 +1,52 @@
+<a name="apex_testing_SOSL"><!-- --></a><h1 class="helpHead1">Adding SOSL Queries to Unit Tests</h1><div class="body">
+      <p class="p">To ensure that test methods always behave in a predictable way, any Salesforce Object
+         Search Language (SOSL) query that is added to an Apex test method returns an empty set of
+         search results when the test method executes. If you do not want the query to return an
+         empty list of results, you can use the <samp class="codeph apex_code">Test.setFixedSearchResults</samp> system method to define a list of record IDs that
+         are returned by the search. All SOSL queries that take place later in the test method
+         return the list of record IDs that were specified by the <samp class="codeph apex_code">Test.setFixedSearchResults</samp> method. Additionally, the test method can call
+            <samp class="codeph apex_code">Test.setFixedSearchResults</samp> multiple times to
+         define different result sets for different SOSL queries. If you do not call the <samp class="codeph apex_code">Test.setFixedSearchResults</samp> method in a test method, or
+         if you call this method without specifying a list of record IDs, any SOSL queries that take
+         place later in the test method return an empty list of results. </p>
+
+      <p class="p">The list of record IDs specified by the <samp class="codeph apex_code">Test.setFixedSearchResults</samp> method replaces the results that would normally be
+         returned by the SOSL query if it were not subject to any <samp class="codeph apex_code">WHERE</samp> or <samp class="codeph apex_code">LIMIT</samp> clauses. If these
+         clauses exist in the SOSL query, they are applied to the list of fixed search results. For
+         example:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> SoslFixedResultsTest1 {
+
+    <span class="keyword">public</span> <span class="keyword">static</span> testMethod <span class="keyword">void</span> testSoslFixedResults() {
+       Id [] fixedSearchResults= <span class="keyword">new</span> Id[1];
+       fixedSearchResults[0] = <span class="string">'001x0000003G89h'</span>;
+       Test.setFixedSearchResults(fixedSearchResults);
+       List&lt;List&lt;SObject&gt;&gt; searchList = [FIND <span class="string">'test'</span> 
+                                         IN ALL FIELDS RETURNING 
+                                            Account(id, name WHERE name = <span class="string">'test'</span> LIMIT 1)];
+    }
+}</pre></div>
+
+      
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>SOSL queries for <span class="keyword parmname">ContentDocument</span> (File) or
+            <span class="keyword parmname">ContentNote</span> (Note) entities require using <samp class="codeph nolang">setFixedSearchResults</samp> with
+            <span class="keyword parmname">ContentVersion</span> IDs to remain consistent with how Salesforce indexes
+         and searches for files and notes.</p>
+</div>
+</div></div></div></div>
+
+      
+      <p class="p">Although the account record with an ID of <samp class="codeph apex_code">001x0000003G89h</samp> may not match the query string in the FIND clause (<samp class="codeph apex_code"><span class="string">'test'</span></samp>), the record is passed into the <samp class="codeph apex_code">RETURNING</samp> clause of the SOSL statement. If the record
+         with ID <samp class="codeph nolang">001x0000003G89h</samp> matches the <samp class="codeph apex_code">WHERE</samp> clause filter, the record is returned. If it does
+         not match the <samp class="codeph apex_code">WHERE</samp> clause, no record is
+         returned.</p>
+
+   </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_start_stop_test.htm" title="Using Limits, startTest , and stopTest">← Previous</a></li>
+</ul></div>
+</div>

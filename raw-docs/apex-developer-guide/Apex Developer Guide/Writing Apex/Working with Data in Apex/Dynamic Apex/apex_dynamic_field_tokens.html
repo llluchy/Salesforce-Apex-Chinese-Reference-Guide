@@ -1,0 +1,168 @@
+<a name="apex_dynamic_field_tokens"><!-- --></a><h1 class="helpHead1">Using Field Tokens</h1><div class="body conbody">
+    <p class="p">To access the token for a field, use one of the following methods:</p>
+
+    <ul class="ul bulletList">
+      <li class="li">Access the static member variable name of an sObject static type, for example, <samp class="codeph apex_code">Account.Name</samp>.</li>
+
+      <li class="li">Call the <samp class="codeph apex_code">getSObjectField</samp> method on a field
+        describe result.</li>
+
+    </ul>
+
+    <p class="p">The field token uses the data type <samp class="codeph apex_code">Schema.SObjectField</samp>.</p>
+
+    <p class="p">In the following example, the field token is returned for the Account object's <samp class="codeph apex_code">Description</samp> field:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.SObjectField fieldToken = Account.Description;</pre></div>
+
+    <p class="p">In the following example, the field token is returned from the field describe result:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the describe result for the Name field on the Account object</span>
+Schema.DescribeFieldResult dfr = Schema.sObjectType.Account.fields.Name;
+
+<span class="onelineComment">// Verify that the field token is the token for the Name field on an Account object</span>
+System.assert(dfr.getSObjectField() == Account.Name);
+
+<span class="onelineComment">// Get the describe result from the token</span>
+dfr = dfr.getSObjectField().getDescribe();</pre></div>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><span class="ph" id="PersonAccountException"><a name="PersonAccountException"><!-- --></a>Field tokens aren't available for person accounts. If you
+        access <samp class="codeph apex_code">Schema.Account.<var class="keyword varname">fieldname</var></samp>,
+        you get an exception error. Instead, specify the field name as a string.</span></p>
+</div>
+</div></div></div></div>
+
+    <div class="section" id="apex_field_describe_using">
+<a name="apex_field_describe_using"><!-- --></a><h2 class="helpHead2">Using Field Describe Results</h2>
+
+      
+      <p class="p">To access the describe result for a field, use one of the following methods:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Call the <samp class="codeph apex_code">getDescribe</samp> method on a field
+          token.</li>
+
+        <li class="li">Access the <samp class="codeph apex_code">fields</samp> member variable of an sObject
+          token with a field member variable (such as <samp class="codeph apex_code">Name</samp>,
+            <samp class="codeph apex_code">BillingCity</samp>, and so on.)</li>
+
+      </ul>
+
+      <p class="p">The field describe result uses the data type <samp class="codeph apex_code">Schema.DescribeFieldResult</samp>. </p>
+
+      <p class="p">The following example uses the <samp class="codeph apex_code">getDescribe</samp>
+        method:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeFieldResult dfr = Account.Description.getDescribe();</pre></div>
+
+      <p class="p">This example uses the <samp class="codeph apex_code">fields</samp> member variable
+        method: </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Schema.DescribeFieldResult dfr = Schema.SObjectType.Account.fields.Name;
+</pre></div>
+
+      <p class="p">In the example above, the system uses special parsing to validate that the final member
+        variable (<samp class="codeph apex_code">Name</samp>) is valid for the specified sObject
+        at compile time. When the parser finds the <samp class="codeph apex_code">fields</samp>
+        member variable, it looks backwards to find the name of the sObject (<samp class="codeph apex_code">Account</samp>). It validates that the field name following the
+          <samp class="codeph apex_code">fields</samp> member variable is legitimate. The <samp class="codeph apex_code">fields</samp> member variable only works when used in this
+        manner.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Don’t use the <samp class="codeph apex_code">fields</samp> member variable without
+        also using either a field member variable name or the <samp class="codeph apex_code">getMap</samp> method. For more information on <samp class="codeph apex_code">getMap</samp>, see the next section.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">For more information about the methods available with a field describe result, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_fields_describe.htm" target="_blank">DescribeFieldResultClass</a>.</p>
+
+    </div>
+
+    <div class="section" id="apex_describe_object_all_fields">
+<a name="apex_describe_object_all_fields"><!-- --></a><h2 class="helpHead2">Accessing All Field Describe Results for an sObject</h2>
+
+      
+      <p class="p">Use the field describe result's <samp class="codeph apex_code">getMap</samp> method to
+        return a map that represents the relationship between all the field names (keys) and the
+        field tokens (values) for an sObject. </p>
+
+      <p class="p">The following example generates a map that can be used to access a field by name:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, Schema.SObjectField&gt; fieldMap = Schema.SObjectType.Account.fields.getMap();</pre></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The value type of this map is not a field describe result. Using the describe results
+        would take too many system resources. Instead, it is a map of tokens that you can use to
+        find the appropriate field. After you determine the field, generate the describe result for
+        it.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">The map has the following characteristics:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">It is dynamic, that is, it is generated at runtime on the fields for that sObject.</li>
+
+        <li class="li">All field names are case insensitive.</li>
+
+        <li class="li">The keys use namespaces as required.</li>
+
+        <li class="li">The keys reflect whether the field is a custom object.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Field Describe Considerations</h2>
+
+      
+      <p class="p">Note the following when describing fields.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">A field describe that’s executed from within an installed managed package returns
+          Chatter fields even if Chatter is not enabled in the installing organization. This is not
+          true if the field describe is executed from a class that’s not within an installed managed
+          package.</li>
+
+        <li class="li"><span class="ph" id="field_describe_api_version"><a name="field_describe_api_version"><!-- --></a>When you describe sObjects and their fields from
+            within an Apex class, custom fields of new field types are returned regardless of the
+            API version that the class is saved in. If a field type, such as the geolocation field
+            type, is available only in a recent API version, components of a geolocation field are
+            returned even if the class is saved in an earlier API version.</span></li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In API version 34.0 and later, Schema.DescribeSObjectResult on a custom SObjectType
+        includes map keys prefixed with the namespace, even if the namespace is that of currently
+        executing code. If you work with multiple namespaces and generate runtime describe data,
+        make sure that your code accesses keys correctly using the namespace prefix.</p>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_describe_objects_understanding.htm" title="Understanding Apex Describe Information">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_dynamic_permissions.htm" title="Understanding Describe Information Permissions">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fields() - HTML (New Window)">DescribeSObjectResult.fields()</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm" target="_blank" title="DescribeSObjectResult.fieldsets() - HTML (New Window)">DescribeSObjectResult.fieldsets()</a></div></li>
+</ul>
+</div>
+</div>

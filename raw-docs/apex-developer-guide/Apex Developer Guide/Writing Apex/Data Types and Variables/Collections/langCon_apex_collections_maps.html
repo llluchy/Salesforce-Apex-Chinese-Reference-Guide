@@ -1,0 +1,154 @@
+<a name="langCon_apex_collections_maps"><!-- --></a><h1 class="helpHead1">Maps</h1><div class="body">
+<div class="shortdesc">A map is a collection of key-value pairs where each unique key maps to a single value.
+    Keys and values can be any data type—primitive types, collections, sObjects, user-defined
+    types, and built-in Apex types.</div>
+
+    <p class="p">This table represents a map of countries and currencies:</p>
+
+    
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+        
+        
+        
+        
+        
+        
+        <tbody class="tbody">
+          <tr>
+            <td class="entry"><strong class="ph b">Country (Key)</strong></td>
+
+            <td class="entry">'United States'</td>
+
+            <td class="entry">'Japan'</td>
+
+            <td class="entry">'France'</td>
+
+            <td class="entry">'England'</td>
+
+            <td class="entry">'India'</td>
+
+          </tr>
+
+          <tr>
+            <td class="entry"><strong class="ph b">Currency (Value)</strong></td>
+
+            <td class="entry">'Dollar'</td>
+
+            <td class="entry">'Yen'</td>
+
+            <td class="entry">'Euro'</td>
+
+            <td class="entry">'Pound'</td>
+
+            <td class="entry">'Rupee'</td>
+
+          </tr>
+
+        </tbody>
+
+      </table></div>
+
+    <p class="p">Map keys and values can contain any collection, and can contain nested collections. For
+      example, you can have a map of Integers to maps, which, in turn, map Strings to lists. Map
+      keys can contain up to seven levels of nested collections, that is, up to eight levels
+      overall.</p>
+
+    <p class="p">To declare a map, use the <samp class="codeph apex_code">Map</samp> keyword followed by
+      the data types of the key and the value within <samp class="codeph apex_code">&lt;&gt;</samp>
+      characters. For example:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; country_currencies = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;();
+Map&lt;<span class="keyword">ID</span>, Set&lt;<span class="keyword">String</span>&gt;&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">ID</span>, Set&lt;<span class="keyword">String</span>&gt;&gt;();
+</pre></div>
+
+    <p class="p">You can use the generic or specific sObject data types with maps. You can also create a
+      generic instance of a map.</p>
+
+    <p class="p">As with lists, you can populate map key-value pairs when the map is declared by using curly
+      brace (<samp class="codeph apex_code">{}</samp>) syntax. Within the curly braces, specify
+      the key first, then specify the value for that key using <samp class="codeph apex_code">=&gt;</samp>. For example:</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; MyStrings = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;{<span class="string">'a'</span> =&gt; <span class="string">'b'</span>, <span class="string">'c'</span> =&gt; <span class="string">'d'</span>.toUpperCase()};
+</pre></div>
+
+    <p class="p">In the first example, the value for the key <samp class="codeph apex_code">a</samp> is
+        <samp class="codeph apex_code">b</samp>, and the value for the key <samp class="codeph apex_code">c</samp> is <samp class="codeph apex_code">D</samp>.</p>
+
+    <p class="p">To access elements in a map, use the Map methods provided by Apex. This example creates a map
+      of integer keys and string values. It adds two entries, checks for the existence of the first
+      key, retrieves the value for the second entry, and finally gets the set of all keys.</p>
+
+    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, <span class="keyword">String</span>&gt;(); <span class="onelineComment">// Define a new map</span>
+m.put(1, <span class="string">'First entry'</span>);                  <span class="onelineComment">// Insert a new key-value pair in the map</span>
+m.put(2, <span class="string">'Second entry'</span>);                  <span class="onelineComment">// Insert a new key-value pair in the map</span>
+System.assert(m.containsKey(1));  <span class="onelineComment">// Assert that the map contains a key</span>
+<span class="keyword">String</span> value = m.get(2);               <span class="onelineComment">// Retrieve a value, given a particular key</span>
+System.assertEquals(<span class="string">'Second entry'</span>, value);
+Set&lt;<span class="keyword">Integer</span>&gt; s = m.keySet();       <span class="onelineComment">// Return a set that contains all of the keys in the map</span>
+</pre></div>
+
+    <p class="p">For more information, including a complete list of all supported Map methods, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_map.htm" target="_blank">Map Class</a>.</p>
+
+    <div class="section">
+<h2 class="helpHead2">Map Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">Unlike Java, Apex developers don’t need to reference the algorithm that is used to
+          implement a map in their declarations (for example, <samp class="codeph apex_code">HashMap</samp> or <samp class="codeph apex_code">TreeMap</samp>). Apex uses a hash
+          structure for all maps.</li>
+
+        <li class="li">The iteration order of map elements is deterministic. You can rely on the order being
+          the same in each subsequent execution of the same code. However, we recommend to always
+          access map elements by key. </li>
+
+        <li class="li">A map key can hold the <samp class="codeph apex_code"><span class="keyword">null</span></samp> value.</li>
+
+        <li class="li">Adding a map entry with a key that matches an existing key in the map overwrites the
+          existing entry with that key with the new entry.</li>
+
+        <li class="li">Map keys of type String are case-sensitive. Two keys that differ only by the case are
+          considered unique and have corresponding distinct Map entries. Subsequently, the Map
+          methods, including <samp class="codeph apex_code">put</samp>, <samp class="codeph apex_code">get</samp>, <samp class="codeph apex_code">containsKey</samp>, and <samp class="codeph apex_code">remove</samp> treat these keys
+          as distinct.</li>
+
+        <li class="li">Uniqueness of map keys of user-defined types is determined by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_collections_maps_keys_userdefined.htm" target="_blank"><samp class="codeph apex_code">equals</samp> and
+              <samp class="codeph apex_code">hashCode</samp> methods</a>, which you provide in
+          your classes. Uniqueness of keys of all other non-primitive types, such as sObject keys,
+          is determined by comparing the objects’ field values. Use caution when you use an
+          sObject as a map key because when the sObject is changed, it no longer maps to the same
+          value. For information and examples, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_map_sobject_considerations.htm" target="_blank" title="HTML (New Window)">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_map_sobject_considerations.htm</a>
+</li>
+
+        <li class="li">A Map object is serializable into JSON only if it uses one of the following data types
+          as a key.<a name="json_map_key_types"><!-- --></a><ul class="ul bulletList" id="json_map_key_types">
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_boolean.htm" target="_blank">Boolean</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_date.htm" target="_blank">Date</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_datetime.htm" target="_blank">DateTime</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_decimal.htm" target="_blank">Decimal</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_double.htm" target="_blank">Double</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_enum.htm" target="_blank">Enum</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_id.htm" target="_blank">Id</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_integer.htm" target="_blank">Integer</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_long.htm" target="_blank">Long</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_string.htm" target="_blank">String</a></li>
+
+            <li class="li"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_time.htm" target="_blank">Time</a></li>
+
+          </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

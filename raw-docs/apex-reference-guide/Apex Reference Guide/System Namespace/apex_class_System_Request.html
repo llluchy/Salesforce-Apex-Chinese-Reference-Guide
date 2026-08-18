@@ -1,0 +1,120 @@
+<a name="apex_class_System_Request"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Request Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods to obtain the request ID and Quiddity value of the
+      current Salesforce request.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      <p class="p">Use the Request class to detect the current Apex context at runtime. The methods in the
+        Request class obtain a unique request ID and the Quiddity value that represent the current
+        Apex execution type. These values can also be used to correlate with debug and event
+        logs.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">The request ID represents an individual transaction, but may not be universally unique.
+          The request ID is present in the debug logs that are triggered by the request.</li>
+
+        <li class="li">The request ID and Quiddity values are the same as in the event log files of the Apex
+          Execution event type used in Event Monitoring.</li>
+
+      </ul>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      <p class="p">This example code shows how to obtain current Apex code context by retrieving the request
+        ID and Quiddity value of the current request.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Get info about the current request</span>
+Request reqInfo = Request.getCurrent();
+
+<span class="onelineComment">//Get the identifier for this request, which is universally unique</span>
+<span class="onelineComment">//Same as REQUEST_ID in event monitoring</span>
+<span class="keyword">String</span> currentRequestId = reqInfo.getRequestId();
+
+<span class="onelineComment">//Enum representing how Apex is running. e.g. BULK_API vs LIGHTNING</span>
+Quiddity currentType = reqInfo.getQuiddity();
+<span class="onelineComment">//Use this with a switch statement,</span>
+<span class="onelineComment">//instead of checking System.isFuture() || System.isQueueable() || ...</span></pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Request.htm#apex_System_Request_methods">Request Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Request_methods">
+<a name="apex_System_Request_methods"><!-- --></a><h2 class="helpHead2">Request Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Request</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Request.htm#apex_System_Request_getCurrent">getCurrent()</a></strong><br>
+Returns the current Request object that contains the request ID and       Quiddity value. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Request.htm#apex_System_Request_getQuiddity">getQuiddity()</a></strong><br>
+Returns the Quiddity value of the current Request     object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_Request.htm#apex_System_Request_getRequestId">getRequestId()</a></strong><br>
+Returns the request ID of the current Request object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Request_getCurrent">
+<a name="apex_System_Request_getCurrent"><!-- --></a><h3 class="helpHead3">getCurrent()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the current Request object that contains the request ID and
+      Quiddity value. </span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.Request getCurrent()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_System_Request" title="Contains methods to obtain the request ID and Quiddity value of the current Salesforce request.">System.Request</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Request_getQuiddity">
+<a name="apex_System_Request_getQuiddity"><!-- --></a><h3 class="helpHead3">getQuiddity()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the Quiddity value of the current Request
+    object.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.Quiddity getQuiddity()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_System_Quiddity.htm" title="Specifies a Quiddity value used by the methods in the System.Request class">System.Quiddity</a></p>
+<p class="p">Uses the values from the Quiddity enum. This value identifies the type of execution event
+        associated with the current request.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Request_getRequestId">
+<a name="apex_System_Request_getRequestId"><!-- --></a><h3 class="helpHead3">getRequestId()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the request ID of the current Request object.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getRequestId()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

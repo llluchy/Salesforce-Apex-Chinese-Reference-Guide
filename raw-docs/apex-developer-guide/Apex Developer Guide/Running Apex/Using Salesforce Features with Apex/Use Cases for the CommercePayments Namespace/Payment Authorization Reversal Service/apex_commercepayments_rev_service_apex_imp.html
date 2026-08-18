@@ -1,0 +1,98 @@
+<a name="apex_commercepayments_rev_service_apex_imp"><!-- --></a><h1 class="helpHead1">Authorization Reversal Apex Class Implementation</h1><div class="body conbody">
+<div class="shortdesc">The Authorization Reversal Service uses the <samp class="codeph apex_code">AuthorizationReversalRequest</samp> and <samp class="codeph apex_code">AuthorizationReversalResponse</samp> classes to manage the creation and storage of
+  authorization reversal information. Implement these classes in your payment gateway
+  adapter.</div>
+
+  <ul class="ul bulletList">
+   <li class="li">
+<strong class="ph b">AuthorizationReversalRequest</strong>: Represents the authorization reversal request. Extends <samp class="codeph apex_code">BaseRequest</samp> and inherits all its methods. <samp class="codeph apex_code">AuthorizationReversalRequest</samp> uses a constructor to
+     build an authorization reversal request record in Salesforce. The <samp class="codeph apex_code">AuthorizationReversalRequest</samp> constructor takes no arguments.
+     You can invoke it as follows. <div class="codeSection apex_code"><pre class="codeblock brush:apex">CommercePayments.AuthorizationReversalRequest arr = <span class="keyword">new</span> CommercePayments.AuthorizationReversalRequest();</pre></div>
+ If you want to build a sample authorization reversal, you can also invoke a constructor with
+     arguments for the reversal amount and payment authorization ID. However, the constructor would
+     only work for test usage and would throw an exception if used outside of the Apex test
+     context. <div class="codeSection apex_code"><pre class="codeblock brush:apex">commercepayments.AuthorizationReversalRequest authorizationReversalRequest = 
+<span class="keyword">new</span> commercepayments.AuthorizationReversalRequest(80, authObj.id);</pre></div>
+</li>
+
+   <li class="li">
+<strong class="ph b">AuthorizationReversalResponse</strong>: The payment gateway adapter sends this class as a response for an Authorization Reversal
+     request type. Extends <samp class="codeph apex_code">AbstractResponse</samp> and inherits its
+     methods. <samp class="codeph apex_code">AuthorizationReversalResponse</samp> uses a constructor to
+     build an authorization reversal request record in Salesforce. The <samp class="codeph apex_code">AuthorizationReversalResponse</samp> constructor takes no arguments.
+     You can invoke it as follows: <div class="codeSection apex_code"><pre class="codeblock brush:apex">CommercePayments.AuthorizationReversalResponse arp = <span class="keyword">new</span> CommercePayments.AuthorizationReversalResponse();</pre></div>
+</li>
+
+  </ul>
+
+  <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce doesn't support bulk operations or custom fields in the authorization reversal
+   process.</p>
+</div>
+</div></div></div></div>
+
+  <div class="section">
+<h2 class="helpHead2">Implementing Reversal Classes in Your Gateway Adapter</h2>
+
+   
+   <p class="p">Add your reversal classes to your payment gateway adapter. We recommend adding
+     <samp class="codeph nolang">AuthorizationReversal</samp> as a possible <samp class="codeph apex_code">requestType</samp> value when calling <samp class="codeph apex_code">processRequest</samp> on the gateway’s response.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> commercepayments.GatewayResponse processRequest(commercepayments.paymentGatewayContext gatewayContext) {
+        commercepayments.RequestType requestType = gatewayContext.getPaymentRequestType();
+        commercepayments.GatewayResponse response;
+        
+        <span class="statement">try</span> {
+        <span class="onelineComment">//add conditions for other requestType values here</span>
+        <span class="onelineComment">//..</span>
+        <span class="statement">else</span> <span class="statement">if</span> (requestType == commercepayments.RequestType.AuthorizationReversal) {
+                response = createAuthReversalResponse((commercepayments.AuthorizationReversalRequest)gatewayContext.getPaymentRequest());}
+        
+        <span class="statement">return</span> response;
+        
+</pre></div>
+
+   <p class="p">Then, add a class that sets the amount of the authorization reversal request, gateway
+    information, and the Salesforce result code.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> commercepayments.GatewayResponse createAuthReversalResponse(commercepayments.AuthorizationReversalRequest authReversalRequest) {
+        commercepayments.AuthorizationReversalResponse authReversalResponse = <span class="keyword">new</span> commercepayments.AuthorizationReversalResponse();
+        <span class="statement">if</span>(authReversalRequest.amount!=<span class="keyword">null</span> )
+        {
+            authReversalResponse.setAmount(authReversalRequest.amount);
+        }
+        <span class="statement">else</span>
+        {
+             <span class="statement">throw</span> <span class="keyword">new</span> SalesforceValidationException(<span class="string">'Required Field Missing : Amount'</span>);             
+        }
+   
+        system.debug(<span class="string">'Response - success'</span>);
+        authReversalResponse.setGatewayDate(system.now());
+        authReversalResponse.setGatewayResultCode(<span class="string">'00'</span>);
+        authReversalResponse.setGatewayResultCodeDescription(<span class="string">'Transaction Normal'</span>);
+        <span class="onelineComment">//Replace 'xxxxx' with the gateway reference number.</span>
+        authReversalResponse.setGatewayReferenceNumber(<span class="string">'SF'</span>+xxxxx);
+        authReversalResponse.setSalesforceResultCodeInfo(SUCCESS_SALESFORCE_RESULT_CODE_INFO);
+        <span class="statement">return</span> authReversalResponse;
+    }</pre></div>
+
+   <div class="p">
+<strong class="ph b">Sample Apex
+    Request</strong><div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> authorizationId = <span class="string">'0XcxXXXXXXXXXXXXXXX'</span>;
+ConnectApi.AuthorizationReversalRequest authorizationReversalRequest = <span class="keyword">new</span> ConnectApi.AuthorizationReversalRequest();
+authorizationReversalRequest.amount = 1.0;
+authorizationReversalRequest.comments = <span class="string">'Captured from custom action'</span>;
+authorizationReversalRequest.ipAddress = <span class="string">'192.162.10.3'</span>;
+authorizationReversalRequest.email = <span class="string">'testuser@example.com'</span>;
+
+ConnectApi.AuthorizationReversalResponse authorizationReversalResponse = ConnectApi.Payments.reverseAuthorization(authorizationReversalRequest, authorizationId);
+<span class="keyword">String</span> authReversalId = authorizationReversalResponse.paymentAuthAdjustment.id;
+System.debug(authorizationReversalResponse);
+System.debug(authReversalId);</pre></div>
+</div>
+
+  </div>
+
+ </div><div id="sfdc:seealso" class="related-links"></div>

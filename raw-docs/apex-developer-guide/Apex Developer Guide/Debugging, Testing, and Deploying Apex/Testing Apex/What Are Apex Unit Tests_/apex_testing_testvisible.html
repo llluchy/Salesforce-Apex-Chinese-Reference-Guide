@@ -1,0 +1,112 @@
+<a name="apex_testing_testvisible"><!-- --></a><h1 class="helpHead1">Accessing Private Test Class Members</h1><div class="body conbody">
+        <p class="p">Test methods are defined in a test class, separate from the class they test. This can
+            present a problem when having to access a private class member variable from the test
+            method, or when calling a private method. Because these are private, they aren’t
+            visible to the test class. You can either modify the code in your class to expose public
+            methods that will make use of these private class members, or you can simply annotate
+            these private class members with <samp class="codeph apex_code">TestVisible</samp>.
+            When you annotate private or protected members with this annotation, they can be
+            accessed by test methods and only code running in test context.</p>
+
+        <p class="p">This example shows how <samp class="codeph apex_code">TestVisible</samp> is used with
+            private member variables, a private inner class with a constructor, a private method,
+            and a private custom exception. All these can be accessed in the test class because
+            they’re annotated with <samp class="codeph apex_code">TestVisible</samp>. The
+            class is listed first and is followed by a test class containing the test methods.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> VisibleSampleClass {
+    <span class="onelineComment">// Private member variables</span>
+    <span class="keyword">@TestVisible</span> <span class="keyword">private</span> <span class="keyword">Integer</span> recordNumber = 0;
+    <span class="keyword">@TestVisible</span> <span class="keyword">private</span> <span class="keyword">String</span> areaCode = <span class="string">'(415)'</span>;
+    <span class="onelineComment">// Public member variable</span>
+    <span class="keyword">public</span> <span class="keyword">Integer</span> maxRecords = 1000;
+    
+    <span class="onelineComment">// Private inner class</span>
+    <span class="keyword">@TestVisible</span> <span class="keyword">class</span> Employee {
+        <span class="keyword">String</span> fullName;
+        <span class="keyword">String</span> phone;
+        
+        <span class="onelineComment">// Constructor</span>
+        <span class="keyword">@TestVisible</span> Employee(<span class="keyword">String</span> s, <span class="keyword">String</span> ph) {
+            fullName = s;
+            phone = ph;
+        }
+    }
+       
+    <span class="onelineComment">// Private method</span>
+    <span class="keyword">@TestVisible</span> <span class="keyword">private</span> <span class="keyword">String</span> privateMethod(Employee e) {
+        System.debug(<span class="string">'I am private.'</span>);
+        recordNumber++;
+        <span class="keyword">String</span> phone = areaCode + <span class="string">' '</span> + e.phone;
+        <span class="keyword">String</span> s = e.fullName + <span class="string">'\'s phone number is '</span> + phone;
+        System.debug(s);
+        <span class="statement">return</span> s;
+    }
+    
+    <span class="onelineComment">// Public method</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> publicMethod() {
+        maxRecords++;
+        System.debug(<span class="string">'I am public.'</span>);    
+    }
+    
+    <span class="onelineComment">// Private custom exception class</span>
+    <span class="keyword">@TestVisible</span> <span class="keyword">private</span> <span class="keyword">class</span> MyException <span class="keyword">extends</span> Exception {}
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Test class for VisibleSampleClass</span>
+<span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> VisibleSampleClassTest {
+
+    <span class="onelineComment">// This test method can access private members of another class </span>
+    <span class="onelineComment">// that are annotated with @TestVisible.</span>
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test1() {
+        VisibleSampleClass sample = <span class="keyword">new</span> VisibleSampleClass ();
+
+        <span class="onelineComment">// Access private data members and update their values</span>
+        sample.recordNumber = 100;
+        sample.areaCode = <span class="string">'(510)'</span>;
+        
+        <span class="onelineComment">// Access private inner class</span>
+        VisibleSampleClass.Employee emp = 
+            <span class="keyword">new</span> VisibleSampleClass.Employee(<span class="string">'Joe Smith'</span>, <span class="string">'555-1212'</span>);
+        
+        <span class="onelineComment">// Call private method</span>
+        <span class="keyword">String</span> s = sample.privateMethod(emp);
+        
+        <span class="onelineComment">// Verify result</span>
+        System.assert(
+            s.contains(<span class="string">'(510)'</span>) &amp;&amp;
+            s.contains(<span class="string">'Joe Smith'</span>) &amp;&amp;
+            s.contains(<span class="string">'555-1212'</span>));
+    }
+    
+    <span class="onelineComment">// This test method can throw private exception defined in another class</span>
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test2() {
+        <span class="onelineComment">// Throw private exception.</span>
+        <span class="statement">try</span> {
+            <span class="statement">throw</span> <span class="keyword">new</span> VisibleSampleClass.MyException(<span class="string">'Thrown from a test.'</span>);
+        } <span class="statement">catch</span>(VisibleSampleClass.MyException e) {
+            <span class="onelineComment">// Handle exception </span>
+        }
+    }
+    
+    <span class="keyword">static</span> testmethod <span class="keyword">void</span> test3() {
+        <span class="onelineComment">// Access public method.</span>
+        <span class="onelineComment">// No @TestVisible is used.</span>
+        VisibleSampleClass sample = <span class="keyword">new</span> VisibleSampleClass ();
+        sample.publicMethod();
+    }   
+
+}</pre></div>
+
+        <p class="p">The <samp class="codeph apex_code">TestVisible</samp> annotation can be handy when you
+            upgrade the Salesforce API
+            version of existing classes containing mixed test and non-test code. Because test
+            methods aren’t allowed in non-test classes starting in API version 28.0, you must
+            move the test methods from the old class into a new test class (a class annotated with
+                <samp class="codeph apex_code">isTest</samp>) when you upgrade the API version of
+            your class. You might run into visibility issues when accessing private methods or
+            member variables of the original class. In this case, just annotate these private
+            members with <samp class="codeph apex_code">TestVisible</samp>.</p>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

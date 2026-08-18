@@ -1,0 +1,575 @@
+<a name="apex_doc_examples"><!-- --></a><h1 class="helpHead1">ApexDoc Examples</h1><div class="body conbody">
+<div class="shortdesc">See practical examples of ApexDoc comments applied to various Apex
+  constructs.</div>
+
+  <div class="section">
+<h2 class="helpHead2">Class Example</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Manages customer account information and related operations.
+ * This class bypasses user record access via 'without sharing' so that it 
+ * can be used in a batch classes.
+ * @author John Developer
+ * @since 0.1.0
+ * @version 0.3.1
+ * @see AccountProcessingBatch
+ * @group Account
+ * @example
+ * {@code
+ * Account a;
+ * try {
+ *  a = new AccountManager().createAccount('Acme', 'Agriculture');
+ * } catch (AccountManager.AccountException caught) {
+ *   LOGGER.log(caught);
+ *   // further exception handling
+ * }
+ * }
+ */</span>
+<span class="keyword">public</span> without sharing <span class="keyword">class</span> AccountManager {
+
+    <span class="multilineComment">/**
+     * The default region for new accounts if not specified.
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> DEFAULT_REGION = <span class="string">'North America'</span>;
+
+    <span class="multilineComment">/**
+     * Stores the count of active accounts managed by this instance.
+     * Populated after using the {@link AccountService}.
+     */</span>
+    <span class="keyword">@TestVisible</span>
+    <span class="keyword">private</span> <span class="keyword">Integer</span> activeAccountCount;
+
+    <span class="multilineComment">/**
+     * Creates a new Account sObject with the given name and industry.
+     * @param accountName The desired name for the new account. Cannot be null or empty.
+     * @param industry The industry classification for the new account.
+     * @return The newly created Account sObject with its ID populated.
+     * @throws AccountManager.AccountException if accountName is invalid
+     * or if DML operation fails.
+     */</span>
+    <span class="keyword">public</span> Account createAccount(<span class="keyword">String</span> accountName, <span class="keyword">String</span> industry) {
+        <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(accountName)) {
+            <span class="statement">throw</span> <span class="keyword">new</span> AccountManager.AccountException(<span class="string">'Account name cannot be blank.'</span>);
+        }
+        Account acc = <span class="keyword">new</span> Account(Name = accountName, Industry = industry);
+        <span class="onelineComment">// Potentially more logic here</span>
+        <span class="statement">try</span> {
+            <span class="statement">insert</span> acc;
+        } <span class="statement">catch</span> (DmlException e) {
+            <span class="statement">throw</span> <span class="keyword">new</span> AccountManager.AccountException(
+                <span class="string">'Failed to create account: '</span> + e.getMessage()
+            );
+        }
+        <span class="statement">return</span> acc;
+    }
+
+    <span class="onelineComment">// more methods...</span>
+
+    <span class="multilineComment">/**
+     * Represents an exception specific to AccountManager operations.
+     * @example
+     * {@code
+     * throw new AccountManager.AccountException('Account not found with provided Id.');
+     * }
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">class</span> AccountException <span class="keyword">extends</span> Exception {}
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Packaged Class Example</h2>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Provides services for geolocation and address conversion.
+ * @author Dennis Smith
+ * @version 0.3.0
+ * @since 0.1.0
+ */</span>
+<span class="keyword">global</span> with sharing <span class="keyword">class</span> GeolocationService {
+  <span class="multilineComment">/**
+   * Represents geographic coordinates (latitude and longitude).
+   */</span>
+  <span class="keyword">global</span> <span class="keyword">class</span> Coordinates {
+    @AuraEnabled
+    <span class="keyword">public</span> <span class="keyword">Decimal</span> latitude;
+    @AuraEnabled
+    <span class="keyword">public</span> <span class="keyword">Decimal</span> longitude;
+
+    <span class="keyword">global</span> Coordinates(<span class="keyword">Decimal</span> lat, <span class="keyword">Decimal</span> lon) {
+      <span class="statement">this</span>.latitude = lat;
+      <span class="statement">this</span>.longitude = lon;
+    }
+  }
+
+  <span class="multilineComment">/**
+   * Converts a full address string to approximate latitude
+   * and longitude coordinates. This method is deprecated and should no
+   * longer be used due to its reliance on an older, less accurate geocoding 
+   * service and simpler parsing logic. It may not handle all address formats
+   * correctly and has a lower success rate.
+   * @param fullAddress The complete address string
+   * (e.g., "123 Main St, Anytown, CA 90210, USA").
+   * @return A `Coordinates` object representing the approximate latitude and longitude.
+   * @throws DeprecatedMethodCalledException If this method is invoked,
+   * informing the user to migrate to the newer, more robust `geocodeAddress` method.
+   * @deprecated in 0.2.0. Use {@link #geocodeAddress(
+   * String street,
+   * String city,
+   * String state,
+   * String postalCode,
+   * String country)} instead.
+   * @since 0.1.0
+   */</span>
+  <span class="keyword">@Deprecated</span>
+  <span class="keyword">global</span> <span class="keyword">static</span> Coordinates convertAddressToCoordinates(<span class="keyword">String</span> fullAddress) {
+    <span class="statement">throw</span> <span class="keyword">new</span> DeprecatedMethodCalledException(
+      <span class="string">'The method `GeolocationService.convertAddressToCoordinates(String fullAddress)` is deprecated. '</span> +
+        <span class="string">'Please use `GeolocationService.geocodeAddress(String street, String city, String state, String postalCode, String country)` '</span> +
+        <span class="string">'for all new and existing address-to-coordinate conversions to ensure better accuracy and reliability.'</span>
+    );
+  }
+
+  <span class="multilineComment">/**
+   * Geocodes a structured address into precise latitude and longitude coordinates
+   * using a robust external geocoding service.
+   * This method provides higher accuracy and better handling of diverse address formats.
+   * @param street The street address (e.g., "123 Main St").
+   * @param city The city (e.g., "Anytown").
+   * @param state The state or province abbreviation (e.g., "CA").
+   * @param postalCode The postal or ZIP code (e.g., "90210").
+   * @param country The country name or code (e.g., "USA").
+   * @return A Coordinates object containing the latitude and longitude.
+   * @throws GeocodingException If the address cannot be geocoded, 
+   * if the external service is unavailable, or if required address
+   * components are missing.
+   * @example
+   * {@code
+   * try {
+   *   GeolocationService.Coordinates coords = GeolocationService.geocodeAddress(
+   *     '415 Mission St',
+   *     'San Francisco',
+   *     'CA',
+   *     '94105',
+   *     'USA'
+   *   );
+   * } catch (GeolocationService.GeocodingException e) {
+   *   // handle failure
+   * }
+   * }
+   * @since 0.2.0
+   */</span>
+  <span class="keyword">global</span> <span class="keyword">static</span> Coordinates geocodeAddress(
+    <span class="keyword">String</span> street,
+    <span class="keyword">String</span> city,
+    <span class="keyword">String</span> state,
+    <span class="keyword">String</span> postalCode,
+    <span class="keyword">String</span> country
+  ) {
+    <span class="onelineComment">// Implement actual geocoding logic</span>
+    <span class="statement">return</span> <span class="keyword">new</span> Coordinates(0, 0);
+  }
+
+  <span class="multilineComment">/**
+   * Exception thrown when a deprecated method is called.
+   * This indicates that the caller should migrate to the recommended alternative.
+   */</span>
+  <span class="keyword">global</span> <span class="keyword">class</span> DeprecatedMethodCalledException <span class="keyword">extends</span> Exception {
+  }
+
+  <span class="multilineComment">/**
+   * Exception thrown when a geocoding operation fails.
+   * This provides specific context for issues during address-to-coordinate conversion.
+   */</span>
+  <span class="keyword">global</span> <span class="keyword">class</span> GeocodingException <span class="keyword">extends</span> Exception {
+  }
+}
+</pre></div>
+
+    </div>
+
+  <div class="section">
+<h2 class="helpHead2">Test Class Example</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Specifications for the GeolocationService
+ * @author Jane Devington
+ * @version 0.2.0
+ * @see GeolocationService
+ * @since 0.1.0
+ */</span>
+<span class="keyword">@IsTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> GeolocationServiceTest {
+  <span class="multilineComment">/**
+   * Verifies that known addresses are correctly geocoded to their expected coordinates.
+   * @see GeolocationService#geocodeAddress(
+   * String street,
+   * String city,
+   * String state,
+   * String postalCode,
+   * String country)
+   */</span>
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> validAddressShouldReturnCorrectCoordinates() {
+    <span class="keyword">String</span> street = <span class="string">'415 Mission Street'</span>;
+    <span class="keyword">String</span> city = <span class="string">'San Francisco'</span>;
+    <span class="keyword">String</span> state = <span class="string">'CA'</span>;
+    <span class="keyword">String</span> postalCode = <span class="string">'94105'</span>;
+    <span class="keyword">String</span> country = <span class="string">'USA'</span>;
+
+    GeolocationService.Coordinates coords;
+    Test.startTest();
+    coords = GeolocationService.geocodeAddress(
+      street,
+      city,
+      state,
+      postalCode,
+      country
+    );
+    Test.stopTest();
+
+    Assert.isNotNull(
+      coords,
+      <span class="string">'Coordinates should not be null for a valid address.'</span>
+    );
+    Assert.areEqual(
+      37.785834,
+      coords.latitude,
+      <span class="string">'Latitude should match for Salesforce tower.'</span>
+    );
+    Assert.areEqual(
+      -122.406417,
+      coords.longitude,
+      <span class="string">'Longitude should match for Salesforce tower.'</span>
+    );
+  }
+
+  <span class="multilineComment">/**
+   * Verifies that calling the geocodeAddress with missing required parameters
+   * throws a GeocodingException.
+   * @see GeolocationService#geocodeAddress(
+   * String street,
+   * String city,
+   * String state,
+   * String postalCode,
+   * String country)
+   * @see GeolocationService#GeocodingException
+   */</span>
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> missingRequiredParametersShouldThrowGeocodingException() {
+    <span class="keyword">String</span> street = <span class="string">''</span>; <span class="onelineComment">// Missing</span>
+    <span class="keyword">String</span> city = <span class="string">'San Francisco'</span>;
+    <span class="keyword">String</span> state = <span class="string">'CA'</span>;
+    <span class="keyword">String</span> postalCode = 94105;
+    <span class="keyword">String</span> country = <span class="string">'USA'</span>;
+
+    Test.startTest();
+    <span class="keyword">Boolean</span> caughtException = <span class="keyword">false</span>;
+    <span class="statement">try</span> {
+      GeolocationService.geocodeAddress(
+        street,
+        city,
+        state,
+        postalCode,
+        country
+      );
+    } <span class="statement">catch</span> (GeolocationService.GeocodingException e) {
+      caughtException = <span class="keyword">true</span>;
+      Assert.areEqual(
+        <span class="string">'Street, City, and Postal Code are required for geocoding.'</span>,
+        e.getMessage(),
+        <span class="string">'Exception message should indicate missing required fields.'</span>
+      );
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      caughtException,
+      <span class="string">'GeocodingException should have been thrown for missing street.'</span>
+    );
+  }
+
+  <span class="multilineComment">/**
+   * Verifies that calling the deprecated method throws a
+   * DeprecatedMethodCalledException.
+   * @see GeolocationService#convertAddressToCoordinates(String address)
+   * @see GeolocationService#DeprecatedMethodCalledException
+   */</span>
+  <span class="keyword">@IsTest</span>
+  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> deprecatedMethodCallShouldThrowDeprecatedMethodCalledException() {
+    <span class="keyword">String</span> oldAddress = <span class="string">'123 Deprecated Lane'</span>;
+
+    Test.startTest();
+    <span class="keyword">Boolean</span> caughtException = <span class="keyword">false</span>;
+    <span class="statement">try</span> {
+      GeolocationService.convertAddressToCoordinates(
+        oldAddress
+      );
+    } <span class="statement">catch</span> (GeolocationService.DeprecatedMethodCalledException e) {
+      caughtException = <span class="keyword">true</span>;
+      Assert.isTrue(
+        e.getMessage().contains(<span class="string">'is deprecated'</span>),
+        <span class="string">'Exception message should indicate deprecation.'</span>
+      );
+      Assert.isTrue(
+        e.getMessage().contains(<span class="string">'Please use'</span>),
+        <span class="string">'Exception message should suggest new method.'</span>
+      );
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      caughtException,
+      <span class="string">'DeprecatedMethodCalledException should have been thrown.'</span>
+    );
+  }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Interface Example</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Defines a contract for objects that can be serialized to a 
+ * specific format. Implementations must provide logic for converting
+ * their state into a string representation.
+ * @author Jane Coder
+ * @since 0.2.0
+ */</span>
+<span class="keyword">public</span> <span class="keyword">interface</span> ISerializable {
+    <span class="multilineComment">/**
+     * Serializes the object's current state into a String.
+     * @return A String representation of the object.
+     * @throws SerializationException if the object cannot be serialized.
+     */</span>
+    <span class="keyword">String</span> serialize();
+
+    <span class="multilineComment">/**
+     * Gets the format name this serializer supports (e.g., "JSON", "XML").
+     * @return The name of the serialization format.
+     */</span>
+    <span class="keyword">String</span> getFormatName();
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Enum Example</h2>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Represents the possible status levels for a support case.
+ * Defines standard values for case progression in the customer portal. 
+ * @author John Developer
+ * @since 0.1.5
+ */</span>
+<span class="keyword">public</span> <span class="keyword">enum</span> CaseStatus {
+  <span class="multilineComment">/* A newly opened case, not yet assigned. */</span>
+  BRAND_NEW,
+  <span class="multilineComment">/* Case is actively being worked on. */</span>
+  WORKING,
+  <span class="multilineComment">/* Case has been escalated to a higher tier. */</span>
+  ESCALATED,
+  <span class="multilineComment">/* Case has been resolved and closed. */</span>
+  CLOSED
+}
+</pre></div>
+
+    </div>
+
+  <div class="section">
+<h2 class="helpHead2">Method Example (with params, return,
+   throws)</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Calculates the total price for a list of products, applying a discount.
+ * @param productCodes A List of unique product codes to calculate the price for.
+ * Each code must correspond to an existing Product2 record.
+ * @param discountPercentage The discount percentage to apply (e.g., 10.5 for 10.5%).
+ * Must be between 0.0 and 100.0.
+ * @return The calculated total price as a Decimal after applying the discount.
+ * Returns 0.0 if productCodes is null or empty.
+ * @throws InvalidArgumentException if discountPercentage is out of range.
+ * @throws ProductNotFoundException if any productCode does not match an
+ * existing product.
+ */</span>
+<span class="keyword">public</span> <span class="keyword">Decimal</span> calculateTotalPrice(
+  List&lt;<span class="keyword">String</span>&gt; productCodes,
+  <span class="keyword">Decimal</span> discountPercentage
+) {
+    <span class="statement">if</span> (discountPercentage &lt; 0.0 || discountPercentage &gt; 100.0) {
+        <span class="statement">throw</span> <span class="keyword">new</span> IllegalArgumentException(
+          <span class="string">'Discount percentage must be between 0.0 and 100.0.'</span>
+        );
+    }
+    <span class="statement">if</span> (productCodes == <span class="keyword">null</span> || productCodes.isEmpty()) {
+        <span class="statement">return</span> 0.0;
+    }
+    <span class="onelineComment">//... implementation logic to fetch prices and calculate total...</span>
+    <span class="statement">return</span> 100.0;
+}
+
+<span class="multilineComment">/**
+ * Represents an exception thrown when a requested product cannot be found.
+ * This custom exception provides a clear indication that a product lookup failed,
+ * allowing calling code to handle the 'not found' scenario specifically.
+ * It is typically thrown by methods attempting to retrieve Product2 records.
+ * @example
+ * {@code
+ * List&lt;Product2&gt; products = [
+ *   SELECT Id
+ *   FROM Product2
+ *   WHERE ProductCode = :productCode
+ *   LIMIT 1
+ * ];
+ * if (products.isEmpty()) {
+ *   throw new ProductNotFoundException(
+ *    'Product with code ' + productCode + ' not found.'
+ *  );
+ * }
+ * }
+ */</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ProductNotFoundException <span class="keyword">extends</span> Exception {} </pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">Annotated Method (@AuraEnabled)
+   Example</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> OpportunityService {
+    <span class="multilineComment">/**
+     * Retrieves a list of open opportunities for a given account,
+     * accessible from Lightning Web Components. If the set of open opportunities
+     * can change during interaction with the component, the author will 
+     * need to use {@code refreshApex()}. 
+     * @param accountId The ID of the Account to retrieve opportunities for.
+     * @return A List of open Opportunity records. Returns an empty list if no
+     * open opportunities are found or if accountId is invalid.
+     * @see OpportunitySelector
+     */</span>
+    @AuraEnabled(cacheable=<span class="keyword">true</span>)
+    <span class="keyword">public</span> <span class="keyword">static</span> List&lt;Opportunity&gt; getOpenOpportunities(Id accountId) {
+        List&lt;Opportunity&gt; result = <span class="keyword">new</span> List&lt;Opportunity&gt;();
+        <span class="onelineComment">//... implementation details...</span>
+        <span class="statement">return</span> result;
+    }
+}
+</pre></div>
+</div>
+
+  <div class="section">
+<h2 class="helpHead2">External Reference Example</h2>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Provides a service to retrieve current weather conditions from an external API.
+ * It utilizes Salesforce Named Credentials for secure endpoint and
+ * authentication management.
+ * @author John Doe
+ * @since 1.0.3
+ */</span>
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> WeatherService {
+  <span class="multilineComment">/**
+   * Retrieves the current weather conditions for a specified city and country.
+   * This method makes an HTTP GET callout to an external weather API using a
+   * Named Credential.
+   * @param city The name of the city (e.g., "London").
+   * @param country The name or code of the country (e.g., "UK" or "United Kingdom").
+   * @return A JSON string representing the current weather conditions.
+   * @throws WeatherServiceException If the HTTP callout fails, returns a non-200 status,
+   * or if there's an issue parsing the response.
+   * @see &lt;a href="https://example.com/weather-api-docs/current-conditions.html"&gt;External 
+   * Weather API&lt;/a&gt;
+   */</span>
+  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> getCurrentWeather(
+    <span class="keyword">String</span> city,
+    <span class="keyword">String</span> country
+  ) {
+    <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(city) || <span class="keyword">String</span>.isBlank(country)) {
+      <span class="statement">throw</span> <span class="keyword">new</span> WeatherServiceException(
+        <span class="string">'City and country cannot be blank for weather lookup.'</span>
+      );
+    }
+
+    <span class="keyword">String</span> namedCredentialUrl = <span class="string">'callout:WeatherAPI/current'</span>; 
+    <span class="keyword">String</span> requestParams =
+      <span class="string">'?city='</span> +
+      EncodingUtil.urlEncode(city, <span class="string">'UTF-8'</span>) +
+      <span class="string">'&amp;country='</span> +
+      EncodingUtil.urlEncode(country, <span class="string">'UTF-8'</span>);
+
+    HttpRequest req = <span class="keyword">new</span> HttpRequest();
+    req.setEndpoint(namedCredentialUrl + requestParams);
+    req.setMethod(<span class="string">'GET'</span>);
+    req.setTimeout(60000);
+
+    Http http = <span class="keyword">new</span> Http();
+    HttpResponse res;
+
+    <span class="statement">try</span> {
+      res = http.send(req);
+    } <span class="statement">catch</span> (System.CalloutException e) {
+      <span class="statement">throw</span> <span class="keyword">new</span> WeatherServiceException(
+        <span class="string">'HTTP Callout Failed: '</span> + e.getMessage()
+      );
+    }
+
+    <span class="statement">if</span> (res.getStatusCode() == 200) {
+      <span class="statement">return</span> res.getBody();
+    } <span class="statement">else</span> {
+      <span class="statement">throw</span> <span class="keyword">new</span> WeatherServiceException(
+        <span class="string">'Failed to retrieve weather data. Status: '</span> +
+          res.getStatusCode() +
+          <span class="string">'. Details: '</span> +
+          res.getBody()
+      );
+    }
+  }
+
+  <span class="multilineComment">/**
+   * Custom exception for errors during weather data retrieval.
+   */</span>
+  <span class="keyword">public</span> <span class="keyword">class</span> WeatherServiceException <span class="keyword">extends</span> Exception {
+  }
+}
+</pre></div>
+
+    </div>
+
+  <div class="section">
+<h2 class="helpHead2">Inline Tags Example</h2>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ * Sanitizes a given input string by removing or replacing certain
+ * characters such as {@code &lt;script&gt;}
+ * @param inputString The raw string provided by a user or external source. 
+ * This string might contain malicious or unexpected characters,
+ * like a {@literal &lt;script&gt;} tag or a backslash {@literal \}.
+ * @return The sanitized string after processing.
+ * @example
+ * {@code
+ * String badInput = 'Hello, &lt;script&gt;alert(\'xss\')&lt;/script&gt; World!';
+ * String safeOutput = SecurityUtils.sanitizeInput(badInput);
+ * System.debug('Sanitized Output: ' + safeOutput);
+ * } * @see {@link String#escapeHtml4} for a similar built-in method.
+ * {@hidden NOTE TO MAINTAINERS: This method should be updated if
+ * new security threats are identified. The current regex
+ * is designed to handle common XSS patterns but may not
+ * be exhaustive. The last major update was in v2.1.}
+ * @since 2.0
+ */</span>
+<span class="keyword">global</span> <span class="keyword">static</span> <span class="keyword">String</span> sanitizeInput(<span class="keyword">String</span> inputString) {
+  <span class="onelineComment">// simple example for demonstration purposes</span>
+  <span class="keyword">String</span> sanitized = inputString;
+  sanitized = sanitized.replace(<span class="string">'&lt;script&gt;'</span>, <span class="string">''</span>).replace(<span class="string">'&lt;/script&gt;'</span>, <span class="string">''</span>);
+  sanitized = sanitized.replace(<span class="string">'&amp;#40;'</span>,<span class="string">'('</span>).replace(<span class="string">'&amp;#41;'</span>,<span class="string">')'</span>);
+  <span class="statement">return</span> sanitized;
+}
+</pre></div>
+</div>
+
+ </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_format.htm" title="To promote consistency and parsability, ApexDoc comments have a defined structure and syntax. Each ApexDoc comment consists of a main description and a set of block and inline tags that provide information about the documented code element.">ApexDoc Comment Structure and Tags</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_doc_constructs.htm" title="Apex has unique constructs and platform-specific features that require particular attention in documentation. Use these guidelines to document these elements with ApexDoc.">Document Apex Constructs and Features</a></div></li>
+</ul>
+</div>
+</div>

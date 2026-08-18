@@ -1,0 +1,189 @@
+<a name="apex_class_System_SoqlStubProvider"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SoqlStubProvider Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Contains a method to create a mock test class for handling SOQL query responses for Data
+        360 data model objects (DMOs). </div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">To create mock test classes, extend the <samp class="codeph ">SoqlStubProvider</samp> class and override the <samp class="codeph ">
+                    handleSoqlQuery()</samp> class method.</p>
+<div class="box message info" id="note_v21_gxh_rdc">
+<a name="note_v21_gxh_rdc"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_loops_for_SOQL.htm" target="_blank">SOQL <samp class="codeph ">For</samp>
+                    Loops</a> in Apex aren't supported for SOQL stubs in static or dynamic SOQL
+                queries against DMOs.</p>
+</div>
+</div></div></div>
+</div>
+<p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/MockSOQLTestsForDMOs.htm" target="_blank" title="HTML (New Window)">Mock SOQL Tests for Data
+                    360 Data Model Objects</a> in the <cite class="cite">Apex Developer
+            Guide</cite>.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            <p class="p">This example shows a mock test class for the
+                    <var class="keyword varname">SkyMilesForBusinessOptInController</var> class.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@IsTest
+public class SkyMilesForBusinessOptInController_Test {
+
+    @IsTest
+    public static void mockSoql() {
+    
+        SoqlStubProvider stub = new UnifiedIndividualSoqlStub();
+        Test.createSoqlStub(UnifiedIndividual__dlm.sObjectType, stub);
+
+        Assert.isTrue(Test.isSoqlStubDefined(UnifiedIndividual__dlm.sObjectType));
+        
+        Test.startTest();
+        string companyId = 'SampleCompanyId';
+        // Performs SOQL query against Data Model Object
+        List&lt;SkyMilesMember&gt; members = SkyMilesForBusinessOptInController.getSkyMilesProfilesFromDataCloud(companyId);
+        
+        Test.stopTest();
+        
+        Assert.areEqual(1, members.size());
+        
+        SkyMilesMember member = members[0];
+        
+        Assert.areEqual(companyId, member.CompanyId);
+        Assert.areEqual(5000, member.SkyMilesBalance);
+    }
+    
+    class UnifiedIndividualSoqlStub extends SoqlStubProvider {
+        public override List&lt;sObject&gt; handleSoqlQuery(sObjectType sot, string stubbedQuery, Map&lt;string, object&gt; bindVars) {
+        
+            Assert.areEqual(UnifiedIndividual__dlm.sObjectType, sot);
+            
+            // Stub assumes that the SOQL query is searching for a single record by company id
+
+            string companyId = 'Default';
+            if(bindVars.containsKey('tmpVar1')) {
+                companyId = (string)bindVars.get('tmpVar1');
+            }
+                     
+            UnifiedIndividual__dlm dmo = (UnifiedIndividual__dlm)Test.createStubQueryRow(
+                sot, 
+                new Map&lt;string, object&gt; {
+                    'ssot__FirstName__c' =&gt; 'Codey',
+                    'ssot__LastName__c' =&gt; 'Bear',
+                    'ssot__Email__c' =&gt; 'developer@salesforce.com',
+                    'ssot__SkyMilesBalance__c' =&gt; 5000,
+                    'ssot__MedallionStatus__c' =&gt; 'Gold',
+                    'ssot__CompanyId__c' =&gt; companyId
+                  } 
+            );           
+            return new List&lt;sObject&gt; { dmo };
+
+        }
+    }
+}</pre></div>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public with sharing class SkyMilesForBusinessOptInController {
+    public static List&lt;SkyMilesMember&gt; getSkyMilesProfilesFromDataCloud(String companyId) {
+        List&lt;UnifiedIndividual__dlm&gt; unifiedIndividuals = [
+          SELECT
+            Id,
+            ssot__FirstName__c,
+            ssot__LastName__c,
+            ssot__Email__c,
+            ssot__SkyMilesBalance__c,
+            ssot__MedallionStatus__c,
+            ssot__CompanyId__c
+          FROM UnifiedIndividual__dlm
+          WHERE ssot__CompanyId__c = :companyId
+        ];
+        List&lt;SkyMilesMember&gt; skyMilesMembers = new List&lt;SkyMilesMember&gt;();
+        for (UnifiedIndividual__dlm individual : unifiedIndividuals) {
+          skyMilesMembers.add(
+            new SkyMilesMember(
+              individual.Id,
+              individual.ssot__FirstName__c,
+              individual.ssot__LastName__c,
+              individual.ssot__Email__c,
+              individual.ssot__SkyMilesBalance__c,
+              individual.ssot__MedallionStatus__c,
+              individual.ssot__CompanyId__c
+            )
+          );
+        }
+        return skyMilesMembers;
+    }
+}
+
+
+
+</pre></div>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SoqlStubProvider.htm#apex_System_SoqlStubProvider_methods">SoqlStubProvider Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_SoqlStubProvider_methods">
+<a name="apex_System_SoqlStubProvider_methods"><!-- --></a><h2 class="helpHead2">SoqlStubProvider Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">SoqlStubProvider</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_SoqlStubProvider.htm#apex_System_SoqlStubProvider_handleSoqlQuery">handleSoqlQuery(targetType, stubbedQuery, bindMap)</a></strong><br>
+Defines a mocked response for a SOQL query executed against the specified SObject     type.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SoqlStubProvider_handleSoqlQuery">
+<a name="apex_System_SoqlStubProvider_handleSoqlQuery"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">handleSoqlQuery(targetType, stubbedQuery, bindMap)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Defines a mocked response for a SOQL query executed against the specified SObject
+    type.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public List&lt;SObject&gt; handleSoqlQuery(Schema.SObjectType
+          targetType, String stubbedQuery, Map&lt;String,Object&gt; bindMap)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">targetType</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_SObjectType.htm#apex_class_Schema_SObjectType" title="A Schema.sObjectType object is returned from the field describe result using the getReferenceTo method, or from the sObject describe result using the getSObjectType method.">Schema.SObjectType</a> The SObject type to be stubbed. This parameter can’t be null.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">stubbedQuery</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The SOQL query whose response is to be stubbed. Bind variables are replaced with
+            placeholders.</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">bindMap</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;String,Object&gt; A map that contains placeholder keys for each bind variable specified in the SOQL query string
+            and its value.</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_methods_system_sobject" title="Contains methods for the sObject data type.">SObject</a>&gt;</p>
+<p class="p">The list of stubbed SObjects resulting from the SOQL query.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_test.htm#apex_methods_system_test" title="Contains methods related to Apex tests.">Test Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/MockSOQLTestsForDMOs.htm" target="_blank" title="Apex Developer Guide: Mock SOQL Tests for Data Cloud Data Model
+              Objects - HTML (New Window)"><em class="ph i">Apex Developer Guide:</em> Mock SOQL Tests for Data Cloud Data Model
+              Objects</a></div></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>

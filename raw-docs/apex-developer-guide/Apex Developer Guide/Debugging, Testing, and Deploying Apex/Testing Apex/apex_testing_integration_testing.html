@@ -1,0 +1,654 @@
+<a name="apex_testing_integration_testing"><!-- --></a><h1 class="helpHead1">Apex Integration Tests for Agentforce and Data 360 Services (Developer Preview)</h1><div class="body conbody">
+<div class="shortdesc">Use Apex integration tests to write end-to-end tests that exercise real interactions
+        between your Salesforce org and services such as Agentforce and Data 360. Unlike standard
+        Apex unit tests, integration tests relax callout restrictions and transaction rollback
+        semantics, so your tests can make real service calls, commit data mid-transaction, and make
+        assertions on expected outcomes. As a developer preview feature, integration tests are
+        available only in scratch orgs. You can’t run them in production orgs or during metadata
+        deployments.</div>
+
+        <div class="section" id="section_wbn_3th_53c">
+<a name="section_wbn_3th_53c"><!-- --></a>
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The Apex Integration Tests feature is available as a developer preview in scratch
+                orgs in Summer ’26 (API version 67.0). The feature isn’t generally available unless
+                or until Salesforce announces its general availability in documentation or in press
+                releases or public statements. All commands, parameters, and other features are
+                subject to change or deprecation at any time, with or without notice. Don't
+                implement functionality developed with these commands or tools in your production
+                package.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">How Integration Tests Compare to Unit Tests</h2>
+
+            
+            <p class="p">Integration tests complement, rather than replace, existing Apex unit tests. Unit
+                tests remain the right choice for testing isolated business logic, triggers, and
+                flows. Integration tests are for scenarios that require real service interactions
+                across transaction boundaries. Use integration tests used in these ways.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Test Agentforce callouts and verify their side effects on org data.</li>
+
+                <li class="li">Run real SOQL queries against Data 360 data model objects (DMOs) without stub
+                    mocks.</li>
+
+                <li class="li">Test behavior that depends on committed data, such as field history tracking
+                    across updates.</li>
+
+            </ul>
+
+            <p class="p">This table shows the key differences between standard Apex unit tests(@IsTest) and
+                integration tests (@IntegrationTest).</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader  " id="d183242e72"></th>
+
+                            <th class="featureTableHeader  " id="d183242e74">Unit Tests</th>
+
+                            <th class="featureTableHeader  " id="d183242e77">Integration Tests</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Agentforce and Data 360 callouts</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Blocked; require mocks</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">Allowed</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Transaction behavior</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Auto-rollback</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">Data committed. Use <samp class="codeph apex_code">@TearDown</samp> for cleanup</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Data visibility</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Test data silo by default</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">
+<samp class="codeph apex_code">SeeAllData=<span class="keyword">true</span></samp> by
+                                default</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Code coverage</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Counts toward deployment code coverage requirements</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">Doesn’t count toward deployment code coverage
+                                requirements</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Metadata deployments</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Included. Unit tests are xecuted in metadata deployment.</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">Excluded</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Execution</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Synchronous or asynchronous</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">Asynchronous only. Allowed only 1 concurrent execution per
+                                org.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d183242e72" data-title="">Maximum runtime</td>
+
+                            <td class="entry" headers="d183242e74" data-title="Unit Tests">Standard limits</td>
+
+                            <td class="entry" headers="d183242e77" data-title="Integration Tests">10 minutes</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Enable Integration Tests in a Scratch Org Definition File</h2>
+
+            
+            <p class="p">Before you can run Apex integration tests, you must have a scratch org with the
+                    <samp class="codeph apex_code">ApexIntegrationTests</samp> feature enabled. </p>
+
+            <p class="p">To enable the feature, add <samp class="codeph apex_code">ApexIntegrationTests</samp> to the features array in the <samp class="codeph apex_code">config/project-scratch-def.json</samp> of your
+                Salesforce DX project.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">{
+  <span class="string">"orgName"</span>: <span class="string">"Company"</span>,
+  <span class="string">"edition"</span>: <span class="string">"Developer"</span>,
+  <span class="string">"features"</span>: [<span class="string">"ApexIntegrationTests"</span>]
+}</pre></div>
+
+            <p class="p">To create a scratch org with this definition, use the <samp class="codeph apex_code">org create scratch</samp> Salesforce CLI command.</p>
+
+            <p class="p">For more information about scratch org development, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.sfdx_dev.meta/sfdx_dev/sfdx_dev_scratch_orgs.htm" target="_blank">Scratch Orgs</a> in the <cite class="cite">Salesforce DX
+                    Developer Guide</cite>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Create an Integration Test Class</h2>
+
+            
+            <p class="p">To create an Apex integration test class, use these annotations and methods.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<samp class="codeph apex_code">@IntegrationTest</samp>: This annotation marks
+                    a class and its test methods as integration tests. A class annotated with
+                        <samp class="codeph apex_code">@IntegrationTest</samp> can only contain
+                    integration test methods and <samp class="codeph apex_code">@TearDown</samp>
+                    methods. You can’t annotate a class with both <samp class="codeph apex_code">@IntegrationTest</samp> and <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> annotations. You can’t call integration test methods from
+                    non-test contexts or from <samp class="codeph apex_code"><span class="keyword">@IsTest</span> </samp>test
+                    methods. However, integration tests can call methods in <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> utility classes such as shared test
+                    data factories.</li>
+
+                <li class="li">
+<samp class="codeph apex_code">@TearDown</samp>: This annotation marks a
+                    static cleanup method that runs after the test completes, regardless of whether
+                    the test passes or fails. Use this method to clean up committed test data. The
+                    teardown transaction auto-commits at the end of the execution.</li>
+
+                <li class="li">
+<samp class="codeph apex_code">IntegrationTest.commitTestOnly()</samp>: This
+                    method commits data to the database mid-transaction so that it’s visible to
+                    other threads and services. It resets the uncommitted work checkpoint, so
+                    subsequent callouts don’t fail. The method also resets tracking for mixed DML
+                    operations, so you can perform setup sObject and non-setup sObject DML in
+                    separate commit windows. The method can only be called from an <samp class="codeph apex_code">@IntegrationTest</samp> method. Calling it from
+                    outside an integration test context results in a runtime error:
+                        <samp class="ph systemoutput">Test.commitTestOnly() can only be called from integration
+                        testMethods</samp>.</li>
+
+            </ul>
+
+            <p class="p">This basic integration test verifies that the service can insert an account.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> <span class="keyword">class</span> MyServiceIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testServiceInteraction() {
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Integration Test Account'</span>);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        Account result = [SELECT Id, Name FROM Account WHERE Id = :a.Id WITH USER_MODE];
+        Assert.areEqual(<span class="string">'Integration Test Account'</span>, result.Name);
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'Integration Test Account'</span>];
+    }
+}
+</pre></div>
+
+        </div>
+
+        <div class="example">
+<h2 class="helpHead2">Test an Agent Action</h2>
+<div class="exampleblock">
+<p class="p">An integration test can invoke an agent with
+                an invocable action and assert on the response. The <samp class="codeph apex_code">commitTestOnly()</samp> call before the agent invocation is critical. Without
+                it, the record you created exists only in your pending transaction and is invisible
+                to the Agentforce planner
+            service.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> AgentforceIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testAgentSummarizesAccount() {
+
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'AgentDemoAccount'</span>, AnnualRevenue = 1000000);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        Invocable.Action action = Invocable.Action.createCustomAction(
+            <span class="string">'generateAiAgentResponse'</span>,
+            <span class="string">'Demo_Action'</span>
+        );
+        action.setInvocationParameter(<span class="string">'userMessage'</span>, <span class="string">'Summarize my Account '</span> + a.Id);
+
+        List&lt;Invocable.Action.Result&gt; results = action.invoke();
+        <span class="keyword">String</span> response = results[0].getOutputParameters().get(<span class="string">'agentResponse'</span>).toString();
+
+        Assert.isNotNull(response, <span class="string">'Agent should return a response'</span>);
+        Assert.isTrue(response.contains(<span class="string">'AgentDemoAccount'</span>),
+            <span class="string">'Response should reference the account name'</span>);
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'AgentDemoAccount'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Generate a report using the AdvancedInputBindings agent script recipe</h2>
+<div class="exampleblock">
+            
+            <p class="p">This example uses the <a class="xref" href="https://developer.salesforce.com/sample-apps/agent-script-recipes/action-configuration/advanced-input-bindings" target="_blank">AdvancedInputBindings</a> agent script recipe
+                and generates a sales report for Q2 2026.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> AdvancedInputBindingsIntegrationTest {
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testAgentUpdate() {
+        <span class="onelineComment">// Invoke Agentforce service (callout allowed in integration tests)</span>
+        Invocable.Action action = Invocable.Action.createCustomAction(
+            <span class="string">'generateAiAgentResponse'</span>,
+            <span class="string">'AdvancedInputBindings'</span>
+        );
+    
+        <span class="keyword">String</span> prompt = <span class="string">'Generate a sales report for Q2 2026'</span>;
+        action.setInvocationParameter(<span class="string">'userMessage'</span>, prompt);
+        List&lt;Invocable.Action.Result&gt; results = action.invoke();
+
+        <span class="keyword">String</span> response = results[0].getOutputParameters().get(<span class="string">'agentResponse'</span>).toString();
+        Assert.isTrue(response.contains(<span class="string">'a0'</span>), <span class="string">'Expected agent response to create an sobject'</span>);
+    
+        <span class="onelineComment">// query and assert the report was created</span>
+        List&lt;ASR_Report_Log__c&gt; logs = [
+            SELECT Id, Report_Type__c, User_ID__c, Format__c
+            FROM ASR_Report_Log__c
+            WHERE Start_Date__c = 2026-04-01
+        ];
+        Assert.areEqual(1, logs.size(), <span class="string">'Report log should be created'</span>);
+    }
+
+    @tearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> destroyTestRecords() {
+        List&lt;ASR_Report_Log__c&gt; testRecords = [
+            SELECT Id, Report_Type__c, User_ID__c, Format__c
+            FROM ASR_Report_Log__c
+            WHERE Start_Date__c = 2026-04-01
+        ];
+    
+        <span class="statement">if</span> (testRecords.size() &gt; 0) {
+            <span class="statement">delete</span> testRecords;
+        }
+    }
+}
+</pre></div>
+
+        </div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Test a Data 360 SOQL Query </h2>
+<div class="exampleblock">
+<p class="p">Query Data 360 data model objects (DMOs) directly in integration tests without using <samp class="codeph apex_code">SoqlStubProvider</samp> or <samp class="codeph apex_code">Test.createSoqlStub</samp>. In standard unit tests,
+                SOQL queries against DMO objects require stub mocks. Integration tests bypass this
+                restriction for Data 360 entities.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> DataCloudQueryIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testDMOQuery() {
+        List&lt;SObject&gt; rows = Database.query(<span class="string">'SELECT Id FROM Account__dlm WITH USER_MODE LIMIT 1'</span>);
+        Assert.areEqual(1, rows.size(), <span class="string">'Data 360 query should return 1 row'</span>);
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Tests as a Specific User</h2>
+<div class="exampleblock">
+<p class="p">Use <samp class="codeph apex_code">System.runAs()</samp> to run integration test logic as a
+                specific user, including setting up the necessary permission set assignments.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> RunAsIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testAgentResponseAsStandardUser() {
+        User u = [SELECT Id FROM User WHERE Alias = <span class="string">'tstUsr'</span> LIMIT 1];
+
+        System.runAs(u) {
+            Account a = <span class="keyword">new</span> Account(Name = <span class="string">'AgentDemoAccount'</span>);
+            <span class="statement">insert</span> <span class="statement">as</span> user a;
+            IntegrationTest.commitTestOnly();
+
+            Invocable.Action action = Invocable.Action.createCustomAction(
+                <span class="string">'generateAiAgentResponse'</span>,
+                <span class="string">'Demo_Action'</span>
+            );
+            <span class="keyword">String</span> prompt = <span class="string">'Summarize my Account '</span> + a.Id;
+            action.setInvocationParameter(<span class="string">'userMessage'</span>, prompt);
+            List&lt;Invocable.Action.Result&gt; results = action.invoke();
+
+            <span class="keyword">String</span> response = results[0].getOutputParameters()
+                .get(<span class="string">'agentResponse'</span>).toString();
+            Assert.isTrue(response.contains(<span class="string">'AgentDemoAccount'</span>));
+        }
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'AgentDemoAccount'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Test External HTTP Callouts</h2>
+<div class="exampleblock">
+<p class="p">Regular HTTP callouts to external endpoints other than Agentforce and Data 360 still require
+                mocks in integration tests.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> HttpCalloutMockIntegrationTest <span class="keyword">implements</span> HttpCalloutMock {
+
+    <span class="keyword">public</span> HTTPResponse respond(HTTPRequest req) {
+        HttpResponse res = <span class="keyword">new</span> HttpResponse();
+        res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'application/json'</span>);
+        res.setBody(<span class="string">'{"status":"success"}'</span>);
+        res.setStatusCode(200);
+        <span class="statement">return</span> res;
+    }
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testExternalApiWithMock() {
+        Test.setMock(HttpCalloutMock.<span class="keyword">class</span>, <span class="keyword">new</span> HttpCalloutMockIntegrationTest());
+
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Callout Test Account'</span>);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        Http h = <span class="keyword">new</span> Http();
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setEndpoint(<span class="string">'https://external-api.example.com/api'</span>);
+        req.setMethod(<span class="string">'POST'</span>);
+        req.setBody(<span class="string">'{"accountId":"'</span> + a.Id + <span class="string">'"}'</span>);
+
+        HttpResponse res = h.send(req);
+
+        Assert.areEqual(200, res.getStatusCode());
+        Assert.isTrue(res.getBody().contains(<span class="string">'success'</span>));
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'Callout Test Account'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Use Test.startTest() and Test.stopTest() with Asynchronous Apex</h2>
+<div class="exampleblock">
+<p class="p">Asynchronous Apex operations enqueued in integration tests can be dequeued synchronously using
+                the <samp class="codeph apex_code">Test.startTest()</samp> and <samp class="codeph apex_code">Test.stopTest()</samp> pattern.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> AsyncIntegrationTest {
+
+    <span class="keyword">public</span> with sharing <span class="keyword">class</span> AccountProcessorQueueable <span class="keyword">implements</span> Queueable {
+        <span class="keyword">private</span> Id accountId;
+
+        <span class="keyword">public</span> AccountProcessorQueueable(Id accountId) {
+            <span class="statement">this</span>.accountId = accountId;
+        }
+
+        <span class="keyword">public</span> <span class="keyword">void</span> execute(QueueableContext context) {
+            Account a = [SELECT Id, Name FROM Account WHERE Id = :accountId WITH USER_MODE];
+            a.Industry = <span class="string">'Technology'</span>;
+            <span class="statement">update</span> <span class="statement">as</span> user a;
+        }
+    }
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testQueueableExecution() {
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Async Test Account'</span>);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        Test.startTest();
+        Id jobId = System.enqueueJob(<span class="keyword">new</span> AccountProcessorQueueable(a.Id));
+        Test.stopTest();
+
+        Account updated = [SELECT Industry FROM Account WHERE Id = :a.Id WITH USER_MODE];
+        Assert.areEqual(<span class="string">'Technology'</span>, updated.Industry,
+            <span class="string">'Queueable should have updated the industry'</span>);
+
+        AsyncApexJob job = [
+            SELECT Status, NumberOfErrors
+            FROM AsyncApexJob WHERE Id = :jobId
+            WITH USER_MODE
+        ];
+        Assert.areEqual(<span class="string">'Completed'</span>, job.Status);
+        Assert.areEqual(0, job.NumberOfErrors);
+    }   
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'Async Test Account'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Create Multiple Commits Within a Transaction</h2>
+<div class="exampleblock">
+<p class="p">Use <samp class="codeph apex_code">IntegrationTest.commitTestOnly()</samp> multiple times with
+                a test method to commit data progressively, which is useful when later operations
+                depend on previously committed records.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> MultiCommitIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testMultipleCommits() {
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'Commit Test Account'</span>);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        a.Website = <span class="string">'example.com'</span>;
+        <span class="statement">update</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        Contact c = <span class="keyword">new</span> Contact(
+            FirstName = <span class="string">'Test'</span>,
+            LastName = <span class="string">'Contact'</span>,
+            AccountId = a.Id
+        );
+        <span class="statement">insert</span> <span class="statement">as</span> user c;
+        IntegrationTest.commitTestOnly();
+
+        Assert.areEqual(1,
+            [SELECT COUNT() FROM Account WHERE Name = <span class="string">'Commit Test Account'</span> WITH USER_MODE]);
+        Assert.areEqual(1,
+            [SELECT COUNT() FROM Contact WHERE AccountId = :a.Id WITH USER_MODE]);
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Contact WHERE LastName = <span class="string">'Contact'</span>];
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'Commit Test Account'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="example">
+<h2 class="helpHead2">Test Field History Tracking</h2>
+<div class="exampleblock">
+<p class="p">Standard unit tests roll back all data, so field history records are never created. Integration
+                tests commit data, which makes it possible to assert on field history.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">@IntegrationTest
+<span class="keyword">public</span> with sharing <span class="keyword">class</span> FieldHistoryIntegrationTest {
+
+    @IntegrationTest
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testFieldHistoryIsTracked() {
+        Account a = <span class="keyword">new</span> Account(Name = <span class="string">'HistoryTestAccount'</span>, Website = <span class="string">'example.com'</span>);
+        <span class="statement">insert</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        a.Website = <span class="string">'salesforce.com'</span>;
+        <span class="statement">update</span> <span class="statement">as</span> user a;
+        IntegrationTest.commitTestOnly();
+
+        List&lt;AccountHistory&gt; history = [
+            SELECT Id FROM AccountHistory WHERE AccountId = :a.Id
+            WITH USER_MODE
+        ];
+        Assert.isTrue(history.size() &gt; 0, <span class="string">'Expected field history to be tracked'</span>);
+    }
+
+    @TearDown
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> tearDown() {
+        <span class="statement">delete</span> <span class="statement">as</span> user [SELECT Id FROM Account WHERE Name = <span class="string">'HistoryTestAccount'</span>];
+    }
+}
+</pre></div>
+</div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Run an Integration Test</h2>
+
+            
+            <p class="p">Both the test method and the teardown method commit their transactions automatically
+                at the end of execution. Data created during the test persists unless explicitly
+                deleted in the teardown.</p>
+
+            <p class="p">Integration tests are considered a distinct “IntegrationTest” category that’s
+                separate from Apex unit tests, flow tests, and Agentforce tests. You can discover
+                and run them using the Salesforce CLI or the Tooling API, either a single test class
+                synchronously or multiple test classes asynchronously. Integration tests are
+                excluded from <samp class="codeph nolang">RunAllTests</samp> during metadata
+                deployments.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Integration Testing Best Practices</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">Always implement <samp class="codeph apex_code">@TearDown</samp> methods.
+                    Because integration tests commit data to the database, test data that is not
+                    torn down after the test run can impact subsequent runs. Delete records in the
+                    correct order in <samp class="codeph apex_code">@TearDown</samp>. When you
+                    create related records, delete child records before parent records to avoid
+                    foreign key constraint issues.</li>
+
+                <li class="li">Use <samp class="codeph apex_code">commitTestOnly()</samp> before callouts to
+                    Agentforce and Data 360. These services operate on separate threads that can’t
+                    see uncommitted data in your test’s pending transaction.</li>
+
+                <li class="li">Keep integration tests focused on integration concerns. Test isolated business
+                    logic with standard <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> unit tests.
+                    Reserve integration tests for scenarios that require real service
+                    interactions.</li>
+
+                <li class="li">Be aware of concurrency limits. Only one integration test can run per org at a
+                    time. Design your test suite accordingly, and prefer shorter, more focused tests
+                    over long monolithic ones. Integration tests have access to and can commit data
+                    to your org (<samp class="codeph apex_code">seeAllData=<span class="keyword">true</span></samp>). Be
+                    mindful of other requests that may be trying to write to the same data rows in
+                    your org if you use existing data from your org.</li>
+
+                <li class="li">Create setup data and avoid reusing org data to avoid row lock contention.</li>
+
+                <li class="li">Plan for the 10-minute runtime limit. If a test involves multiple slow service
+                    calls, consider splitting it into separate test methods.</li>
+
+                <li class="li">Mock external HTTP endpoints. Even in integration tests, regular HTTP callouts
+                    to non-Salesforce endpoints require <samp class="codeph nolang">HttpCalloutMock</samp>. Only Agentforce and Data 360 services are exempt
+                    from the mock requirement.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Integration Testing Limitations and Considerations</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">During developer preview, integration testing can only run in scratch orgs.
+                    Integration tests aren’t available in production orgs, sandboxes, or during
+                    metadata deployments.</li>
+
+                <li class="li">Integration tests don’t count toward code coverage requirements.</li>
+
+                <li class="li">There is no <samp class="codeph apex_code"><span class="keyword">@TestVisible</span></samp> access. Unlike
+                        <samp class="codeph apex_code"><span class="keyword">@IsTest</span></samp> classes, <samp class="codeph apex_code">@IntegrationTest</samp> classes can’t access
+                    private members annotated with <samp class="codeph apex_code"><span class="keyword">@TestVisible</span></samp> in the test classes. </li>
+
+                <li class="li">Only asynchronous execution is supported. Only one test runs per org at a time. </li>
+
+                <li class="li">Asynchronous Apex governor limits (for SOQL, DML, CPU and heap limits) apply to
+                    integration testing. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm" title="Because Apex runs in a multitenant environment, the Apex runtime engine strictly enforces limits so that runaway Apex code or processes don’t monopolize shared resources. If some Apex code exceeds a limit, the associated governor issues a runtime exception that can’t be handled.">Execution
+                        Governors and Limits</a>.</li>
+
+                <li class="li">Integration tests share the same 24-hour limit on asynchronous Apex test runs
+                    with flow tests and unit tests. </li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing.htm</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing_stub_api.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_stub_api.htm</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing_unit_tests.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_unit_tests.htm</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/MockSOQLTestsForDMOs.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/MockSOQLTestsForDMOs.htm</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_Invocable_Action.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_Invocable_Action.htm</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing_best_practices.htm" target="_blank">https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_testing_best_practices.htm</a></div></li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,125 @@
+<a name="apex_exception_trycatch_example"><!-- --></a><h1 class="helpHead1">Exception Handling Example</h1><div class="body conbody">
+<div class="shortdesc">Learn how exception handling works in Apex.</div>
+
+        <div class="p">To see an exception in action, execute some code that causes a DML exception to be
+            thrown. Execute the following in the Developer
+            Console:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+<span class="statement">insert</span> <span class="statement">as</span> user m;</pre></div>
+</div>
+
+        <p class="p">The <samp class="codeph apex_code"><span class="statement">insert</span></samp> DML statement in the example causes a
+            DmlException because we’re inserting a merchandise item without setting any of
+            its required fields. This is the exception error that you see in the debug log.</p>
+
+        <p class="p"><samp class="codeph nolang">System.DmlException: Insert failed. First exception on row 0;
+                first error: REQUIRED_FIELD_MISSING, Required fields are missing: [Description,
+                Price, Total Inventory]: [Description, Price, Total Inventory]</samp></p>
+
+        <div class="p">Next, execute this snippet in the Developer Console. It’s based on the previous example
+            but includes a try-catch block.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+    <span class="statement">insert</span> <span class="statement">as</span> user m;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'The following exception has occurred: '</span> + e.getMessage());
+}</pre></div>
+</div>
+
+        <p class="p">Notice that the request status in the Developer Console now reports success. This is
+            because the code handles the exception.</p>
+
+        <p class="p">Any statements in the try block occurring after the exception are skipped and
+            aren’t executed. For example, if you add a statement after <samp class="codeph apex_code"><span class="statement">insert</span> m;</samp>, this statement won’t be executed.
+            Execute the following:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+    <span class="statement">insert</span> <span class="statement">as</span> user m;
+    <span class="onelineComment">// This doesn't execute since insert causes an exception</span>
+    System.debug(<span class="string">'Statement after insert.'</span>);
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'The following exception has occurred: '</span> + e.getMessage());
+}</pre></div>
+
+        <p class="p">In the new debug log entry, notice that you don’t see a debug message of <samp class="codeph nolang">Statement after insert</samp>. This is because this debug
+            statement occurs after the exception caused by the insertion and never gets executed. To
+            continue the execution of code statements after an exception happens, place the
+            statement after the try-catch block. Execute this modified code snippet and notice that
+            the debug log now has a debug message of <samp class="codeph nolang">Statement after
+                insert</samp>.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+    <span class="statement">insert</span> <span class="statement">as</span> user m;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'The following exception has occurred: '</span> + e.getMessage());
+}
+<span class="onelineComment">// This will get executed</span>
+System.debug(<span class="string">'Statement after insert.'</span>);
+</pre></div>
+
+        <p class="p">Alternatively, you can include additional try-catch blocks. This code snippet has the
+                <samp class="codeph apex_code">System.debug</samp> statement inside a second
+            try-catch block. Execute it to see that you get the same result as before.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Merchandise__c m = <span class="keyword">new</span> Merchandise__c();
+    <span class="statement">insert</span> <span class="statement">as</span> user m;
+} <span class="statement">catch</span>(DmlException e) {
+    System.debug(<span class="string">'The following exception has occurred: '</span> + e.getMessage());
+}
+
+<span class="statement">try</span> {
+    System.debug(<span class="string">'Statement after insert.'</span>);
+    <span class="onelineComment">// Insert other records</span>
+}
+<span class="statement">catch</span> (Exception e) {
+    <span class="onelineComment">// Handle this exception here</span>
+}</pre></div>
+
+        <p class="p">The finally block always executes regardless of what exception is thrown, and even if no
+            exception is thrown. Let’s see it used in action. Execute the following:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Declare the variable outside the try-catch block</span>
+<span class="onelineComment">// so that it will be in scope for all blocks.</span>
+XmlStreamWriter w = <span class="keyword">null</span>;
+<span class="statement">try</span> {
+    w = <span class="keyword">new</span> XmlStreamWriter();
+    w.writeStartDocument(<span class="keyword">null</span>, <span class="string">'1.0'</span>);
+    w.writeStartElement(<span class="keyword">null</span>, <span class="string">'book'</span>, <span class="keyword">null</span>);
+    w.writeCharacters(<span class="string">'This is my book'</span>);
+    w.writeEndElement(); 
+    w.writeEndDocument();
+
+    <span class="onelineComment">// Perform some other operations</span>
+    <span class="keyword">String</span> s;
+    <span class="onelineComment">// This causes an exception because</span>
+    <span class="onelineComment">// the string hasn't been assigned a value.</span>
+    <span class="keyword">Integer</span> i = s.length();
+} <span class="statement">catch</span>(Exception e) {
+    System.debug(<span class="string">'An exception occurred: '</span> + e.getMessage());
+} <span class="statement">finally</span> {
+    <span class="onelineComment">// This gets executed after the exception is handled</span>
+    System.debug(<span class="string">'Closing the stream writer in the finally block.'</span>);
+    <span class="onelineComment">// Close the stream writer</span>
+    w.close();
+}</pre></div>
+
+        <p class="p">The previous code snippet creates an XML stream writer and adds some XML elements. Next,
+            an exception occurs due to accessing the null String variable <samp class="codeph apex_code">s</samp>. The catch block handles this exception. Then the
+            finally block executes. It writes a debug message and closes the stream writer, which
+            frees any associated resources. Check the debug output in the debug log. You’ll
+            see the debug message <samp class="codeph nolang">Closing the stream writer in the
+                finally block.</samp> after the exception error. This tells you that the finally
+            block executed after the exception was caught.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_exception_custom.htm">Create Custom Exceptions</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/blogs/2017/09/error-handling-best-practices-lightning-apex" target="_blank" title="Salesforce Developers Blog: Error Handling Best Practices
+                            for Lightning and Apex - HTML (New Window)"><em class="ph i">Salesforce Developers Blog</em>: Error Handling Best Practices
+                            for Lightning and Apex</a></div></li>
+</ul>
+</div>
+</div>

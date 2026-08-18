@@ -1,0 +1,508 @@
+<a name="apex_connector_example_github_issues"><!-- --></a><h1 class="helpHead1">GitHub Issues Custom Adapter for Salesforce Connect</h1><div class="body conbody">
+<div class="shortdesc">This example creates a custom adapter that links GitHub Issues to products in Salesforce
+        using an indirect lookup relationship. An external lookup relationship also links GitHub
+        Issues to the comments on each issue.</div>
+
+        <p class="p">This example illustrates a range of common use cases for custom adapters, including how
+            to:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">Query external data.</li>
+
+            <li class="li">Work with a range of external object field types, such as Date and Picklist
+                fields.</li>
+
+            <li class="li">Use indirect lookup relationships, which link a child external object to a parent
+                standard or custom object.</li>
+
+            <li class="li">Use external lookup relationships, which link a child standard, custom, or external
+                object to a parent external object.</li>
+
+            <li class="li">Use Data Manipulation Language (DML) operations to insert, update, and delete
+                external data.</li>
+
+        </ul>
+
+        <p class="p">To improve unit tests for the Apex code in this example, you can also return mock records
+            in a testing context. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_connector_external_objects_mock_soql_tests.htm" title="You can mock SOQL query responses for external objects in Apex testing by using SOQL stub methods and a new test class. Use basic and joined SOQL queries against external objects and return mock records in a testing context.">Mock SOQL Tests for External Objects</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2">DataSource.Connection Class</h2>
+
+            
+            <p class="p">This example creates a class named <samp class="codeph apex_code">GitHubDataSourceConnection</samp>. For this example to work, create a custom
+                field on the Product2 standard object. Specify the name of the custom text field as
+                Repository, and select the External ID and Unique attributes.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Defines the connection to GitHub REST API v3 to support
+ *   querying of GitHub profiles.
+ *   Extends the DataSource.Connection class to enable
+ *   Salesforce to sync the external system’s schema
+ *   and to handle queries and searches of the external data.
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> GitHubDataSourceConnection <span class="keyword">extends</span> DataSource.Connection {
+    <span class="keyword">private</span> DataSource.ConnectionParams connectionInfo;
+
+    <span class="multilineComment">/**
+     *   Constructor for GitHubDataSourceConnection
+     **/</span>
+    <span class="keyword">global</span> GitHubDataSourceConnection(DataSource.ConnectionParams connectionInfo) {
+        <span class="statement">this</span>.connectionInfo = connectionInfo;
+    }
+
+    <span class="multilineComment">/**
+     *   Called to query and get results from the external 
+     *   system for SOQL queries, list views, and detail pages 
+     *   for an external object that’s associated with the 
+     *   external data source.
+     *   
+     *   The queryContext argument represents the query to run 
+     *   against a table in the external system.
+     *   
+     *   Returns a list of rows as the query results.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult query(DataSource.QueryContext context) {
+        DataSource.Filter filter = context.tableSelection.filter;
+        <span class="keyword">String</span> url, tableName;
+
+        <span class="statement">if</span>(context.tableSelection.tableSelected.equals(<span class="string">'GithubIssues'</span>)) {
+            tableName = <span class="string">'GithubIssues'</span>;
+            <span class="statement">if</span> (filter != <span class="keyword">null</span>) {
+                <span class="keyword">String</span> thisColumnName = filter.columnName;
+                <span class="statement">if</span> (thisColumnName != <span class="keyword">null</span> &amp;&amp;
+                   (thisColumnName.equals(<span class="string">'ExternalId'</span>) ||
+                    thisColumnName.equals(<span class="string">'number'</span>)))
+                    url = <span class="string">'callout:GithubNC/issues/'</span> + filter.columnValue;
+                <span class="statement">else</span>
+                    url = <span class="string">'callout:GithubNC/issues'</span>;
+            } <span class="statement">else</span> {
+                url = <span class="string">'callout:GithubNC/issues'</span>;
+            }
+        } <span class="statement">else</span> <span class="statement">if</span>(context.tableSelection.tableSelected.equals(<span class="string">'IssueComments'</span>)) {
+            tableName = <span class="string">'IssueComments'</span>;
+            <span class="statement">if</span> (filter != <span class="keyword">null</span>) {
+                <span class="keyword">String</span> thisColumnName = filter.columnName;
+                <span class="statement">if</span> (thisColumnName != <span class="keyword">null</span> &amp;&amp;
+                   (thisColumnName.equals(<span class="string">'ExternalId'</span>) ||
+                    thisColumnName.equals(<span class="string">'id'</span>)))
+                    url = <span class="string">'callout:GithubNC/issues/comments/'</span> + filter.columnValue;
+                <span class="statement">else</span>
+                    url = <span class="string">'callout:GithubNC/issues/comments'</span>;
+            } <span class="statement">else</span> {
+                url = <span class="string">'callout:GithubNC/issues/comments'</span>;
+            }
+        }
+
+        <span class="multilineComment">/**
+         * Filters, sorts, and applies limit and offset clauses.
+         **/</span>
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows = DataSource.QueryUtils.process(context, getData(url, tableName));
+        <span class="statement">return</span> DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>, context.tableSelection.tableSelected, rows);
+    }
+
+    <span class="multilineComment">/**
+     *   Defines the schema for the external system. 
+     *   Called when the Salesforce admin clicks “Validate and Sync”
+     *   in the user interface for the external data source.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables =<span class="keyword">new</span> List&lt;DataSource.Table&gt;();
+        List&lt;DataSource.Column&gt; columns, commentsColumns;
+        columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+        commentsColumns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+
+        <span class="onelineComment">// Defines the external lookup field.</span>
+        commentsColumns.add(DataSource.Column.externalLookup(<span class="string">'issue_number'</span>, <span class="string">'GithubIssues__x'</span>));
+        commentsColumns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>, 255));
+        commentsColumns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        commentsColumns.add(DataSource.Column.text(<span class="string">'Body'</span>));
+        commentsColumns.add(DataSource.Column.text(<span class="string">'Created_By'</span>));
+        commentsColumns.add(DataSource.Column.datetime(<span class="string">'Created'</span>));
+        commentsColumns.add(DataSource.Column.datetime(<span class="string">'Updated'</span>));
+        tables.add(DataSource.Table.get(<span class="string">'IssueComments'</span>,<span class="string">'id'</span>, commentsColumns));
+
+        <span class="onelineComment">//================================================================================</span>
+
+        <span class="onelineComment">// Defines the indirect lookup field. (For this to work,</span>
+        <span class="onelineComment">// make sure your Product2 standard object has a</span>
+        <span class="onelineComment">// custom unique, external ID field called Repository.)</span>
+        columns.add(DataSource.Column.indirectLookup( <span class="string">'repository_url'</span>, <span class="string">'Product2'</span>, <span class="string">'Repository__c'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>,255));
+        columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'Title'</span>,255));
+        columns.add(DataSource.Column.text(<span class="string">'Description'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'Repo_Name'</span>));
+        columns.add(DataSource.Column.url(<span class="string">'Repo_URL'</span>));
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;&gt; stateList = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;&gt;(); 
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; open = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        open.put(<span class="string">'Open'</span>, <span class="string">'Open'</span>);
+        stateList.add(open);
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; closed = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        closed.put(<span class="string">'Closed'</span>, <span class="string">'Closed'</span>);
+        stateList.add(closed);
+        columns.add(DataSource.Column.picklist(<span class="string">'State'</span>,stateList));
+
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;&gt; stateReasonList = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt;&gt;(); 
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; completed = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        completed.put(<span class="string">'Completed'</span>, <span class="string">'completed'</span>);
+        stateReasonList.add(completed);
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; reopened = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        reopened.put(<span class="string">'Reopened'</span>, <span class="string">'reopened'</span>);
+        stateReasonList.add(reopened);
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">String</span>&gt; notPlanned = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        notPlanned.put(<span class="string">'Not Planned'</span>, <span class="string">'not_planned'</span>);
+        stateReasonList.add(notPlanned);
+        columns.add(DataSource.Column.picklist(<span class="string">'State_Reason'</span>,stateReasonList));
+
+        columns.add(DataSource.Column.boolean(<span class="string">'Locked'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'Lock_Reason'</span>, 255));
+        columns.add(DataSource.Column.datetime(<span class="string">'Created'</span>));
+        columns.add(DataSource.Column.datetime(<span class="string">'Updated'</span>));
+        columns.add(DataSource.Column.datetime(<span class="string">'Closed_At'</span>));
+
+        tables.add(DataSource.Table.get(<span class="string">'GithubIssues'</span>,<span class="string">'repository_url'</span>, columns));
+        <span class="statement">return</span> tables;
+    }
+
+    <span class="multilineComment">/**
+     *   Called to do a full text search and get results from
+     *   the external system for SOSL queries and Salesforce
+     *   global searches.
+     *
+     *   The SearchContext argument represents the query to run
+     *   against a table in the external system.
+     *
+     *   Returns results for each table that the SearchContext
+     *   requested to be searched.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.TableResult&gt; search(
+            DataSource.SearchContext context) {
+        List&lt;DataSource.TableResult&gt; results =
+                <span class="keyword">new</span> List&lt;DataSource.TableResult&gt;();
+
+        <span class="statement">for</span> (<span class="keyword">Integer</span> i =0;i&lt; context.tableSelections.size();i++) {
+            <span class="keyword">String</span> entity = context.tableSelections[i].tableSelected;
+
+            <span class="keyword">String</span> url = <span class="string">'callout:GithubNC/issues/'</span> + context.searchPhrase;
+            results.add(DataSource.TableResult.get(<span class="keyword">true</span>, <span class="keyword">null</span>, entity, getData(url, entity)));
+        }
+
+        <span class="statement">return</span> results;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.UpsertResult&gt; upsertRows(DataSource.UpsertContext context) {
+        List&lt;DataSource.UpsertResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.UpsertResult&gt;();
+        <span class="keyword">String</span> tableName = context.tableSelected;
+
+        <span class="onelineComment">// Calls the GitHub API to create and update issues.</span>
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows = context.rows;
+        <span class="statement">for</span>(<span class="keyword">Integer</span> i = 0; i &lt; rows.size(); i++) {
+            Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row = rows[i];
+            Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; obj = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+            <span class="keyword">String</span> externalId = (<span class="keyword">String</span>) row.get(<span class="string">'ExternalId'</span>);
+            <span class="keyword">String</span> url, httpMethod;
+
+            <span class="statement">if</span>(tableName.equals(<span class="string">'GithubIssues'</span>)) {
+                url = <span class="string">'callout:GithubNC/issues'</span>;
+                httpMethod = <span class="string">'POST'</span>;
+                <span class="statement">if</span>(!<span class="keyword">String</span>.isBlank(externalId)){
+                    httpMethod = <span class="string">'PATCH'</span>;
+                    url = url+<span class="string">'/'</span>+externalId;
+                }
+
+                obj.put(<span class="string">'title'</span>, row.get(<span class="string">'Title'</span>));
+                obj.put(<span class="string">'body'</span>, row.get(<span class="string">'Description'</span>));
+                obj.put(<span class="string">'state'</span>, row.get(<span class="string">'State'</span>));
+                obj.put(<span class="string">'state_reason'</span>, <span class="keyword">String</span>.isBlank((<span class="keyword">String</span>) row.get(<span class="string">'State_Reason'</span>))? <span class="keyword">null</span>: row.get(<span class="string">'State_Reason'</span>));
+                obj.put(<span class="string">'closed_at'</span>, row.get(<span class="string">'Closed_At'</span>));
+            }
+            <span class="statement">else</span> <span class="statement">if</span>(tableName.equals(<span class="string">'IssueComments'</span>)) {
+                url = <span class="string">'callout:GithubNC/issues'</span>;
+                <span class="statement">if</span>(!<span class="keyword">String</span>.isBlank(externalId)){
+                    httpMethod = <span class="string">'PATCH'</span>;
+                    url = url+<span class="string">'/comments/'</span>+externalId;
+                } <span class="statement">else</span> {
+                    httpMethod = <span class="string">'POST'</span>;
+                    url = url+<span class="string">'/'</span> + row.get(<span class="string">'issue_number'</span>) + <span class="string">'/comments'</span>;
+                }
+                obj.put(<span class="string">'body'</span>, row.get(<span class="string">'Body'</span>));
+            }
+
+            HttpResponse response = getResponse(url, httpMethod, obj);
+            <span class="statement">if</span> (response.getStatusCode() != 200){ 
+                results.add(DataSource.UpsertResult.failure(
+                    <span class="keyword">String</span>.valueOf(row.get(<span class="string">'ExternalId'</span>)), <span class="string">'The callout resulted in an error: '</span> + response.getStatusCode()+<span class="string">' - '</span>+response.getBody()));
+            }
+            System.debug(response.getBody());
+
+            <span class="statement">if</span>(tableName.equals(<span class="string">'GithubIssues'</span>)) {
+                HttpResponse responseForLock = <span class="keyword">null</span>;
+                <span class="statement">if</span>(!<span class="keyword">String</span>.isBlank(externalId)) {
+                    <span class="keyword">Boolean</span> currentlyLocked = isIssueLockedCurrently(url);
+                    <span class="keyword">Boolean</span> isLocked = (<span class="keyword">Boolean</span>) row.get(<span class="string">'Locked'</span>);
+                    <span class="keyword">Boolean</span> lockStatusChanged = currentlyLocked != isLocked;
+                    <span class="statement">if</span>(lockStatusChanged) {
+                        url = url + <span class="string">'/lock'</span>;
+                        <span class="statement">if</span>(isLocked) {
+                            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; lockReasonObj = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+                            lockReasonObj.put(<span class="string">'lock_reason'</span>, row.get(<span class="string">'Lock_Reason'</span>));
+                            responseForLock = getResponse(url, <span class="string">'PUT'</span>, lockReasonObj);
+                        }
+                        <span class="statement">else</span> {
+                            responseForLock = getResponse(url, <span class="string">'DELETE'</span>, <span class="keyword">null</span>);
+                        }
+
+                        <span class="statement">if</span> (responseForLock.getStatusCode() != 200) {
+                            results.add(DataSource.UpsertResult.failure(
+                                <span class="keyword">String</span>.valueOf(row.get(<span class="string">'ExternalId'</span>)), <span class="string">'The callout resulted in an error: '</span> + responseForLock.getStatusCode()+<span class="string">' - '</span>+responseForLock.getBody()));
+                        }
+                        System.debug(responseForLock.getBody());
+                    }
+                }
+            }
+            
+            results.add(DataSource.UpsertResult.success(<span class="keyword">String</span>.valueOf(externalId)));
+        }
+        <span class="statement">return</span> results;
+    }
+
+    <span class="keyword">global</span> <span class="keyword">override</span> List&lt;DataSource.DeleteResult&gt; deleteRows(DataSource.DeleteContext context) {
+        List&lt;DataSource.DeleteResult&gt; results = <span class="keyword">new</span> List&lt;DataSource.DeleteResult&gt;();
+        <span class="keyword">String</span> tableName = context.tableSelected;
+
+        <span class="onelineComment">// Calls the GitHub API to delete issues.</span>
+        <span class="statement">if</span>(tableName.equals(<span class="string">'IssueComments'</span>)) {
+            <span class="statement">for</span>(<span class="keyword">String</span> externalId: context.externalIds) {
+                <span class="keyword">String</span> httpMethod = <span class="string">'DELETE'</span>;
+                <span class="keyword">String</span> url = <span class="string">'callout:GithubNC/issues/comments/'</span>+externalId;
+    
+                HttpResponse response = getResponse(url, httpMethod, <span class="keyword">null</span>);
+                <span class="statement">if</span> (response.getStatusCode() != 204){ 
+                    results.add(DataSource.DeleteResult.failure(
+                        externalId, <span class="string">'The callout resulted in an error: '</span> + response.getStatusCode()+<span class="string">' - '</span>+response.getBody()));
+                }
+                System.debug(response.getBody());
+                results.add(DataSource.DeleteResult.success(<span class="keyword">String</span>.valueOf(externalId)));
+            }      
+        } <span class="statement">else</span> <span class="statement">if</span>(tableName.equals(<span class="string">'GithubIssues'</span>)) {
+            System.debug(<span class="string">'Deletion not supported for GitHub Issues.'</span>);
+            results.add(DataSource.DeleteResult.failure(<span class="keyword">String</span>.valueOf(context.externalIds), <span class="string">'Deletion not supported for GitHub Issues.'</span>));
+        }
+        <span class="statement">return</span> results;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to parse the data.
+     *   The url argument is the URL of the external system.
+     *   Returns a list of rows from the external system.
+     **/</span>
+    <span class="keyword">public</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; getData(<span class="keyword">String</span> url, <span class="keyword">String</span> tableName) {
+        <span class="keyword">String</span> response = getResponse(url, <span class="string">'GET'</span>, <span class="keyword">null</span>).getBody();
+
+        <span class="onelineComment">// Standardize response string</span>
+        <span class="statement">if</span> (!response.contains(<span class="string">'"items":'</span>)) {
+            <span class="statement">if</span> (response.substring(0,1).equals(<span class="string">'{'</span>)) {
+                response = <span class="string">'['</span> + response  + <span class="string">']'</span>;
+            }
+            response = <span class="string">'{"items": '</span> + response + <span class="string">'}'</span>;
+        }
+
+        List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; rows = <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; responseBodyMap = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) JSON.deserializeUntyped(response);
+
+        <span class="multilineComment">/**
+         *   Checks errors.
+         **/</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; error = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)responseBodyMap.get(<span class="string">'error'</span>);
+        <span class="statement">if</span> (error!=<span class="keyword">null</span>) {
+            List&lt;<span class="keyword">Object</span>&gt; errorsList = (List&lt;<span class="keyword">Object</span>&gt;)error.get(<span class="string">'errors'</span>);
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; errors = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)errorsList[0];
+            <span class="keyword">String</span> errorMessage = (<span class="keyword">String</span>)errors.get(<span class="string">'message'</span>);
+            <span class="statement">throw</span> <span class="keyword">new</span> DataSource.OAuthTokenExpiredException(errorMessage);
+        }
+
+        List&lt;<span class="keyword">Object</span>&gt; fileItems = (List&lt;<span class="keyword">Object</span>&gt;)responseBodyMap.get(<span class="string">'items'</span>);
+        <span class="statement">if</span> (fileItems != <span class="keyword">null</span>) {
+            <span class="statement">for</span> (<span class="keyword">Integer</span> i=0; i &lt; fileItems.size(); i++) {
+                Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; <span class="statement">item</span> = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)fileItems[i];
+                rows.add(createRow(<span class="statement">item</span>, tableName));
+            }
+        } <span class="statement">else</span> {
+            rows.add(createRow(responseBodyMap, tableName));
+        }
+
+        <span class="statement">return</span> rows;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to populate the External ID and Display
+     *   URL fields on external object records based on the 'id'
+     *   value that’s sent by the external system.
+     *
+     *   The Map&lt;String, Object&gt; item parameter maps to the data
+     *   that represents a row.
+     *
+     *   Returns an updated map with the External ID and
+     *   Display URL values.
+     **/</span>
+    <span class="keyword">public</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; createRow(Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; <span class="statement">item</span>, <span class="keyword">String</span> tableName) {
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; row = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+        <span class="statement">for</span> ( <span class="keyword">String</span> key : <span class="statement">item</span>.keySet() ) {
+            <span class="statement">if</span>(tableName.equals(<span class="string">'GithubIssues'</span>)) {
+                <span class="statement">if</span> (key == <span class="string">'number'</span>) {
+                    row.put(<span class="string">'ExternalId'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'title'</span>) {
+                    row.put(<span class="string">'Title'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'body'</span>) {
+                    row.put(<span class="string">'Description'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'url'</span>) {
+                    row.put(<span class="string">'DisplayUrl'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'repository_url'</span>) {
+                    <span class="keyword">String</span> repoUrl = (<span class="keyword">String</span>) <span class="statement">item</span>.get(key);
+                    row.put(<span class="string">'Repo_URL'</span>, repoUrl);
+                    <span class="onelineComment">//extract repository name from the URL and add it to the Repo_Name field </span>
+                    <span class="keyword">String</span> repoName = repoUrl.substring(repoUrl.lastIndexOf(<span class="string">'/'</span>)+1);
+                    row.put(<span class="string">'Repo_Name'</span>, repoName);
+                    row.put(key, <span class="statement">item</span>.get(key));
+                }  <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'state'</span>) {
+                    row.put(<span class="string">'State'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'state_reason'</span>) {
+                    row.put(<span class="string">'State_Reason'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'locked'</span>) {
+                    row.put(<span class="string">'Locked'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'active_lock_reason'</span>) {
+                    row.put(<span class="string">'Lock_Reason'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'created_at'</span> &amp;&amp; <span class="statement">item</span>.get(key) != <span class="keyword">null</span>) {
+                    DateTime createdDateTime = (DateTime)Json.deserialize(<span class="string">'"'</span>+<span class="statement">item</span>.get(key)+<span class="string">'"'</span>, DateTime.<span class="keyword">class</span>);
+                    row.put(<span class="string">'Created'</span>, createdDateTime);
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'updated_at'</span> &amp;&amp; <span class="statement">item</span>.get(key) != <span class="keyword">null</span>) {
+                    DateTime updatedDateTime = (DateTime)Json.deserialize(<span class="string">'"'</span>+<span class="statement">item</span>.get(key)+<span class="string">'"'</span>, DateTime.<span class="keyword">class</span>);
+                    row.put(<span class="string">'Updated'</span>, updatedDateTime);
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'closed_at'</span> &amp;&amp; <span class="statement">item</span>.get(key) != <span class="keyword">null</span>) {
+                    DateTime closedDateTime = (DateTime)Json.deserialize(<span class="string">'"'</span>+<span class="statement">item</span>.get(key)+<span class="string">'"'</span>, DateTime.<span class="keyword">class</span>);
+                    row.put(<span class="string">'Closed_At'</span>, closedDateTime);
+                } <span class="statement">else</span> {
+                    row.put(key, <span class="statement">item</span>.get(key));
+                }
+            }
+            <span class="statement">else</span> <span class="statement">if</span> (tableName.equals(<span class="string">'IssueComments'</span>)) {
+                <span class="statement">if</span> (key==<span class="string">'id'</span>) {
+                    row.put(<span class="string">'ExternalId'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'url'</span>) {
+                    row.put(<span class="string">'DisplayUrl'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key == <span class="string">'body'</span>) {
+                    row.put(<span class="string">'Body'</span>, <span class="statement">item</span>.get(key));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'user'</span>) {
+                    Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; ownerMap = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)<span class="statement">item</span>.get(key);
+                    row.put(<span class="string">'Created_By'</span>, ownerMap.get(<span class="string">'login'</span>));
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'created_at'</span> &amp;&amp; <span class="statement">item</span>.get(key) != <span class="keyword">null</span>) {
+                    DateTime createdDateTime = (DateTime)Json.deserialize(<span class="string">'"'</span>+<span class="statement">item</span>.get(key)+<span class="string">'"'</span>, DateTime.<span class="keyword">class</span>);
+                    row.put(<span class="string">'Created'</span>, createdDateTime);
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'updated_at'</span> &amp;&amp; <span class="statement">item</span>.get(key) != <span class="keyword">null</span>) {
+                    DateTime updatedDateTime = (DateTime)Json.deserialize(<span class="string">'"'</span>+<span class="statement">item</span>.get(key)+<span class="string">'"'</span>, DateTime.<span class="keyword">class</span>);
+                    row.put(<span class="string">'Updated'</span>, updatedDateTime);
+                } <span class="statement">else</span> <span class="statement">if</span> (key==<span class="string">'issue_url'</span>) {
+                    <span class="keyword">String</span> issueUrl = (<span class="keyword">String</span>) <span class="statement">item</span>.get(key);
+                    row.put(<span class="string">'issue_number'</span>, issueUrl.substring(issueUrl.lastIndexOf(<span class="string">'/'</span>)+1));
+                } <span class="statement">else</span> {
+                 row.put(key, <span class="statement">item</span>.get(key));   
+                }
+            }
+        }
+        <span class="statement">return</span> row;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">Boolean</span> isIssueLockedCurrently(<span class="keyword">String</span> url) {
+        <span class="keyword">String</span> existingIssue = getResponse(url, <span class="string">'GET'</span>, <span class="keyword">null</span>).getBody();
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; existingIssueBodyMap = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) JSON.deserializeUntyped(existingIssue);
+
+        <span class="multilineComment">/**
+         *   Checks errors.
+         **/</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; error = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;) existingIssueBodyMap.get(<span class="string">'error'</span>);
+        <span class="statement">if</span> (error!=<span class="keyword">null</span>) {
+            List&lt;<span class="keyword">Object</span>&gt; errorsList = (List&lt;<span class="keyword">Object</span>&gt;)error.get(<span class="string">'errors'</span>);
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; errors = (Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;)errorsList[0];
+            <span class="keyword">String</span> errorMessage = (<span class="keyword">String</span>)errors.get(<span class="string">'message'</span>);
+            <span class="statement">throw</span> <span class="keyword">new</span> DataSource.OAuthTokenExpiredException(errorMessage);
+        }
+        
+        <span class="statement">return</span> (<span class="keyword">Boolean</span>) existingIssueBodyMap.get(<span class="string">'locked'</span>);
+    }
+
+    <span class="multilineComment">/**
+     *   The url argument is the URL of the external system.
+     *   Returns the response from the external system.
+     **/</span>
+    <span class="keyword">public</span> HttpResponse getResponse(<span class="keyword">String</span> url, <span class="keyword">String</span> httpMethod, Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; issue) {
+        <span class="onelineComment">// Perform callouts for production (non-test) results.</span>
+        Http httpProtocol = <span class="keyword">new</span> Http();
+        HttpRequest request = <span class="keyword">new</span> HttpRequest();
+        request.setEndpoint(url);
+        request.setMethod(httpMethod);
+        <span class="statement">if</span>(issue != <span class="keyword">null</span>)
+            request.setBody(JSON.serialize(issue));
+        
+        <span class="statement">return</span> httpProtocol.send(request);
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">DataSource.Provider Class</h2>
+
+            
+            <p class="p">This example creates a class named <samp class="codeph apex_code">GitHubDataSourceProvider</samp>.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Extends the DataSource.Provider base class to create a
+ *   custom adapter for Salesforce Connect. The class informs
+ *   Salesforce of the functional and authentication
+ *   capabilities that are supported by or required to connect
+ *   to an external system.
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> GitHubDataSourceProvider <span class="keyword">extends</span> DataSource.Provider {
+
+    <span class="multilineComment">/**
+     *   For simplicity, this example declares that the external 
+     *   system doesn’t require authentication by returning
+     *   AuthenticationCapability.ANONYMOUS as the sole entry 
+     *   in the list of authentication capabilities.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.AuthenticationCapability&gt; getAuthenticationCapabilities() {
+        List&lt;DataSource.AuthenticationCapability&gt; capabilities = <span class="keyword">new</span> List&lt;DataSource.AuthenticationCapability&gt;();
+        capabilities.add(DataSource.AuthenticationCapability.ANONYMOUS);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the functional capabilities that the
+     *   external system supports, in this case
+     *   only SOQL queries.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Capability&gt; getCapabilities() {
+        List&lt;DataSource.Capability&gt; capabilities = <span class="keyword">new</span> List&lt;DataSource.Capability&gt;();
+        capabilities.add(DataSource.Capability.ROW_QUERY);
+        capabilities.add(DataSource.Capability.ROW_CREATE);
+        capabilities.add(DataSource.Capability.ROW_UPDATE);
+        capabilities.add(DataSource.Capability.ROW_DELETE);
+        capabilities.add(DataSource.Capability.PICKLIST);
+        capabilities.add(DataSource.Capability.MULTI_PICKLIST);
+        capabilities.add(DataSource.Capability.SEARCH);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the associated DataSource.Connection class.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.Connection getConnection(DataSource.ConnectionParams connectionParams) {
+        <span class="statement">return</span> <span class="keyword">new</span> GitHubDataSourceConnection(connectionParams);
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

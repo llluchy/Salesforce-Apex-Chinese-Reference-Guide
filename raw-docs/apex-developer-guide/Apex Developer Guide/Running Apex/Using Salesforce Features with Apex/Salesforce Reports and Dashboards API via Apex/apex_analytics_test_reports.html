@@ -1,0 +1,114 @@
+<a name="apex_analytics_test_reports"><!-- --></a><h1 class="helpHead1">Test Reports</h1><div class="body conbody">
+<div class="shortdesc">Like all Apex code, Salesforce Reports and Dashboards API via Apex code requires test
+        coverage.</div>
+
+<p class="p">The Reporting Apex methods don’t run in system mode, they run in the context of the
+            current user (also called the <em class="ph i">context user</em> or the <em class="ph i">logged-in</em> user). The
+            methods have access to whatever the current user has access to.</p>
+
+<p class="p">In Apex tests, report runs always ignore the <samp class="codeph apex_code">SeeAllData</samp> annotation, regardless
+of whether the annotation is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> or <samp class="codeph apex_code"><span class="keyword">false</span></samp>. This
+means that report results will include pre-existing data that the
+test didn’t create. There is no way to disable the <samp class="codeph apex_code">SeeAllData</samp> annotation for a report
+execution. To limit results, use a filter on the report.</p>
+
+<div class="example">
+<h2 class="helpHead2">Create a Reports Test Class</h2>
+<div class="exampleblock">
+<p class="p">The following
+example tests asynchronous and synchronous reports. Each method:</p>
+<ul class="ul bulletList">
+<li class="li">Creates a new Opportunity object and uses it to set a filter on
+the report.</li>
+
+<li class="li">Runs the report.</li>
+
+<li class="li">Calls assertions to validate the data.</li>
+
+</ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>In Apex tests, asynchronous reports execute only after
+the test is stopped using the <samp class="codeph apex_code">Test.stopTest</samp> method.</p>
+</div>
+</div></div></div></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> ReportsInApexTest{
+
+    <span class="keyword">@isTest(SeeAllData='true')</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testAsyncReportWithTestData() {
+
+      List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where
+          DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+      <span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+      
+      <span class="onelineComment">// Create an Opportunity object.</span>
+      Opportunity opp = <span class="keyword">new</span> Opportunity(Name=<span class="string">'ApexTestOpp'</span>, StageName=<span class="string">'stage'</span>,
+          Probability = 95, CloseDate=system.today());
+      <span class="statement">insert</span> opp;
+    
+      Reports.ReportMetadata reportMetadata =
+          Reports.ReportManager.describeReport(reportId).getReportMetadata();
+      
+      <span class="onelineComment">// Add a filter.</span>
+      List&lt;Reports.ReportFilter&gt; filters = <span class="keyword">new</span> List&lt;Reports.ReportFilter&gt;(); 
+      Reports.ReportFilter newFilter = <span class="keyword">new</span> Reports.ReportFilter();
+      newFilter.setColumn(<span class="string">'OPPORTUNITY_NAME'</span>);
+      newFilter.setOperator(<span class="string">'equals'</span>);
+      newFilter.setValue(<span class="string">'ApexTestOpp'</span>);
+      filters.add(newFilter);
+      reportMetadata.setReportFilters(filters);
+      
+      Test.startTest();
+       
+      Reports.ReportInstance instanceObj =
+          Reports.ReportManager.runAsyncReport(reportId,reportMetadata,<span class="keyword">false</span>);
+      <span class="keyword">String</span> instanceId = instanceObj.getId();
+      
+      <span class="onelineComment">// Report instance is not available yet.</span>
+      Test.stopTest();
+      <span class="onelineComment">// After the stopTest method, the report has finished executing</span>
+      <span class="onelineComment">// and the instance is available.</span>
+     
+      instanceObj = Reports.ReportManager.getReportInstance(instanceId);
+      System.assertEquals(instanceObj.getStatus(),<span class="string">'Success'</span>);
+      Reports.ReportResults result = instanceObj.getReportResults();
+      Reports.ReportFact grandTotal = (Reports.ReportFact)result.getFactMap().get(<span class="string">'T!T'</span>);
+      System.assertEquals(1,(<span class="keyword">Decimal</span>)grandTotal.getAggregates().get(1).getValue());
+    }
+  
+    <span class="keyword">@isTest(SeeAllData='true')</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testSyncReportWithTestData() {
+    
+      <span class="onelineComment">// Create an Opportunity Object.</span>
+      Opportunity opp = <span class="keyword">new</span> Opportunity(Name=<span class="string">'ApexTestOpp'</span>, StageName=<span class="string">'stage'</span>,
+          Probability = 95, CloseDate=system.today());
+      <span class="statement">insert</span> opp;
+      
+      List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where
+          DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+      <span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+      
+      Reports.ReportMetadata reportMetadata =
+          Reports.ReportManager.describeReport(reportId).getReportMetadata();
+      
+      <span class="onelineComment">// Add a filter.</span>
+      List&lt;Reports.ReportFilter&gt; filters = <span class="keyword">new</span> List&lt;Reports.ReportFilter&gt;(); 
+      Reports.ReportFilter newFilter = <span class="keyword">new</span> Reports.ReportFilter();
+      newFilter.setColumn(<span class="string">'OPPORTUNITY_NAME'</span>);
+      newFilter.setOperator(<span class="string">'equals'</span>);
+      newFilter.setValue(<span class="string">'ApexTestOpp'</span>);
+      filters.add(newFilter);
+      reportMetadata.setReportFilters(filters);
+      
+      Reports.ReportResults result =
+          Reports.ReportManager.runReport(reportId,reportMetadata,<span class="keyword">false</span>); 
+      Reports.ReportFact grandTotal = (Reports.ReportFact)result.getFactMap().get(<span class="string">'T!T'</span>);
+      System.assertEquals(1,(<span class="keyword">Decimal</span>)grandTotal.getAggregates().get(1).getValue());
+    }
+}</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

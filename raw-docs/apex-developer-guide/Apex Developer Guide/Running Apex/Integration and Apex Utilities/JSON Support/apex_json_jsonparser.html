@@ -1,0 +1,157 @@
+<a name="apex_json_jsonparser"><!-- --></a><h1 class="helpHead1">JSON Parsing</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">JSONParser</samp> class methods to parse
+        JSON-encoded content. These methods enable you to parse a JSON-formatted response that's
+        returned from a call to an external service, such as a web service callout.</div>
+
+        <p class="p">The following are samples that show how to parse JSON strings.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Parsing a JSON Response from a Web Service Callout</h2>
+
+            
+            <p class="p">This example parses a JSON-formatted response using <samp class="codeph apex_code">JSONParser</samp> methods. It makes a callout to a web service that returns a
+                response in JSON format. Next, the response is parsed to build up a map from api
+                version numbers to the release labels.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> JSONParserUtil {
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> parseJSONResponse() {        
+        
+        <span class="onelineComment">// Create HTTP request to send.</span>
+        HttpRequest request = <span class="keyword">new</span> HttpRequest();
+        <span class="onelineComment">// Set the endpoint URL.</span>
+        <span class="keyword">String</span> endpoint = URL.getOrgDomainUrl().toExternalForm() + <span class="string">'/services/data'</span>;
+        request.setEndPoint(endpoint);
+        <span class="onelineComment">// Set the HTTP verb to GET.</span>
+        request.setMethod(<span class="string">'GET'</span>);
+        <span class="onelineComment">// Set the request header for JSON content type</span>
+        request.setHeader(<span class="string">'Accept'</span>, <span class="string">'application/json'</span>);
+        
+        <span class="onelineComment">// Send the HTTP request and get the response.</span>
+        <span class="onelineComment">// The response is in JSON format.</span>
+        Http httpProtocol = <span class="keyword">new</span> Http();
+        HttpResponse response = httpProtocol.send(request);
+        System.debug(response.getBody());
+        <span class="multilineComment">/* The JSON response returned is the following:
+            {"label":"Summer '14","url":"/services/data/v31.0","version":"31.0"},
+            {"label":"Winter '15","url":"/services/data/v32.0","version":"32.0"},
+            {"label":"Spring '15","url":"/services/data/v33.0","version":"33.0"},
+        */</span>
+        <span class="onelineComment">// Parse JSON response to build a map from API version numbers to labels</span>
+        JSONParser parser = JSON.createParser(response.getBody());
+        Map&lt;double, string&gt; apiVersionToReleaseNameMap = <span class="keyword">new</span> Map&lt;double, string&gt;();
+        
+        string label = <span class="keyword">null</span>;
+        double version = <span class="keyword">null</span>;
+        
+        <span class="statement">while</span> (parser.nextToken() != <span class="keyword">null</span>) {
+            
+            <span class="statement">if</span> (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
+                <span class="statement">switch</span> on parser.getText() {
+                    when <span class="string">'label'</span> {
+                    <span class="onelineComment">// Advance to the label value.</span>
+                    parser.nextToken();
+                        label = parser.getText();
+                    }
+                    when <span class="string">'version'</span> {
+                        <span class="onelineComment">// Advance to the version value.</span>
+                        parser.nextToken();
+                        version = <span class="keyword">Double</span>.valueOf(parser.getText());
+                    }
+                }
+            }
+            
+            <span class="statement">if</span>(version != <span class="keyword">null</span> &amp;&amp; <span class="keyword">String</span>.isNotEmpty(label)) {
+                apiVersionToReleaseNameMap.put(version, label);
+                version = <span class="keyword">null</span>;
+                label = <span class="keyword">null</span>; 
+            }
+        }
+        system.debug(<span class="string">'Release with Rainbow logo = '</span> +
+            apiVersionToReleaseNameMap.get(39.0D));
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example: Parse a JSON String and Deserialize It into Objects</h2>
+
+            
+            <div class="p">This example uses a hardcoded JSON string, which is the same JSON string returned by
+                the callout in the previous example. In this example, the entire string is parsed
+                into <samp class="codeph apex_code">Invoice</samp> objects using the <samp class="codeph apex_code" id="ReadValueAs-FEE58CF0"><a name="ReadValueAs-FEE58CF0"><!-- --></a>readValueAs</samp> method.
+                This code also uses the <samp class="codeph apex_code">skipChildren</samp> method
+                to skip the child array and child objects and parse the next sibling invoice in the
+                list. The parsed objects are instances of the <samp class="codeph apex_code">Invoice</samp> class that is defined as an inner class. Because each invoice
+                contains line items, the class that represents the corresponding line item type, the
+                    <samp class="codeph apex_code">LineItem</samp> class, is also defined as an
+                inner class. Add this sample code to a class to use
+                it.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> parseJSONString() {
+    <span class="keyword">String</span> jsonStr = 
+        <span class="string">'{"invoiceList":['</span> +
+        <span class="string">'{"totalPrice":5.5,"statementDate":"2011-10-04T16:58:54.858Z","lineItems":['</span> +
+            <span class="string">'{"UnitPrice":1.0,"Quantity":5.0,"ProductName":"Pencil"},'</span> +
+            <span class="string">'{"UnitPrice":0.5,"Quantity":1.0,"ProductName":"Eraser"}],'</span> +
+                <span class="string">'"invoiceNumber":1},'</span> +
+        <span class="string">'{"totalPrice":11.5,"statementDate":"2011-10-04T16:58:54.858Z","lineItems":['</span> +
+            <span class="string">'{"UnitPrice":6.0,"Quantity":1.0,"ProductName":"Notebook"},'</span> +
+            <span class="string">'{"UnitPrice":2.5,"Quantity":1.0,"ProductName":"Ruler"},'</span> +
+            <span class="string">'{"UnitPrice":1.5,"Quantity":2.0,"ProductName":"Pen"}],"invoiceNumber":2}'</span> +
+        <span class="string">']}'</span>;
+
+    <span class="onelineComment">// Parse entire JSON response.</span>
+    JSONParser parser = JSON.createParser(jsonStr);
+    <span class="statement">while</span> (parser.nextToken() != <span class="keyword">null</span>) {
+        <span class="onelineComment">// Start at the array of invoices.</span>
+        <span class="statement">if</span> (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+            <span class="statement">while</span> (parser.nextToken() != <span class="keyword">null</span>) {
+                <span class="onelineComment">// Advance to the start object marker to</span>
+                <span class="onelineComment">//  find next invoice statement object.</span>
+                <span class="statement">if</span> (parser.getCurrentToken() == JSONToken.START_OBJECT) {
+                    <span class="onelineComment">// Read entire invoice object, including its array of line items.</span>
+                    Invoice inv = (Invoice)parser.readValueAs(Invoice.<span class="keyword">class</span>);
+                    system.debug(<span class="string">'Invoice number: '</span> + inv.invoiceNumber);
+                    system.debug(<span class="string">'Size of list items: '</span> + inv.lineItems.size());
+                    <span class="onelineComment">// For debugging purposes, serialize again to verify what was parsed.</span>
+                    <span class="keyword">String</span> s = JSON.serialize(inv);
+                    system.debug(<span class="string">'Serialized invoice: '</span> + s);
+
+                    <span class="onelineComment">// Skip the child start array and start object markers.</span>
+                    parser.skipChildren();
+                }
+            }
+        }
+    }
+} 
+
+<span class="onelineComment">// Inner classes used for serialization by readValuesAs(). </span>
+
+<span class="keyword">public</span> <span class="keyword">class</span> Invoice {
+    <span class="keyword">public</span> <span class="keyword">Double</span> totalPrice;
+    <span class="keyword">public</span> DateTime statementDate;
+    <span class="keyword">public</span> <span class="keyword">Long</span> invoiceNumber;
+    List&lt;LineItem&gt; lineItems;
+    
+    <span class="keyword">public</span> Invoice(<span class="keyword">Double</span> price, DateTime dt, <span class="keyword">Long</span> invNumber, List&lt;LineItem&gt; liList) {
+        totalPrice = price;
+        statementDate = dt;
+        invoiceNumber = invNumber;
+        lineItems = liList.clone();
+    }
+}  
+
+<span class="keyword">public</span> <span class="keyword">class</span> LineItem {
+    <span class="keyword">public</span> <span class="keyword">Double</span> unitPrice;
+    <span class="keyword">public</span> <span class="keyword">Double</span> quantity;
+    <span class="keyword">public</span> <span class="keyword">String</span> productName;
+}</pre></div>
+</div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_JsonParser.htm" target="_blank" title="Apex Reference Guide: JSONParser Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: JSONParser Class</a></div></li></ul>
+</div>
+</div>

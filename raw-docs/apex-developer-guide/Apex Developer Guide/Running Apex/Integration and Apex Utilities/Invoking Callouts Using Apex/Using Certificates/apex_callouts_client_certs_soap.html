@@ -1,0 +1,47 @@
+<a name="apex_callouts_client_certs_soap"><!-- --></a><h1 class="helpHead1">Using Certificates with SOAP Services</h1><div class="body">
+<div class="shortdesc">To support two-way authentication for a callout to a SOAP web service, generate a
+        certificate in Salesforce or import a key pair from a keystore into Salesforce. Then
+        integrate the certificate with your Apex.</div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>We recommend storing mutual authentication certificates for external
+            web services in a Java keystore. For more information, see <a class="xref" href="https://help.salesforce.com/articleView?id=security_keys_about.htm&amp;language=en_US" target="_blank">Certificates and Keys</a>.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">To integrate the certificate with your Apex:</p>
+
+        <ol class="ol enumList">
+            <li class="li">Receive the WSDL for the web service from the third party, or generate it from the
+                application you want to connect to. </li>
+
+            <li class="li">Generate Apex classes from the WSDL for the web service. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex.htm">SOAP Services: Defining a Class from a WSDL Document</a>.</li>
+
+            <li class="li">The generated Apex classes include a stub for calling the third-party web service
+                represented by the WSDL document. Edit the Apex classes, and assign a value to a
+                    <samp class="codeph apex_code">clientCertName_x</samp> variable on an instance
+                of the stub class. The value must match the <span class="keyword parmname">Unique Name</span> of the
+                certificate that you generated on the Certificate and Key Management page.</li>
+
+        </ol>
+
+        <p class="p">This example illustrates editing the Apex classes and works with the sample WSDL file in
+                <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_gen_code.htm" title="You can generate Apex classes from a WSDL document using the WSDL2Apex tool. The WSDL2Apex tool is open source and available on GitHub.">Generated WSDL2Apex Code</a>. The example
+            assumes that you generated a certificate with the <span class="keyword parmname">Unique Name</span> of
+                <samp class="codeph apex_code">DocSampleCert</samp>.</p>
+
+        
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">docSample.DocSamplePort stub = <span class="keyword">new</span> docSample.DocSamplePort();
+stub.clientCertName_x = <span class="string">'DocSampleCert'</span>;
+<span class="keyword">String</span> input = <span class="string">'This is the input string'</span>;
+<span class="keyword">String</span> output = stub.EchoString(input);
+</pre></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_client_certs_generate.htm" title="Generating Certificates">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_client_certs_http.htm" title="Using Certificates with HTTP Requests">Next →</a></li>
+</ul></div>
+</div>

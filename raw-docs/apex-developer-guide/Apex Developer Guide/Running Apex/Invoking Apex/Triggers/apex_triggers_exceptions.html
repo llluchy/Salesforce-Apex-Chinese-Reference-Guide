@@ -1,0 +1,38 @@
+<a name="apex_triggers_exceptions"><!-- --></a><h1 class="helpHead1">Trigger Exceptions</h1><div class="body">
+    <p class="p">Triggers can be used to prevent DML operations from occurring by calling the <samp class="codeph apex_code">addError()</samp> method on a record or field. When used on
+        <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp> records in <samp class="codeph apex_code"><span class="statement">insert</span></samp> and <samp class="codeph apex_code"><span class="statement">update</span></samp>
+      triggers, and on <samp class="codeph apex_code">Trigger.old</samp> records in <samp class="codeph apex_code"><span class="statement">delete</span></samp> triggers, the custom error message is displayed in
+      the application interface and logged. </p>
+
+    <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Users experience less of a delay in response time if errors are added to <samp class="codeph apex_code">before</samp> triggers.</p>
+</div>
+</div></div></div></div>
+
+    <div class="p">A subset of the records being processed can be marked with the <samp class="codeph apex_code">addError()</samp> method:<ul class="ul bulletList">
+        <li class="li">If the trigger was spawned by a DML statement in Apex, any one error results in the
+          entire operation rolling back. However, the runtime engine still processes every record in
+          the operation to compile a comprehensive list of errors. </li>
+
+        <li class="li">If the trigger was spawned by a bulk DML call in the Lightning Platform API, the runtime
+          engine sets aside the bad records and attempts to do a partial save of the records that
+          did not generate errors. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm">Bulk DML Exception Handling</a>.</li>
+
+      </ul>
+</div>
+
+    <p class="p">If a trigger ever throws an unhandled exception, all records are marked with an error and no
+      further processing takes place.</p>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_knowledge_considerations.htm" title="Trigger Considerations for Knowledge Articles">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_bestpract.htm" title="Trigger and Bulk Request Best Practices">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject.htm" target="_blank" title="Apex Reference Guide: SObject.addError() - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: SObject.addError()</a></div></li></ul>
+</div>
+</div>

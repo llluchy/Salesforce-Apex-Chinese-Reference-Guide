@@ -1,0 +1,158 @@
+<a name="apex_class_sfsqlquery_QueryHandle"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">QueryHandle Class</h1>
+<div class="body refbody">
+<div class="shortdesc">Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use <samp class="codeph ">QueryHandle</samp> to resume a previously submitted query from a saved query ID in a new <samp class="codeph ">SqlRowIterator</samp> or a new <samp class="codeph ">SqlQueueable</samp> job.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_sfsqlquery.htm" title="Contains classes for executing SQL queries against Data 360 data spaces from Apex.">sfsqlquery</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p"><samp class="codeph ">QueryHandle</samp> doesn't expose getters to subscribers. All internal state—query ID, data space, workload name, offset, and lifecycle flags—is managed by <samp class="codeph ">SqlRowIterator</samp> and <samp class="codeph ">SqlQueueable</samp>. Use <samp class="codeph ">SqlRowIterator.getQueryId()</samp> or <samp class="codeph ">SqlQueueable.getQueryId()</samp> to retrieve the query ID. When you resume from a saved query ID, call <samp class="codeph ">withOffset()</samp> to tell the framework how many rows were already processed so it resumes from the correct position.</p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">Resume a previously submitted query:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">sfsqlquery.QueryHandle handle = sfsqlquery.QueryHandle.create(<span class="string">'my-query-id-123'</span>, <span class="string">'default'</span>)
+    .withWorkloadName(<span class="string">'my_workload'</span>)
+    .withOffset(500);
+
+sfsqlquery.SqlRowIterator iterator = <span class="keyword">new</span> sfsqlquery.SqlRowIterator(handle);
+<span class="statement">for</span> (sfsqlquery.Row row : iterator) {
+    System.debug(row.getString(<span class="string">'Name__c'</span>));
+}</pre></div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_sfsqlquery_QueryHandle_methods">
+<a name="apex_sfsqlquery_QueryHandle_methods"><!-- --></a>
+  <h2 class="helpHead2">QueryHandle Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">QueryHandle</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_QueryHandle_create">
+<a name="apex_sfsqlquery_QueryHandle_create"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">create(queryId, dataspace)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Creates a <samp class="codeph ">QueryHandle</samp> from a previously submitted query ID and data space name. Use this method to resume fetching results for a query that was submitted in an earlier transaction.</div>
+<div class="section">
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Keep the class name and <samp class="codeph ">.create()</samp> on the same line when chaining methods.</p>
+</div>
+</div></div></div></div>
+</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public static sfsqlquery.QueryHandle create(String queryId, String dataspace)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">queryId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">ID of a previously submitted query, obtained from <samp class="codeph ">getQueryId()</samp> on a <samp class="codeph ">SqlRowIterator</samp> or <samp class="codeph ">SqlQueueable</samp>.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dataspace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Name of the Data 360 data space the original query was submitted against.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a></p>
+<p class="p">A new <samp class="codeph ">QueryHandle</samp> instance for the specified query.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_QueryHandle_toString">
+<a name="apex_sfsqlquery_QueryHandle_toString"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">toString()</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of this <samp class="codeph ">QueryHandle</samp>.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public String toString()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">A string representation of this <samp class="codeph ">QueryHandle</samp>.</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_QueryHandle_withOffset">
+<a name="apex_sfsqlquery_QueryHandle_withOffset"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">withOffset(offset)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the row offset at which to begin fetching results and returns the same <samp class="codeph ">QueryHandle</samp> instance for method chaining. Use this when resuming a query to skip rows that were already processed.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public sfsqlquery.QueryHandle withOffset(Long offset)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">offset</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_long.htm#apex_methods_system_long" title="Contains methods for the Long primitive data type.">Long</a> 0-based row offset at which to begin fetching results.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a></p>
+<p class="p">This <samp class="codeph ">QueryHandle</samp> instance.</p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Resume processing after 500 rows were already processed:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// In a previous transaction, you processed 500 rows and saved the query ID</span>
+<span class="keyword">Integer</span> rowsProcessed = 500;
+<span class="keyword">String</span> savedQueryId = <span class="string">'my-query-id-123'</span>;
+
+<span class="onelineComment">// In a later transaction, resume from where you left off</span>
+sfsqlquery.QueryHandle handle = sfsqlquery.QueryHandle.create(savedQueryId, <span class="string">'default'</span>)
+    .withOffset(rowsProcessed);  <span class="onelineComment">// Skip the 500 rows already processed</span>
+
+sfsqlquery.SqlRowIterator iterator = <span class="keyword">new</span> sfsqlquery.SqlRowIterator(handle);
+<span class="statement">while</span> (iterator.hasNext()) {
+    sfsqlquery.Row row = iterator.next();
+    <span class="onelineComment">// Continue processing from row 501 onward</span>
+    rowsProcessed++;
+}</pre></div>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_sfsqlquery_QueryHandle_withWorkloadName">
+<a name="apex_sfsqlquery_QueryHandle_withWorkloadName"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">withWorkloadName(name)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Sets the workload name to use when fetching results and returns the same <samp class="codeph ">QueryHandle</samp> instance for method chaining.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public sfsqlquery.QueryHandle withWorkloadName(String name)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Custom workload name to associate with result fetch requests. Set this value to help Salesforce
+            Customer Support assist you with debugging issues</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_sfsqlquery_QueryHandle" title="Tracks the runtime execution state of a Data 360 SQL query as it progresses through submission, execution, and result retrieval. Use QueryHandle to resume a previously submitted query from a saved query ID in a new SqlRowIterator or a new SqlQueueable job.">sfsqlquery.QueryHandle</a></p>
+<p class="p">This <samp class="codeph ">QueryHandle</samp> instance.</p>
+</div>
+</div>
+</div>
+</div>
+</div>

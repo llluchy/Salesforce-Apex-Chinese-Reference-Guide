@@ -1,0 +1,323 @@
+<a name="apex_methods_system_version"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Version Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Use the Version methods to get the version of a first-generation managed package (1GP) or
+        a migrated second-generation managed package (2GP), and to compare package
+        versions.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">A package version is a number that identifies the set of components
+                uploaded in a package. The version number has the format
+                    <var class="keyword varname">majorNumber.minorNumber.patchNumber</var> (for example, 2.1.3). The
+                major and minor numbers increase to a chosen value during every major release. The
+                    <var class="keyword varname">patchNumber</var> is generated and updated only for a patch
+                release. </p>
+<p class="p">A called component can check the version against which the caller
+                was compiled using the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_system.htm#apex_System_System_requestVersion" title="Returns a two-part version that contains the major and minor version numbers of a package. Applies to first-generation managed packages."><samp class="codeph apex_code">System.requestVersion</samp></a> method and
+                behave differently depending on the caller’s expectations. This allows you to
+                continue to support existing behavior in classes and triggers in previous package
+                versions while continuing to evolve the code.</p>
+<p class="p">The value returned by the
+                    <samp class="codeph apex_code">System.requestVersion</samp> method is an
+                instance of this class with a two-part version number containing a major and a minor
+                number. Since the <samp class="codeph apex_code">System.requestVersion</samp>
+                method doesn’t return a patch number, the patch number in the returned
+                Version object is <span class="ph">null</span>.</p>
+<p class="p">The <samp class="codeph apex_code">System.Version</samp> class can also hold also a
+                three-part version number that includes a patch number.</p>
+<p class="p"> See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_manpkgs_behavior.htm" target="_blank" title="HTML (New Window)">Version Apex Code
+                    Behavior</a> in the <cite class="cite">Apex Developer Guide</cite>.</p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">This example shows how to use the
+methods in this class, along with the <samp class="codeph apex_code">requestVersion</samp> method, to determine the managed package
+version of the code that is calling your package.<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ex_requestVersion"><a name="ex_requestVersion"><!-- --></a><span class="statement">if</span> (System.requestVersion() == <span class="keyword">new</span> Version(1,0))
+{
+    <span class="onelineComment">// Do something</span>
+}
+<span class="statement">if</span> ((System.requestVersion().major() == 1) 
+     &amp;&amp; (System.requestVersion().minor() &gt; 0)
+     &amp;&amp; (System.requestVersion().minor() &lt;=9))
+{
+    <span class="onelineComment">// Do something different for versions 1.1 to 1.9</span>
+}
+<span class="statement">else</span> <span class="statement">if</span> (System.requestVersion().compareTo(<span class="keyword">new</span> Version(2,0)) &gt;= 0)
+{
+    <span class="onelineComment">// Do something completely different for versions 2.0 or greater</span>
+}
+</pre></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_constructors">Version Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_methods">Version Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Version_constructors">
+<a name="apex_System_Version_constructors"><!-- --></a>
+<h2 class="helpHead2">Version Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">Version</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_ctor_2">Version(major, minor)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Version</samp> class as a two-part package version using the specified major and minor version numbers.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_ctor">Version(major, minor, patch)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Version</samp> class as a three-part package version using the specified major, minor, and patch version numbers.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_ctor_2">
+<a name="apex_System_Version_ctor_2"><!-- --></a>
+<h3 class="helpHead3">Version(major, minor)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Version</samp> class as a two-part package version using the specified
+major and minor version numbers.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Version(<span class="keyword">Integer</span> major, <span class="keyword">Integer</span> minor)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">major</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The major version number.</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">minor</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The minor version number.</p>
+</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_ctor">
+<a name="apex_System_Version_ctor"><!-- --></a>
+<h3 class="helpHead3">Version(major, minor, patch)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Version</samp> class as a three-part package version using the
+specified major, minor, and patch version numbers.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Version(<span class="keyword">Integer</span> major, <span class="keyword">Integer</span> minor,
+<span class="keyword">Integer</span> patch)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">major</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The major version number.</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">minor</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The minor version number.</p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">patch</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">The patch version number.</p>
+</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Version_methods">
+<a name="apex_System_Version_methods"><!-- --></a>
+<h2 class="helpHead2">Version Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Version</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_compareTo">compareTo(version)</a></strong><br>
+Compares the current version with the specified version.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_major">major()</a></strong><br>
+Returns the major package version of the of the calling code.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_minor">minor()</a></strong><br>
+Returns the minor package version of the calling code.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_version.htm#apex_System_Version_patch">patch()</a></strong><br>
+Returns the patch package version of the calling code or <samp class="codeph apex_code"><span class="keyword">null</span></samp> if there is no patch version.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_compareTo">
+<a name="apex_System_Version_compareTo"><!-- --></a>
+<h3 class="helpHead3">compareTo(version)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Compares the current version with the specified version.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> compareTo(System.Version version)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">version</var></strong>:<p class="p">Type: <a class="xref" href="#apex_methods_system_version" title="Use the Version methods to get the version of a first-generation managed package (1GP) or a migrated second-generation managed package (2GP), and to compare package versions.">System.Version</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+<p class="p">Returns one of the following values:</p>
+<ul class="ul bulletList">
+<li class="li">zero if the current package version is equal to the specified
+package version</li>
+
+<li class="li">an Integer value greater than zero if the current package version
+is greater than the specified package version</li>
+
+<li class="li">an Integer value less than zero if the current package version
+is less than the specified package version</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If a two-part version is
+being compared to a three-part version, the patch number is ignored
+and the comparison is based only on the major and minor numbers.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_major">
+<a name="apex_System_Version_major"><!-- --></a>
+<h3 class="helpHead3">major()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the major package version of the of the calling
+code.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> major()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_minor">
+<a name="apex_System_Version_minor"><!-- --></a>
+<h3 class="helpHead3">minor()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the minor package version of the calling code.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> minor()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Version_patch">
+<a name="apex_System_Version_patch"><!-- --></a>
+<h3 class="helpHead3">patch()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the patch package version of the calling code or <samp class="codeph apex_code"><span class="keyword">null</span></samp> if there is no patch version.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> patch()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

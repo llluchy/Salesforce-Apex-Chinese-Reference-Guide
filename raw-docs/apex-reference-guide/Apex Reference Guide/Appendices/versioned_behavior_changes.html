@@ -1,0 +1,1291 @@
+<a name="versioned_behavior_changes"><!-- --></a><h1 class="helpHead1">Apex Versioned Behavior Changes</h1><div class="body conbody">
+<div class="shortdesc">This document includes major Apex behavior changes across API versions, organized by
+    version number for easy lookup. It isn’t an exhaustive list of all versioned Apex behavior. For
+    example, this compilation excludes versioned changes to Connect in Apex and classes in the
+    ConnectApi namespace.</div>
+
+    <div class="section" id="section_jhd_vn5_m3c">
+<a name="section_jhd_vn5_m3c"><!-- --></a>
+      <p class="p">Keep these guidelines in mind regarding API version usage:</p>
+
+      <a name="ul_sxp_kr5_m3c"><!-- --></a><ul class="ul bulletList" id="ul_sxp_kr5_m3c">
+        <li class="li">Salesforce strongly recommends that you use the latest available API version.</li>
+
+        <li class="li">If you can't upgrade to the latest version yet, use API versions released in the past
+          three years for improved performance, security, and compatibility.</li>
+
+        <li class="li">To reduce complexity, consolidate your Apex codebase to use the minimal number of API
+          versions, ideally, just one API version.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Version 67.0</h2>
+
+      
+    </div>
+
+    <div class="section">
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Database Operations in User Mode by Default</strong>: In API version 67.0 and later, Apex runs in user context by default, meaning that the
+            current user’s permissions and field-level security (FLS) are enforced during code
+            execution. In API version 66.0 and earlier, system mode is the default. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_enforce_usermode.htm" target="_blank">Set an Access Mode for Database Operations</a>.</li>
+
+        <li class="li">
+<strong class="ph b">Apex Classes Enforce Sharing by Default</strong>: In API version 67.0 and later, classes without an explicit sharing declaration are run
+            in the current user context. In API version 66.0 and earlier, for classes without an
+            explicit sharing declaration, the current sharing rule remains in effect. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">Use the with sharing, without sharing, and inherited
+              sharing Keywords</a>.</li>
+
+        <li class="li">
+<strong class="ph b">WITH_SECURITY_ENFORCED Not Supported in SOQL Queries</strong>: With API version 67.0 and later, you cannot use the <samp class="codeph apex_code">WITH SECURITY_ENFORCED</samp> clause in SOQL SELECT queries in Apex code. Instead,
+            to run a SOQL or SOSL query in user mode, use the <samp class="codeph apex_code">WITH
+              USER_MODE</samp> clause.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_65_0">
+<a name="version_65_0"><!-- --></a><h2 class="helpHead2">Version 65.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v65_general">
+<a name="v65_general"><!-- --></a>
+      <a name="dl_m3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_m3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">Access Modifiers with Abstract and Override Methods</strong>: <p class="p">In API version 65.0 and later, an abstract or override method requires a <samp class="codeph apex_code"><span class="keyword">protected</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, or <samp class="codeph apex_code"><span class="keyword">global</span></samp> access modifier.
+              If one of these access modifiers isn't explicitly included in the method declaration,
+              then method access defaults to private. Private access is invalid for these method
+              types because the implementing class can't access the abstract method. Therefore, if
+              you attempt to declare an abstract or override method without an allowed access
+              modifier, you get the compilation error: Abstract methods require at least one of
+              these modifiers: <samp class="codeph apex_code"><span class="keyword">global</span></samp>, <samp class="codeph apex_code"><span class="keyword">public</span></samp>, <samp class="codeph apex_code"><span class="keyword">protected</span></samp>. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_extending.htm" target="_blank">Extending a Class</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_63_0">
+<a name="version_63_0"><!-- --></a><h2 class="helpHead2">Version 63.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v63_general">
+<a name="v63_general"><!-- --></a>
+      <a name="dl_n3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_n3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">DataWeave Version</strong>: <p class="p">API version 63.0 and later support DataWeave 2.9 script syntax. API version 62.0
+              supports DataWeave 2.8, and API version 61.0 and earlier support DataWeave 2.5. See
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataWeaveInApex_impl.htm" target="_blank">Implementing DataWeave in Apex</a>. </p>
+</li>
+
+        <li class="li">
+<strong class="ph b">JSON Serialization of Exceptions</strong>: <p class="p">In API version 63.0 and later, JSON serialization of custom exceptions and most
+              built-in exceptions isn't supported. Attempting to serialize an exception throws an
+              error: Type unsupported in JSON: MyException. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_methods_system_json_overview.htm" target="_blank">JSON Support</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_62_0">
+<a name="version_62_0"><!-- --></a><h2 class="helpHead2">Version 62.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v62_general">
+<a name="v62_general"><!-- --></a>
+      <a name="dl_o3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_o3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">DataWeave Version</strong>: <p class="p">API version 62.0 supports DataWeave 2.8 script syntax. API version 61.0 and earlier
+              versions support DataWeave 2.5. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataWeaveInApex_impl.htm" target="_blank">Implementing DataWeave in Apex</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_61_0">
+<a name="version_61_0"><!-- --></a><h2 class="helpHead2">Version 61.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v61_general">
+<a name="v61_general"><!-- --></a>
+      <a name="dl_p3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_p3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">Private Method Override</strong>: <p class="p">In API version 61.0 and later, private methods are no longer overridden by an
+              instance method with the same signature in a subclass. In API version 60.0 and
+              earlier, if a subclass declares an instance method with the same signature as a
+              private method in one of its superclasses, the subclass method overrides the private
+              method. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_interfaces.htm" target="_blank">Interfaces</a>. </p>
+</li>
+
+        <li class="li">
+<strong class="ph b">DMO Information</strong>: In API version 61.0 and later, you can get information on a specific DMO by using
+              <samp class="codeph apex_code">SObjectType.getDescribe()</samp>. Field-level
+            security isn't enforced because all fields on DMOs that are accessed by field describes
+            and security model checks are read-only. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataCloudInApex.htm" target="_blank">Data Cloud In Apex</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_60_0">
+<a name="version_60_0"><!-- --></a><h2 class="helpHead2">Version 60.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v60_general">
+<a name="v60_general"><!-- --></a>
+      <a name="dl_q3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_q3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b"><samp class="codeph apex_code"><span class="statement">instanceof</span></samp> Operator with <samp class="codeph apex_code">List</samp> and <samp class="codeph apex_code">Iterable</samp></strong>: <p class="p">In API version 60.0 and later, if a <samp class="codeph apex_code">List</samp> data
+              type implements the Iterable data type, compilation fails. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm" target="_blank">Using the instanceof Keyword</a>. </p>
+</li>
+
+        <li class="li">
+<strong class="ph b">Transaction Control: Savepoints</strong>: <p class="p">In API version 60.0 and later, all Apex test savepoints are released when <samp class="codeph apex_code">Test.startTest()</samp> and <samp class="codeph apex_code">Test.stopTest()</samp> are called. If any savepoints are reset, a SAVEPOINT_RESET
+              event is logged. In API version 59.0 and earlier, making a callout after creating
+              savepoints throws a CalloutException regardless of whether there was uncommitted DML
+              or the changes were rolled back to a savepoint. In API version 60.0 and later, <samp class="codeph apex_code">Database.rollback(databaseSavepoint)</samp> and <samp class="codeph apex_code">Database.setSavepoint()</samp> calls don't increment the
+              DML row usage limit. In API version 59.0 and earlier, these methods increment the DML
+              row usage limit. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_transaction_control.htm" target="_blank">Transaction Control</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v60_reference">
+<a name="v60_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e285">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e288">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e291">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e285" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e288" data-title="Class">Database</td>
+
+              <td class="entry" headers="d4197e291" data-title="Behavior Change"> API version 60.0 and later: <samp class="codeph apex_code">Database.rollback(databaseSavepoint)</samp> and <samp class="codeph apex_code">Database.setSavepoint()</samp> calls don't increment the DML row usage limit.
+                In API version 59.0 and earlier, these methods increment the DML row usage limit.
+                See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_rollback" target="_blank">Database.rollBack()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e285" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e288" data-title="Class">Test</td>
+
+              <td class="entry" headers="d4197e291" data-title="Behavior Change">API version 60.0 and later: Apex test savepoints are released when <samp class="codeph apex_code">Test.startTest()</samp> and <samp class="codeph apex_code">Test.stopTest()</samp> are called. If any savepoints are
+                reset, a SAVEPOINT_RESET event is logged. In API version 59.0 and earlier, making a
+                callout after creating savepoints throws a CalloutException regardless of whether
+                there was uncommitted DML or the changes were rolled back to a savepoint. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_rollback" target="_blank">Database.rollBack()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e285" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e288" data-title="Class">Type</td>
+
+              <td class="entry" headers="d4197e291" data-title="Behavior Change">API version 60.0 and later: Using an invalid namespace while calling this
+                method returns null. Previously, Apex allowed you to specify an invalid namespace
+                such as <samp class="codeph apex_code">Type.forName(<span class="string">'InvalidNamespace'</span>,
+                  <span class="string">'OuterClass.InnerClass'</span>)</samp> or use an outer class as a namespace such as
+                  <samp class="codeph apex_code">Type.forName(<span class="string">'OuterClass'</span>, <span class="string">'InnerClass'</span>)</samp>
+                with indeterminate results. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_forName_2" target="_blank">Type.forName()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_57_0">
+<a name="version_57_0"><!-- --></a><h2 class="helpHead2">Version 57.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v57_reference">
+<a name="v57_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e393">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e396">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e399">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e393" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e396" data-title="Class">Object</td>
+
+              <td class="entry" headers="d4197e399" data-title="Behavior Change">API version 57.0 and later: The <samp class="codeph apex_code">toString()</samp> method only includes member variables of Apex objects that
+                are visible in the current namespace. Non-global properties are suppressed from
+                output when you invoke <samp class="codeph apex_code">toString()</samp> on managed
+                Apex types. To keep the non-global state of the object visible in debug output, you
+                can explicitly override the <samp class="codeph apex_code">toString()</samp>
+                method. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Object.htm#apex_System_Object_toString" target="_blank">Object.toString()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_55_0">
+<a name="version_55_0"><!-- --></a><h2 class="helpHead2">Version 55.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v55_general">
+<a name="v55_general"><!-- --></a>
+      <a name="dl_t3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_t3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">@AuraEnabled Annotation</strong>: <p class="p">In API version 55.0 and later, overloads aren't allowed on methods annotated with
+              @AuraEnabled. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm" target="_blank">AuraEnabled Annotation</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_54_0">
+<a name="version_54_0"><!-- --></a><h2 class="helpHead2">Version 54.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v54_reference">
+<a name="v54_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e484">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e487">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e490">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e484" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e487" data-title="Class">Date</td>
+
+              <td class="entry" headers="d4197e490" data-title="Behavior Change">API version 54.0 and later: If you call <samp class="codeph apex_code"><span class="keyword">Date</span>.valueOf</samp> with a Datetime object, the method converts the object to a
+                valid Date without the time information. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_date.htm#apex_System_Date_valueOf" target="_blank">Date.valueOf()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e484" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e487" data-title="Class">Id</td>
+
+              <td class="entry" headers="d4197e490" data-title="Behavior Change">API version 54.0 and later: Assignment of an invalid 15 or 18 character ID to a
+                variable results in a System.StringException exception. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_valueOf" target="_blank">Id.valueOf()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e484" data-title="Namespace">Schema</td>
+
+              <td class="entry" headers="d4197e487" data-title="Class">DescribeSObjectResult</td>
+
+              <td class="entry" headers="d4197e490" data-title="Behavior Change">API version 54.0 and later: For custom settings and custom metadata type
+                objects, <samp class="codeph apex_code">DescribeSObjectResult.isAccessible()</samp> returns false if the user doesn't
+                have permissions to access the queried objects. In API version 53.0 and earlier, the
+                method returns true even if the user doesn't have the required permissions. See
+                  <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject_describe.htm#apex_Schema_DescribeSObjectResult_isAccessible" target="_blank">DescribeSObjectResult.isAccessible()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e484" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e487" data-title="Class">Messaging</td>
+
+              <td class="entry" headers="d4197e490" data-title="Behavior Change">API version 54.0 and later: A null <samp class="codeph apex_code">emailMessageIds</samp> parameter results in a System.IllegalArgumentException
+                exception. In API version 53.0 and earlier, a null <samp class="codeph apex_code">emailMessageIds</samp> parameter results in an error. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_email_outbound_messaging.htm#apex_System_Messaging_sendEmailMessage" target="_blank">Messaging.sendEmailMessage()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_53_0">
+<a name="version_53_0"><!-- --></a><h2 class="helpHead2">Version 53.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v53_general">
+<a name="v53_general"><!-- --></a>
+      <a name="dl_v3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_v3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">DataWeave Integration</strong>: Apex classes must be at API version 53.0 or later to access DataWeave integration
+            methods. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/DataWeaveInApex_impl.htm" target="_blank">Implementing DataWeave in Apex</a>.</li>
+
+        <li class="li">
+<strong class="ph b">JSON DateTime Format</strong>: <p class="p">In API version 53.0 and later, DateTime format and processing has been updated. The
+              API correctly handles DateTime values in JSON requests that use more than 3 digits
+              after the decimal point. Requests that use an unsupported DateTime format (such as
+              123456000) result in an error. Salesforce recommends that you strictly adhere to
+              DateTime formats specified in Valid Date and DateTime Formats. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api_rest.meta/api_rest/intro_valid_date_formats.htm" target="_blank">Valid Date and DateTime Formats</a>. </p>
+</li>
+
+        <li class="li">
+<strong class="ph b">Trigger Order of Execution</strong>: In API version 53.0 and earlier, after-save record-triggered flows run after
+            entitlements are executed. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_triggers_order_of_execution.htm" target="_blank">Triggers and Order of Execution</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v53_reference">
+<a name="v53_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e637">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e640">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e643">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e637" data-title="Namespace">Database</td>
+
+              <td class="entry" headers="d4197e640" data-title="Class">SaveResult</td>
+
+              <td class="entry" headers="d4197e643" data-title="Behavior Change">API version 53.0 and later: The <samp class="codeph apex_code">getId()</samp>
+                method returns the sObject ID. However, if record locking fails during the update
+                operation, the method returns a null value. In API version 52.0 and earlier, the
+                  <samp class="codeph apex_code">getId()</samp> method returns a null value if the
+                record isn't updated successfully. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database_saveresult.htm#apex_Database_SaveResult_getId" target="_blank">SaveResult.getId()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e637" data-title="Namespace">Database</td>
+
+              <td class="entry" headers="d4197e640" data-title="Class">UpsertResult</td>
+
+              <td class="entry" headers="d4197e643" data-title="Behavior Change">API version 53.0 and later: The <samp class="codeph apex_code">getId()</samp>
+                method returns the sObject ID. However, if record locking fails during the update
+                operation, the method returns a null value. In API version 52.0 and earlier, the
+                  <samp class="codeph apex_code">getId()</samp> method returns a null value if the
+                record isn't updated successfully. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database_upsertresult.htm#apex_Database_UpsertResult_getId" target="_blank">UpsertResult.getId()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_52_0">
+<a name="version_52_0"><!-- --></a><h2 class="helpHead2">Version 52.0</h2>
+
+      
+    </div>
+
+    <div class="section">
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">CardPaymentMethods and DigitalWallets</strong>: <p class="p">In API version 52.0 and later, CardPaymentMethods and DigitalWallets can’t store
+              values for GatewayTokenEncryption and GatewayToken at the same time on the same
+              record. If you try to assign one while the other exists, Salesforce throws an error.
+              See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_commercepayments_tokenization_service_apex_imp.htm" target="_blank">Tokenization Service Apex Class
+              Implementation</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v52_reference">
+<a name="v52_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e741">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e744">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e747">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e741" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e744" data-title="Class">Database</td>
+
+              <td class="entry" headers="d4197e747" data-title="Behavior Change">API version 52.0 and later: If the <samp class="codeph apex_code">executeBatch</samp> call fails to acquire an Apex flex queue lock, the call
+                throws a System.AsyncException. In API version 51.0 and earlier, if the executeBatch
+                call fails to acquire an Apex flex queue lock, the call returns an empty ID,
+                "000000000000000", instead of throwing an exception. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_database.htm#apex_System_Database_executeBatch" target="_blank">Database.executeBatch()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_51_0">
+<a name="version_51_0"><!-- --></a><h2 class="helpHead2">Version 51.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v51_reference">
+<a name="v51_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e802">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e805">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e808">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e802" data-title="Namespace">Schema</td>
+
+              <td class="entry" headers="d4197e805" data-title="Class">DescribeFieldResult</td>
+
+              <td class="entry" headers="d4197e808" data-title="Behavior Change">API version 51.0 and later: The <samp class="codeph apex_code">getReferenceTo()</samp> method returns referenced objects that aren't
+                accessible to the context user. If the context user has access to an object's field
+                that references another object, irrespective of the context user's access to the
+                cross-referenced object, the method returns references. In API version 50.0 and
+                earlier, if the context user doesn't have access to the cross-referenced object, the
+                method returns an empty list. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_fields_describe.htm#apex_Schema_DescribeFieldResult_getReferenceTo" target="_blank">DescribeFieldResult.getReferenceTo()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e802" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e805" data-title="Class">String</td>
+
+              <td class="entry" headers="d4197e808" data-title="Behavior Change">API version 51.0 and later: The <samp class="codeph apex_code">format()</samp> method supports single quotes in the stringToFormat parameter
+                and returns a formatted string using the formattingArguments parameter. In version
+                50.0 and earlier, single quotes aren't supported. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_string.htm#apex_System_String_format" target="_blank">String.format()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e802" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e805" data-title="Class">System</td>
+
+              <td class="entry" headers="d4197e808" data-title="Behavior Change">API version 51.0 and later: The <samp class="codeph apex_code">hashCode()</samp> method returns the same hashCode for identical Id values. In
+                API version 50.0 and earlier, identical Id values don't always generate the same
+                hashCode value. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm#apex_system_system_hashcode" target="_blank">System.hashCode()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_50_0">
+<a name="version_50_0"><!-- --></a><h2 class="helpHead2">Version 50.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v50_general">
+<a name="v50_general"><!-- --></a>
+      <a name="dl_z3n_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_z3n_kn5_m3c">
+        <li class="li">
+<strong class="ph b">@NamespaceAccessible Annotation</strong>: <p class="p">In API version 50.0 and later, scope and accessibility rules are enforced on Apex
+              variables, methods, inner classes, and interfaces that are annotated with
+              @NamespaceAccessible. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm" target="_blank">NamespaceAccessible Annotation</a> and <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_declaring_variables.htm" target="_blank">Class Variables</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_49_0">
+<a name="version_49_0"><!-- --></a><h2 class="helpHead2">Version 49.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v49_general">
+<a name="v49_general"><!-- --></a>
+      <a name="dl_ajn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_ajn_kn5_m3c">
+        <li class="li">
+<strong class="ph b">@JsonAccess Annotation</strong>: <p class="p">In API version 49.0 and later, the default access for both serialization and
+              deserialization is <samp class="codeph apex_code">sameNamespace</samp>. In API
+              version 48.0 and earlier, the default access for deserialization is <samp class="codeph apex_code">always</samp> and the default access for serialization is
+                <samp class="codeph apex_code">sameNamespace</samp> to preserve the existing
+              behavior. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_JsonAccess.htm" target="_blank">JsonAccess Annotation</a>. </p>
+</li>
+
+        <li class="li">
+<strong class="ph b">@ReadOnly Annotation on REST Methods</strong>: <p class="p">In API version 49.0 and later, you can annotate Apex REST methods with just
+              @ReadOnly. In API version 49.0 and earlier, Apex REST methods with the @ReadOnly
+              annotation also require the @RemoteAction annotation. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_ReadOnly.htm" target="_blank">ReadOnly Annotation</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_47_0">
+<a name="version_47_0"><!-- --></a><h2 class="helpHead2">Version 47.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v47_general">
+<a name="v47_general"><!-- --></a>
+      <a name="dl_bjn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_bjn_kn5_m3c">
+        <li class="li">
+<strong class="ph b">@NamespaceAccessible Annotation</strong>: <p class="p">In API version 47.0 and later, @NamespaceAccessible isn't allowed on an entity marked
+              with @AuraEnabled. Therefore, an Aura or Lightning web component installed from a
+              package can't call an Apex method from another package, even if both packages are in
+              the same namespace. However, an @AuraEnabled public method from one package can call a
+              @NamespaceAccessible public method from another package in the same namespace. See
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_NamespaceAccessible.htm" target="_blank">NamespaceAccessible Annotation</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_cjn_kn5_m3c">
+<a name="section_cjn_kn5_m3c"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      <p class="p"><samp class="codeph apex_code">changedfields</samp> Properties in <samp class="codeph apex_code">EventBus.ChangeEventHeader</samp>: A list of the fields that were
+        changed in an update operation, including the LastModifiedDate system field. This field is
+        empty for other operations, including record creation. This property is available in Apex
+        saved using API version 47.0 or later. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_eventbus_ChangeEventHeader.htm#apex_eventbus_ChangeEventHeader_properties" target="_blank">ChangeEventHeader Properties</a>.</p>
+
+    </div>
+
+    <div class="section" id="version_45_0">
+<a name="version_45_0"><!-- --></a><h2 class="helpHead2">Version 45.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_rrh_d55_m3c">
+<a name="section_rrh_d55_m3c"><!-- --></a>
+      <a name="dl_srh_d55_m3c"><!-- --></a><ul class="ul bulletList" id="dl_srh_d55_m3c">
+        <li class="li">
+<strong class="ph b">WITH SECURITY_ENFORCED Clause in SOQL</strong>: <p class="p">The WITH SECURITY_ENFORCED clause is only available in Apex. We don’t recommend using
+              WITH SECURITY_ENFORCED in Apex classes or triggers with an API version earlier than
+              45.0. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_with_security_enforced.htm" target="_blank">Filter SOQL Queries Using WITH
+                SECURITY_ENFORCED</a>. </p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v45_reference">
+<a name="v45_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1031">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1034">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1037">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1031" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1034" data-title="Class">TimeZone</td>
+
+              <td class="entry" headers="d4197e1037" data-title="Behavior Change">API version 45.0 and later: <samp class="codeph apex_code">getDisplayName()</samp> displays Daylight Savings Time appropriately when
+                daylight savings is in effect. For example, British Summer Time is displayed for
+                Europe/London and Pacific Daylight Time for America/Los_Angeles. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_timezone.htm#apex_System_TimeZone_getDisplayName" target="_blank">TimeZone.getdisplayName()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="section_vzy_g2v_g3c">
+<a name="section_vzy_g2v_g3c"><!-- --></a><h2 class="helpHead2">Version 44.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_c3n_tfv_g3c">
+<a name="section_c3n_tfv_g3c"><!-- --></a>
+      <a name="dl_upk_5fv_g3c"><!-- --></a><ul class="ul bulletList" id="dl_upk_5fv_g3c">
+        <li class="li">
+<strong class="ph b">BatchApexErrorEvent</strong>: The BatchApexErrorEvent object represents a platform event associated with a batch
+            Apex class. This object is available in API version 44.0 and later. If the <samp class="codeph apex_code">start</samp>, <samp class="codeph apex_code">execute</samp>, or <samp class="codeph apex_code">finish</samp> method of a batch
+            Apex job encounters an unhandled exception, a <samp class="codeph apex_code">BatchApexErrorEvent</samp> platform event is fired. For more details, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/sforce_api_objects_batchapexerrorevent.htm" target="_blank" title="HTML (New Window)">BatchApexErrorEvent</a>
+</li>
+
+        <li class="li">
+<strong class="ph b">AuraEnabled Annotation</strong>: In API version 44.0 and later, you can improve runtime performance by caching method
+            results on the client by using the annotation <samp class="codeph apex_code">@AuraEnabled(cacheable=<span class="keyword">true</span>)</samp>. You can cache method results only for methods
+            that retrieve data but don’t modify it. Using this annotation eliminates the need to
+            call <samp class="codeph javascript">setStorable()</samp> in JavaScript code on every
+            action that calls the Apex method. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_annotation_AuraEnabled.htm" target="_blank">AuraEnabled Annotation</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_lwd_hls_d3c">
+<a name="section_lwd_hls_d3c"><!-- --></a><h2 class="helpHead2">Version 42.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_fjn_kn5_m3c">
+<a name="section_fjn_kn5_m3c"><!-- --></a>
+      <a name="dl_cdt_rcw_g3c"><!-- --></a><ul class="ul bulletList" id="dl_cdt_rcw_g3c">
+        <li class="li">
+<strong class="ph b">Hierarchy Custom Settings</strong>: In API version 42.0 and later, if a hierarchy custom setting is inserted in a <samp class="codeph apex_code">testSetup</samp> method, inserting a hierarchy custom setting
+            record with the same SetupOwnerId in a test method throws a DUPLICATE_VALUE exception.
+            In API version 41.0 and earlier, each method in an Apex test class, including <samp class="codeph apex_code">testSetup</samp> methods, is able to insert hierarchy custom
+            setting values. This behavior is true even when the methods have the same SetupOwnerId
+            value as a hierarchy custom setting record inserted in a different test method. See
+              <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_custom_settings.htm#apex_System_HierarchyCustomSetting_instance_methods" target="_blank">Hierarchy Custom Setting Methods</a>.</li>
+
+        <li class="li">
+<strong class="ph b">Apex Properties</strong>: In API version 42.0 and later, unless a variable value is set in a set accessor, you
+            can’t update its value in a get accessor. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_properties.htm" target="_blank">Apex Properties</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="version_41_0">
+<a name="version_41_0"><!-- --></a><h2 class="helpHead2">Version 41.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v41_general">
+<a name="v41_general"><!-- --></a>
+      <a name="dl_gjn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_gjn_kn5_m3c">
+        <li class="li">
+<strong class="ph b">Exception Handling</strong>: <p class="p">In API version 41.0 and later, unreachable statements in your code cause compilation
+              errors. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_exception_statements.htm" target="_blank">Exception Statements</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v41_reference">
+<a name="v41_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1193">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1196">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1199">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1193" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1196" data-title="Class">URL</td>
+
+              <td class="entry" headers="d4197e1199" data-title="Behavior Change">API version 41.0 and later: Apex URL objects are represented by the
+                java.net.URI type, not the java.net.URL type. The API version in which the URL
+                object was instantiated determines the behavior of subsequent method calls to the
+                specific instance. Salesforce strongly encourages you to use API version 41.0 and
+                later for fully RFC-compliant URL parsing that includes proper handling of edge
+                cases of complex URL structures. In API version 41.0 and later, inputs must be
+                valid, RFC-compliant URL or URI strings. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_url.htm" target="_blank">URL Class</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="section_ams_2yw_d3c">
+<a name="section_ams_2yw_d3c"><!-- --></a><h2 class="helpHead2">Version 39.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_dms_2yw_d3c">
+<a name="section_dms_2yw_d3c"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1251">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1254">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1257">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1251" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1254" data-title="Class">SObject</td>
+
+              <td class="entry" headers="d4197e1257" data-title="Behavior Change">API version 39.0 and later: <samp class="codeph apex_code">getPopulatedFieldsAsMap()</samp> returns all values set on the SObject, even if
+                values were set after the record was queried. This behavior is dependent on the
+                version of the Apex class calling this method and not on the version of the class
+                that generated the SObject. If you query an SObject at API version 20.0, and then
+                call this method in a class with API version 40.0, you will get the full set of
+                fields. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_getPopulatedFieldsAsMap" target="_blank">SObject.getPopulatedFieldsAsMap()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="section_grc_xfs_d3c">
+<a name="section_grc_xfs_d3c"><!-- --></a><h2 class="helpHead2">Version 35.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_ijn_kn5_m3c">
+<a name="section_ijn_kn5_m3c"><!-- --></a>
+      <a name="dl_rpk_5gs_d3c"><!-- --></a><ul class="ul bulletList" id="dl_rpk_5gs_d3c">
+        <li class="li">
+<strong class="ph b">Serialization of IDs</strong>: In API version 35.0 and later, ID comparison using <samp class="codeph apex_code">==</samp> does not fail for IDs that have been through roundtrip JSON serialization
+            and deserialization. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_json_json.htm" target="_blank">Roundtrip Serialization and
+            Deserialization</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_psv_sgs_d3c">
+<a name="section_psv_sgs_d3c"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1331">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1334">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1337">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1331" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1334" data-title="Class">JSON</td>
+
+              <td class="entry" headers="d4197e1337" data-title="Behavior Change">When deserializing JSON content into an Apex class in any API version, or into
+                an object in API version 35.0 or later, no exception is thrown. When deserializing
+                JSON content into a custom object or an sObject using Salesforce API version 34.0 or
+                earlier, the<samp class="codeph apex_code"> deserialize(jsonString,
+                  apexType)</samp> and <samp class="codeph apex_code">readValueAs(apexType)</samp> methods throw a runtime exception when passed
+                extraneous attributes. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_deserialize" target="_blank">JSON.deserialize(jsonString, apexType)</a> and
+                  <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_JsonParser.htm#apex_System_JsonParser_readValueAs" target="_blank">JSONParser.readValueAs()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e1331" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1334" data-title="Class">PageReference</td>
+
+              <td class="entry" headers="d4197e1337" data-title="Behavior Change">In API version 34.0 and later, <samp class="codeph apex_code">getContent()</samp> and <samp class="codeph apex_code">getContentAsPDF()</samp> are treated as callouts. If you use <samp class="codeph apex_code">getContent()</samp> or <samp class="codeph apex_code">getContentAsPDF()</samp> in a test method, the test method fails. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_System_PageReference_getContent.htm" target="_blank">PageReference.getContent()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e1331" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1334" data-title="Class">Pattern</td>
+
+              <td class="entry" headers="d4197e1337" data-title="Behavior Change">In API version 35.0 and later, the <samp class="codeph apex_code">split()</samp> method works correctly if you use a zero-width regExp parameter.
+                In API version 34.0 and earlier, a zero-width regExp value produces an empty list
+                item at the beginning of the <samp class="codeph apex_code">split()</samp> method
+                output. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_pattern_and_matcher_pattern_methods.htm#apex_System_Pattern_split" target="_blank">Pattern.split()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_34_0">
+<a name="version_34_0"><!-- --></a><h2 class="helpHead2">Version 34.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v34_general">
+<a name="v34_general"><!-- --></a>
+      <a name="dl_jjn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_jjn_kn5_m3c">
+        <li class="li">
+<strong class="ph b">Schema Namespace Prefixes</strong>: <p class="p">In API version 34.0 and later, <samp class="codeph apex_code">Schema.DescribeSObjectResult</samp> on a custom SObjectType includes map keys
+              prefixed with the namespace, even if the namespace is that of currently executing
+              code. If you work with multiple namespaces and generate run-time describe data, make
+              sure that your code accesses keys correctly by using the namespace prefix. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_namespace_prefix.htm" target="_blank">Namespace Prefix</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="v34_reference">
+<a name="v34_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1469">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1472">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1475">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1469" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1472" data-title="Class">Date</td>
+
+              <td class="entry" headers="d4197e1475" data-title="Behavior Change">API version 34.0 to 53.0: If you call <samp class="codeph apex_code"><span class="keyword">Date</span>.valueOf</samp> with a <samp class="codeph apex_code"><span class="keyword">Datetime</span></samp>
+                object, the method converts <samp class="codeph apex_code"><span class="keyword">Datetime</span></samp> to a
+                valid <samp class="codeph apex_code"><span class="keyword">Date</span></samp> without the time information, but
+                the result depends on the manner in which the <samp class="codeph apex_code"><span class="keyword">Datetime</span></samp> object was initialized. For example, if the <samp class="codeph apex_code"><span class="keyword">Datetime</span></samp> object was initialized using <samp class="codeph apex_code"><span class="keyword">Datetime</span>.valueOf(stringDate)</samp>, the returned <samp class="codeph apex_code"><span class="keyword">Date</span></samp> value contains time (hours) information. If
+                the <samp class="codeph apex_code"><span class="keyword">Datetime</span></samp> object is initialized by using
+                  <samp class="codeph apex_code"><span class="keyword">Datetime</span>.newInstance(year, month, day, hour,
+                  minute, second)</samp>, the returned Date value doesn't contain time
+                information. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_date.htm#apex_System_Date_valueOf" target="_blank">Date.valueOf()</a>.</td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d4197e1469" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1472" data-title="Class">SObject</td>
+
+              <td class="entry" headers="d4197e1475" data-title="Behavior Change">In API version 34.0 and later, you must include the namespace name to retrieve
+                a field from a field Map using the <samp class="codeph apex_code">get(fieldName)</samp> method. For example, to get the account__c field in the
+                MyNamespace namespace from field Map called "fields", use: <samp class="codeph apex_code">fields.get(<span class="string">'MyNamespace__account__c'</span>)</samp>. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_get" target="_blank">SObject.get(fieldName)</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_33_0">
+<a name="version_33_0"><!-- --></a><h2 class="helpHead2">Version 33.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v33_reference">
+<a name="v33_reference"><!-- --></a><h2 class="helpHead2">API Reference Changes</h2>
+
+      
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d4197e1581">Namespace</th>
+
+              <th class="featureTableHeader  " id="d4197e1584">Class</th>
+
+              <th class="featureTableHeader  " id="d4197e1587">Behavior Change</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d4197e1581" data-title="Namespace">System</td>
+
+              <td class="entry" headers="d4197e1584" data-title="Class">Date</td>
+
+              <td class="entry" headers="d4197e1587" data-title="Behavior Change">In API version 33.0 and earlier, if you call <samp class="codeph apex_code"><span class="keyword">Date</span>.valueOf</samp> with a Datetime object, the method returns a Date value
+                that contains the hours, minutes, seconds, and milliseconds set. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_date.htm#apex_System_Date_valueOf" target="_blank">Date.valueOf()</a>.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="version_32_0">
+<a name="version_32_0"><!-- --></a><h2 class="helpHead2">Version 32.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v32_general">
+<a name="v32_general"><!-- --></a>
+      <a name="dl_mjn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_mjn_kn5_m3c">
+        <li class="li">
+<strong class="ph b"><samp class="codeph apex_code"><span class="statement">instanceof</span></samp> Operator</strong>: <p class="p">In API version 32.0 and later, <samp class="codeph apex_code"><span class="statement">instanceof</span></samp>
+              returns <samp class="codeph apex_code"><span class="keyword">false</span></samp> if the left operand is a null
+              object. In API version 31.0 and earlier, <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> in this
+              case. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm" target="_blank">Using the Instance of Keyword</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_yvr_plw_g3c">
+<a name="section_yvr_plw_g3c"><!-- --></a><h2 class="helpHead2">Version 28.0</h2>
+
+      
+    </div>
+
+    <div class="section">
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Null Fields in JSON Serialization</strong>: <p class="p">In API version 28.0 and later, null fields aren’t serialized and aren’t included in
+              the JSON string, unlike in earlier versions. This change doesn’t affect deserializing
+              JSON strings with JSON methods, such as <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Json.htm#apex_System_Json_deserialize" target="_blank">Json.deserialize()</a>. This change is noticeable
+              when you inspect the JSON string.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b">VLOOKUP Validation Rule Function</strong>: In API version 28.0 and later, the VLOOKUP validation rule function no longer accesses
+            organization data from a running Apex test. The function looks up only data created by
+            the test, unless the test class or method is annotated with <samp class="codeph apex_code">IsTest(SeeAllData=<span class="keyword">true</span>)</samp>. In API version 27.0 and
+            earlier, the VLOOKUP validation rule function always looks up org data in addition to
+            test data when fired by a running Apex test. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing_data_access.htm" target="_blank">Isolation of Test Data from Organization Data in Unit
+              Tests</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_ah4_mdv_g3c">
+<a name="section_ah4_mdv_g3c"><!-- --></a><h2 class="helpHead2">Version 26.0</h2>
+
+      
+    </div>
+
+    <div class="section">
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Chaining Batch Jobs</strong>: <p class="p">In API version 26.0 and later, you can start another batch job from an existing batch
+              job to chain jobs together, enforcing strict sequential execution. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank">Use Batch Apex</a>.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b">Calling <samp class="codeph apex_code">Database.executeBatch</samp> and <samp class="codeph apex_code">System.scheduleBatch</samp> Methods</strong>: <p class="p">In API version 26.0 and later, you can call <samp class="codeph apex_code">Database.executeBatch</samp> and <samp class="codeph apex_code">System.scheduleBatch</samp> from any batch Apex method. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank">Use Batch Apex</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_ndj_bnw_g3c">
+<a name="section_ndj_bnw_g3c"><!-- --></a><h2 class="helpHead2">Version 24.0</h2>
+
+      
+      <a name="dl_g5j_3nw_g3c"><!-- --></a><ul class="ul bulletList" id="dl_g5j_3nw_g3c">
+        <li class="li">
+<strong class="ph b">Apex Test Methods</strong>: In API version 24.0 and later, Apex test methods can’t access pre-existing org data by
+            default, such as standard objects, custom objects, and custom settings data. They can
+            only access data that they create. However, objects that are used to manage your
+            organization or metadata objects can still be accessed in your tests. In API version
+            23.0 and earlier, test code continues to have access to all data in the organization and
+            its data access is unchanged. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_testing_data_access.htm" target="_blank">Isolation of Test Data from Organization Data in Unit
+              Tests</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_ufm_sbv_g3c">
+<a name="section_ufm_sbv_g3c"><!-- --></a><h2 class="helpHead2">Version 22.0</h2>
+
+      
+    </div>
+
+    <div class="section">
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b">Batch Apex Exceptions with Test Methods</strong>: <p class="p">In API version 22.0 and later, exceptions that occur during the execution of a batch
+              Apex job invoked by a test method are passed to the calling test method. As a result,
+              these exceptions cause the test method to fail. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_batch_interface.htm" target="_blank">Use Batch Apex</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_u4y_xdw_g3c">
+<a name="section_u4y_xdw_g3c"><!-- --></a><h2 class="helpHead2">Version 21.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="section_v2m_ydw_g3c">
+<a name="section_v2m_ydw_g3c"><!-- --></a>
+      <a name="dl_c1h_cmw_g3c"><!-- --></a><ul class="ul bulletList" id="dl_c1h_cmw_g3c">
+        <li class="li">
+<strong class="ph b">Bulk API Requests</strong>: In API version 21.0 and later, if a Bulk API request causes a trigger to fire, each
+            chunk of 200 records for the trigger to process is no longer split into smaller chunks.
+            If a Bulk API request causes a trigger to fire multiple times for chunks of 200 records,
+            governor limits are reset between these trigger invocations for the same HTTP request.
+            Static variables aren’t reset within the multiple trigger invocations for the same Bulk
+            API request. In API version 20.0 and earlier, if a Bulk API request causes a trigger to
+            fire, each chunk of 200 records for the trigger to process is split into chunks of 100
+            records.</li>
+
+        <li class="li">
+<strong class="ph b"><samp class="codeph apex_code">FeedPost</samp> Objects</strong>: In API version 21.0, insert and delete triggers on FeedPost objects are supported. In
+            API version 20.0 and earlier, these trigger operations on FeedPost aren't supported. See
+              <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_triggers_fields_not_updated_chatter.htm" target="_blank">Triggers for Chatter Objects</a>.<div class="box message info" id="note_tpf_x3v_43c">
+<a name="note_tpf_x3v_43c"><!-- --></a><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code">FeedPost</samp> object is
+              discontinued in API version 22.0 and later. Use <samp class="codeph apex_code">FeedItem</samp> instead. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_feeditem.htm" target="_blank">FeedItem</a></p>
+</div>
+</div></div></div>
+</div>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_m1b_bfv_g3c">
+<a name="section_m1b_bfv_g3c"><!-- --></a><h2 class="helpHead2">Version 17.0</h2>
+
+      
+      <a name="dl_pns_bfv_g3c"><!-- --></a><ul class="ul bulletList" id="dl_pns_bfv_g3c">
+        <li class="li">
+<strong class="ph b">HTTP Response Decoding</strong>: In API version 17.0 and later, HTTP responses are decoded using the encoding specified
+            in the Content-Type header. In API versions 16.0 and earlier, HTTP responses for
+            callouts are always decoded using UTF-8, regardless of the Content-Type header. See
+              <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_wsdl2apex.htm" target="_blank">SOAP Services: Defining a Class from a WSDL
+              Document</a>.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_pg5_gfv_g3c">
+<a name="section_pg5_gfv_g3c"><!-- --></a><h2 class="helpHead2">Version 16.0</h2>
+
+      
+    </div>
+
+    <div class="section" id="v16_general">
+<a name="v16_general"><!-- --></a>
+      <a name="dl_njn_kn5_m3c"><!-- --></a><ul class="ul bulletList" id="dl_njn_kn5_m3c">
+        <li class="li">
+<strong class="ph b">Decimal Data Type</strong>: <p class="p">In API version 16.0 and later, Apex uses the higher-precision <samp class="codeph apex_code"><span class="keyword">Decimal</span></samp> data type in certain types such as currency.
+              See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_primitives.htm" target="_blank">Primitive Data Types</a>.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section" id="section_gdy_2fv_g3c">
+<a name="section_gdy_2fv_g3c"><!-- --></a><h2 class="helpHead2">Version 15.0</h2>
+
+      
+      <a name="dl_gm5_5gw_g3c"><!-- --></a><ul class="ul bulletList" id="dl_gm5_5gw_g3c">
+        <li class="li">
+<strong class="ph b"><samp class="codeph apex_code">anyType</samp> datatype</strong>: The Salesforce datatype <samp class="codeph apex_code">anyType</samp> is not
+            supported in WSDLs used to generate Apex code that is saved by using API version 15.0
+            and later. In API version 14.0 and earlier, <samp class="codeph apex_code">anyType</samp> is mapped to String. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_wsdl2apex.htm" target="_blank">SOAP Services: Defining a Class from a WSDL
+              Document</a>.</li>
+
+        <li class="li">
+<strong class="ph b">DMLOptions Settings</strong>: DMLOptions settings are only available for Apex saved against API versions 15.0 and
+            higher. DMLOptions settings take effect only for record operations performed by using
+            Apex DML and not through the Salesforce user interface. In API version 15.0 and later, the Database.DMLOptions <samp class="codeph apex_code">emailHeader</samp> property enables you to specify information about the email sent
+            when an event occurs because of Apex DML code execution. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_dml_database_dmloptions.htm" target="_blank">Setting DML Options</a>.</li>
+
+        <li class="li">
+<strong class="ph b">String values</strong>: In API version 15.0 and higher, assigning a <samp class="codeph apex_code"><span class="keyword">String</span></samp> value that is too long for the field produces a run-time error.</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

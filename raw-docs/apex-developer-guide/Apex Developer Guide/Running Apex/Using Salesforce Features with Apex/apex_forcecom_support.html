@@ -1,0 +1,84 @@
+<a name="apex_forcecom_support"><!-- --></a><h1 class="helpHead1">Support Classes</h1><div class="body conbody">
+<div class="shortdesc">Support classes allow you to interact with records commonly used by support centers,
+        such as business hours and cases.</div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="BusinessHourExamples"><a name="BusinessHourExamples"><!-- --></a>Working with Business
+Hours</span></h2>
+<p class="p">Business hours are used to specify the hours
+at which your customer support team operates, including multiple business
+hours in multiple time zones.</p>
+<div class="p">This example finds the time one
+business hour from startTime, returning the Datetime in the local
+time zone. It gets the default business hours by querying BusinessHours.
+Also, it calls the <samp class="codeph apex_code">BusinessHours</samp> <samp class="codeph apex_code">add</samp> method.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the default business hours</span>
+BusinessHours bh = [SELECT Id FROM BusinessHours WHERE IsDefault=<span class="keyword">true</span>];
+
+<span class="onelineComment">// Create Datetime on May 28, 2008 at 1:06:08 AM in local timezone.</span>
+<span class="keyword">Datetime</span> startTime = <span class="keyword">Datetime</span>.newInstance(2008, 5, 28, 1, 6, 8);
+
+<span class="onelineComment">// Find the time it will be one business hour from May 28, 2008, 1:06:08 AM using the</span>
+<span class="onelineComment">// default business hours.  The returned Datetime will be in the local timezone.</span>
+<span class="keyword">Datetime</span> nextTime = BusinessHours.add(bh.id, startTime, 60 * 60 * 1000L);
+</pre></div>
+</div>
+<div class="p">This example finds the time one business hour from
+startTime, returning the Datetime in GMT:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the default business hours</span>
+BusinessHours bh = [SELECT Id FROM BusinessHours WHERE IsDefault=<span class="keyword">true</span>];
+
+<span class="onelineComment">// Create Datetime on May 28, 2008 at 1:06:08 AM in local timezone.</span>
+<span class="keyword">Datetime</span> startTime = <span class="keyword">Datetime</span>.newInstance(2008, 5, 28, 1, 6, 8);
+
+<span class="onelineComment">// Find the time it will be one business hour from May 28, 2008, 1:06:08 AM using the</span>
+<span class="onelineComment">// default business hours.  The returned Datetime will be in GMT.</span>
+<span class="keyword">Datetime</span> nextTimeGmt = BusinessHours.addGmt(bh.id, startTime, 60 * 60 * 1000L);
+</pre></div>
+</div>
+<div class="p">The next example finds the difference between startTime
+and nextTime: <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the default business hours</span>
+BusinessHours bh = [select id from businesshours where IsDefault=<span class="keyword">true</span>];
+
+<span class="onelineComment">// Create Datetime on May 28, 2008 at 1:06:08 AM in local timezone.</span>
+<span class="keyword">Datetime</span> startTime = <span class="keyword">Datetime</span>.newInstance(2008, 5, 28, 1, 6, 8);
+
+<span class="onelineComment">// Create Datetime on May 28, 2008 at 4:06:08 PM in local timezone.</span>
+<span class="keyword">Datetime</span> endTime = <span class="keyword">Datetime</span>.newInstance(2008, 5, 28, 16, 6, 8);
+
+<span class="onelineComment">// Find the number of business hours milliseconds between startTime and endTime as</span>
+<span class="onelineComment">// defined by the default business hours.  Will return a negative value if endTime is</span>
+<span class="onelineComment">// before startTime, 0 if equal, positive value otherwise.</span>
+<span class="keyword">Long</span> diff = BusinessHours.diff(bh.id, startTime, endTime);
+</pre></div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Working with Cases</h2>
+<p class="p">Incoming and outgoing
+email messages can be associated with their corresponding cases using
+the <samp class="codeph apex_code">Cases</samp> class <samp class="codeph apex_code">getCaseIdFromEmailThreadId</samp> method.
+This method is used with Email-to-Case, which is an automated process
+that turns emails received from customers into customer service cases.</p>
+<p class="p">The following example uses an email thread ID to retrieve the
+related case ID.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> GetCaseIdController {
+
+   <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> getCaseIdSample() {
+        <span class="onelineComment">// Get email thread ID </span>
+        <span class="keyword">String</span> emailThreadId = <span class="string">'_00Dxx1gEW._500xxYktg'</span>;
+        <span class="onelineComment">// Call Apex method to retrieve case ID from email thread ID </span>
+        <span class="keyword">ID</span> caseId = Cases.getCaseIdFromEmailThreadId(emailThreadId);
+    
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_businesshours.htm" target="_blank" title="Apex Reference Guide: BusinessHours Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: BusinessHours Class</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_system_cases.htm" target="_blank" title="Apex Reference Guide: Cases Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Cases Class</a></div></li>
+</ul>
+</div>
+</div>

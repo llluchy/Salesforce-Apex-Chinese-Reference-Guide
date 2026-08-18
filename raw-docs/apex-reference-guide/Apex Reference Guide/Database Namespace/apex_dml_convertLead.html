@@ -1,0 +1,1020 @@
+<a name="apex_dml_convertLead"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">LeadConvert Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Contains information used for lead conversion.</div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">The <samp class="codeph apex_code">convertLead</samp> Database method converts a lead into an
+            account and contact or an account and person account, as well as (optionally) an
+            opportunity. The <samp class="codeph apex_code">convertLead</samp> takes an instance
+            of the <samp class="codeph apex_code">Database.LeadConvert</samp> class as a
+            parameter. Create an instance of this class and set the information required for
+            conversion, such as setting the lead, and destination account and contact.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The <samp class="codeph apex_code">Database.convertLead()</samp> method can take one
+      <samp class="codeph apex_code">LeadConvert</samp> object or a list of <samp class="codeph apex_code">LeadConvert</samp> objects.</p>
+</div>
+</div></div></div></div>
+</div>
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<p class="p">This example shows how to use the <samp class="codeph apex_code">Database.convertLead</samp>
+                method to convert a lead. It inserts a new lead, creates a <samp class="codeph apex_code">LeadConvert</samp> object, sets its status to <samp class="codeph apex_code">converted</samp>, then passes it to the <samp class="codeph apex_code">Database.convertLead</samp> method. Finally, it
+                verifies that the conversion was successful.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Lead myLead = <span class="keyword">new</span> Lead(LastName = <span class="string">'Fry'</span>, Company=<span class="string">'Fry And Sons'</span>);
+<span class="statement">insert</span> <span class="statement">as</span> user myLead;
+
+Database.LeadConvert lc = <span class="keyword">new</span> Database.LeadConvert();
+lc.setLeadId(myLead.id);
+
+LeadStatus convertStatus = [SELECT Id, ApiName FROM LeadStatus WHERE IsConverted=<span class="keyword">true</span> WITH USER_MODE LIMIT 1];
+lc.setConvertedStatus(convertStatus.ApiName);
+
+Database.LeadConvertResult lcr = Database.convertLead(lc, AccessLevel.USER_MODE);
+Assert.isTrue(lcr.isSuccess());</pre></div>
+</div>
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_constructors">LeadConvert Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_methods">LeadConvert Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_constructors">
+<a name="apex_Database_LeadConvert_constructors"><!-- --></a>
+<h2 class="helpHead2">LeadConvert Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">LeadConvert</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_ctor">LeadConvert()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">Database.LeadConvert</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_ctor">
+<a name="apex_Database_LeadConvert_ctor"><!-- --></a>
+<h3 class="helpHead3">LeadConvert()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">Database.LeadConvert</samp> class.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> LeadConvert()</samp></p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_methods">
+<a name="apex_Database_LeadConvert_methods"><!-- --></a>
+<h2 class="helpHead2">LeadConvert Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">LeadConvert</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getAccountId">getAccountId()</a></strong><br>
+Gets the ID of the account into which the lead will be merged. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getAccountRecord">getAccountRecord()</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getBypassAccountDedupeCheck">getBypassAccountDedupeCheck()</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getBypassContactDedupeCheck">getBypassContactDedupeCheck()</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getContactId">getContactId()</a></strong><br>
+Gets the ID of the contact into which the lead will be merged. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getContactRecord">getContactRecord()</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getConvertedStatus">getConvertedStatus()</a></strong><br>
+Gets the lead status value for a converted lead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getLeadID">getLeadID()</a></strong><br>
+Gets the ID of the lead to convert. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getOpportunityId">getOpportunityId()</a></strong><br>
+Gets the ID of the existing opportunity that will be related to the resulting   contact.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getOpportunityName">getOpportunityName()</a></strong><br>
+Gets the name of the opportunity to create. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getOpportunityRecord">getOpportunityRecord()</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getOwnerID">getOwnerID()</a></strong><br>
+Gets the ID of the person to own any newly created account, contact, and opportunity.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_getRelatedPersonAccountId">getRelatedPersonAccountId()</a></strong><br>
+Gets the ID of the existing person account into which the lead will be converted. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#unique_1456249524">getRelatedPersonAccountRecord()</a></strong><br>
+Gets the entity record of the new person account into which the lead will be converted. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_isDoNotCreateOpportunity">isDoNotCreateOpportunity()</a></strong><br>
+Indicates whether an Opportunity is created during lead conversion (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default) or not (<samp class="codeph apex_code"><span class="keyword">true</span></samp>).</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_isOverWriteLeadSource">isOverWriteLeadSource()</a></strong><br>
+Indicates whether the <span class="keyword parmname">LeadSource</span> field on the target Contact object is overwritten with the contents of the <span class="keyword parmname">LeadSource</span> field in the source Lead object (<samp class="codeph apex_code"><span class="keyword">true</span></samp>), or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default). </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_isSendNotificationEmail">isSendNotificationEmail()</a></strong><br>
+Indicates whether a notification email is sent to the owner specified by <samp class="codeph apex_code">setOwnerId</samp> (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default).</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setAccountId">setAccountId(accountId)</a></strong><br>
+Sets the ID of the account into which the lead is merged. This value is required only         when updating an existing account, including person accounts. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setAccountRecord">setAccountRecord(accountRecord)</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setBypassAccountDedupeCheck">setBypassAccountDedupeCheck(bypassAccountDedupeCheck)</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setBypassContactDedupeCheck">setBypassContactDedupeCheck(bypassContactDedupeCheck)</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setContactId">setContactId(contactId)</a></strong><br>
+Sets the ID of the contact into which the lead will be merged (this contact must be associated with the account specified with <samp class="codeph apex_code">setAccountId</samp>, and <samp class="codeph apex_code">setAccountId</samp> must be specified). This value is required only when updating an existing contact.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setContactRecord">setContactRecord(contactRecord)</a></strong><br>
+This method is for internal use only. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setConvertedStatus">setConvertedStatus(status)</a></strong><br>
+Sets the lead status value for a converted lead. This field is required. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setDoNotCreateOpportunity">setDoNotCreateOpportunity(createOpportunity)</a></strong><br>
+Specifies whether to create an opportunity during lead conversion. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>: opportunities are created by default. Set this flag to <samp class="codeph apex_code"><span class="keyword">true</span></samp> only if you do not want to create an opportunity from the lead. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setLeadId">setLeadId(leadId)</a></strong><br>
+Sets the ID of the lead to convert. This field is required. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setOpportunityId">setOpportunityId(opportunityId)</a></strong><br>
+Sets the ID of the opportunity into which the lead is merged.                         This value is required only when updating an existing                 opportunity.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setOpportunityName">setOpportunityName(opportunityName)</a></strong><br>
+Sets the name of the opportunity to create. If no name is specified, this value defaults to the company name of the lead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setOpportunityRecord">setOpportunityRecord(opportunityRecord)</a></strong><br>
+This method is for internal use only.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setOverwriteLeadSource">setOverwriteLeadSource(overwriteLeadSource)</a></strong><br>
+Specifies whether to overwrite the <samp class="codeph apex_code">LeadSource</samp> field on the target contact object with the contents of the <samp class="codeph apex_code">LeadSource</samp> field in the source lead object. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>, to not overwrite the field. If you specify this as <samp class="codeph apex_code"><span class="keyword">true</span></samp>, you must also specify <samp class="codeph apex_code">setContactId</samp> for the target contact.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setOwnerId">setOwnerId(ownerId)</a></strong><br>
+Specifies the ID of the person to own any newly created account, contact, and opportunity. If the application does not specify this value, the owner of the new object will be the owner of the lead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setRelatedPersonAccountId">setRelatedPersonAccountId(relatedPersonAccountId)</a></strong><br>
+Sets the ID of the existing person account into which to convert the lead. This                 value is required only when updating an existing person account.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_dml_convertLead.htm#apex_Database_LeadConvert_setSendNotificationEmail">setSendNotificationEmail(sendEmail)</a></strong><br>
+Specifies whether to send a notification email to the owner specified by <samp class="codeph apex_code">setOwnerId</samp>. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>, that is, to not send email.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getAccountId">
+<a name="apex_Database_LeadConvert_getAccountId"><!-- --></a>
+<h3 class="helpHead3">getAccountId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the ID of the account into which the lead will be
+merged. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getAccountId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getAccountRecord">
+<a name="apex_Database_LeadConvert_getAccountRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getAccountRecord()</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getBypassAccountDedupeCheck">
+<a name="apex_Database_LeadConvert_getBypassAccountDedupeCheck"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getBypassAccountDedupeCheck()</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getBypassContactDedupeCheck">
+<a name="apex_Database_LeadConvert_getBypassContactDedupeCheck"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getBypassContactDedupeCheck()</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getContactId">
+<a name="apex_Database_LeadConvert_getContactId"><!-- --></a>
+<h3 class="helpHead3">getContactId()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the ID of the contact into which the lead will be
+merged. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getContactId()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getContactRecord">
+<a name="apex_Database_LeadConvert_getContactRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getContactRecord()</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getConvertedStatus">
+<a name="apex_Database_LeadConvert_getConvertedStatus"><!-- --></a>
+<h3 class="helpHead3">getConvertedStatus()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the lead status value for a converted lead.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getConvertedStatus()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getLeadID">
+<a name="apex_Database_LeadConvert_getLeadID"><!-- --></a>
+<h3 class="helpHead3">getLeadID()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the ID of the lead to convert. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getLeadID()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getOpportunityId">
+<a name="apex_Database_LeadConvert_getOpportunityId"><!-- --></a>
+ <h3 class="helpHead3">getOpportunityId()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Gets the ID of the existing opportunity that will be related to the resulting
+  contact.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getOpportunityId()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getOpportunityName">
+<a name="apex_Database_LeadConvert_getOpportunityName"><!-- --></a>
+<h3 class="helpHead3">getOpportunityName()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the name of the opportunity to create. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getOpportunityName()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getOpportunityRecord">
+<a name="apex_Database_LeadConvert_getOpportunityRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">getOpportunityRecord()</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getOwnerID">
+<a name="apex_Database_LeadConvert_getOwnerID"><!-- --></a>
+<h3 class="helpHead3">getOwnerID()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Gets the ID of the person to own any newly created account,
+contact, and opportunity.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getOwnerID()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_getRelatedPersonAccountId">
+<a name="apex_Database_LeadConvert_getRelatedPersonAccountId"><!-- --></a>
+ <h3 class="helpHead3">getRelatedPersonAccountId()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Gets the ID of the existing person account into which the lead will be converted. </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getRelatedPersonAccountId()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_1456249524">
+<a name="unique_1456249524"><!-- --></a>
+ <h3 class="helpHead3">getRelatedPersonAccountRecord()</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Gets the entity record of the new person account into which the lead will be converted. </div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getRelatedPersonAccountRecord()</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_isDoNotCreateOpportunity">
+<a name="apex_Database_LeadConvert_isDoNotCreateOpportunity"><!-- --></a>
+<h3 class="helpHead3">isDoNotCreateOpportunity()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether an Opportunity is created during lead
+conversion (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default)
+or not (<samp class="codeph apex_code"><span class="keyword">true</span></samp>).</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isDoNotCreateOpportunity()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_isOverWriteLeadSource">
+<a name="apex_Database_LeadConvert_isOverWriteLeadSource"><!-- --></a>
+<h3 class="helpHead3">isOverWriteLeadSource()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether the <span class="keyword parmname">LeadSource</span> field
+on the target Contact object is overwritten with the contents of the <span class="keyword parmname">LeadSource</span> field in the source Lead object (<samp class="codeph apex_code"><span class="keyword">true</span></samp>), or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default). </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isOverWriteLeadSource()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_isSendNotificationEmail">
+<a name="apex_Database_LeadConvert_isSendNotificationEmail"><!-- --></a>
+<h3 class="helpHead3">isSendNotificationEmail()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether a notification email is sent to the owner
+specified by <samp class="codeph apex_code">setOwnerId</samp> (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>, the default).</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isSendNotificationEmail()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setAccountId">
+<a name="apex_Database_LeadConvert_setAccountId"><!-- --></a>
+<h3 class="helpHead3">setAccountId(accountId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the ID of the account into which the lead is merged. This value is required only
+        when updating an existing account, including person accounts. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setAccountId(<span class="keyword">ID</span> accountId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">accountId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setAccountRecord">
+<a name="apex_Database_LeadConvert_setAccountRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">setAccountRecord(accountRecord)</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setBypassAccountDedupeCheck">
+<a name="apex_Database_LeadConvert_setBypassAccountDedupeCheck"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">setBypassAccountDedupeCheck(bypassAccountDedupeCheck)</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setBypassContactDedupeCheck">
+<a name="apex_Database_LeadConvert_setBypassContactDedupeCheck"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">setBypassContactDedupeCheck(bypassContactDedupeCheck)</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setContactId">
+<a name="apex_Database_LeadConvert_setContactId"><!-- --></a>
+<h3 class="helpHead3">setContactId(contactId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the ID of the contact into which the lead will be
+merged (this contact must be associated with the account specified
+with <samp class="codeph apex_code">setAccountId</samp>, and <samp class="codeph apex_code">setAccountId</samp> must be specified). This
+value is required only when updating an existing contact.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setContactId(<span class="keyword">ID</span> contactId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">contactId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If <samp class="codeph apex_code">setContactId</samp> is specified, then the application
+    creates a new contact that is implicitly associated with the account. The contact name and other
+    existing data are not overwritten (unless <samp class="codeph apex_code">setOverwriteLeadSource</samp> is set to true, in which case only the <samp class="codeph apex_code">LeadSource</samp> field is overwritten). </p>
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexref" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>If you are converting a lead into a person account, do not specify <samp class="codeph apex_code">setContactId</samp> or an error will result.
+Specify only <samp class="codeph apex_code">setAccountId</samp> of
+the person account.</p>
+</div>
+</div></div></div></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setContactRecord">
+<a name="apex_Database_LeadConvert_setContactRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">setContactRecord(contactRecord)</span></h3>
+
+ <div class="shortdesc">This method is for internal use only. </div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setConvertedStatus">
+<a name="apex_Database_LeadConvert_setConvertedStatus"><!-- --></a>
+<h3 class="helpHead3">setConvertedStatus(status)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the lead status value for a converted lead. This field
+is required. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setConvertedStatus(<span class="keyword">String</span> status)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">status</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setDoNotCreateOpportunity">
+<a name="apex_Database_LeadConvert_setDoNotCreateOpportunity"><!-- --></a>
+<h3 class="helpHead3">setDoNotCreateOpportunity(createOpportunity)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies whether to create an opportunity during lead
+conversion. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>: opportunities are created by default. Set this flag to <samp class="codeph apex_code"><span class="keyword">true</span></samp> only if you do not want to create
+an opportunity from the lead. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setDoNotCreateOpportunity(<span class="keyword">Boolean</span>
+createOpportunity)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">createOpportunity</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setLeadId">
+<a name="apex_Database_LeadConvert_setLeadId"><!-- --></a>
+<h3 class="helpHead3">setLeadId(leadId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the ID of the lead to convert. This field is required. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setLeadId(<span class="keyword">ID</span> leadId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">leadId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setOpportunityId">
+<a name="apex_Database_LeadConvert_setOpportunityId"><!-- --></a>
+        <h3 class="helpHead3">setOpportunityId(opportunityId)</h3>
+
+        
+        
+        <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the ID of the opportunity into which the lead is merged.
+                        This value is required only when updating an existing
+                opportunity.</span></div>
+
+                <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+                        
+                        <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setOpportunityId(<span class="keyword">ID</span>
+                                        opportunityId)</samp></p>
+
+                        
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+                        
+                        <ul class="ul bulletList">
+                                <li class="li">
+<strong class="ph b"><var class="keyword varname">opportunityId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+                        </ul>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+                        
+                        <p class="p">Type: Void</p>
+
+                </div>
+
+        </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setOpportunityName">
+<a name="apex_Database_LeadConvert_setOpportunityName"><!-- --></a>
+<h3 class="helpHead3">setOpportunityName(opportunityName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the name of the opportunity to create. If no name
+is specified, this value defaults to the company name of the lead.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setOpportunityName(<span class="keyword">String</span>
+    opportunityName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">opportunityName</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">The maximum length of this field is
+80 characters.</p>
+<p class="p">If <samp class="codeph apex_code">setDoNotCreateOpportunity</samp> is true, no Opportunity is created and this field must be left blank;
+otherwise, an error is returned.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setOpportunityRecord">
+<a name="apex_Database_LeadConvert_setOpportunityRecord"><!-- --></a>
+ <h3 class="helpHead3"><span class="titlecodeph">setOpportunityRecord(opportunityRecord)</span></h3>
+
+ <div class="shortdesc">This method is for internal use only.</div>
+
+ 
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setOverwriteLeadSource">
+<a name="apex_Database_LeadConvert_setOverwriteLeadSource"><!-- --></a>
+<h3 class="helpHead3">setOverwriteLeadSource(overwriteLeadSource)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies whether to overwrite the <samp class="codeph apex_code">LeadSource</samp> field on the target contact
+object with the contents of the <samp class="codeph apex_code">LeadSource</samp> field in the source lead object. The default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>, to not overwrite the field.
+If you specify this as <samp class="codeph apex_code"><span class="keyword">true</span></samp>, you must also specify <samp class="codeph apex_code">setContactId</samp> for the target contact.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setOverwriteLeadSource(<span class="keyword">Boolean</span>
+overwriteLeadSource)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">overwriteLeadSource</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setOwnerId">
+<a name="apex_Database_LeadConvert_setOwnerId"><!-- --></a>
+<h3 class="helpHead3">setOwnerId(ownerId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies the ID of the person to own any newly created
+account, contact, and opportunity. If the application does not specify
+this value, the owner of the new object will be the owner of the lead.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setOwnerId(<span class="keyword">ID</span> ownerId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">ownerId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This method is not applicable when
+merging with existing objects—if <samp class="codeph apex_code">setOwnerId</samp> is specified, the <samp class="codeph apex_code">ownerId</samp> field is not overwritten in an existing account
+or contact. </p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setRelatedPersonAccountId">
+<a name="apex_Database_LeadConvert_setRelatedPersonAccountId"><!-- --></a>
+        <h3 class="helpHead3">setRelatedPersonAccountId(relatedPersonAccountId)</h3>
+
+        
+        
+        <div class="body refbody">
+<div class="shortdesc">Sets the ID of the existing person account into which to convert the lead. This
+                value is required only when updating an existing person account.</div>
+
+                <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+                        
+                        <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setRelatedPersonAccountId(<span class="keyword">ID</span>
+                                        relatedPersonAccountId)</samp></p>
+
+                        
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+                        
+                        <ul class="ul bulletList">
+                                <li class="li">
+<strong class="ph b"><var class="keyword varname">relatedPersonAccountId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a>
+</li>
+
+                        </ul>
+
+                </div>
+
+                <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+                        
+                        <p class="p">Type: Void</p>
+
+                </div>
+
+        </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_LeadConvert_setSendNotificationEmail">
+<a name="apex_Database_LeadConvert_setSendNotificationEmail"><!-- --></a>
+<h3 class="helpHead3">setSendNotificationEmail(sendEmail)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies whether to send a notification email to the owner
+specified by <samp class="codeph apex_code">setOwnerId</samp>. The
+default value is <samp class="codeph apex_code"><span class="keyword">false</span></samp>, that
+is, to not send email.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setSendNotificationEmail(<span class="keyword">Boolean</span>
+sendEmail)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sendEmail</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,83 @@
+<a name="apex_classes_pattern_and_matcher_using"><!-- --></a><h1 class="helpHead1">Using Patterns and Matchers</h1><div class="body">
+<div class="shortdesc">Apex provides patterns and matchers that enable you to search text using
+regular expressions.</div>
+
+<p class="p">A pattern is a compiled representation of a regular expression.
+Patterns are used by matchers to perform match operations on a character
+string.</p>
+
+<p class="p">A <dfn class="term">regular expression</dfn> is a string that is used to match
+another string, using a specific syntax. Apex supports the use of regular expressions through its <dfn class="term">Pattern</dfn> and <dfn class="term">Matcher</dfn> classes.</p>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>In Apex, Patterns and Matchers, as well as regular expressions, are based
+on their counterparts in Java. See <a class="xref" href="http://java.sun.com/j2se/1.5.0/docs/api/index.html?java/util/regex/Pattern.html" target="_blank" title="html (New Window)"><span class="ph filepath">http://java.sun.com/j2se/1.5.0/docs/api/index.html?java/util/regex/Pattern.html</span></a>.</p>
+</div>
+</div></div></div></div>
+
+<p class="p">Many Matcher objects can share the same Pattern object, as shown
+in the following illustration: </p>
+
+<div class="fig fignone">
+<span class="figcap">Many Matcher objects can be created from the same Pattern object</span>
+
+<span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2FPatternAndMatcher.gif&folder=apexcode" alt="A flow chart showing flow from Regular Expression to Matcher object"></span>
+</div>
+
+<p class="p">Regular expressions in Apex follow the standard syntax for regular expressions used in Java.
+Any Java-based regular expression strings can be easily imported into
+your Apex code.</p>
+
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce limits the number of times an input sequence for a regular
+expression can be accessed to 1,000,000 times. If you reach that limit,
+you receive a runtime error. </p>
+</div>
+</div></div></div></div>
+
+<p class="p">All regular expressions are specified as strings. Most regular
+expressions are first compiled into a Pattern object: only the String <samp class="codeph apex_code">split</samp> method takes a regular expression
+that isn't compiled.</p>
+
+<div class="p">Generally, after you compile a regular expression into a Pattern
+object, you only use the Pattern object once to create a Matcher object.
+All further actions are then performed using the Matcher object. For
+example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// First, instantiate a new Pattern object "MyPattern"</span>
+Pattern MyPattern = Pattern.compile(<span class="string">'a*b'</span>);
+
+<span class="onelineComment">// Then instantiate a new Matcher object "MyMatcher"</span>
+Matcher MyMatcher = MyPattern.matcher(<span class="string">'aaaaab'</span>);
+
+<span class="onelineComment">// You can use the system static method assert to verify the match</span>
+System.assert(MyMatcher.matches());</pre></div>
+</div>
+
+<p class="p">If you are only going to use a regular expression once, use the <samp class="codeph apex_code">Pattern</samp> class <samp class="codeph apex_code">matches</samp> method to compile the expression
+and match a string against it in a single invocation. For example,
+the following is equivalent to the code above:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Boolean</span> Test = Pattern.matches(<span class="string">'a*b'</span>, <span class="string">'aaaaab'</span>);</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_pattern_and_matcher_regions.htm">Using Regions</a></strong><br>
+A Matcher object finds matches in a subset of its input string       called a <dfn class="term">region</dfn>. The default region for a Matcher object       is always the entirety of the input string. However, you can change       the start and end points of a region by using the <samp class="codeph apex_code">region</samp> method, and you can query       the region's end points by using the <samp class="codeph apex_code">regionStart</samp> and <samp class="codeph apex_code">regionEnd</samp> methods.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_pattern_and_matcher_matching.htm">Using Match Operations</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_pattern_and_matcher_bounds.htm">Using Bounds</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_pattern_and_matcher_capturing_groups.htm">Understanding Capturing Groups</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_pattern_and_matcher_example.htm">Pattern and Matcher Example</a></strong><br>
+</li>
+</ul>
+</div>

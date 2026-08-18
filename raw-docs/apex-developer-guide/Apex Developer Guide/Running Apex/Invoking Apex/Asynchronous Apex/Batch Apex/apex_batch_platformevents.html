@@ -1,0 +1,116 @@
+<a name="apex_batch_platformevents"><!-- --></a><h1 class="helpHead1">Firing Platform Events from Batch Apex</h1><div class="body conbody">
+<div class="shortdesc"><span class="ph" id="FiringPlatformEvents_SD"><a name="FiringPlatformEvents_SD"><!-- --></a>Batch Apex classes can fire platform events when
+            encountering an error or exception. Clients listening on an event can obtain actionable
+            information, such as how often the event failed and which records were in scope at the
+            time of failure. Events are also fired for Salesforce Platform internal errors and other
+            uncatchable Apex exceptions such as LimitExceptions, which are caused by reaching
+            governor limits.</span></div>
+
+        <p class="p">An event message provides more granular error tracking than the Apex Jobs UI. It includes
+            the record IDs being processed, exception type, exception message, and stack trace. You
+            can also incorporate custom handling and retry logic for failures. You can invoke custom
+            Apex logic from any trigger on this type of event, so Apex developers can build
+            functionality like custom logging or automated retry handling.</p>
+
+        <p class="p">For information on subscribing to platform events, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_subscribe.htm" target="_blank">Subscribing to Platform Events</a>.</p>
+
+        <p class="p">The BatchApexErrorEvent object represents a platform event associated with a batch Apex
+            class. This object is available in API version 44.0 and later. If the <samp class="codeph apex_code">start</samp>, <samp class="codeph apex_code">execute</samp>, or <samp class="codeph apex_code">finish</samp> method of a
+            batch Apex job encounters an unhandled exception, a <samp class="codeph apex_code">BatchApexErrorEvent</samp> platform event is fired. For more details, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/sforce_api_objects_batchapexerrorevent.htm" target="_blank" title="HTML (New Window)">BatchApexErrorEvent</a> in the <cite class="cite">Platform Events Developer Guide</cite>.</p>
+
+        <div class="p">To fire a platform event, a batch Apex class declaration must implement the
+            Database.RaisesPlatformEvents interface.
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> YourSampleBatchJob <span class="keyword">implements</span> Database.Batchable&lt;SObject&gt;, 
+   <strong class="ph b">Database.RaisesPlatformEvents</strong>{ 
+   <span class="onelineComment">// class implementation </span>
+} </pre></div>
+</div>
+
+        <div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock"><div class="p">This example creates a trigger to determine which accounts failed in the batch
+            transaction. Custom field Dirty__c indicates that the account was one of a failing batch
+            and ExceptionType__c indicates the exception that was encountered. JobScope and
+            ExceptionType are fields in the BatchApexErrorEvent
+            object.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> MarkDirtyIfFail on BatchApexErrorEvent (after <span class="statement">insert</span>) {
+    Set&lt;Id&gt; asyncApexJobIds = <span class="keyword">new</span> Set&lt;Id&gt;();
+    <span class="statement">for</span>(BatchApexErrorEvent evt:Trigger.<span class="keyword">new</span>){
+        asyncApexJobIds.add(evt.AsyncApexJobId);
+    }
+    
+    Map&lt;Id,AsyncApexJob&gt; jobs = <span class="keyword">new</span> Map&lt;Id,AsyncApexJob&gt;(
+        [SELECT id, ApexClass.Name FROM AsyncApexJob WHERE Id IN :asyncApexJobIds]
+    );
+    
+    List&lt;Account&gt; records = <span class="keyword">new</span> List&lt;Account&gt;();
+    <span class="statement">for</span>(BatchApexErrorEvent evt:Trigger.<span class="keyword">new</span>){
+        <span class="onelineComment">//only handle events for the job(s) we care about</span>
+        <span class="statement">if</span>(jobs.get(evt.AsyncApexJobId).ApexClass.Name == <span class="string">'AccountUpdaterJob'</span>){
+            <span class="statement">for</span> (<span class="keyword">String</span> <span class="statement">item</span> : evt.JobScope.split(<span class="string">','</span>)) {
+                Account a = <span class="keyword">new</span> Account(
+                    Id = (Id)<span class="statement">item</span>,
+                    ExceptionType__c = evt.ExceptionType,
+                    Dirty__c = <span class="keyword">true</span>
+                );
+                records.add(a);
+            }
+        }
+    }
+    <span class="statement">update</span> records;
+}</pre></div>
+</div></div>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Testing BatchApexErrorEvent Messages Published from Batch Apex Jobs</h2>
+
+            
+            <p class="p">Use the <samp class="codeph apex_code">Test.getEventBus().deliver()</samp> method
+                to deliver event messages that are published by failed batch Apex jobs. Use the
+                    <samp class="codeph apex_code">Test.startTest()</samp> and <samp class="codeph apex_code">Test.stopTest()</samp> statement block to execute the
+                batch job.</p>
+
+            <p class="p">This snippet shows how to execute a batch Apex job and deliver event messages. It
+                executes the batch job after <samp class="codeph apex_code">Test.stopTest()</samp>. This batch job publishes a BatchApexErrorEvent message
+                when a failure occurs through the implementation of <samp class="codeph nolang">Database.RaisesPlatformEvents</samp>. After <samp class="codeph apex_code">Test.stopTest()</samp> runs, a separate <samp class="codeph apex_code">Test.getEventBus().deliver()</samp> statement is added so that it can deliver
+                the BatchApexErrorEvent.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    Test.startTest();
+    Database.executeBatch(<span class="keyword">new</span> SampleBatchApex());
+    Test.stopTest();
+    <span class="onelineComment">// Batch Apex job executes here</span>
+} <span class="statement">catch</span>(Exception e) {
+    <span class="onelineComment">// Catch any exceptions thrown in the batch job</span>
+}
+
+<span class="onelineComment">// The batch job fires BatchApexErrorEvent if it fails, so deliver the event.</span>
+Test.getEventBus().deliver();
+</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If further platform events are published by downstream processes, add <samp class="codeph apex_code">Test.getEventBus().deliver();</samp> to deliver the
+                event messages for each process. For example, if a platform event trigger, which
+                processes the event from the Apex job, publishes another platform event, add a
+                    <samp class="codeph apex_code">Test.getEventBus().deliver();</samp> statement
+                to deliver the event message.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_test_deliver.htm" target="_blank" title="Platform Events Developer Guide: Deliver Test Event
+                            Messages - HTML (New Window)"><em class="ph i">Platform Events Developer Guide</em>: Deliver Test Event
+                            Messages</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.platform_events.meta/platform_events/platform_events_test_events.htm" target="_blank" title="Platform Events Developer Guide: Event and Event Bus
+                            Properties in Test Context - HTML (New Window)"><em class="ph i">Platform Events Developer Guide</em>: Event and Event Bus
+                            Properties in Test Context</a></div></li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,70 @@
+<a name="apex_interface_commerce_payments_GatewayResponse"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">GatewayResponse Interface</h1>
+
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Generic payment gateway response interface. This class extends the
+        <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_CaptureResponse.htm#apex_class_commerce_payments_CaptureResponse" title="The payment gateway adapter sends this response for the capture request type. This class extends AbstractResponse and inherits its methods."><samp class="codeph apex_code">CaptureResponse</samp></a>, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AbstractTransactionResponse.htm#apex_class_commercepayments_AbstractTransactionResponse" title="Abstract class for storing normalized information sent from payment gateways about a payment transaction. Holds the common response fields sent from payment gateways for authorization, sale, capture, and refund transactions."><samp class="codeph apex_code">AbstractTransactionResponse</samp></a>, and <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercepayments_AbstractResponse.htm#apex_class_commerce_payments_AbstractResponse" title="Contains the normalized response fields from payment gateways that are common to all the other gateway responses."><samp class="codeph apex_code">AbstractResponse</samp></a> classes and inherits all their
+      properties. It has no unique methods or parameters.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercepayments.htm" title="Use the CommercePayments namespace to provide a safe and customizable platform for managing customer payments and refunds.">CommercePayments</a></p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_commercepayments_GatewayResponse.htm#apex_interface_commerce_payments_GatewayResponse_Example">GatewayResponse Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_commerce_payments_GatewayResponse_Example">
+<a name="apex_interface_commerce_payments_GatewayResponse_Example"><!-- --></a><h2 class="helpHead2">GatewayResponse Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">This is an example implementation of the <samp class="codeph apex_code">commercepayments.GatewayResponse</samp> interface.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+     * Abstract function to build gateway response for a Transaction
+     * The input is the response from gateway
+     * It creates and returns GatewayResponse from the HttpResponse
+     */</span>
+    <span class="keyword">public</span> <span class="keyword">abstract</span> commercepayments.GatewayResponse buildResponse(HttpResponse response);
+
+    <span class="multilineComment">/**
+     * Function to process transaction requests
+     * Steps involved are:
+     * 1. Build HttpRequest with the input Request from gateway context
+     * 2. Send request and get the response from gateway
+     * 3. Parse the response from gateway and return GatewayResponse
+     */</span>
+    <span class="keyword">public</span> commercepayments.GatewayResponse execute(){
+                HttpRequest req;
+        <span class="statement">try</span>{
+            <span class="onelineComment">//Building a new request</span>
+            req = buildRequest();
+        } <span class="statement">catch</span>(PayeezeValidationException e) {
+            <span class="statement">return</span> getValidationExceptionError(e);
+        }
+        commercepayments.PaymentsHttp http = <span class="keyword">new</span> commercepayments.PaymentsHttp();
+        HttpResponse res = <span class="keyword">null</span>;
+        <span class="statement">try</span>{
+            <span class="onelineComment">//Sending the request</span>
+            res = http.send(req);
+        } <span class="statement">catch</span>(CalloutException ce) {
+            <span class="statement">return</span> getCalloutExceptionError(ce);
+        }
+        <span class="statement">try</span>{
+            <span class="onelineComment">//Parsing the response from gateway</span>
+            <span class="statement">return</span> buildResponse(res);
+        } <span class="statement">catch</span>(Exception e) {
+            <span class="statement">return</span> getParseExceptionError(e);
+        }
+    }</pre></div>
+
+      
+      <p class="p">For additional context, review the complete <a class="xref" href="https://github.com/forcedotcom/Core-Payments-Reference-Gateway-Integration-Adapters/blob/master/PayeezyGatewayAdapter/classes/AbstractTransactionService.apex" target="_blank">Sample Gateway Adapter</a> in the <a class="xref" href="https://github.com/forcedotcom/Core-Payments-Reference-Gateway-Integration-Adapters" target="_blank">CommercePayments Gateway Reference
+        Implementation</a>.</p>
+</div>
+</div>
+</div>
+</div>

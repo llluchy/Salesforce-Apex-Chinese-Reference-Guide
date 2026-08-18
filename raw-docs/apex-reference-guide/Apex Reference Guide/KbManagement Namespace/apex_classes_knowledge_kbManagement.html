@@ -1,0 +1,925 @@
+<a name="apex_classes_knowledge_kbManagement"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">PublishingService Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Use the methods in the <samp class="codeph apex_code">KbManagement.PublishingService</samp> class to manage the lifecycle of an article and its translations.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_KbManagement.htm" title="The KbManagement namespace provides a class for managing knowledge articles.">KbManagement</a></p>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">Use the methods in the <samp class="codeph apex_code">KbManagement.PublishingService</samp> class to manage the following parts of the lifecycle of
+   an article and its translations:<ul class="ul bulletList">
+    <li class="li">Publishing</li>
+
+    <li class="li">Updating</li>
+
+    <li class="li">Retrieving</li>
+
+    <li class="li">Deleting</li>
+
+    <li class="li">Submitting for translation</li>
+
+    <li class="li">Setting a translation to complete or incomplete status</li>
+
+    <li class="li">Archiving</li>
+
+    <li class="li">Assigning review tasks for draft articles or translations</li>
+
+   </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Date values are based on GMT. </p>
+</div>
+</div></div></div></div>
+To use the methods in this class, you must enable
+   Salesforce Knowledge. </div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_methods">
+<a name="apex_KbManagement_PublishingService_methods"><!-- --></a>
+<h2 class="helpHead2">PublishingService Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">PublishingService</samp>. All methods are static.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_archiveOnlineArticle">archiveOnlineArticle(articleId, scheduledDate)</a></strong><br>
+Archives an online version of an article. If the specified scheduledDate is null, the article is archived immediately. Otherwise, it archives the article on the scheduled date. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_assignDraftArticleTask">assignDraftArticleTask(articleId, assigneeId, instructions, dueDate, sendEmailNotification)</a></strong><br>
+Assigns a review task related to a draft article. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_assignDraftTranslationTask">assignDraftTranslationTask(articleVersionId, assigneeId, instructions, dueDate, sendEmailNotification)</a></strong><br>
+Assigns a review task related to a draft translation. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_cancelScheduledArchivingOfArticle">cancelScheduledArchivingOfArticle(articleId)</a></strong><br>
+Cancels the scheduled archiving of an online article. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_cancelScheduledPublicationOfArticle">cancelScheduledPublicationOfArticle(articleId)</a></strong><br>
+Cancels the scheduled publication of a draft article. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_completeTranslation">completeTranslation(articleVersionId)</a></strong><br>
+Puts a translation in a completed state that is ready to publish. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_deleteArchivedArticle">deleteArchivedArticle(articleId)</a></strong><br>
+Deletes an archived article.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_deleteArchivedArticleVersion">deleteArchivedArticleVersion(articleId, versionNumber)</a></strong><br>
+Deletes a specific archived version of a published article.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_deleteDraftArticle">deleteDraftArticle(articleId)</a></strong><br>
+Deletes a draft article. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_deleteDraftTranslation">deleteDraftTranslation(articleVersionId)</a></strong><br>
+Deletes a draft translation. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_editArchivedArticle">editArchivedArticle(articleId)</a></strong><br>
+Creates a draft article from the archived primary version and returns the new draft   primary version ID of the article. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_editOnlineArticle">editOnlineArticle(articleId, unpublish)</a></strong><br>
+Creates a draft article from the online version and returns the new draft primary version   ID of the article. Also, unpublishes the online article, if <var class="keyword varname">unpublish</var> is set to    <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_editPublishedTranslation">editPublishedTranslation(articleId, language, unpublish)</a></strong><br>
+Creates a draft version of the online translation for a specific language and returns the   new draft primary version ID of the article. Also, unpublishes the article, if set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_publishArticle">publishArticle(articleId, flagAsNew)</a></strong><br>
+Publishes an article. If <var class="keyword varname">flagAsNew</var> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the article is published as a major version. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_restoreOldVersion">restoreOldVersion(articleId, versionNumber)</a></strong><br>
+Creates a draft article from an existing online article based on the specified archived version of the article and returns the article version ID.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_scheduleForPublication">scheduleForPublication(articleId, scheduledDate)</a></strong><br>
+Schedules the article for publication as a major version. If the specified date is null, the article is published immediately. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_setTranslationToIncomplete">setTranslationToIncomplete(articleVersionId)</a></strong><br>
+Sets a draft translation that is ready for publication back to “in progress” status.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_knowledge_kbManagement.htm#apex_KbManagement_PublishingService_submitForTranslation">submitForTranslation(articleId, language, assigneeId, dueDate)</a></strong><br>
+Submits an article for translation to the specified language. Also assigns the specified user and due date to the submittal and returns new ID of the draft translation.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_archiveOnlineArticle">
+<a name="apex_KbManagement_PublishingService_archiveOnlineArticle"><!-- --></a>
+<h3 class="helpHead3">archiveOnlineArticle(articleId, scheduledDate)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Archives an online version of an article. If the specified
+scheduledDate is null, the article is archived immediately. Otherwise,
+it archives the article on the scheduled date. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void archiveOnlineArticle(<span class="keyword">String</span>
+articleId, <span class="keyword">Datetime</span> scheduledDate)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scheduledDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">Datetime</span> scheduledDate = <span class="keyword">Datetime</span>.newInstanceGmt(2012, 12,1,13,30,0);
+KbManagement.PublishingService.archiveOnlineArticle(articleId, scheduledDate);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_assignDraftArticleTask">
+<a name="apex_KbManagement_PublishingService_assignDraftArticleTask"><!-- --></a>
+<h3 class="helpHead3">assignDraftArticleTask(articleId, assigneeId, instructions, dueDate, sendEmailNotification)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Assigns a review task related to a draft article. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void assignDraftArticleTask(<span class="keyword">String</span> articleId, <span class="keyword">String</span>
+     assigneeId, <span class="keyword">String</span> instructions, <span class="keyword">Datetime</span> dueDate, <span class="keyword">Boolean</span> sendEmailNotification)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">assigneeId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">instructions</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dueDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sendEmailNotification</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> assigneeId = <span class="string">''</span>;
+<span class="keyword">String</span> instructions = <span class="string">'Please review this draft.'</span>;
+<span class="keyword">Datetime</span> dueDate = <span class="keyword">Datetime</span>.newInstanceGmt(2012, 12, 1);
+KbManagement.PublishingService.assignDraftArticleTask(articleId, assigneeId, instructions, dueDate, <span class="keyword">true</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_assignDraftTranslationTask">
+<a name="apex_KbManagement_PublishingService_assignDraftTranslationTask"><!-- --></a>
+<h3 class="helpHead3">assignDraftTranslationTask(articleVersionId, assigneeId, instructions, dueDate, sendEmailNotification)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Assigns a review task related to a draft translation. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void assignDraftTranslationTask(<span class="keyword">String</span>
+     articleVersionId, <span class="keyword">String</span> assigneeId, <span class="keyword">String</span> instructions, <span class="keyword">Datetime</span> dueDate, <span class="keyword">Boolean</span>
+     sendEmailNotification)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleVersionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">assigneeId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">instructions</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dueDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">sendEmailNotification</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> assigneeId = <span class="string">'</span><var class="keyword varname">Insert assignee ID</var><span class="string">';
+</span><span class="keyword">String</span> instructions = <span class="string">'Please review this draft.'</span>;
+<span class="keyword">Datetime</span> dueDate = <span class="keyword">Datetime</span>.newInstanceGmt(2012, 12, 1);
+KbManagement.PublishingService.assignDraftTranslationTask(articleId, assigneeId, instructions, dueDate, <span class="keyword">true</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_cancelScheduledArchivingOfArticle">
+<a name="apex_KbManagement_PublishingService_cancelScheduledArchivingOfArticle"><!-- --></a>
+<h3 class="helpHead3">cancelScheduledArchivingOfArticle(articleId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Cancels the scheduled archiving of an online article. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void cancelScheduledArchivingOfArticle(<span class="keyword">String</span>
+articleId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.cancelScheduledArchivingOfArticle (articleId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_cancelScheduledPublicationOfArticle">
+<a name="apex_KbManagement_PublishingService_cancelScheduledPublicationOfArticle"><!-- --></a>
+<h3 class="helpHead3">cancelScheduledPublicationOfArticle(articleId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Cancels the scheduled publication of a draft article. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void cancelScheduledPublicationOfArticle(<span class="keyword">String</span>
+articleId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.cancelScheduledPublicationOfArticle (articleId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_completeTranslation">
+<a name="apex_KbManagement_PublishingService_completeTranslation"><!-- --></a>
+<h3 class="helpHead3">completeTranslation(articleVersionId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Puts a translation in a completed state that is ready to
+publish. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void completeTranslation(<span class="keyword">String</span>
+articleVersionId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleVersionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleVersionId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.completeTranslation(articleVersionId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_deleteArchivedArticle">
+<a name="apex_KbManagement_PublishingService_deleteArchivedArticle"><!-- --></a>
+<h3 class="helpHead3">deleteArchivedArticle(articleId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Deletes an archived article.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void deleteArchivedArticle(<span class="keyword">String</span>
+articleId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.deleteArchivedArticle(articleId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_deleteArchivedArticleVersion">
+<a name="apex_KbManagement_PublishingService_deleteArchivedArticleVersion"><!-- --></a>
+<h3 class="helpHead3">deleteArchivedArticleVersion(articleId, versionNumber)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Deletes a specific archived version of a published article.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void deleteArchivedArticleVersion(<span class="keyword">String</span>
+articleId, <span class="keyword">Integer</span> versionNumber)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">versionNumber</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">Integer</span> versionNumber = 1;
+KbManagement.PublishingService.deleteArchivedArticleVersion(articleId, versionNumber);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_deleteDraftArticle">
+<a name="apex_KbManagement_PublishingService_deleteDraftArticle"><!-- --></a>
+<h3 class="helpHead3">deleteDraftArticle(articleId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Deletes a draft article. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void deleteDraftArticle(<span class="keyword">String</span>
+articleId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.deleteDraftArticle(articleId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_deleteDraftTranslation">
+<a name="apex_KbManagement_PublishingService_deleteDraftTranslation"><!-- --></a>
+<h3 class="helpHead3">deleteDraftTranslation(articleVersionId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Deletes a draft translation. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void deleteDraftTranslation(<span class="keyword">String</span>
+articleVersionId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleVersionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleVersionId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.deleteDraftTranslation (articleVersionId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_editArchivedArticle">
+<a name="apex_KbManagement_PublishingService_editArchivedArticle"><!-- --></a>
+<h3 class="helpHead3">editArchivedArticle(articleId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a draft article from the archived primary version and returns the new draft
+  primary version ID of the article. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> editArchivedArticle(<span class="keyword">String</span>
+articleId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> id = KbManagement.PublishingService.editArchivedArticle(articleId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_editOnlineArticle">
+<a name="apex_KbManagement_PublishingService_editOnlineArticle"><!-- --></a>
+<h3 class="helpHead3">editOnlineArticle(articleId, unpublish)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a draft article from the online version and returns the new draft primary version
+  ID of the article. Also, unpublishes the online article, if <var class="keyword varname">unpublish</var> is set to
+   <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> editOnlineArticle(<span class="keyword">String</span>
+articleId, <span class="keyword">Boolean</span> unpublish)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">unpublish</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> id = KbManagement.PublishingService.editOnlineArticle (articleId, <span class="keyword">true</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_editPublishedTranslation">
+<a name="apex_KbManagement_PublishingService_editPublishedTranslation"><!-- --></a>
+<h3 class="helpHead3">editPublishedTranslation(articleId, language, unpublish)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a draft version of the online translation for a specific language and returns the
+  new draft primary version ID of the article. Also, unpublishes the article, if set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> editPublishedTranslation(<span class="keyword">String</span>
+articleId, <span class="keyword">String</span> language, <span class="keyword">Boolean</span> unpublish)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">language</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">unpublish</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> language = <span class="string">'fr'</span>;
+<span class="keyword">String</span> id = KbManagement.PublishingService.editPublishedTranslation(articleId, language, <span class="keyword">true</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_publishArticle">
+<a name="apex_KbManagement_PublishingService_publishArticle"><!-- --></a>
+<h3 class="helpHead3">publishArticle(articleId, flagAsNew)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Publishes an article. If <var class="keyword varname">flagAsNew</var> is
+set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the article is
+published as a major version. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void publishArticle(<span class="keyword">String</span> articleId,
+<span class="keyword">Boolean</span> flagAsNew)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">flagAsNew</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.publishArticle(articleId, <span class="keyword">true</span>);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_restoreOldVersion">
+<a name="apex_KbManagement_PublishingService_restoreOldVersion"><!-- --></a>
+<h3 class="helpHead3">restoreOldVersion(articleId, versionNumber)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a draft article from an existing online article
+based on the specified archived version of the article and returns
+the article version ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> restoreOldVersion(<span class="keyword">String</span>
+articleId, <span class="keyword">Integer</span> versionNumber)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">versionNumber</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> id = KbManagement.PublishingService.restoreOldVersion (articleId, 1);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_scheduleForPublication">
+<a name="apex_KbManagement_PublishingService_scheduleForPublication"><!-- --></a>
+<h3 class="helpHead3">scheduleForPublication(articleId, scheduledDate)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Schedules the article for publication as a major version.
+If the specified date is null, the article is published immediately. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void scheduleForPublication(<span class="keyword">String</span>
+articleId, <span class="keyword">Datetime</span> scheduledDate)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">scheduledDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">Datetime</span> scheduledDate = <span class="keyword">Datetime</span>.newInstanceGmt(2012, 12,1,13,30,0);
+KbManagement.PublishingService.scheduleForPublication(articleId, scheduledDate);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_setTranslationToIncomplete">
+<a name="apex_KbManagement_PublishingService_setTranslationToIncomplete"><!-- --></a>
+<h3 class="helpHead3">setTranslationToIncomplete(articleVersionId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets a draft translation that is ready for publication
+back to “in progress” status.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Void setTranslationToIncomplete(<span class="keyword">String</span>
+articleVersionId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleVersionId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleVersionId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span>KbManagement.PublishingService.setTranslationToIncomplete(articleVersionId);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_KbManagement_PublishingService_submitForTranslation">
+<a name="apex_KbManagement_PublishingService_submitForTranslation"><!-- --></a>
+<h3 class="helpHead3">submitForTranslation(articleId, language, assigneeId, dueDate)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Submits an article for translation to the specified language.
+Also assigns the specified user and due date to the submittal and
+returns new ID of the draft translation.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">String</span> submitForTranslation(<span class="keyword">String</span> articleId, <span class="keyword">String</span>
+     language, <span class="keyword">String</span> assigneeId, <span class="keyword">Datetime</span> dueDate)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">articleId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">language</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">assigneeId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">dueDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> articleId = <span class="string">'</span><var class="keyword varname">Insert article ID</var><span class="string">';
+</span><span class="keyword">String</span> language = <span class="string">'fr'</span>;
+<span class="keyword">String</span> assigneeId = <span class="string">'</span><var class="keyword varname">Insert assignee ID</var><span class="string">';
+</span><span class="keyword">Datetime</span> dueDate = <span class="keyword">Datetime</span>.newInstanceGmt(2012, 12,1);
+<span class="keyword">String</span> id = KbManagement.PublishingService.submitForTranslation(articleId, language, assigneeId, dueDate);</pre></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

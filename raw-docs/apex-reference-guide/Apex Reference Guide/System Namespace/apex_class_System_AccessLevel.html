@@ -1,0 +1,253 @@
+<a name="apex_class_System_AccessLevel"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">AccessLevel Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Defines the different modes, such as system or user mode, that Apex
+      database operations execute in. </span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">By default, Apex code runs in user mode, which means that the current user’s object
+        permissions, field-level security, and sharing rules are enforced. You can set a specific
+        DML method to system mode, where the object and field-level permissions of the current user
+        are ignored, and the record sharing rules are controlled by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">class sharing keywords</a>.</p>
+
+      <p class="p">Many of the DML methods of the <samp class="codeph ">System.Database</samp> and
+          <samp class="codeph ">System.Search</samp> classes include an <samp class="codeph nolang">accessLevel</samp> parameter to specify the execution mode. </p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">If the user running this Apex code doesn't have write access to the Account object, the
+          <samp class="codeph ">Database.insert()</samp> method returns an error.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; toInsert = <span class="keyword">new</span> List&lt;Account&gt;{<span class="keyword">new</span> Account(Name = <span class="string">'Exciting New Account'</span>)};
+
+List&lt;Database.SaveResult&gt; sr = Database.<span class="statement">insert</span>(toInsert, AccessLevel.USER_MODE);
+</pre></div>
+
+      <p class="p">In contrast, this example shows the method running in system mode. The success of the
+        insert doesn't depend on whether the user running the Apex code has create access to the
+        Account object. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Account&gt; toInsert = <span class="keyword">new</span> List&lt;Account&gt;{<span class="keyword">new</span> Account(Name = <span class="string">'Exciting New Account'</span>)};
+
+List&lt;Database.SaveResult&gt; sr = Database.<span class="statement">insert</span>(toInsert, AccessLevel.SYSTEM_MODE);
+</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_System_AccessLevel_methods">AccessLevel Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_System_AccessLevel_properties">AccessLevel Properties</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_AccessLevel_methods">
+<a name="apex_System_AccessLevel_methods"><!-- --></a><h2 class="helpHead2">AccessLevel Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">AccessLevel</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_System_AccessLevel_withPermissionSetId">withPermissionSetId(permissionSetId)(Developer Preview)</a></strong><br>
+Supports database and search operations to be run with permissions specified in a         permission set. Apex enforces field-level security (FLS) and object permissions as per the         specified permission set, in addition to the running user’s permissions.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_AccessLevel_withPermissionSetId">
+<a name="apex_System_AccessLevel_withPermissionSetId"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">withPermissionSetId(permissionSetId)(Developer
+    Preview)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Supports database and search operations to be run with permissions specified in a
+        permission set. Apex enforces field-level security (FLS) and object permissions as per the
+        specified permission set, in addition to the running user’s permissions.</div>
+
+    <div class="section">
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Feature is available as a developer
+        preview. Feature isn’t generally available unless or until Salesforce announces its general
+        availability in documentation or in press releases or public statements. All commands,
+        parameters, and other features are subject to change or deprecation at any time, with or
+        without notice. Don’t implement functionality developed with these commands or tools in a
+        production environment. You can provide feedback and suggestions for the “Permission Sets
+        with User Mode” feature in the <a class="xref" href="https://trailhead.salesforce.com/trailblazer-community/groups/0F94S000000GvrW" target="_blank" title="HTML (New Window)">Trailblazer Community</a>.</p>
+</div>
+</div></div></div></div>
+<p class="p">This feature is available in scratch orgs where the <samp class="codeph nolang">ApexUserModeWithPermset</samp> feature is enabled. If the feature isn’t
+                enabled, Apex code with this feature can be compiled but not executed.</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">public System.AccessLevel withPermissionSetId(String
+          permissionSetId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">permissionSetId</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> Permissions in the specified permission set are enforced while running user-mode DML
+                        operations, in addition to the running user’s permissions.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_System_AccessLevel" title="Defines the different modes, such as system or user mode, that Apex database operations execute in.">Access Level Class</a></p>
+
+    </div>
+
+    <div class="example">
+<h4 class="sectiontitle">Example</h4>
+<div class="exampleblock">
+      <div class="p">This example runs the <samp class="codeph ">AccessLevel.withPermissionSetId()</samp>
+                method with the specified permission set and inserts a custom
+                object.<div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>@isTest
+public with sharing class ElevateUserModeOperations_Test {
+    @isTest
+    static void objectCreatePermViaPermissionSet() {
+        Profile p = [SELECT Id FROM Profile WHERE Name='Minimum Access - Salesforce'];
+        User u = new User(Alias = 'standt', Email='standarduser@testorg.com',
+            EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+            LocaleSidKey='en_US', ProfileId = p.Id,
+            TimeZoneSidKey='America/Los_Angeles',
+            UserName='standarduser' + DateTime.now().getTime() + '@testorg.com');
+
+        System.runAs(u) {
+            try { 
+                Database.insert(new Account(name='foo'), AccessLevel.User_mode); 
+                Assert.fail(); 
+            } catch (SecurityException ex) { 
+                Assert.isTrue(ex.getMessage().contains('Account'));
+            }
+            //Get ID of previously created permission set named 'AllowCreateToAccount'
+            Id permissionSetId = [Select Id from PermissionSet 
+                where Name = 'AllowCreateToAccount' limit 1].Id;
+
+            Database.insert(new Account(name='foo'), AccessLevel.User_mode.withPermissionSetId(permissionSetId)); 
+
+            // The elevated access level in not persisted to subsequent operations
+            try { 
+                Database.insert(new Account(name='foo2'), AccessLevel.User_mode); 
+                Assert.fail(); 
+            } catch (SecurityException ex) { 
+                Assert.isTrue(ex.getMessage().contains('Account')); 
+            } 
+            
+        } 
+    } 
+}
+</pre></div>
+</div>
+
+    </div>
+</div>
+
+  </div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_AccessLevel_properties">
+<a name="apex_System_AccessLevel_properties"><!-- --></a>
+  <h2 class="helpHead2">AccessLevel Properties</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+<p class="p">The following are properties for <samp class="codeph ">AccessLevel</samp>.</p>
+</div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_System_AccessLevel_SYSTEM_MODE">SYSTEM_MODE</a></strong><br>
+Execution mode in which the the object and field-level permissions       of the current user are ignored, and the record sharing rules are controlled by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">class sharing keywords</a>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_System_AccessLevel.htm#apex_System_AccessLevel_USER_MODE">USER_MODE</a></strong><br>
+Execution mode in which the object permissions, field-level       security, and sharing rules of the current user are enforced.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_AccessLevel_SYSTEM_MODE">
+<a name="apex_System_AccessLevel_SYSTEM_MODE"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">SYSTEM_MODE</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Execution mode in which the the object and field-level permissions
+      of the current user are ignored, and the record sharing rules are controlled by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_keywords_sharing.htm" target="_blank">class sharing keywords</a>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public System.AccessLevel SYSTEM_MODE {get;}</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: System.AccessLevel</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_AccessLevel_USER_MODE">
+<a name="apex_System_AccessLevel_USER_MODE"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">USER_MODE</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Execution mode in which the object permissions, field-level
+      security, and sharing rules of the current user are enforced.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public System.AccessLevel USER_MODE {get;}</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: System.AccessLevel</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,319 @@
+<a name="apex_class_Datacloud_DuplicateResult"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">DuplicateResult Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">
+<span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Represents the details of a duplicate rule that detected duplicate
+            records and information about those duplicate records.</span>
+    </div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_datacloud.htm#apex_namespace_datacloud" title="The Datacloud namespace provides classes and methods for retrieving information about duplicate rules. Duplicate rules let you control whether and when users can save duplicate records within Salesforce.">Datacloud</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code">DuplicateResult</samp> class and its methods are
+                available to organizations that use duplicate rules.</p>
+
+            <p class="p"><samp class="codeph apex_code">DuplicateResult</samp> is contained within <samp class="codeph apex_code">DuplicateError</samp>, which is part of <samp class="codeph apex_code">SaveResult</samp>. <samp class="codeph apex_code">SaveResult</samp> is generated when a user attempts to save a record in Salesforce.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">This example shows a custom application that lets users add a contact. When a contact
+                is saved, an alert displays if there are duplicate records.</p>
+
+            <p class="p">The sample application consists of a Visualforce page and an
+                Apex controller. The Visualforce page is
+                listed first so that you can see how the page makes use of the Apex controller. Save
+                the Apex class first before saving the Visualforce page.</p>
+
+            <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"ContactDedupeController"</span>&gt;
+    <span class="tag">&lt;apex:form</span> &gt;
+        <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Duplicate Records"</span><span class="attribute"> rendered=</span><span class="string">"{!hasDuplicateResult}"</span>&gt;
+            <span class="tag">&lt;apex:pageMessages</span> /&gt;
+            <span class="tag">&lt;apex:pageBlockTable</span><span class="attribute"> value=</span><span class="string">"{!duplicateRecords}"</span><span class="attribute"> var=</span><span class="string">"item"</span>&gt;
+                <span class="tag">&lt;apex:column</span> &gt;
+                    <span class="tag">&lt;apex:facet</span><span class="attribute"> name=</span><span class="string">"header"</span>&gt;Name<span class="tag">&lt;/apex:facet</span>&gt;
+                    <span class="tag">&lt;apex:outputLink</span><span class="attribute"> value=</span><span class="string">"/{!item['Id']}"</span>&gt;<span class="formula">{!item['Name']}</span><span class="tag">&lt;/apex:outputLink</span>&gt;
+                <span class="tag">&lt;/apex:column</span>&gt;
+                <span class="tag">&lt;apex:column</span> &gt;
+                    <span class="tag">&lt;apex:facet</span><span class="attribute"> name=</span><span class="string">"header"</span>&gt;Owner<span class="tag">&lt;/apex:facet</span>&gt;
+                    <span class="tag">&lt;apex:outputField</span><span class="attribute"> value=</span><span class="string">"{!item['OwnerId']}"</span>/&gt;
+                <span class="tag">&lt;/apex:column</span>&gt;
+                <span class="tag">&lt;apex:column</span> &gt;
+                    <span class="tag">&lt;apex:facet</span><span class="attribute"> name=</span><span class="string">"header"</span>&gt;Last Modified Date<span class="tag">&lt;/apex:facet</span>&gt;
+                    <span class="tag">&lt;apex:outputField</span><span class="attribute"> value=</span><span class="string">"{!item['LastModifiedDate']}"</span>/&gt;
+                <span class="tag">&lt;/apex:column</span>&gt;
+            <span class="tag">&lt;/apex:pageBlockTable</span>&gt; 
+        <span class="tag">&lt;/apex:pageBlock</span>&gt;
+        
+        <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Contact"</span><span class="attribute"> mode=</span><span class="string">"edit"</span>&gt;
+            <span class="tag">&lt;apex:pageBlockButtons</span> &gt;
+                <span class="tag">&lt;apex:commandButton</span><span class="attribute"> value=</span><span class="string">"Save"</span><span class="attribute"> action=</span><span class="string">"{!save}"</span>/&gt;
+            <span class="tag">&lt;/apex:pageBlockButtons</span>&gt;         
+
+            <span class="tag">&lt;apex:pageBlockSection</span> &gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!Contact.FirstName}"</span>/&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!Contact.LastName}"</span>/&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!Contact.Email}"</span>/&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!Contact.Phone}"</span>/&gt;
+                <span class="tag">&lt;apex:inputField</span><span class="attribute"> value=</span><span class="string">"{!Contact.AccountId}"</span>/&gt;
+            <span class="tag">&lt;/apex:pageBlockSection</span>&gt;
+        <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;/apex:form</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+
+            <p class="p">This sample is the Apex controller for the page. This controller contains the action
+                method for the Save button. The <samp class="codeph apex_code">save</samp> method
+                inserts the new contact. If errors are returned, this method iterates through each
+                error, checks if it’s a duplicate error, adds the error message to the page, and
+                returns information about the duplicate records to be displayed on the page.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> ContactDedupeController {
+    
+    <span class="onelineComment">// Initialize a variable to hold the contact record you're processing</span>
+    <span class="keyword">private</span> <span class="keyword">final</span> Contact contact;
+    
+    <span class="onelineComment">// Initialize a list to hold any duplicate records</span>
+    <span class="keyword">private</span> List&lt;sObject&gt; duplicateRecords;
+    
+    <span class="onelineComment">// Define variable that’s true if there are duplicate records</span>
+    <span class="keyword">public</span> boolean hasDuplicateResult{get;set;}
+    
+    <span class="onelineComment">// Define the constructor</span>
+    <span class="keyword">public</span> ContactDedupeController() {
+        
+        <span class="onelineComment">// Define the values for the contact you’re processing based on its ID</span>
+        Id id = ApexPages.currentPage().getParameters().get(<span class="string">'id'</span>);
+        <span class="statement">this</span>.contact = (id == <span class="keyword">null</span>) ? <span class="keyword">new</span> Contact() : 
+            [SELECT Id, FirstName, LastName, Email, Phone, AccountId 
+             FROM Contact WHERE Id = :id];
+       
+        <span class="onelineComment">// Initialize empty list of potential duplicate records</span>
+        <span class="statement">this</span>.duplicateRecords = <span class="keyword">new</span> List&lt;sObject&gt;();
+        <span class="statement">this</span>.hasDuplicateResult = <span class="keyword">false</span>;
+    }
+    
+    <span class="onelineComment">// Return contact and its values to the Visualforce page for display</span>
+    <span class="keyword">public</span> Contact getContact() {
+        <span class="statement">return</span> <span class="statement">this</span>.contact;
+    }
+    
+    <span class="onelineComment">// Return duplicate records to the Visualforce page for display</span>
+    <span class="keyword">public</span> List&lt;sObject&gt; getDuplicateRecords() {
+        <span class="statement">return</span> <span class="statement">this</span>.duplicateRecords;
+    }
+    
+    <span class="onelineComment">// Process the saved record and handle any duplicates</span>
+    <span class="keyword">public</span> PageReference save() {
+        
+        <span class="onelineComment">// Optionally, set DML options here, use “DML” instead of “false” </span>
+        <span class="onelineComment">//   in the insert()</span>
+        <span class="onelineComment">// Database.DMLOptions dml = new Database.DMLOptions(); </span>
+        <span class="onelineComment">// dml.DuplicateRuleHeader.allowSave = true;</span>
+        <span class="onelineComment">// dml.DuplicateRuleHeader.runAsCurrentUser = true;</span>
+        Database.SaveResult saveResult = Database.<span class="statement">insert</span>(contact, <span class="keyword">false</span>);
+
+        <span class="statement">if</span> (!saveResult.isSuccess()) {
+            <span class="statement">for</span> (Database.Error error : saveResult.getErrors()) {
+                <span class="onelineComment">// If there are duplicates, an error occurs</span>
+                <span class="onelineComment">// Process only duplicates and not other errors </span>
+                <span class="onelineComment">//   (e.g., validation errors)</span>
+                <span class="statement">if</span> (error <span class="statement">instanceof</span> Database.DuplicateError) {
+                    <span class="onelineComment">// Handle the duplicate error by first casting it as a </span>
+                    <span class="onelineComment">//   DuplicateError class</span>
+                    <span class="onelineComment">// This lets you use methods of that class </span>
+                    <span class="onelineComment">//  (e.g., getDuplicateResult())</span>
+                    Database.DuplicateError duplicateError = 
+                            (Database.DuplicateError)error;
+                    Datacloud.DuplicateResult duplicateResult = 
+                            duplicateError.getDuplicateResult();
+                    
+                    <span class="onelineComment">// Display duplicate error message as defined in the duplicate rule</span>
+                    ApexPages.Message errorMessage = <span class="keyword">new</span> ApexPages.Message(
+                            ApexPages.Severity.ERROR, <span class="string">'Duplicate Error: '</span> + 
+                            duplicateResult.getErrorMessage());
+                    ApexPages.addMessage(errorMessage);
+                    
+                    <span class="onelineComment">// Get duplicate records</span>
+                    <span class="statement">this</span>.duplicateRecords = <span class="keyword">new</span> List&lt;sObject&gt;();
+
+                    <span class="onelineComment">// Return only match results of matching rules that </span>
+                    <span class="onelineComment">//  find duplicate records</span>
+                    Datacloud.MatchResult[] matchResults = 
+                            duplicateResult.getMatchResults();
+
+                    <span class="onelineComment">// Just grab first match result (which contains the </span>
+                    <span class="onelineComment">//   duplicate record found and other match info)</span>
+                    Datacloud.MatchResult matchResult = matchResults[0];
+
+                    Datacloud.MatchRecord[] matchRecords = matchResult.getMatchRecords();
+
+                    <span class="onelineComment">// Add matched record to the duplicate records variable</span>
+                    <span class="statement">for</span> (Datacloud.MatchRecord matchRecord : matchRecords) {
+                        System.debug(<span class="string">'MatchRecord: '</span> + matchRecord.getRecord());
+                        <span class="statement">this</span>.duplicateRecords.add(matchRecord.getRecord());
+                    }
+                    <span class="statement">this</span>.hasDuplicateResult = !<span class="statement">this</span>.duplicateRecords.isEmpty();
+                }
+            }
+            
+            <span class="onelineComment">//If there’s a duplicate record, stay on the page</span>
+            <span class="statement">return</span> <span class="keyword">null</span>;
+        }
+        
+        <span class="onelineComment">//  After save, navigate to the view page:</span>
+        <span class="statement">return</span> (<span class="keyword">new</span> ApexPages.StandardController(contact)).view();
+    }
+    
+}</pre></div>
+
+        </div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_Datacloud_DuplicateResult_methods">DuplicateResult Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_saveresult.htm#apex_methods_system_database_saveresult" title="The result of an insert or update DML operation returned by a Database method.">SaveResult Class</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_class_Database_DuplicateError.htm#apex_class_Database_DuplicateError" title="Contains information about an error that occurred when an attempt was made to save a duplicate record. Use if your organization has set up duplicate rules, which are part of the Duplicate Management feature.">DuplicateError Class</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Datacloud_DuplicateResult_methods">
+<a name="apex_Datacloud_DuplicateResult_methods"><!-- --></a><h2 class="helpHead2">DuplicateResult Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">DuplicateResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_Datacloud_DuplicateResult_getDuplicateRule">getDuplicateRule()</a></strong><br>
+Returns the developer name of the executed duplicate rule that       returned duplicate records.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_Datacloud_DuplicateResult_getErrorMessage">getErrorMessage()</a></strong><br>
+Returns the error message configured by the administrator to warn       users they may be creating duplicate records. This message is associated with a duplicate       rule.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_Datacloud_DuplicateResult_getMatchResults">getMatchResults()</a></strong><br>
+Returns the duplicate records and match information.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Datacloud_DuplicateResult.htm#apex_Datacloud_DuplicateResult_isAllowSave">isAllowSave()</a></strong><br>
+Indicates whether the duplicate rule will allow a record that’s       identified as a duplicate to be saved. Set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if       duplicate rule should allow save; otherwise, <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Datacloud_DuplicateResult_getDuplicateRule">
+<a name="apex_Datacloud_DuplicateResult_getDuplicateRule"><!-- --></a><h3 class="helpHead3">getDuplicateRule()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the developer name of the executed duplicate rule that
+      returned duplicate records.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getDuplicateRule()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Datacloud_DuplicateResult_getErrorMessage">
+<a name="apex_Datacloud_DuplicateResult_getErrorMessage"><!-- --></a><h3 class="helpHead3">getErrorMessage()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the error message configured by the administrator to warn
+      users they may be creating duplicate records. This message is associated with a duplicate
+      rule.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getErrorMessage()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">This example shows the code used to display the error message when duplicates are found
+        while saving a new contact. This code is part of a custom application that lets users add a
+        contact. When a contact is saved, an alert displays if there are duplicate records. Review
+          <a class="xref" href="#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records.">DuplicateResult Class</a> to check out the entire sample
+        applicaton.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">ApexPages.Message errorMessage = <span class="keyword">new</span> ApexPages.Message(
+                            ApexPages.Severity.ERROR, <span class="string">'Duplicate Error: '</span> + 
+                            duplicateResult.getErrorMessage());
+                    ApexPages.addMessage(errorMessage);</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Datacloud_DuplicateResult_getMatchResults">
+<a name="apex_Datacloud_DuplicateResult_getMatchResults"><!-- --></a><h3 class="helpHead3">getMatchResults()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the duplicate records and match information.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;Datacloud.MatchResult&gt; getMatchResults()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: List&lt;Datacloud.MatchResult&gt;</p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <p class="p">This example shows the code used to return duplicate record and match information and
+        assign it to the <samp class="codeph apex_code">matchResults</samp> variable. This code is
+        part of a custom application that implements duplicate management when users add a contact.
+        See <a class="xref" href="#apex_class_Datacloud_DuplicateResult" title="Represents the details of a duplicate rule that detected duplicate records and information about those duplicate records.">DuplicateResult Class</a> to check out the entire sample
+        applicaton.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Datacloud.MatchResult[] matchResults = 
+                            duplicateResult.getMatchResults();</pre></div>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Datacloud_DuplicateResult_isAllowSave">
+<a name="apex_Datacloud_DuplicateResult_isAllowSave"><!-- --></a><h3 class="helpHead3">isAllowSave()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Indicates whether the duplicate rule will allow a record that’s
+      identified as a duplicate to be saved. Set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if
+      duplicate rule should allow save; otherwise, <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isAllowSave()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

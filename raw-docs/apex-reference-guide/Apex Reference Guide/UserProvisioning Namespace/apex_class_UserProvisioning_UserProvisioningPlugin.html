@@ -1,0 +1,403 @@
+<a name="apex_class_UserProvisioning_UserProvisioningPlugin"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">UserProvisioningPlugin Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The <samp class="codeph apex_code">UserProvisioningPlugin</samp>
+      base class implements <samp class="codeph apex_code">Process.Plugin</samp> for programmatic
+      customization of the user provisioning process for connected apps. </span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_UserProvisioning.htm" title="The UserProvisioning namespace provides methods for monitoring outbound user provisioning requests.">UserProvisioning</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Extending this class gives you a plug-in that can be used Flow Builder as a legacy Apex
+        action, with the following input and output parameters.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  text-center" id="d627801e78">Input Parameter Name</th>
+
+              <th class="featureTableHeader vertical-align-top text-center" id="d627801e81">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class=" text-left" headers="d627801e78" data-title="Input Parameter Name"><samp class="codeph nolang">userProvisioningRequestId</samp></td>
+
+              <td class=" text-left" headers="d627801e81" data-title="Description">The unique ID of the request for the plug-in to process.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e78" data-title="Input Parameter Name"><samp class="codeph nolang">userId</samp></td>
+
+              <td class=" text-left" headers="d627801e81" data-title="Description">The ID of the associated user for the request.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e78" data-title="Input Parameter Name"><samp class="codeph nolang">NamedCredDevName</samp></td>
+
+              <td class=" text-left" headers="d627801e81" data-title="Description">The unique API name for the named credential to use for a request.
+                The named credential identifies the third-party system and the third-party
+                authentication settings.<p class="p">When the named credential is set in the User Provisioning
+                  Wizard, Salesforce stores the value in the
+                    <span class="keyword parmname">UserProvisioningConfig.NamedCredentialId</span> field.</p>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e78" data-title="Input Parameter Name"><samp class="codeph nolang">reconFilter</samp></td>
+
+              <td class=" text-left" headers="d627801e81" data-title="Description">When collecting and analyzing users on a third-party system, the
+                plug-in uses this filter to limit the scope of the collection.<p class="p">When the filter is
+                  set in the User Provisioning Wizard, Salesforce stores the value in the
+                    <span class="keyword parmname">UserProvisioningConfig.ReconFilter</span> field.</p>
+</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e78" data-title="Input Parameter Name"><samp class="codeph nolang">reconOffset</samp></td>
+
+              <td class=" text-left" headers="d627801e81" data-title="Description">When collecting and analyzing users on a third-party system, the
+                plug-in uses this value as the starting point for the collection.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  text-center" id="d627801e163">Output Parameter Name</th>
+
+              <th class="featureTableHeader vertical-align-top text-center" id="d627801e166">Description</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">Status</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">
+                <p class="p">The vendor-specific status of the provisioning operation on the third-party
+                  system.</p>
+
+              </td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">Details</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The vendor-specific message related to the status of the
+                provisioning operation on the third-party system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">ExternalUserId</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The vendor-specific ID for the associated user on the third-party
+                system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">ExternalUsername</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The vendor-specific username for the associated user on the
+                third-party system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">ExternalEmail</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The email address assigned to the user on the third-party
+                system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">ExternalFirstName</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The first name assigned to the user on the third-party
+                system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">ExternalLastName</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The last name assigned to the user on the third-party
+                system.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">reconState</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">The state of the collecting and analyzing process on the
+                third-party system. When the value is <samp class="codeph nolang">complete</samp>,
+                the process is finished and a subsequent call to the plug-in is no longer needed,
+                nor made.</td>
+
+            </tr>
+
+            <tr>
+              <td class=" text-left" headers="d627801e163" data-title="Output Parameter Name"><samp class="codeph nolang">nextReconOffset</samp></td>
+
+              <td class=" text-left" headers="d627801e166" data-title="Description">When collecting and analyzing users on a third-party system, the
+                process may encounter a transaction limit and have to stop before finishing. The
+                value specified here initiates a call to the plug-in with a new quota limit.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+      <p class="p">If you want to add more custom parameters, use the <samp class="codeph apex_code">buildDescribeCall()</samp> method.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">The following example uses the <samp class="codeph apex_code">buildDescribeCall()</samp>
+        method to add a new input parameter and a new output parameter. The example also
+        demonstrates how to bypass the limit of the 10,000 records processed in DML statements in an
+        Apex transaction.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> SampleConnector <span class="keyword">extends</span> UserProvisioning.UserProvisioningPlugin {
+
+    <span class="onelineComment">// Example of adding more input and output parameters to those defined in the base class</span>
+    <span class="keyword">global</span> <span class="keyword">override</span> Process.PluginDescribeResult buildDescribeCall() { 
+        Process.PluginDescribeResult describeResult = <span class="keyword">new</span> Process.PluginDescribeResult();
+        describeResult.inputParameters = <span class="keyword">new</span> 
+            List&lt;Process.PluginDescribeResult.InputParameter&gt;{ 
+               <span class="keyword">new</span> Process.PluginDescribeResult.InputParameter(<span class="string">'testInputParam'</span>, 
+                       Process.PluginDescribeResult.ParameterType.STRING, <span class="keyword">false</span>)
+            }; 
+
+        describeResult.outputParameters = <span class="keyword">new</span> 
+            List&lt;Process.PluginDescribeResult.OutputParameter&gt;{ 
+               <span class="keyword">new</span> Process.PluginDescribeResult.OutputParameter(<span class="string">'testOutputParam'</span>, 
+                       Process.PluginDescribeResult.ParameterType.STRING)
+            };
+            
+        <span class="statement">return</span> describeResult;
+    }
+    
+    <span class="onelineComment">// Example Plugin that demonstrates how to leverage the reconOffset/nextReconOffset/reconState</span>
+    <span class="onelineComment">// parameters to create more than 10,000 users. (i.e. go beyond the 10,000 DML limit per transaction)</span>
+    
+    <span class="keyword">global</span> <span class="keyword">override</span> Process.PluginResult invoke(Process.PluginRequest request) {
+        Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt; result = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;();
+        <span class="keyword">String</span> uprId = (<span class="keyword">String</span>) request.inputParameters.get(<span class="string">'userProvisioningRequestId'</span>);
+        UserProvisioning.UserProvisioningLog.log(uprId, <span class="string">'Inserting Log from test Apex connector'</span>);
+        UserProvisioningRequest upr = [SELECT id, operation, connectedAppId, state
+                   FROM userprovisioningrequest WHERE id = :uprId];
+        <span class="statement">if</span> (upr.operation.equals(<span class="string">'Reconcile'</span>)) {
+            <span class="keyword">String</span> reconOffsetStr = (<span class="keyword">String</span>) request.inputParameters.get(<span class="string">'reconOffset'</span>);
+            <span class="keyword">Integer</span> reconOffset = 0;
+            <span class="statement">if</span> (reconOffsetStr != <span class="keyword">null</span>) {
+                reconOffset = <span class="keyword">Integer</span>.valueOf(reconOffsetStr);
+            }
+            
+            <span class="statement">if</span> (reconOffset &gt; 44999) {
+                result.put(<span class="string">'reconState'</span>, <span class="string">'Completed'</span>);
+            }
+            
+            <span class="keyword">Integer</span> i = 0;
+            List&lt;UserProvAccountStaging&gt; upasList = <span class="keyword">new</span> List&lt;UserProvAccountStaging&gt;();
+            <span class="statement">for</span> (i = 0; i &lt; 5000; i++) {
+                UserProvAccountStaging upas = <span class="keyword">new</span> UserProvAccountStaging();
+                upas.Name = i + reconOffset + <span class="string">''</span>;
+                upas.ExternalFirstName = upas.Name;
+                upas.ExternalEmail = <span class="string">'externaluser@externalsystem.com'</span>;
+                upas.LinkState = <span class="string">'Orphaned'</span>;
+                upas.Status = <span class="string">'Active'</span>;
+                upas.connectedAppId = upr.connectedAppId;
+                upasList.add(upas);
+            }
+            <span class="statement">insert</span> upasList;
+            result.put(<span class="string">'nextReconOffset'</span>, reconOffset + 5000 + <span class="string">''</span>);
+        }
+        
+        <span class="statement">return</span> <span class="keyword">new</span> Process.PluginResult(result);
+    }
+}
+    </pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_UserProvisioning_UserProvisioningPlugin.htm#apex_UserProvisioning_UserProvisioningPlugin_methods">UserProvisioningPlugin Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_UserProvisioning_UserProvisioningPlugin_methods">
+<a name="apex_UserProvisioning_UserProvisioningPlugin_methods"><!-- --></a><h2 class="helpHead2">UserProvisioningPlugin Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">UserProvisioningPlugin</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_UserProvisioning_UserProvisioningPlugin.htm#apex_UserProvisioning_UserProvisioningPlugin_buildDescribeCall">buildDescribeCall()</a></strong><br>
+Use this method to add more input and output parameters to those       defined in the base class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_UserProvisioning_UserProvisioningPlugin.htm#apex_UserProvisioning_UserProvisioningPlugin_describe">describe()</a></strong><br>
+Returns a <samp class="codeph apex_code">Process.PluginDescribeResult</samp> object     that describes this method call.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_UserProvisioning_UserProvisioningPlugin.htm#apex_UserProvisioning_UserProvisioningPlugin_getPluginClassName">getPluginClassName()</a></strong><br>
+Returns the name of the class implementing the plugin.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_UserProvisioning_UserProvisioningPlugin.htm#apex_UserProvisioning_UserProvisioningPlugin_invoke">invoke(request)</a></strong><br>
+Primary method that the system invokes when the class that       implements the interface is instantiated.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_UserProvisioning_UserProvisioningPlugin_buildDescribeCall">
+<a name="apex_UserProvisioning_UserProvisioningPlugin_buildDescribeCall"><!-- --></a>
+  <h3 class="helpHead3">buildDescribeCall()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use this method to add more input and output parameters to those
+      defined in the base class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span>
+          Process.PluginDescribeResult
+      buildDescribeCall()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Process_PluginDescribeResult.htm#apex_class_Process_PluginDescribeResult" title="Describes the input and output parameters for Process.PluginResult.">Process.PluginDescribeResult</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_UserProvisioning_UserProvisioningPlugin_describe">
+<a name="apex_UserProvisioning_UserProvisioningPlugin_describe"><!-- --></a>
+  <h3 class="helpHead3">describe()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns a <samp class="codeph apex_code">Process.PluginDescribeResult</samp> object
+    that describes this method call.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span>
+          Process.PluginDescribeResult
+      describe()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Process_PluginDescribeResult.htm#apex_class_Process_PluginDescribeResult" title="Describes the input and output parameters for Process.PluginResult.">Process.PluginDescribeResult</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_UserProvisioning_UserProvisioningPlugin_getPluginClassName">
+<a name="apex_UserProvisioning_UserProvisioningPlugin_getPluginClassName"><!-- --></a>
+  <h3 class="helpHead3">getPluginClassName()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the name of the class implementing the plugin.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span>
+          getPluginClassName()</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_UserProvisioning_UserProvisioningPlugin_invoke">
+<a name="apex_UserProvisioning_UserProvisioningPlugin_invoke"><!-- --></a>
+  <h3 class="helpHead3">invoke(request)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Primary method that the system invokes when the class that
+      implements the interface is instantiated.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Process.PluginResult invoke(Process.PluginRequest
+          request)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">request</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Process_PluginRequest.htm#apex_class_Process_PluginRequest" title="Passes input parameters from the class that implements the Process.Plugin interface to the flow.">Process.PluginRequest</a></p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Process_PluginDescribeResult.htm#apex_class_Process_PluginDescribeResult" title="Describes the input and output parameters for Process.PluginResult.">Process.PluginDescribeResult</a></p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

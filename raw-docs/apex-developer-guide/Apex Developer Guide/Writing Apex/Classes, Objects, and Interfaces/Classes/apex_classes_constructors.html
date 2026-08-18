@@ -1,0 +1,95 @@
+<a name="apex_classes_constructors"><!-- --></a><h1 class="helpHead1">Using Constructors</h1><div class="body">
+<p class="p">A <dfn class="term">constructor</dfn> is code that is invoked when an object is created from the class
+      blueprint. You do not need to write a constructor for every class. If a class doesn't have a
+      user-defined constructor, a default, no-argument constructor with the same visibility as the
+      containing class is generated.</p>
+
+<p class="p">The syntax for a constructor is similar to a method, but it differs
+from a method definition in that it never has an explicit return type
+and it is not inherited by the object created from it. </p>
+
+<div class="p">After you write the constructor for a class, you must use the <samp class="codeph apex_code"><span class="keyword">new</span></samp> keyword in order to instantiate
+an object from that class, using that constructor. For example, using
+the following class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> TestObject {
+
+   <span class="onelineComment">// The no argument constructor </span>
+   <span class="keyword">public</span> TestObject() {
+      <span class="onelineComment">// more code here</span>
+  }
+}
+</pre></div>
+</div>
+
+<div class="p">A new object of this type can be instantiated with this
+      code.<div class="codeSection apex_code"><pre class="codeblock brush:apex">TestObject myTest = <span class="keyword">new</span> TestObject();</pre></div>
+</div>
+
+<p class="p">If you write a constructor that takes arguments, you can then use that constructor to create an
+      object using those arguments.</p>
+
+    <p class="p">If you create a constructor that takes arguments, and you still want to use a no-argument
+      constructor, you must create your own no-argument constructor in your code. After you create a
+      constructor for a class, you no longer have access to the default, no-argument public
+      constructor.</p>
+
+<div class="p">In Apex, a constructor can be <dfn class="term">overloaded</dfn>, that is, there can be more than one
+      constructor for a class, each having different parameters. This example illustrates a class
+      with two constructors: one with no arguments and one that takes a simple Integer argument. It
+      also illustrates how one constructor calls another constructor using the <samp class="codeph apex_code"><span class="statement">this</span>(...)</samp> syntax, also know as <dfn class="term">constructor
+        chaining</dfn>.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> TestObject2 {
+
+<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">Integer</span> DEFAULT_SIZE = 10;
+
+<span class="keyword">Integer</span> size;
+
+   <span class="onelineComment">//Constructor with no arguments</span>
+   <span class="keyword">public</span> TestObject2() {
+       <span class="statement">this</span>(DEFAULT_SIZE); <span class="onelineComment">// Using this(...) calls the one argument constructor    </span>
+   }
+
+   <span class="onelineComment">// Constructor with one argument </span>
+   <span class="keyword">public</span> TestObject2(<span class="keyword">Integer</span> ObjectSize) {
+     size = ObjectSize;  
+   }
+}
+</pre></div>
+</div>
+
+<div class="p">New objects of this type can be instantiated with this
+      code.<div class="codeSection apex_code"><pre class="codeblock brush:apex">  TestObject2 myObject1 = <span class="keyword">new</span> TestObject2(42);
+  TestObject2 myObject2 = <span class="keyword">new</span> TestObject2();
+</pre></div>
+</div>
+
+<div class="p">Every constructor that you create for a class must have a different argument list. In this
+      example, all of the constructors are
+      possible.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> Leads {
+
+  <span class="onelineComment">// First a no-argument constructor </span>
+  <span class="keyword">public</span> Leads () {}
+
+  <span class="onelineComment">// A constructor with one argument</span>
+  <span class="keyword">public</span> Leads (<span class="keyword">Boolean</span> call) {}
+
+  <span class="onelineComment">// A constructor with two arguments</span>
+  <span class="keyword">public</span> Leads (<span class="keyword">String</span> email, <span class="keyword">Boolean</span> call) {}
+
+  <span class="onelineComment">// Though this constructor has the same arguments as the </span>
+  <span class="onelineComment">// one above, they are in a different order, so this is legal</span>
+  <span class="keyword">public</span> Leads (<span class="keyword">Boolean</span> call, <span class="keyword">String</span> email) {}
+}
+</pre></div>
+</div>
+
+<p class="p">When you define a new class, you are defining a new data type.
+You can use class name in any place you can use other data type names,
+such as String, Boolean, or Account. If you define a variable whose
+type is a class, any object you assign to it must be an instance of
+that class or subclass.  </p>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_defining_methods.htm" title="Class Methods">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_access_modifiers.htm" title="Access Modifiers">Next →</a></li>
+</ul></div>
+</div>

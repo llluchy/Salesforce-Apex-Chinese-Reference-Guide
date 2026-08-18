@@ -1,0 +1,29 @@
+<a name="apex_analytics_list_async_runs"><!-- --></a><h1 class="helpHead1">List Asynchronous Runs of a Report</h1><div class="body conbody">
+<div class="shortdesc">You can retrieve up to 2,000 instances of a report that
+you ran asynchronously.</div>
+
+<div class="section">
+<p class="p">The instance list is sorted by the date and time when
+the report was run. Report results are stored for a rolling 24-hour
+period. During this time, based on your user access level, you can
+access results for each instance of the report that was run.</p>
+</div>
+
+<div class="example">
+<h2 class="sectiontitle">Example</h2>
+<div class="exampleblock">
+<p class="p">You can get the instance list by calling the <samp class="codeph apex_code">ReportManager.getReportInstances</samp> method.
+For example:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get the report ID</span>
+List &lt;Report&gt; reportList = [SELECT Id,DeveloperName FROM Report where
+    DeveloperName = <span class="string">'Closed_Sales_This_Quarter'</span>];
+<span class="keyword">String</span> reportId = (<span class="keyword">String</span>)reportList.get(0).get(<span class="string">'Id'</span>);
+
+<span class="onelineComment">// Run a report asynchronously</span>
+Reports.ReportInstance instance = Reports.ReportManager.runAsyncReport(reportId, <span class="keyword">true</span>);
+System.debug(<span class="string">'List of asynchronous runs: '</span> + 
+    Reports.ReportManager.getReportInstances(reportId));</pre></div>
+</div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links"></div>

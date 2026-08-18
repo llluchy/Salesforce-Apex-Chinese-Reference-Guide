@@ -1,0 +1,68 @@
+<a name="connectapi_examples_commerce_cart_custom"><!-- --></a><h1 class="helpHead1">Create a Cart and Cart Item with Custom Fields in a Commerce Store</h1><div class="body refbody">
+<div class="shortdesc">Create a cart with a cart item using custom fields for a buyer or guest user in your
+  Commerce store.</div>
+
+   <div class="section">
+<p class="p">Custom fields are optional and must be previously defined for the WebCart and CartItem sObjects.
+    See <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.adding_fields.htm&amp;type=5&amp;language=en_US" target="_blank">Create Custom Fields</a>. Field-level security rules from the <a class="xref" href="https://help.salesforce.com/s/articleView?id=commerce.comm_create_shopper_profile.htm&amp;type=5&amp;language=en_US" target="_blank">shopper profile</a> are applied to the WebCart and CartItem
+    custom fields. The rules are applied for registered shoppers and for the guest shopper
+    profile.</p>
+
+   <p class="p">To create a cart with custom fields, call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm#apex_ConnectAPI_Commerce_createCart_1" target="_blank"><samp class="codeph apex_code">createCart(webstoreId,
+      cartInput)</samp></a>. Specify your custom fields using the <samp class="codeph nolang">customFields</samp> property of <samp class="codeph apex_code">cartInput</samp>. The type
+    for <samp class="codeph nolang">customFields</samp> is <samp class="codeph nolang">List&lt;SObject&gt;</samp>, where the sObject is a WebCart. </p>
+
+   <p class="p">Then, to add an item to the cart, call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_CommerceCart_static_methods.htm#apex_ConnectAPI_CommerceCart_addItemToCart_9" target="_blank"><samp class="codeph apex_code">addItemToCart(webstoreId,
+      effectiveAccountId, activeCartOrId, cartItemInput, currencyIsoCode)</samp></a>. You can
+    specify custom fields using the <samp class="codeph nolang">customFields</samp> property of
+     <samp class="codeph apex_code">cartItemInput</samp>. Again, the type of <samp class="codeph nolang">customFields</samp> is <samp class="codeph nolang">List&lt;SObject&gt;</samp>, but the sObject must be a CartItem. </p>
+
+   <p class="p">In this scenario we assume that further customization sets a custom field within the <a class="xref" href="https://developer.salesforce.com/docs/commerce/salesforce-commerce/guide/cart-calculate-api.html" target="_blank">Cart Calculate API</a> flow onto the cart item for further
+    use.</p>
+</div>
+
+  <div class="section">
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="codeblock_cpv_wym_gbc"><a name="codeblock_cpv_wym_gbc"><!-- --></a><span class="keyword">ID</span> webStoreId = <span class="string">'0ZEOL000000063r4AA'</span>;
+    <span class="keyword">ID</span> accountId = <span class="string">'001OL000002LC0qYAG'</span>;
+    <span class="keyword">ID</span> productId = <span class="string">'01tOL000000ETzuYAG'</span>;
+
+    List&lt;SObject&gt; webCartList = <span class="keyword">new</span> List&lt;SObject&gt;();
+    WebCart webCart = <span class="keyword">new</span> WebCart();
+    webCart.webCartCustomTextField__c = <span class="string">'webCartCustomFieldValue'</span>;
+    webCartList.add(webCart);
+        
+    <span class="keyword">final</span> ConnectApi.CartInput cartInput = <span class="keyword">new</span> ConnectApi.CartInput();
+    cartInput.effectiveAccountId = accountId;
+    cartInput.name = <span class="string">'Cart With Custom Fields'</span>;
+    cartInput.customFields = webCartList;
+
+    <span class="onelineComment">// create a cart</span>
+    ConnectApi.CartSummary cartSummary = ConnectApi.CommerceCart.createCart(webStoreId, cartInput);
+
+    <span class="keyword">ID</span> cartId = cartSummary.cartId;
+
+    <span class="onelineComment">// Given</span>
+    List&lt;SObject&gt; cartItemList = <span class="keyword">new</span> List&lt;SObject&gt;();
+    CartItem cartItem = <span class="keyword">new</span> CartItem();
+    cartItem.cartItemCustomNumberField__c = 12.34;
+    cartItemList.add(cartItem);
+
+    <span class="keyword">final</span> ConnectApi.CartItemInput input = <span class="keyword">new</span> ConnectApi.CartItemInput();
+    input.productId = productId;
+    input.quantity = <span class="string">'2'</span>;
+    input.type = ConnectApi.CartItemType.Product;
+    input.customFields = cartItemList;
+
+    <span class="onelineComment">// add an item to the previously created cart</span>
+    ConnectApi.CartItem itemResult = ConnectApi.CommerceCart.addItemToCart(webStoreId, accountId, cartId, input, <span class="string">'USD'</span>);
+
+    <span class="onelineComment">// response contains all (accessible) custom fields for which data was set</span>
+    CartItem cartItemResult = (CartItem)itemResult.customFields[0];
+    <span class="onelineComment">// the value from request (if not changed during flow)</span>
+    <span class="keyword">Double</span> valueFromRequest = cartItemResult.cartItemCustomNumberField__c;
+    <span class="onelineComment">// an additional customization value, e.g. set by the cart calculation flow</span>
+    <span class="keyword">String</span> valueForCustomization = cartItemResult.additionalCustomField__c;</pre></div>
+
+  </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

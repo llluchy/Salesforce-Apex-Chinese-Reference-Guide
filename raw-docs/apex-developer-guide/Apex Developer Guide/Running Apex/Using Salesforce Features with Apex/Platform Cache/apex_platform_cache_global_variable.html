@@ -1,0 +1,55 @@
+<a name="apex_platform_cache_global_variable"><!-- --></a><h1 class="helpHead1">Use a Visualforce Global Variable for the Platform Cache</h1><div class="body conbody">
+<div class="shortdesc">You can access cached values stored in the session or org cache from a Visualforce page
+    with global variables.</div>
+
+    <p class="p">You can use either the <samp class="codeph apex_code">$Cache.Session</samp> or <samp class="codeph apex_code">$Cache.Org</samp> global variable. Include the global variable’s
+      fully qualified key name with the namespace and partition name. </p>
+
+    <p class="p">This output text component retrieves a session cache value using the global variable’s
+      namespace, partition, and key.</p>
+
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Session.myNamespace.myPartition.key1}"</span>/&gt;
+</pre></div>
+
+    <p class="p">This example is similar but uses the <samp class="codeph apex_code">$Cache.Org</samp>
+      global variable to retrieve a value from the org cache.</p>
+
+    <div class="p">
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Org.myNamespace.myPartition.key1}"</span>/&gt;</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>The
+        remaining examples show how to access the session cache using the <samp class="codeph apex_code">$Cache.Session</samp> global variable. The equivalent org cache
+        examples are the same except that you use the <samp class="codeph apex_code">$Cache.Org</samp> global variable instead.</p>
+</div>
+</div></div></div></div>
+Unlike with Apex methods, you can’t
+      omit the <samp class="codeph apex_code">myNamespace.myPartition</samp> prefix to reference
+      the default partition in the org.</div>
+
+    <p class="p">If a namespace isn’t defined for the org, use <samp class="codeph apex_code">local</samp>
+      to refer to the org’s namespace.</p>
+
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Session.local.myPartition.key1}"</span>/&gt;
+</pre></div>
+
+    <p class="p">The cached value is sometimes a data structure that has properties or methods, like an Apex
+      list or a custom class. In this case, you can access the properties in the <samp class="codeph apex_code">$Cache.Session</samp> or <samp class="codeph apex_code">$Cache.Org</samp> expression by using dot notation. For example, this markup invokes the
+        <samp class="codeph apex_code">List.size()</samp> Apex method if the value of <samp class="codeph apex_code">numbersList</samp> is declared as a <samp class="codeph apex_code">List</samp>.</p>
+
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Session.local.myPartition.numbersList.size}"</span>/&gt;</pre></div>
+
+    <p class="p">This example accesses the value property on the myData cache value that is declared as a
+      custom class.</p>
+
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Session.local.myPartition.myData.value}"</span>/&gt;</pre></div>
+
+    <p class="p">If you’re using <samp class="codeph apex_code">CacheBuilder</samp>, qualify the key name
+      with the class that implements the <samp class="codeph apex_code">CacheBuilder</samp>
+      interface and the literal string <kbd class="ph userinput">_B_</kbd>, in addition to the namespace and
+      partition name. In this example, the class that implements <samp class="codeph apex_code">CacheBuilder</samp> is called <samp class="codeph apex_code">CacheBuilderImpl</samp>.</p>
+
+    <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!$Cache.Session.myNamespace.myPartition.CacheBuilderImpl_B_key1}"</span>/&gt;</pre></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

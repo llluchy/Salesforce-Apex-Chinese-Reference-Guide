@@ -1,0 +1,248 @@
+<a name="apex_interface_Auth_HeadlessUserDiscoveryHandler"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">HeadlessUserDiscoveryHandler Interface</h1>
+<div class="body refbody">
+<div class="shortdesc">Use this interface to create a headless user discovery handler that you implement during
+    headless login, passwordless login, and forgot password flows. </div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+</div>
+<div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Develop headless authorization flows where users log in to an off-platform app with an
+        identifier other than their username, such as an email address, phone number, or order
+        number. When a user enters the identifier in your headless app, your app sends the
+        identifying information to a Salesforce endpoint. Salesforce then passes the identifying
+        information to your implementation of the <samp class="codeph nolang">Auth.HeadlessUserDiscoveryHandler</samp> interface. The handler finds the user's
+        account and its associated email address or phone number.</p>
+
+      <p class="p">Headless user discovery supports these use cases.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">Headless login with any identifier and a password. For example, a user goes to your
+          headless app and enters their order number and password to log in.</li>
+
+        <li class="li">Headless login with any identifier and a one-time password (OTP). For example, a user
+          goes to your app and enters just their order number. Your Apex handler finds the user's
+          account based on the order number. Salesforce sends an OTP to the verified email address
+          that's associated with the account. To log in, the user enters the OTP.</li>
+
+        <li class="li">Headless password reset with any identifier. For example a user goes to your app and
+          enters their phone number. Your Apex handler finds the user account and Salesforce sends
+          an OTP to the user's verified phone number. To verify their identity for password reset,
+          the user enters the OTP and can then set a new password.</li>
+
+      </ul>
+
+      <p class="p">Headless user discovery is supported for Headless Identity API flows and OAuth 2.0 for
+        First-Party Applications flows. For more information about supported flows and
+        implementation details, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=xcloud.remoteaccess_headless_discovery.htm&amp;type=5&amp;language=en_US" target="_blank">Headless Login Without a Username</a>.</p>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_HeadlessUserDiscoveryHandler.htm#apex_Auth_HeadlessUserDiscoveryHandler_methods">HeadlessUserDiscoveryHandler Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_HeadlessUserDiscoveryHandler.htm#apex_interface_Auth_HeadlessUserDiscoveryHandler_Example">HeadlessUserDiscoveryHandler Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_HeadlessUserDiscoveryHandler_methods">
+<a name="apex_Auth_HeadlessUserDiscoveryHandler_methods"><!-- --></a><h2 class="helpHead2">HeadlessUserDiscoveryHandler Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">HeadlessUserDiscoveryHandler</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_Auth_HeadlessUserDiscoveryHandler.htm#apex_Auth_HeadlessUserDiscoveryHandler_discoverUserFromLoginHint">discoverUserFromLoginHint(networkId, loginHint, verificationAction, customDataJson, requestAttributes)</a></strong><br>
+Finds a user's Salesforce account based on user information, such as their email address,     phone number, or other data, that's passed to a Salesforce endpoint during headless login,     passwordless login, and forgot password flows.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_HeadlessUserDiscoveryHandler_discoverUserFromLoginHint">
+<a name="apex_Auth_HeadlessUserDiscoveryHandler_discoverUserFromLoginHint"><!-- --></a><h3 class="helpHead3"><span class="titlecodeph">discoverUserFromLoginHint(networkId, loginHint, verificationAction,
+      customDataJson, requestAttributes)</span></h3>
+<div class="body refbody">
+<div class="shortdesc">Finds a user's Salesforce account based on user information, such as their email address,
+    phone number, or other data, that's passed to a Salesforce endpoint during headless login,
+    passwordless login, and forgot password flows.</div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Auth.HeadlessUserDiscoveryResponse discoverUserFromLoginHint(Id
+          networkId, String loginHint, Auth.VerificationAction verificationAction, String
+          customDataJson, Map&lt;String,String&gt; requestAttributes)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">networkId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+<p class="p">The ID of the Experience Cloud site where your headless app sends requests.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">loginHint</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Information about</p>
+<p class="p">the user that Salesforce can use to find their associated account, such as
+            their email address or phone number.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">verificationAction</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Auth_VerificationAction.htm" title="Indicates the method that you use to send a one-time password (OTP) to a user during the headless passwordless login flow.">Auth.VerificationAction</a></p>
+<p class="p">The verification method that's used to log the user in, either email or SMS.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">customDataJson</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Custom user data, such as first name, that you collect when the user logs in to your headless
+            app.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">requestAtttibutes</var></strong>:<p class="p">Type: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" target="_blank">Map</a>&lt;<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" target="_blank">String</a>,<a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" target="_blank">String</a>&gt;</p>
+<p class="p">Information about the login request that's based on the user’s browser state when
+            accessing the login page. <samp class="codeph ">requestAttributes</samp> passes
+            in the CommunityUrl, IpAddress, UserAgent, Platform, Application, City, Country, and
+            Subdivision values. The City, Country, and Subdivision values come from IP
+            geolocation.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_HeadlessUserDiscoveryResponse.htm#apex_class_Auth_HeadlessUserDiscoveryResponse" title="Contains methods to describe the result of headless user discovery using a handler that implements the Auth.HeadlessUserDiscoveryHandler interface during headless login, passwordless login, and forgot password flows.">Auth.HeadlessUserDiscoveryResponse</a></p>
+<p class="p">If the handler finds a user, it returns a user ID. If not, it returns an error message.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_Auth_HeadlessUserDiscoveryHandler_Example">
+<a name="apex_interface_Auth_HeadlessUserDiscoveryHandler_Example"><!-- --></a><h2 class="helpHead2">HeadlessUserDiscoveryHandler Example Implementation</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">Here's an example implementation of the <samp class="codeph ">Auth.HeadlessUserDiscoveryHandler</samp> interface. This example supports login with
+        email and login with SMS.</p>
+<p class="p">The <samp class="codeph ">discoverUserFromLoginHint</samp> method uses custom logic to
+        search for a user account with a verified email address or phone number that matches the
+        data passed in the login hint. As a security best practice, Salesforce always recommends
+        writing code to determine if the user's email address or phone number is verified.</p>
+<p class="p">For users logging in with email, the
+        custom logic first checks whether the email address passed in the login hint is in a valid
+        format. Then, to look for a verified Salesforce email address that matches the email address
+        passed in the login hint, it queries the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_twofactormethodsinfo.htm" target="_blank">TwoFactorMethodsInfo</a> object. If successful, it
+        returns an instance of <samp class="codeph ">Auth.HeadlessUserDiscoveryResponse</samp> with the user ID. If something goes wrong, it
+        returns an instance of <samp class="codeph ">Auth.HeadlessUserDiscoveryResponse</samp> with a custom error message. In this example,
+        it returns error messages when the email address format isn't valid, the email address isn't
+        verified, there's no user with that email address, or there are multiple users with that
+        email address.</p>
+<p class="p">For users logging in with SMS, the custom logic is similar. It checks
+        whether the phone number passed in the login hint is in a valid format. Then, it looks for a
+        verified Salesforce phone number that matches the phone number passed in the login hint. If
+        successful, it returns an instance of <samp class="codeph ">Auth.HeadlessUserDiscoveryResponse</samp> with the user ID, and if not, it returns
+        custom error messages.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/*
+ * Headless User Discovery Handler
+ */</span>
+<span class="keyword">global</span> <span class="keyword">class</span> MyHeadlessUserDiscoveryHandler <span class="keyword">implements</span> Auth.HeadlessUserDiscoveryHandler {
+
+
+  <span class="multilineComment">/*
+  * This method handles the logic to determine the user account based on the loginHint and verificationMethod
+  */</span>
+  <span class="keyword">global</span> Auth.HeadlessUserDiscoveryResponse discoverUserFromLoginHint(Id networkId, <span class="keyword">String</span> loginHint, 
+  Auth.VerificationAction verificationAction, <span class="keyword">String</span> customDataJson, Map&lt;<span class="keyword">String</span>,<span class="keyword">String</span>&gt;requestAttributes) {
+    <span class="statement">if</span> (verificationAction == Auth.VerificationAction.EMAIL) {
+      <span class="statement">return</span> doLookupByVerifiedEmail(loginHint, verificationAction);
+    } <span class="statement">else</span> <span class="statement">if</span> (verificationAction == Auth.VerificationAction.SMS) {
+      <span class="statement">return</span> doLookupByVerifiedMobile(loginHint, verificationAction);
+    } <span class="statement">else</span> {
+      <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Unsupported Auth.VerificationAction'</span>);
+    }
+  }
+
+  <span class="keyword">private</span> Auth.HeadlessUserDiscoveryResponse doLookupByVerifiedEmail(<span class="keyword">String</span> loginHint, Auth.VerificationAction verificationAction) {
+    <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(loginHint) || !isValidEmail(loginHint)) {
+      <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Invalid email sent as loginHint: '</span> + loginHint);
+    }
+    <span class="onelineComment">// Search for an user account by email</span>
+    List&lt;User&gt; users = [SELECT Id FROM User WHERE Email = :loginHint AND IsActive = TRUE];
+    <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+      Id userId = users[0].Id;
+      <span class="onelineComment">// Check if the user has a verified email</span>
+      List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedEmailAddress FROM TwoFactorMethodsInfo WHERE UserId = :userId];
+      <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedEmailAddress == <span class="keyword">true</span>) {
+        <span class="onelineComment">// Prepare and return HeadlessUserDiscoveryResponse with userId</span>
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">new</span> Set&lt;Id&gt;{userId}, <span class="keyword">null</span>);
+      } <span class="statement">else</span> {
+        <span class="onelineComment">// Return HeadlessUserDiscoveryResponse with error message</span>
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Email '</span> + loginHint + <span class="string">' not verified for the given user account'</span>);
+      }
+    } <span class="statement">else</span> {
+      <span class="statement">if</span> (users.isEmpty()) {
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'No user identified for the email: '</span> + loginHint);
+      } <span class="statement">else</span> {
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Multiple users identified for the email: '</span> + loginHint);
+      }
+    }
+  }
+
+  <span class="keyword">private</span> Auth.HeadlessUserDiscoveryResponse doLookupByVerifiedMobile(<span class="keyword">String</span> loginHint, Auth.VerificationAction verificationAction) {
+    <span class="keyword">String</span> formattedSms = !<span class="keyword">String</span>.isBlank(loginHint) ? getFormattedSms(loginHint) : <span class="keyword">null</span>;
+    <span class="statement">if</span> (<span class="keyword">String</span>.isBlank(formattedSms)) {
+      <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Invalid phone number sent as loginHint: '</span> + loginHint);
+    }
+    <span class="onelineComment">// Search for an user account by phone</span>
+    List&lt;User&gt; users = [SELECT Id FROM User WHERE MobilePhone = :loginHint AND IsActive = TRUE];
+    <span class="statement">if</span> (!users.isEmpty() &amp;&amp; users.size() == 1) {
+      Id userId = users[0].Id;
+      <span class="onelineComment">// Check if the user has a verified phone</span>
+      List&lt;TwoFactorMethodsInfo&gt; verifiedInfo = [SELECT HasUserVerifiedMobileNumber FROM TwoFactorMethodsInfo WHERE UserId = :userId];
+      <span class="statement">if</span> (!verifiedInfo.isEmpty() &amp;&amp; verifiedInfo[0].HasUserVerifiedMobileNumber == <span class="keyword">true</span>) {
+        <span class="onelineComment">// Prepare and return HeadlessUserDiscoveryResponse with userId</span>
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">new</span> Set&lt;Id&gt;{userId}, <span class="keyword">null</span>);
+      } <span class="statement">else</span> {
+        <span class="onelineComment">// Return HeadlessUserDiscoveryResponse with error message</span>
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">' '</span> + loginHint + <span class="string">' not verified for the given user account'</span>);
+      }
+    } <span class="statement">else</span> {
+      <span class="statement">if</span> (users.isEmpty()) {
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'No user identified for the phone number: '</span> + loginHint);
+      } <span class="statement">else</span> {
+        <span class="statement">return</span> <span class="keyword">new</span> Auth.HeadlessUserDiscoveryResponse(<span class="keyword">null</span>, <span class="string">'Multiple users identified for the phone number: '</span> + loginHint);
+      }
+    }
+  }
+
+  <span class="keyword">private</span> boolean isValidEmail(<span class="keyword">String</span> identifier) {
+    <span class="keyword">String</span> emailRegex = <span class="string">'^[a-zA-Z0-9._|\\\\%#~`=?&amp;/$^*!}{+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$'</span>;
+    <span class="onelineComment">// source: http://www.regular-expressions.info/email.html </span>
+    Pattern EmailPattern = Pattern.compile(emailRegex);
+    Matcher EmailMatcher = EmailPattern.matcher(identifier);
+    <span class="statement">if</span> (EmailMatcher.matches()) { <span class="statement">return</span> <span class="keyword">true</span>; }
+    <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">false</span>; }
+  }
+
+  <span class="keyword">private</span> <span class="keyword">String</span> getFormattedSms(<span class="keyword">String</span> identifier) {
+    <span class="onelineComment">// Accept SMS input formats with 1 or 2 digits country code, 3 digits area code and 7 digits number</span>
+    <span class="onelineComment">// You can customize the SMS regex to allow different formats</span>
+    <span class="keyword">String</span> smsRegex = <span class="string">'^(\\+?\\d{1,2}?[\\s-])?(\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{4})$'</span>;
+    Pattern smsPattern = Pattern.compile(smsRegex);
+    Matcher smsMatcher = SmsPattern.matcher(identifier);
+    <span class="statement">if</span> (smsMatcher.matches()) {
+      <span class="statement">try</span> {
+        <span class="onelineComment">// Format user input into the verified SMS format '+xx xxxxxxxxxx' before DB lookup</span>
+        <span class="onelineComment">// Append US country code +1 by default if no country code is provided</span>
+        <span class="keyword">String</span> countryCode = smsMatcher.group(1) == <span class="keyword">null</span> ? <span class="string">'+1'</span> : smsMatcher.group(1);
+        <span class="statement">return</span> System.UserManagement.formatPhoneNumber(countryCode, smsMatcher.group(2));
+      } <span class="statement">catch</span>(System.InvalidParameterValueException e) {
+        <span class="statement">return</span> <span class="keyword">null</span>;
+      }
+    } <span class="statement">else</span> { <span class="statement">return</span> <span class="keyword">null</span>; }
+  }</pre></div>
+</div>
+</div>
+</div>
+</div>

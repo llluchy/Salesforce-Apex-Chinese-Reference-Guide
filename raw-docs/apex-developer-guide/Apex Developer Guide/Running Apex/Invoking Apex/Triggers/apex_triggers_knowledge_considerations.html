@@ -1,0 +1,156 @@
+<a name="apex_triggers_knowledge_considerations"><!-- --></a><h1 class="helpHead1">Trigger Considerations for Knowledge Articles</h1><div class="body refbody">
+<div class="shortdesc">You can write triggers for KnowledgeArticleVersion objects. Learn when you can use
+    triggers, and which actions don’t fire triggers, like archiving articles.</div>
+
+    <div class="section">
+      <p class="p">In general, KnowledgeArticleVersion (KAV) records can use these triggers:</p>
+<ul class="ul bulletList">
+          <li class="li">Creating a KAV record calls the <samp class="codeph nolang">before insert</samp> and
+              <samp class="codeph nolang">after insert</samp> triggers. This includes creating an
+            article, and creating drafts from archived, published, and master-language articles
+            using the Restore, Edit as Draft, and Submit for Translation
+            actions.</li>
+
+          <li class="li">Editing an existing KAV record calls the <samp class="codeph nolang">before
+              update</samp> and <samp class="codeph nolang">after update</samp> triggers.</li>
+
+          <li class="li">Deleting a KAV record calls the <samp class="codeph nolang">before delete</samp> and
+              <samp class="codeph nolang">after delete</samp>
+            triggers.</li>
+
+          <li class="li">
+            <p class="p">Importing articles calls the <samp class="codeph nolang">before insert</samp> and
+                <samp class="codeph nolang">after insert</samp> triggers. Importing articles with
+              translations also calls the <samp class="codeph nolang">before update</samp> and
+                <samp class="codeph nolang">after update</samp> triggers.</p>
+
+          </li>
+
+        </ul>
+
+      <p class="p">Actions that change the publication status of a KAV record, such as Publish and Archive, do
+        not fire Apex or flow triggers. However, sometimes publishing an article from the UI causes
+        the article to be saved, and in these instances the <samp class="codeph nolang">before
+          update</samp> and <samp class="codeph nolang">after update</samp> triggers are
+        called.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="actions_triggers"><a name="actions_triggers"><!-- --></a>Knowledge Actions and Apex Triggers</span></h2>
+
+      
+      <p class="p">Consider the following when writing Apex triggers for actions on KnowledgeArticleVersion:</p>
+<ul class="ul bulletList">
+          <li class="li">
+<strong class="ph b">Save, Save and Close</strong>: When an article is saved, the <samp class="codeph nolang">before update</samp> and
+                <samp class="codeph nolang">after update</samp> triggers are called. When a new
+              article is saved for the first time, the <samp class="codeph nolang">before
+                insert</samp> and <samp class="codeph nolang">after insert</samp> triggers work
+              instead.</li>
+
+          <li class="li">
+<strong class="ph b">Edit, Edit as Draft</strong>: <ul class="ul bulletList">
+                <li class="li">When a draft translation is edited, you can use the <samp class="codeph nolang">before update</samp> and <samp class="codeph nolang">after update</samp>
+                  triggers.</li>
+
+                <li class="li">The
+                  Edit
+                  as Draft action creates a draft from a published article, so
+                  the <samp class="codeph nolang">before insert</samp> and <samp class="codeph nolang">after insert</samp> triggers fire.</li>
+
+                <li class="li">In Salesforce Classic, no triggers fire when a draft master-language article is
+                  edited.</li>
+
+                <li class="li">In Salesforce Classic, the <samp class="codeph nolang">before insert</samp>
+                  and <samp class="codeph nolang">after insert</samp> triggers are called when
+                  editing an archived article from the Article Management tab. This creates a draft
+                  KAV record.</li>
+
+              </ul>
+</li>
+
+          <li class="li">
+<strong class="ph b">Cancel, Delete</strong>: <p class="p">The <samp class="codeph nolang">before delete</samp> and <samp class="codeph nolang">after delete</samp> triggers are called in these cases:</p>
+
+              <ul class="ul bulletList">
+                <li class="li">When deleting a translation draft.</li>
+
+                <li class="li">From the Article Management or Knowledge tab in Salesforce Classic, after
+                  editing a published article and then clicking Cancel. This deletes the new
+                  draft.</li>
+
+              </ul>
+</li>
+
+          <li class="li">
+<strong class="ph b">Submit for Translation</strong>: This action creates a draft translation, so you can generally use the <samp class="codeph nolang">before insert</samp> and <samp class="codeph nolang">after
+                insert</samp> triggers. In Salesforce Classic, you can use the <samp class="codeph nolang">before update</samp> and <samp class="codeph nolang">after
+                update</samp> triggers when you create a new article from the Knowledge tab, save
+              it, and then submit for translation. The <samp class="codeph nolang">before
+                update</samp> and <samp class="codeph nolang">after update</samp> triggers fire
+              when the master-language article is currently being edited, but not from list views or
+              when viewing the article.</li>
+
+          <li class="li">
+<strong class="ph b">Assign</strong>: The <samp class="codeph nolang">before update</samp> and <samp class="codeph nolang">after update</samp> triggers are called only when doing so
+              causes a record save first. This happens when the article is being edited before the
+              Assign button is clicked.</li>
+
+        </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="actions_no_triggers"><a name="actions_no_triggers"><!-- --></a>Actions That Don’t Fire Triggers</span></h2>
+
+      
+      <p class="p">These actions can’t fire Apex triggers:</p>
+<ul class="ul bulletList">
+          <li class="li">Undelete articles from the recycle bin.</li>
+
+          <li class="li">Preview and archive articles.</li>
+
+        </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="lightning_migration_impact"><a name="lightning_migration_impact"><!-- --></a>Impact on Lightning Migration</span></h2>
+
+      
+      <p class="p">Migrating from Knowledge in Salesforce Classic to Lightning Knowledge affects Apex
+        triggers. Writing an Apex trigger on KnowledgeArticleVersion objects creates dependencies
+        and prevents the KAV object from being deleted. When you migrate an org with multiple
+        article types to Lightning Knowledge, you must remove any Apex triggers that reference the
+        KAV article types. During migration, admins see an error message if Apex triggers still
+        reference the article type KAV objects that are deleted during migration. If you cancel
+        Lightning Knowledge migration while Apex triggers exist that refer to the new KAV object,
+        admins are notified and you must remove the Apex
+        code.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2" id="knowledge_sample_trigger">
+<a name="knowledge_sample_trigger"><!-- --></a>Sample Knowledge Trigger</h2>
+
+      
+      <p class="p">For example, you can define a trigger that enters summary text when an article is
+        created.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> KAVTrigger on KAV_Type__kav (before <span class="statement">insert</span>) {
+    <span class="statement">for</span> (KAV_Type__kav kav : Trigger.New) {
+        kav.Summary__c = <span class="string">'Updated article summary before insert'</span>;
+    }  
+}
+</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_fields_not_updated_chatter.htm" title="Triggers for Chatter Objects">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_exceptions.htm" title="Trigger Exceptions">Next →</a></li>
+</ul></div>
+</div>

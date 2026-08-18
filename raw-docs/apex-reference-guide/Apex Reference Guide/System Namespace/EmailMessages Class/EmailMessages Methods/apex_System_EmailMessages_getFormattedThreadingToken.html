@@ -1,0 +1,90 @@
+<a name="apex_System_EmailMessages_getFormattedThreadingToken"><!-- --></a><h1 class="helpHead1"><span class="titlecodeph">getFormattedThreadingToken(recordId)</span></h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns an email threading token that’s formatted with the correct
+      prefix and suffix. This token can be embedded in an outbound email body, email subject, or
+      both the body and subject. When users reply to the email, threading tokens can be used to
+      attach responses to a record, such as a Case record in Email-to-Case. </span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Signature</h2>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Id getFormattedThreadingToken(Id
+          recordId)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Parameters</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+          <strong class="ph b"><var class="keyword varname">recordId</var></strong>: <p class="p">Type:<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+
+          <p class="p">The record ID associated with the threading token.</p>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Return Value</h2>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+      <div class="p">The returned value is a formatted string that includes a prefix and suffix, for
+        example:<div class="codeSection nolang"><pre class="codeblock brush:plain">thread::pp5XPGfmNf2hRZdRCWnrohc::</pre></div>
+</div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<p class="p">When sending emails in Apex, use the returned string to
+        match emails to a record, such as a Case record, that’s associated with the email thread.
+        Embed the formatted token in the body or subject of outgoing emails. To find the
+        corresponding record ID in incoming emails, use <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_System_EmailMessages_getRecordIdFromEmail.htm" title="Returns the record ID corresponding to the specified email threading token, or returns null if none is found.">EmailMessages.getRecordIdFromEmail(subject, textBody, htmlBody)</a>. </p>
+<p class="p">If there
+        is no existing token, <span class="keyword parmname">getFormattedThreadingToken</span> may perform a Data
+        Manipulation Language (DML) operation to generate one.</p>
+<p class="p">If something goes wrong while
+        generating the token, such as a user lacking permission to access the parent record, then
+        null is returned.</p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">In this sample, we send an email with a threading token so that the email and any responses
+        are associated with the related case. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Get your Record ID. Here, we're using a dummy Case ID.</span>
+<span class="keyword">ID</span> caseId = Id.valueOf(<span class="string">'500xx000000bpkTAAQ'</span>);
+
+<span class="onelineComment">// Get the formatted threading token.</span>
+<span class="keyword">String</span> formattedToken = EmailMessages.getFormattedThreadingToken(caseId);
+
+<span class="onelineComment">// Create a SingleEmailMessage object.</span>
+Messaging.SingleEmailMessage email = <span class="keyword">new</span> Messaging.SingleEmailMessage();
+
+<span class="onelineComment">// Set recipients and other fields.</span>
+email.setToAddresses(<span class="keyword">new</span> <span class="keyword">String</span>[] {<span class="string">'test@example.com'</span>});
+
+<span class="onelineComment">// Append the threading token to the email body (text or html), subject,</span>
+<span class="onelineComment">// or both body and subject.</span>
+email.setPlainTextBody(<span class="string">'Test Email Notification text body'</span> + <span class="string">'\n\n'</span> + formattedToken);
+email.setHtmlBody(<span class="string">'Test Email Notification html body'</span> + <span class="string">'&lt;br&gt;&lt;br&gt;'</span> + formattedToken);
+email.setSubject(<span class="string">'Test Notification '</span> + <span class="string">'[ '</span> + formattedToken + <span class="string">' ]'</span>);
+<span class="onelineComment">// ........... more fields ...........</span>
+
+<span class="onelineComment">// Send out the email.</span>
+Messaging.sendEmail(<span class="keyword">new</span> Messaging.SingleEmailMessage[]{email});</pre></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

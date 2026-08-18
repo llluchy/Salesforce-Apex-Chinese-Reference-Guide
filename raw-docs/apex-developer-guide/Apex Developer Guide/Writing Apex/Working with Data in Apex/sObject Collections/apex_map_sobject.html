@@ -1,0 +1,75 @@
+<a name="apex_map_sobject"><!-- --></a><h1 class="helpHead1">Maps of sObjects</h1><div class="body conbody">
+<div class="shortdesc">Map keys and values can be of any data type, including
+sObject types, such as Account.</div>
+
+<div class="p">Maps can hold sObjects both in their keys and values. A map key
+represents a unique value that maps to a map value. For example, a
+common key would be an ID that maps to an account (a specific sObject
+type). This example shows how to define a map whose keys are of type
+ID and whose values are of type Account.<div class="codeSection apex_code"><pre class="codeblock brush:apex">Map&lt;<span class="keyword">ID</span>, Account&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">ID</span>, Account&gt;();</pre></div>
+</div>
+
+<p class="p">As with primitive types, you can populate map key-value pairs when
+the map is declared by using curly brace (<samp class="codeph apex_code">{}</samp>) syntax. Within the curly braces,
+specify the key first, then specify the value for that key using <samp class="codeph apex_code">=&gt;</samp>. This example creates a map of
+integers to accounts lists and adds one entry using the account list
+created earlier.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accs = <span class="keyword">new</span> Account[5]; <span class="onelineComment">// Account[] is synonymous with List&lt;Account&gt;</span>
+Map&lt;<span class="keyword">Integer</span>, List&lt;Account&gt;&gt; m4 = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, List&lt;Account&gt;&gt;{1 =&gt; accs};
+</pre></div>
+
+<p class="p">Maps allow sObjects in their keys. You must use sObjects in the keys only when the sObject field
+            values won’t change.</p>
+
+<div class="section">
+<h2 class="helpHead2">Auto-Populating Map Entries from a SOQL Query</h2>
+<p class="p">When working with SOQL queries, maps can be populated from the results returned by the SOQL
+                query. The map key must be declared with an ID or String data type, and the map
+                value must be declared as an sObject data type.</p>
+<div class="p">This example shows how to populate a new map from a query. In
+the example, the SOQL query returns a list of accounts with their <samp class="codeph apex_code">Id</samp> and <samp class="codeph apex_code">Name</samp> fields. The <samp class="codeph apex_code"><span class="keyword">new</span></samp> operator uses the returned list of accounts to create a map.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Populate map from SOQL query</span>
+Map&lt;<span class="keyword">ID</span>, Account&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">ID</span>, Account&gt;([SELECT Id, Name FROM Account LIMIT 10]);
+<span class="onelineComment">// After populating the map, iterate through the map entries</span>
+<span class="statement">for</span> (<span class="keyword">ID</span> idKey : m.keyset()) {
+    Account a = m.get(idKey);
+    System.debug(a);
+}</pre></div>
+</div>
+<p class="p">One common usage of this map type is for in-memory
+“joins” between two tables.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>RecentlyViewed records for users who are members of several communities can’t be
+                retrieved automatically into a map via Apex. This is because records of a user with
+                different networks can result in duplicate IDs that maps don’t support. For more
+                information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.object_reference.meta/object_reference/sforce_api_objects_recentlyviewed.htm" target="_blank">RecentlyViewed</a>.</p>
+</div>
+</div></div></div></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Using Map Methods</h2>
+<p class="p">The <samp class="codeph apex_code">Map</samp> class exposes various methods
+that you can use to work with map elements, such as adding, removing,
+or retrieving elements. This example uses Map methods to add new elements
+and retrieve existing elements from the map. This example also checks
+for the existence of a key and gets the set of all keys. The map in
+this example has one element with an integer key and an account value.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account myAcct = <span class="keyword">new</span> Account();                        <span class="onelineComment">//Define a new account</span>
+Map&lt;<span class="keyword">Integer</span>, Account&gt; m = <span class="keyword">new</span> Map&lt;<span class="keyword">Integer</span>, Account&gt;(); <span class="onelineComment">// Define a new map</span>
+m.put(1, myAcct);                  <span class="onelineComment">// Insert a new key-value pair in the map</span>
+System.assert(!m.containsKey(3));  <span class="onelineComment">// Assert that the map contains a key</span>
+Account a = m.get(1);              <span class="onelineComment">// Retrieve a value, given a particular key</span>
+Set&lt;<span class="keyword">Integer</span>&gt; s = m.keySet();       <span class="onelineComment">// Return a set that contains all of the keys in the map</span></pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_map_sobject_considerations.htm">sObject Map Considerations</a></strong><br>
+</li>
+</ul>
+</div>

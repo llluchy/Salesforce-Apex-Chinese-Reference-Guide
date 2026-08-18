@@ -1,0 +1,924 @@
+<a name="apex_classes_restful_http_httprequest"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">HttpRequest Class</h1>
+
+  
+  
+  <div class="body">
+<div class="shortdesc">Use the <samp class="codeph apex_code">HttpRequest</samp> class to programmatically
+    create HTTP requests like GET, POST, PATCH, PUT, and DELETE.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Use the XML classes or JSON classes to parse XML or JSON content in the body of a request
+        created by <samp class="codeph apex_code">HttpRequest</samp>.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">The following example illustrates how you can use an authorization header with a request
+        and handle the response.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> AuthCallout {
+ 
+   <span class="keyword">public</span> <span class="keyword">void</span> basicAuthCallout(){
+     HttpRequest req = <span class="keyword">new</span> HttpRequest();
+     req.setEndpoint(<span class="string">'http://www.yahoo.com'</span>);
+     req.setMethod(<span class="string">'GET'</span>);
+     
+     <span class="onelineComment">// Specify the required user name and password to access the endpoint</span>
+     <span class="onelineComment">// As well as the header and header information</span>
+ 
+     <span class="keyword">String</span> username = <span class="string">'myname'</span>;
+     <span class="keyword">String</span> password = <span class="string">'mypwd'</span>;
+  
+     <span class="keyword">Blob</span> headerValue = <span class="keyword">Blob</span>.valueOf(username + <span class="string">':'</span> + password);
+     <span class="keyword">String</span> authorizationHeader = <span class="string">'Basic '</span> +
+     EncodingUtil.base64Encode(headerValue);
+     req.setHeader(<span class="string">'Authorization'</span>, authorizationHeader);
+   
+     <span class="onelineComment">// Create a new http object to send the request object</span>
+     <span class="onelineComment">// A response object is generated as a result of the request  </span>
+  
+     Http http = <span class="keyword">new</span> Http();
+     HTTPResponse res = http.send(req);
+     System.debug(res.getBody());
+   }
+}</pre></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can set the endpoint as a named credential URL. A named credential URL contains the
+        scheme <samp class="codeph nolang">callout:</samp>, the name of the named credential, and
+        an optional path. For example: <samp class="codeph nolang">callout:</samp><var class="keyword varname">My_Named_Credential</var><samp class="codeph nolang">/</samp><var class="keyword varname">some_path</var>. A named credential specifies the URL of a callout
+        endpoint and its required authentication parameters in one definition. Salesforce manages
+        all authentication for Apex callouts that specify a named credential as the callout endpoint
+        so that your code doesn’t have to. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" target="_blank">Named Credentials as Callout Endpoints</a>.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2"><span class="ph" id="compression_callouts"><a name="compression_callouts"><!-- --></a>Compression</span></h2>
+
+      
+      <p class="p">To compress the data you send, use <samp class="codeph apex_code">setCompressed</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">HttpRequest req = <span class="keyword">new</span> HttpRequest();
+req.setEndPoint(<span class="string">'</span><var class="keyword varname">my_endpoint</var><span class="string">');
+</span>req.setCompressed(<span class="keyword">true</span>);
+req.setBody(<span class="string">'</span><var class="keyword varname">some post body</var><span class="string">');
+</span>
+</pre></div>
+
+      <p class="p"><span class="ph" id="explain_compression_callout"><a name="explain_compression_callout"><!-- --></a>If a response comes back in compressed format, <samp class="codeph apex_code">getBody</samp> recognizes the format, uncompresses it, and
+          returns the uncompressed value.</span></p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_constructors">HttpRequest Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_methods">HttpRequest Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_methods_system_json_overview.htm" target="_blank" title="Apex Developer Guide: JSON Support - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: JSON Support</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_xml_support.htm" target="_blank" title="Apex Developer Guide: XML Support - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: XML Support</a></div></li>
+</ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_HttpRequest_constructors">
+<a name="apex_System_HttpRequest_constructors"><!-- --></a>
+<h2 class="helpHead2">HttpRequest Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">HttpRequest</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_ctor">HttpRequest()</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">HttpRequest</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_ctor">
+<a name="apex_System_HttpRequest_ctor"><!-- --></a>
+<h3 class="helpHead3">HttpRequest()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">HttpRequest</samp> class.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> HttpRequest()</samp></p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_HttpRequest_methods">
+<a name="apex_System_HttpRequest_methods"><!-- --></a>
+<h2 class="helpHead2">HttpRequest Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">HttpRequest</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getBody">getBody()</a></strong><br>
+Retrieves the body of this request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getBodyAsBlob">getBodyAsBlob()</a></strong><br>
+Retrieves the body of this request as a Blob.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getBodyDocument">getBodyDocument()</a></strong><br>
+Retrieves the body of this request as a DOM document.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getCompressed">getCompressed()</a></strong><br>
+If <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the request body is compressed, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getEndpoint">getEndpoint()</a></strong><br>
+Retrieves the URL for the endpoint of the external server for this request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getHeader">getHeader(key)</a></strong><br>
+Retrieves the contents of the request header.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_getMethod">getMethod()</a></strong><br>
+Returns the type of method used by <samp class="codeph apex_code">HttpRequest</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setBody">setBody(body)</a></strong><br>
+Sets the contents of the body for this request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setBodyAsBlob">setBodyAsBlob(body)</a></strong><br>
+Sets the contents of the body for this request using a Blob.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setBodyDocument">setBodyDocument(document)</a></strong><br>
+Sets the contents of the body for this request. The contents represent a DOM   document.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setClientCertificate">setClientCertificate(clientCert, password)</a></strong><br>
+This method is deprecated. Use <samp class="codeph apex_code">setClientCertificateName</samp> instead.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setClientCertificateName">setClientCertificateName(certDevName)</a></strong><br>
+If the external service requires a client certificate for authentication, set the certificate name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setCompressed">setCompressed(flag)</a></strong><br>
+If <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the data in the body is delivered to the endpoint in the gzip compressed format. If <samp class="codeph apex_code"><span class="keyword">false</span></samp>, no compression format is used.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setEndpoint">setEndpoint(endpoint)</a></strong><br>
+Specifies the endpoint for this request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setHeader">setHeader(key, value)</a></strong><br>
+Sets the contents of the request header.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setMethod">setMethod(method)</a></strong><br>
+Sets the type of method to be used for the HTTP request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_setTimeout">setTimeout(timeout)</a></strong><br>
+Sets a timeout for the request between 1 and 120,000 milliseconds. The timeout is the   maximum time to wait for establishing the HTTP connection. The same timeout is used for waiting   for the request to start. When the request is executing, such as retrieving or posting data, the   connection is kept alive until the request finishes.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm#apex_System_HttpRequest_toString">toString()</a></strong><br>
+Returns a string containing the URL for the endpoint of the external server for this request and the method used, for example, <samp class="codeph nolang">Endpoint=http://YourServer, Method=POST</samp>
+</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getBody">
+<a name="apex_System_HttpRequest_getBody"><!-- --></a>
+<h3 class="helpHead3">getBody()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the body of this request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getBody()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getBodyAsBlob">
+<a name="apex_System_HttpRequest_getBodyAsBlob"><!-- --></a>
+<h3 class="helpHead3">getBodyAsBlob()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the body of this request as a Blob.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Blob</span> getBodyAsBlob()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getBodyDocument">
+<a name="apex_System_HttpRequest_getBodyDocument"><!-- --></a>
+<h3 class="helpHead3">getBodyDocument()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the body of this request as a DOM document.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Dom.Document getBodyDocument()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_document.htm#apex_classes_xml_dom_document" title="Use the Document class to process XML content. You can parse nested XML content that’s up to 50 nodes deep.">Dom.Document</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">Use this method as a shortcut for:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> xml = httpRequest.getBody();
+Dom.Document domDoc = <span class="keyword">new</span> Dom.Document(xml);</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getCompressed">
+<a name="apex_System_HttpRequest_getCompressed"><!-- --></a>
+<h3 class="helpHead3">getCompressed()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">If <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the request
+body is compressed, <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise. </div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getCompressed()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getEndpoint">
+<a name="apex_System_HttpRequest_getEndpoint"><!-- --></a>
+<h3 class="helpHead3">getEndpoint()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the URL for the endpoint of the external server
+for this request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getEndpoint()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getHeader">
+<a name="apex_System_HttpRequest_getHeader"><!-- --></a>
+<h3 class="helpHead3">getHeader(key)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Retrieves the contents of the request header.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getHeader(<span class="keyword">String</span> key)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_getMethod">
+<a name="apex_System_HttpRequest_getMethod"><!-- --></a>
+<h3 class="helpHead3">getMethod()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the type of method used by <samp class="codeph apex_code">HttpRequest</samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getMethod()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">Examples of return values:</p>
+<ul class="ul bulletList">
+                <li class="li">DELETE</li>
+
+                <li class="li">GET</li>
+
+                <li class="li">HEAD</li>
+
+                <li class="li">PATCH</li>
+
+                <li class="li">POST</li>
+
+                <li class="li">PUT</li>
+
+                <li class="li">TRACE</li>
+
+            </ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setBody">
+<a name="apex_System_HttpRequest_setBody"><!-- --></a>
+ <h3 class="helpHead3">setBody(body)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Sets the contents of the body for this request.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBody(<span class="keyword">String</span> body)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Limit: 6 MB for synchronous Apex or 12 MB for asynchronous Apex.</p>
+
+   <p class="p">The HTTP request and response sizes count towards the total heap size.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setBodyAsBlob">
+<a name="apex_System_HttpRequest_setBodyAsBlob"><!-- --></a>
+ <h3 class="helpHead3">setBodyAsBlob(body)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Sets the contents of the body for this request using a Blob.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBodyAsBlob(<span class="keyword">Blob</span> body)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">body</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_blob.htm#apex_methods_system_blob" title="Contains methods for the Blob primitive data type.">Blob</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Limit: 6 MB for synchronous Apex or 12 MB for asynchronous Apex.</p>
+
+   <p class="p">The HTTP request and response sizes count towards the total heap size.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setBodyDocument">
+<a name="apex_System_HttpRequest_setBodyDocument"><!-- --></a>
+ <h3 class="helpHead3">setBodyDocument(document)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Sets the contents of the body for this request. The contents represent a DOM
+  document.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setBodyDocument(Dom.Document document)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">document</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_xml_dom_document.htm#apex_classes_xml_dom_document" title="Use the Document class to process XML content. You can parse nested XML content that’s up to 50 nodes deep.">Dom.Document</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">Limit: 6 MB for synchronous Apex or 12 MB for asynchronous Apex.</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setClientCertificate">
+<a name="apex_System_HttpRequest_setClientCertificate"><!-- --></a>
+<h3 class="helpHead3">setClientCertificate(clientCert, password)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">This method is deprecated. Use <samp class="codeph apex_code">setClientCertificateName</samp> instead.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setClientCertificate(<span class="keyword">String</span> clientCert,
+<span class="keyword">String</span> password)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">clientCert</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">password</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If the server requires a
+client certificate for authentication, set the client certificate
+PKCS12 key store and password.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setClientCertificateName">
+<a name="apex_System_HttpRequest_setClientCertificateName"><!-- --></a>
+<h3 class="helpHead3">setClientCertificateName(certDevName)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">If the external service requires a client certificate for
+authentication, set the certificate name.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setClientCertificateName(<span class="keyword">String</span>
+certDevName)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">certDevName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+ <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_client_certs_http.htm" target="_blank">Using Certificates with HTTP Requests</a>.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setCompressed">
+<a name="apex_System_HttpRequest_setCompressed"><!-- --></a>
+<h3 class="helpHead3">setCompressed(flag)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">If <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the data
+in the body is delivered to the endpoint in the gzip compressed format.
+If <samp class="codeph apex_code"><span class="keyword">false</span></samp>, no compression format
+is used.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setCompressed(<span class="keyword">Boolean</span> flag)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">flag</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setEndpoint">
+<a name="apex_System_HttpRequest_setEndpoint"><!-- --></a>
+<h3 class="helpHead3">setEndpoint(endpoint)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Specifies the endpoint for this request.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setEndpoint(<span class="keyword">String</span> endpoint)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">endpoint</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Possible values for the endpoint:</p>
+<ul class="ul bulletList">
+              <li class="li">Endpoint
+                URL<div class="codeSection apex_code"><pre class="codeblock brush:apex">https:<span class="onelineComment">//my_endpoint.example.com/some_path</span></pre></div>
+</li>
+
+              <li class="li">Named credential URL, which contains the scheme <samp class="codeph nolang">callout</samp>, the name of the named credential, and, optionally, an appended
+                path<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">callout</span>:My_Named_Credential/some_path</pre></div>
+</li>
+
+            </ul>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" target="_blank" title="Apex Developer Guide: Named Credentials as Callout Endpoints - HTML (New Window)"><em class="ph i">Apex Developer Guide</em>: Named Credentials as Callout Endpoints</a></div></li></ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setHeader">
+<a name="apex_System_HttpRequest_setHeader"><!-- --></a>
+<h3 class="helpHead3">setHeader(key, value)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the contents of the request header.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setHeader(<span class="keyword">String</span> key, <span class="keyword">String</span> value)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">key</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">Limit 100 KB.</p>
+
+      
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setMethod">
+<a name="apex_System_HttpRequest_setMethod"><!-- --></a>
+<h3 class="helpHead3">setMethod(method)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the type of method to be used for the HTTP request.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setMethod(<span class="keyword">String</span> method)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">method</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Possible values for the method type include:</p>
+<ul class="ul bulletList">
+       <li class="li">DELETE</li>
+
+       <li class="li">GET</li>
+
+       <li class="li">HEAD</li>
+
+       <li class="li">PATCH</li>
+
+       <li class="li">POST</li>
+
+       <li class="li">PUT</li>
+
+       <li class="li">TRACE</li>
+
+      </ul>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">You can also use this method
+to set any required options.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_setTimeout">
+<a name="apex_System_HttpRequest_setTimeout"><!-- --></a>
+ <h3 class="helpHead3">setTimeout(timeout)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Sets a timeout for the request between 1 and 120,000 milliseconds. The timeout is the
+  maximum time to wait for establishing the HTTP connection. The same timeout is used for waiting
+  for the request to start. When the request is executing, such as retrieving or posting data, the
+  connection is kept alive until the request finishes.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setTimeout(<span class="keyword">Integer</span> timeout)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">timeout</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_HttpRequest_toString">
+<a name="apex_System_HttpRequest_toString"><!-- --></a>
+<h3 class="helpHead3">toString()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a string containing the URL for the endpoint of
+the external server for this request and the method used, for example, <samp class="codeph nolang">Endpoint=http://YourServer, Method=POST</samp>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

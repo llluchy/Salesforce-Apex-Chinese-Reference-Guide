@@ -1,0 +1,318 @@
+<a name="apex_connector_example_loopback"><!-- --></a><h1 class="helpHead1">Loopback Custom Adapter for Salesforce Connect</h1><div class="body conbody">
+<div class="shortdesc">This example illustrates how to handle filtering in queries. For simplicity, this
+        example connects the Salesforce org to itself as the external system.</div>
+
+        <div class="section">
+<h2 class="helpHead2">LoopbackDataSourceConnection Class</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Extends the DataSource.Connection class to enable 
+ *   Salesforce to sync the external systemâ€™s schema 
+ *   and to handle queries and searches of the external data. 
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> LoopbackDataSourceConnection 
+    <span class="keyword">extends</span> DataSource.Connection {
+
+    <span class="multilineComment">/**
+     *   Constructors.
+     **/</span>
+    <span class="keyword">global</span> LoopbackDataSourceConnection(
+        DataSource.ConnectionParams connectionParams) {
+    }
+    <span class="keyword">global</span> LoopbackDataSourceConnection() {}
+    
+    <span class="multilineComment">/**
+     *   Called when an external object needs to get a list of 
+     *   schema from the external data source, for example when 
+     *   the administrator clicks â€œValidate and Syncâ€ in the 
+     *   user interface for the external data source.   
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Table&gt; sync() {
+        List&lt;DataSource.Table&gt; tables = 
+            <span class="keyword">new</span> List&lt;DataSource.Table&gt;();        
+        List&lt;DataSource.Column&gt; columns;
+        columns = <span class="keyword">new</span> List&lt;DataSource.Column&gt;();
+        columns.add(DataSource.Column.text(<span class="string">'ExternalId'</span>, 255));
+        columns.add(DataSource.Column.url(<span class="string">'DisplayUrl'</span>));
+        columns.add(DataSource.Column.text(<span class="string">'Name'</span>, 255));
+        columns.add(
+            DataSource.Column.number(<span class="string">'NumberOfEmployees'</span>, 18, 0));
+        tables.add(
+            DataSource.Table.get(<span class="string">'Looper'</span>, <span class="string">'Name'</span>, columns));
+        <span class="statement">return</span> tables;
+    }
+    
+    <span class="multilineComment">/**
+     *   Called to query and get results from the external 
+     *   system for SOQL queries, list views, and detail pages 
+     *   for an external object thatâ€™s associated with the 
+     *   external data source.
+     *   
+     *   The QueryContext argument represents the query to run 
+     *   against a table in the external system.
+     *   
+     *   Returns a list of rows as the query results.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.TableResult 
+        query(DataSource.QueryContext context) {
+        <span class="statement">if</span> (context.tableSelection.columnsSelected.size() == 1 &amp;&amp;
+            context.tableSelection.columnsSelected.get(0).aggregation ==
+                DataSource.QueryAggregation.COUNT) {
+            integer count = execCount(getCountQuery(context));
+            List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt; countResponse =
+                <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;&gt;();
+            Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; countRow =
+                <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+            countRow.put(
+                context.tableSelection.columnsSelected.get(0).columnName,
+                count);
+            countResponse.add(countRow);
+            <span class="statement">return</span> DataSource.TableResult.get(context,countResponse);
+        } <span class="statement">else</span> {
+            List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = execQuery(
+                getSoqlQuery(context));
+            <span class="statement">return</span> DataSource.TableResult.get(context,rows);
+        }
+    }
+    
+    <span class="multilineComment">/**
+     *   Called to do a full text search and get results from
+     *   the external system for SOSL queries and Salesforce
+     *   global searches.
+     *   
+     *   The SearchContext argument represents the query to run 
+     *   against a table in the external system.
+     *   
+     *   Returns results for each table that the SearchContext 
+     *   requested to be searched.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.TableResult&gt; 
+        search(DataSource.SearchContext context) {        
+        <span class="statement">return</span> DataSource.SearchUtils.searchByName(context, <span class="statement">this</span>);
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to execute the SOQL query and 
+     *   return the results.
+     **/</span>
+    <span class="keyword">private</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; 
+        execQuery(<span class="keyword">String</span> soqlQuery) {
+        List&lt;Account&gt; objs = Database.query(soqlQuery);
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; rows = 
+            <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+        <span class="statement">for</span> (Account obj : objs) {
+            Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt; row = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;();
+            row.put(<span class="string">'Name'</span>, obj.Name);
+            row.put(<span class="string">'NumberOfEmployees'</span>, obj.NumberOfEmployees);
+            row.put(<span class="string">'ExternalId'</span>, obj.Id);
+            row.put(<span class="string">'DisplayUrl'</span>, 
+                URL.getOrgDomainUrl().toExternalForm() + 
+                    obj.Id);
+            rows.add(row);
+        }
+        <span class="statement">return</span> rows;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to get aggregate count.
+     **/</span>
+    <span class="keyword">private</span> integer execCount(<span class="keyword">String</span> soqlQuery) {
+        integer count = Database.countQuery(soqlQuery);
+        <span class="statement">return</span> count;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to create default aggregate query.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> getCountQuery(DataSource.QueryContext context) {
+        <span class="keyword">String</span> baseQuery = <span class="string">'SELECT COUNT() FROM Account'</span>;
+        <span class="keyword">String</span> filter = getSoqlFilter(<span class="string">''</span>, 
+            context.tableSelection.filter);
+        <span class="statement">if</span> (filter.length() &gt; 0)
+            <span class="statement">return</span> baseQuery + <span class="string">' WHERE '</span> + filter;
+        <span class="statement">return</span> baseQuery;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to create default query.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> getSoqlQuery(DataSource.QueryContext context) {
+        <span class="keyword">String</span> baseQuery = 
+            <span class="string">'SELECT Id,Name,NumberOfEmployees FROM Account'</span>;
+        <span class="keyword">String</span> filter = getSoqlFilter(<span class="string">''</span>, 
+            context.tableSelection.filter);
+        <span class="statement">if</span> (filter.length() &gt; 0)
+            <span class="statement">return</span> baseQuery + <span class="string">' WHERE '</span> + filter;
+        <span class="statement">return</span> baseQuery;
+    }
+
+    <span class="multilineComment">/**
+     *   Helper method to handle query filter.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> getSoqlFilter(<span class="keyword">String</span> query, 
+        DataSource.Filter filter) {
+        <span class="statement">if</span> (filter == <span class="keyword">null</span>) {
+            <span class="statement">return</span> query;
+        }
+        <span class="keyword">String</span> append;
+        DataSource.FilterType type = filter.type;
+        List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt; retainedRows = 
+            <span class="keyword">new</span> List&lt;Map&lt;<span class="keyword">String</span>,<span class="keyword">Object</span>&gt;&gt;();
+        <span class="statement">if</span> (type == DataSource.FilterType.NOT_) {
+            DataSource.Filter subfilter = filter.subfilters.get(0);
+            append = getSoqlFilter(<span class="string">'NOT'</span>, subfilter);
+        } <span class="statement">else</span> <span class="statement">if</span> (type == DataSource.FilterType.AND_) {
+            append =  
+                getSoqlFilterCompound(<span class="string">'AND'</span>, filter.subfilters);
+        } <span class="statement">else</span> <span class="statement">if</span> (type == DataSource.FilterType.OR_) {
+            append = 
+                getSoqlFilterCompound(<span class="string">'OR'</span>, filter.subfilters);
+        } <span class="statement">else</span> {
+            append = getSoqlFilterExpression(filter);
+        }
+        <span class="statement">return</span> query + <span class="string">' '</span> + append;
+    }
+    
+    <span class="multilineComment">/**
+     *   Helper method to handle query subfilters.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> getSoqlFilterCompound(<span class="keyword">String</span> operator, 
+        List&lt;DataSource.Filter&gt; subfilters) {
+        <span class="keyword">String</span> expression = <span class="string">' ('</span>;
+        boolean first = <span class="keyword">true</span>;
+        <span class="statement">for</span> (DataSource.Filter subfilter : subfilters) {
+            <span class="statement">if</span> (first)
+                first = <span class="keyword">false</span>;
+            <span class="statement">else</span>
+                expression += <span class="string">' '</span> + operator + <span class="string">' '</span>;
+            expression += getSoqlFilter(<span class="string">''</span>, subfilter);
+        }
+        expression += <span class="string">') '</span>;
+        <span class="statement">return</span> expression;
+    }
+    
+    <span class="multilineComment">/**
+     *   Helper method to handle query filter expressions.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> getSoqlFilterExpression(
+        DataSource.Filter filter) {
+        <span class="keyword">String</span> columnName = filter.columnName;
+        <span class="keyword">String</span> operator;
+        <span class="keyword">Object</span> expectedValue = filter.columnValue;
+        <span class="statement">if</span> (filter.type == DataSource.FilterType.EQUALS) {
+            operator = <span class="string">'='</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.NOT_EQUALS) {
+            operator = <span class="string">'&lt;&gt;'</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.LESS_THAN) {
+            operator = <span class="string">'&lt;'</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.GREATER_THAN) {
+            operator = <span class="string">'&gt;'</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.LESS_THAN_OR_EQUAL_TO) {
+            operator = <span class="string">'&lt;='</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.GREATER_THAN_OR_EQUAL_TO) {
+            operator = <span class="string">'&gt;='</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.STARTS_WITH) {
+            <span class="statement">return</span> mapColumnName(columnName) + 
+            <span class="string">' LIKE \''</span> + <span class="keyword">String</span>.valueOf(expectedValue) + <span class="string">'%\''</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.ENDS_WITH) {
+            <span class="statement">return</span> mapColumnName(columnName) + 
+            <span class="string">' LIKE \'%'</span> + <span class="keyword">String</span>.valueOf(expectedValue) + <span class="string">'\''</span>;
+        } <span class="statement">else</span> <span class="statement">if</span> (filter.type == 
+            DataSource.FilterType.LIKE_) {
+            <span class="statement">return</span> mapColumnName(columnName) + 
+            <span class="string">' LIKE \''</span> + <span class="keyword">String</span>.valueOf(expectedValue) + <span class="string">'\''</span>;
+        } <span class="statement">else</span> {
+            throwException(
+            <span class="string">'Implementing other filter types is left as an exercise for the reader: '</span> 
+            + filter.type);
+        }
+        <span class="statement">return</span> mapColumnName(columnName) + 
+            <span class="string">' '</span> + operator + <span class="string">' '</span> + wrapValue(expectedValue);
+    }
+    
+    <span class="multilineComment">/**
+     *   Helper method to map column names.
+     **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> mapColumnName(<span class="keyword">String</span> apexName) {
+        <span class="statement">if</span> (apexName.equalsIgnoreCase(<span class="string">'ExternalId'</span>))
+            <span class="statement">return</span> <span class="string">'Id'</span>;
+        <span class="statement">if</span> (apexName.equalsIgnoreCase(<span class="string">'DisplayUrl'</span>))
+            <span class="statement">return</span> <span class="string">'Id'</span>;
+        <span class="statement">return</span> apexName;
+    }
+
+    <span class="multilineComment">/**
+    *   Helper method to wrap expression Strings with quotes.
+    **/</span>
+    <span class="keyword">private</span> <span class="keyword">String</span> wrapValue(<span class="keyword">Object</span> foundValue) {
+        <span class="statement">if</span> (foundValue <span class="statement">instanceof</span> <span class="keyword">String</span>)
+            <span class="statement">return</span> <span class="string">'\''</span> + <span class="keyword">String</span>.valueOf(foundValue) + <span class="string">'\''</span>;
+        <span class="statement">return</span> <span class="keyword">String</span>.valueOf(foundValue);
+    }
+}
+</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">LoopbackDataSourceProvider Class</h2>
+
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="multilineComment">/**
+ *   Extends the DataSource.Provider base class to create a 
+ *   custom adapter for Salesforce Connect. The class informs 
+ *   Salesforce of the functional and authentication 
+ *   capabilities that are supported by or required to connect 
+ *   to an external system.
+ **/</span>
+<span class="keyword">global</span> <span class="keyword">class</span> LoopbackDataSourceProvider 
+    <span class="keyword">extends</span> DataSource.Provider {
+    
+    <span class="multilineComment">/**
+     *   Declares the types of authentication that can be used 
+     *   to access the external system.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.AuthenticationCapability&gt; 
+        getAuthenticationCapabilities() {
+        List&lt;DataSource.AuthenticationCapability&gt; capabilities = 
+            <span class="keyword">new</span> List&lt;DataSource.AuthenticationCapability&gt;();
+        capabilities.add(
+            DataSource.AuthenticationCapability.ANONYMOUS);
+        capabilities.add(
+            DataSource.AuthenticationCapability.BASIC);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the functional capabilities that the 
+     *   external system supports.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> List&lt;DataSource.Capability&gt; 
+        getCapabilities() {
+        List&lt;DataSource.Capability&gt; capabilities = 
+            <span class="keyword">new</span> List&lt;DataSource.Capability&gt;();
+        capabilities.add(DataSource.Capability.ROW_QUERY);
+        capabilities.add(DataSource.Capability.SEARCH);
+        <span class="statement">return</span> capabilities;
+    }
+
+    <span class="multilineComment">/**
+     *   Declares the associated DataSource.Connection class.
+     **/</span>
+    <span class="keyword">override</span> <span class="keyword">global</span> DataSource.Connection 
+        getConnection(DataSource.ConnectionParams connectionParams) {
+        <span class="statement">return</span> <span class="keyword">new</span> LoopbackDataSourceConnection();
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

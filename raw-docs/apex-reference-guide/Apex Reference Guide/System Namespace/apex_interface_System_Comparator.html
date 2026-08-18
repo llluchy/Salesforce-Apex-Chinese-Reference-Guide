@@ -1,0 +1,181 @@
+<a name="apex_interface_System_Comparator"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">Comparator Interface</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Implement different sort orders with the Comparator interface’s <samp class="codeph ">compare()</samp> method, and pass the Comparator as a parameter to <samp class="codeph ">List.sort()</samp>. Your implementation must explicitly handle null inputs
+    in the <samp class="codeph ">compare()</samp> method to avoid a null pointer
+    exception.</div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_System_Comparator.htm#apex_System_Comparator_methods">Comparator Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_System_Comparator.htm#apex_interface_System_Comparator_Example">Comparator Example Implementation</a></strong><br>
+Use the Comparator interface to impose different kinds of sorting.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Comparator_methods">
+<a name="apex_System_Comparator_methods"><!-- --></a><h2 class="helpHead2">Comparator Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph ">Comparator</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_interface_System_Comparator.htm#apex_System_Comparator_compare">compare(var1, var2)</a></strong><br>
+Compares the two arguments and returns a negative integer, zero, or a positive integer     depending on whether  the first argument is less than, equal to, or greater than the second     argument.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Comparator_compare">
+<a name="apex_System_Comparator_compare"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">compare(var1, var2)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Compares the two arguments and returns a negative integer, zero, or a positive integer
+    depending on whether  the first argument is less than, equal to, or greater than the second
+    argument.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph ">public Integer compare(T var1, T var2)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">var1</var></strong>: Type: T T - The type determined by the parameterized type of the Comparator. For example, if
+            the class implements <samp class="codeph ">Comparator&lt;Account&gt;</samp> then <var class="keyword varname">var1</var> and <var class="keyword varname">var2</var> are
+            of type Account .</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">var2</var></strong>: Type: T T - The type determined by the parameterized type of the Comparator. For example, if
+            the class implements <samp class="codeph ">Comparator&lt;Account&gt;</samp> then <var class="keyword varname">var1</var> and <var class="keyword varname">var2</var> are
+            of type Account .</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_interface_System_Comparator_Example">
+<a name="apex_interface_System_Comparator_Example"><!-- --></a>
+  <h2 class="helpHead2">Comparator Example Implementation</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Use the Comparator interface to impose different kinds of sorting.</div>
+
+    <div class="section">
+      <p class="p">This example implements two different ways of sorting employees.</p>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>public class Employee {
+
+    private Long id;
+    private String name;
+    private Integer yearJoined;
+    
+    // Constructor
+    public Employee(Long i, String n, Integer y) {
+        id = i;
+        name = n;
+        yearJoined = y;
+    }
+    
+    public String getName() { return name; }
+    public Integer getYear() { return yearJoined; }
+}</pre></div>
+
+      <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>// Class to compare Employees by name
+    public class NameCompare implements Comparator&lt;Employee&gt; {
+        public Integer compare(Employee e1, Employee e2) {
+            if(e1?.getName() == null &amp;&amp; e2?.getName() == null) {
+                return 0;
+            } else if(e1?.getName() == null) { 
+                return -1; 
+            } else if(e2?.getName() == null) {
+                return 1;
+            }        
+            return e1.getName().compareTo(e2.getName());
+            }
+        }
+
+    // Class to compare Employees by year joined
+    public class YearCompare implements Comparator&lt;Employee&gt; {
+        public Integer compare(Employee e1, Employee e2) {
+            // Guard against null operands for ‘&lt;’ or ‘&gt;’ operators because
+            // they will always return false and produce inconsistent sorting
+            Integer result;
+            if(e1?.getYear() == null &amp;&amp; e2?.getYear() == null) {
+                result = 0;
+            } else if(e1?.getYear() == null) { 
+                  result = -1; 
+            } else if(e2?.getYear() == null) {
+                  result = 1;
+            } else if (e1.getYear() &lt; e2.getYear()) {
+                  result = -1;
+            } else if (e1.getYear() &gt; e2.getYear()) {
+                  result = 1;
+            } else {
+                  result = 0;  
+            } 
+        return result;
+        }
+    }
+</pre></div>
+
+      <p class="p">The following example tests the implementation:</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> EmployeeSortingTest {
+    <span class="keyword">@isTest</span>
+    <span class="keyword">static</span> <span class="keyword">void</span> sortWithComparators() {        
+        List&lt;Employee&gt; empList = <span class="keyword">new</span> List&lt;Employee&gt;();
+        empList.add(<span class="keyword">new</span> Employee(101,<span class="string">'Joe Smith'</span>, 2020));
+        empList.add(<span class="keyword">new</span> Employee(102,<span class="string">'J. Smith'</span>, 2020));
+        empList.add(<span class="keyword">new</span> Employee(25,<span class="string">'Caragh Smith'</span>, 2021));
+        empList.add(<span class="keyword">new</span> Employee(105,<span class="string">'Mario Ruiz'</span>, 2019));
+        <span class="onelineComment">// Sort by name</span>
+        NameCompare nameCompare = <span class="keyword">new</span> NameCompare();
+        empList.sort(nameCompare);
+        <span class="onelineComment">// Expected order: Caragh Smith, J. Smith, Joe Smith, Mario Ruiz</span>
+        Assert.areEqual(<span class="string">'Caragh Smith'</span>, empList.get(0).getName());
+        
+        <span class="onelineComment">// Sort by year joined</span>
+        YearCompare yearCompare = <span class="keyword">new</span> YearCompare();
+        empList.sort(yearCompare);
+        <span class="onelineComment">// Expected order: Mario Ruiz, J. Smith, Joe Smith, Caragh Smith</span>
+        Assert.areEqual(<span class="string">'Mario Ruiz'</span>, empList.get(0).getName());
+    }
+}
+</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>

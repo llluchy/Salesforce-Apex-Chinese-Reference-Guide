@@ -1,0 +1,35 @@
+<a name="connectapi_examples_post_comment_richtext_code_snippet"><!-- --></a><h1 class="helpHead1">Post a Rich-Text Feed Comment with a Code Block</h1><div class="body refbody">
+<div class="shortdesc">Call a method to post a comment with a code block.</div>
+
+    <div class="section"><div class="p">This example calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postCommentToFeedElement_2" target="_blank"><samp class="codeph apex_code">postCommentToFeedElement(communityId, feedElementId, comment,
+          feedElementFileUpload)</samp></a> to post a comment with a code
+        block.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> communityId = <span class="keyword">null</span>;
+<span class="keyword">String</span> feedElementId = <span class="string">'0D5R0000000SBEr'</span>;
+<span class="keyword">String</span> codeSnippet = <span class="string">'&lt;html&gt;\n\t&lt;body&gt;\n\t\tHello, world!\n\t&lt;/body&gt;\n&lt;/html&gt;'</span>;
+
+ConnectApi.CommentInput input = <span class="keyword">new</span> ConnectApi.CommentInput();
+ConnectApi.MessageBodyInput messageInput = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+ConnectApi.TextSegmentInput textSegment;
+ConnectApi.MarkupBeginSegmentInput markupBeginSegment;
+ConnectApi.MarkupEndSegmentInput markupEndSegment;
+
+messageInput.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+markupBeginSegment = <span class="keyword">new</span> ConnectApi.MarkupBeginSegmentInput();
+markupBeginSegment.markupType = ConnectApi.MarkupType.Code;
+messageInput.messageSegments.add(markupBeginSegment);
+
+textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+textSegment.text = codeSnippet;
+messageInput.messageSegments.add(textSegment);
+
+markupEndSegment = <span class="keyword">new</span> ConnectApi.MarkupEndSegmentInput();
+markupEndSegment.markupType = ConnectApi.MarkupType.Code;
+messageInput.messageSegments.add(markupEndSegment);
+
+input.body = messageInput;
+
+ConnectApi.ChatterFeeds.postCommentToFeedElement(communityId, feedElementId, input, <span class="keyword">null</span>);</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

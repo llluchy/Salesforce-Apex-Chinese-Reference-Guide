@@ -1,0 +1,75 @@
+<a name="apex_classes_push_notification"><!-- --></a><h1 class="helpHead1">PushNotification Class</h1><div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a><samp class="codeph nolang">PushNotification</samp> is used to
+   configure push notifications and send them from an Apex trigger.</span></div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Messaging.htm" title="The Messaging namespace provides classes and methods for Salesforce notifications and email functionality.">Messaging</a></p>
+
+  </div>
+
+  <div class="section" id="push_notification_example_code">
+<a name="push_notification_example_code"><!-- --></a><h2 class="helpHead2">Example</h2>
+
+   
+   <p class="p">This sample Apex trigger sends push
+                notifications to the external client app named <kbd class="ph userinput">Test_App</kbd>,
+                which corresponds to a mobile app on iOS mobile clients. The trigger fires after
+                cases have been updated and sends the push notification to two users: the case owner
+                and the user who last modified the case.</p>
+
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> caseAlert on Case (after <span class="statement">update</span>) {    
+    
+    <span class="statement">for</span>(Case cs : Trigger.New)  
+    {
+        <span class="onelineComment">// Instantiating a notification</span>
+        Messaging.PushNotification msg = 
+            <span class="keyword">new</span> Messaging.PushNotification();
+
+        <span class="onelineComment">// Assembling the necessary payload parameters for Apple.</span>
+        <span class="onelineComment">// Apple params are: </span>
+        <span class="onelineComment">// (&lt;alert text&gt;,&lt;alert sound&gt;,&lt;badge count&gt;,</span>
+        <span class="onelineComment">// &lt;free-form data&gt;)</span>
+        <span class="onelineComment">// This example doesn't use badge count or free-form data.</span>
+        <span class="onelineComment">// The number of notifications that haven't been acted</span>
+        <span class="onelineComment">// upon by the intended recipient is best calculated</span>
+        <span class="onelineComment">// at the time of the push. This timing helps</span>
+        <span class="onelineComment">// ensure accuracy across multiple target devices.</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; payload = 
+            Messaging.PushNotificationPayload.apple(
+                <span class="string">'Case '</span> + cs.CaseNumber + <span class="string">' status changed to: '</span> 
+                + cs.Status, <span class="string">''</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);
+
+        <span class="onelineComment">// Adding the assembled payload to the notification</span>
+        msg.setPayload(payload);
+
+        <span class="onelineComment">// Getting recipient users</span>
+        <span class="keyword">String</span> userId1 = cs.OwnerId;
+        <span class="keyword">String</span> userId2 = cs.LastModifiedById;
+
+        <span class="onelineComment">// Adding recipient users to list</span>
+        Set&lt;<span class="keyword">String</span>&gt; users = <span class="keyword">new</span> Set&lt;<span class="keyword">String</span>&gt;();
+        users.add(userId1);
+        users.add(userId2);                       
+
+        <span class="onelineComment">// Sending the notification to the specified app and users.</span>
+        <span class="onelineComment">// Here we specify the API name of the external client app.  </span>
+        msg.send(<span class="string">'Test_App'</span>, users);
+    }
+}</pre></div>
+
+  </div>
+
+  
+ </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_Messaging_PushNotification_constructors.htm">PushNotification Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_Messaging_PushNotification_methods.htm">PushNotification Methods</a></strong><br>
+</li>
+</ul>
+</div>

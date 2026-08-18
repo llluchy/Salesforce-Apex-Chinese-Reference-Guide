@@ -1,0 +1,480 @@
+<a name="apex_site_urlRewriter"><!-- --></a><h1 class="helpHead1">Rewrite URLs for Salesforce Sites</h1><div class="body">
+<div class="shortdesc">Sites provides built-in logic that helps you display user-friendly URLs and links to
+        site visitors. <span class="ph" id="site_urlrewriter_desc"><a name="site_urlrewriter_desc"><!-- --></a>Create rules to rewrite URL requests typed
+            into the address bar, launched from bookmarks, or linked from external websites. You can
+            also create rules to rewrite the URLs for links within site pages. URL rewriting not
+            only makes URLs more descriptive and intuitive for users, it allows search engines to
+            better index your site pages.</span>
+</div>
+
+        <p class="p">For example, let's say that you have a blog site. Without URL rewriting, a blog entry's
+            URL might look like this:
+                <span class="ph filepath">https://myblog.my.salesforce-sites.com/posts?id=003D000000Q0PcN</span></p>
+
+        <p class="p">With URL rewriting, your users can access blog posts by date and title, say, instead of
+            by record ID. The URL for one of your New Year's Eve posts might be:
+                <span class="ph filepath">https://myblog.my.salesforce-sites.com/posts/2019/12/31/auld-lang-syne</span></p>
+
+        <p class="p">You can also rewrite URLs for links shown within a site page. If your New Year's Eve post
+            contained a link to your Valentine's Day post, the link URL might show:
+                <span class="ph filepath">https://myblog.my.salesforce-sites.com/posts/2019/02/14/last-minute-roses</span></p>
+
+        <p class="p">To rewrite URLs for a site, create an Apex class that maps the original URLs to
+            user-friendly URLs, and then add the Apex class to your site.</p>
+
+        <p class="p">To learn about the methods in the <samp class="codeph apex_code">Site.UrlRewriter
+                <span class="keyword">interface</span></samp>, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_site_urlRewriter_reference.htm" target="_blank">UrlRewriter Interface</a>.</p>
+
+        <div class="section" id="apex_site_urlrewriter_creating">
+<a name="apex_site_urlrewriter_creating"><!-- --></a><h2 class="helpHead2">Creating the Apex Class</h2>
+
+            
+            <div class="p">The Apex class that you create must implement the provided interface <samp class="codeph apex_code">Site.UrlRewriter</samp>. In general, it must have the
+                following
+                form:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> yourClass <span class="keyword">implements</span> Site.UrlRewriter {
+    <span class="keyword">global</span> PageReference mapRequestUrl(PageReference
+            yourFriendlyUrl)
+    <span class="keyword">global</span> PageReference[] generateUrlFor(PageReference[]
+            yourSalesforceUrls);
+}</pre></div>
+</div>
+
+            <p class="p">Consider the following restrictions and recommendations as you create your Apex class:</p>
+<ul class="ul bulletList">
+                    <li class="li">
+<strong class="ph b">Class and Methods Must Be Global</strong>: The Apex class and methods must all be <samp class="codeph apex_code"><span class="keyword">global</span></samp>.</li>
+
+                    <li class="li">
+<strong class="ph b">Class Must Include Both Methods</strong>: The Apex class must implement both the <samp class="codeph apex_code">mapRequestUrl</samp> and <samp class="codeph apex_code">generateUrlFor</samp> methods. If you don't want to use one of
+                            the methods, simply have it return <samp class="codeph apex_code"><span class="keyword">null</span></samp>.</li>
+
+                    <li class="li">
+<strong class="ph b">Rewriting Only Works for Visualforce Site Pages</strong>: Incoming URL requests can only be mapped to Visualforce pages associated
+                            with your site. You can't map to standard pages, images, or other
+                            entities. To rewrite URLs for links on your site's pages, use the <samp class="codeph apex_page">!URLFOR</samp> function with the <samp class="codeph apex_page">$Page</samp> merge variable. For example,
+                            the following links to a Visualforce page named
+                                myPage:<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:outputLink</span><span class="attribute"> value=</span><span class="string">"{!URLFOR($Page.myPage)}"</span>&gt;<span class="tag">&lt;/apex:outputLink</span>&gt;</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Visualforce
+                                    <samp class="codeph apex_code">&lt;apex:form&gt;</samp> elements
+                                with <samp class="codeph apex_code">forceSSL=”<span class="keyword">true</span>”</samp> aren't affected by the
+                                    <samp class="codeph apex_code">urlRewriter</samp>.</p>
+</div>
+</div></div></div></div>
+ See the “Functions” appendix of the <cite class="cite"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="HTML (New Window)">Visualforce Developer's
+                                    Guide</a></cite>.</li>
+
+                    <li class="li">
+<strong class="ph b">Encoded URLs</strong>: The URLs you get from using the <samp class="codeph apex_code">Site.urlRewriter</samp> interface are encoded. If you need to
+                            access the unencoded values of your URL, use the <samp class="codeph apex_code">urlDecode</samp> method of the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_encodingUtil.htm" target="_blank">EncodingUtil Class</a>.</li>
+
+                    <li class="li">
+<strong class="ph b">Restricted Characters</strong>: User-friendly URLs must be distinct from Salesforce URLs. URLs with a
+                            3-character entity prefix or a 15- or 18-character ID aren’t
+                            rewritten. You can’t use periods in your user-friendly or rewritten URLs, except
+                            for the <samp class="codeph apex_page">.well-known</samp> path
+                            component, which can’t be used at the end of a URL.</li>
+
+                    <li class="li">
+<strong class="ph b">Restricted Strings</strong>: You can’t use the following reserved strings as the first path component
+                            after a site’s base URL in either a user-friendly URL or a rewritten
+                            URL. Some examples of the first past component after a site’s base URL
+                            are baseURL in
+                            https://<var class="keyword varname">MyDomainName</var>.my.salesforce-sites.com/baseURL,
+                                https://<var class="keyword varname">MyDomainName</var>.my.salesforce-sites.com/pathPrefix/baseURL,
+                            https://custom-domain/pathPrefix/baseURL, and
+                                https://<var class="keyword varname">MyDomainName</var>.my.salesforce-sites.com/pathPrefix/baseURL/another/path.<ul class="ul bulletList">
+                                <li class="li"><samp class="codeph apex_code">apexcomponent</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">apexpages</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">aura</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">chatter</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">chatteranswers</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">chatterservice</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">cometd</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">ex</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">faces</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">flash</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">flex</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">google</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">home</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">id</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">ideas</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">idp</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">images</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">img</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">javascript</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">js</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">knowledge</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">lightning</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">login</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">m</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">mobile</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">ncsphoto</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">nui</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">push</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">resource</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">saml</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">sccommunities</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">search</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">secur</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">services</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">servlet</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">setup</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">sfc</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">sfdc</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">sfdc_ns</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">sfsites</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">site</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">style</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">vote</samp></li>
+
+                                <li class="li"><samp class="codeph ">WEB-INF</samp></li>
+
+                                <li class="li"><samp class="codeph apex_code">widg</samp></li>
+
+                            </ul>
+ You can't use the following reserved strings at the end of a rewritten
+                            URL path:<ul class="ul bulletList">
+                                <li class="li">/aura</li>
+
+                                <li class="li">/auraFW</li>
+
+                                <li class="li">/auraResource</li>
+
+                                <li class="li">/AuraJLoggingRPCService</li>
+
+                                <li class="li">/AuraJLVRPCService</li>
+
+                                <li class="li">/AuraJRPCService</li>
+
+                                <li class="li">/dbcthumbnail</li>
+
+                                <li class="li">/HelpAndTrainingDoor</li>
+
+                                <li class="li">/htmldbcthumbnail</li>
+
+                                <li class="li">/l</li>
+
+                                <li class="li">/m</li>
+
+                                <li class="li">/mobile</li>
+
+                            </ul>
+</li>
+
+                    <li class="li">
+<strong class="ph b">Relative Paths Only</strong>: The <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_System_PageReference_getUrl.htm" target="_blank">PageReference.getUrl()</a> method
+                            only returns the part of the URL immediately following the host name or
+                            site prefix (if any). For example, if your URL is
+                                <span class="ph filepath">https://mycompany.my.salesforce-sites.com/sales/MyPage?id=12345</span>,
+                            where “sales” is the site prefix, only
+                                <span class="ph filepath">/MyPage?id=12345</span> is returned. You can't rewrite the domain or site prefix.</li>
+
+                    <li class="li">
+<strong class="ph b">Unique Paths Only</strong>: You can't map a URL to a directory that has the same name as your site
+                            prefix. For example, if your site URL is
+                                <span class="ph filepath">https://acme.my.salesforce-sites.com/help</span>,
+                            where “help” is the site prefix, you can't point the URL
+                            to <span class="ph filepath">help/page</span>. The resulting path,
+                                <span class="ph filepath">https://acme.my.salesforce-sites.com/help/help/page</span>,
+                            would be returned instead as
+                                <span class="ph filepath">https://acme.my.salesforce-sites.com/help/page</span>.</li>
+
+                    <li class="li">
+<strong class="ph b">Query in Bulk</strong>: For better performance with page generation, perform tasks in bulk
+                            rather than one at a time for the <samp class="codeph apex_code">generateUrlFor</samp> method.</li>
+
+                    <li class="li">
+<strong class="ph b">Enforce Field Uniqueness</strong>: Make sure the fields you choose for rewriting URLs are unique. Using
+                            unique or indexed fields in SOQL for your queries may improve
+                            performance.</li>
+
+                </ul>
+
+        </div>
+
+        <div class="section" id="apex_site_urlrewriter_add">
+<a name="apex_site_urlrewriter_add"><!-- --></a><h2 class="helpHead2">Adding URL Rewriting to a Site</h2>
+
+            
+            <div class="p">Once you've created the URL rewriting Apex class, follow these steps to add it to
+                your site:<ol class="ol enumList">
+                    <li class="li">From Setup, enter <kbd class="ph userinput">Sites</kbd> in the <span class="keyword parmname">Quick
+                            Find</span> box, then select <strong class="ph uicontrol">Sites</strong>.</li>
+
+                    <li class="li">Click <strong class="ph uicontrol">New</strong> or click <strong class="ph uicontrol">Edit</strong> for an
+                        existing site.</li>
+
+                    <li class="li">On the Site Edit page, choose an Apex class for <span class="keyword parmname">URL Rewriter
+                            Class</span>.</li>
+
+                    <li class="li">Click <strong class="ph uicontrol">Save</strong>.</li>
+
+                </ol>
+</div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If you have URL rewriting enabled on your site, all PageReferences are passed
+                through the URL rewriter. PageReferences with <samp class="codeph apex_code">redirect</samp> set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> and a
+                    <samp class="codeph apex_code">redirectCode</samp> other than 0 return
+                redirected URLs instead of rewritten URLs.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section" id="apex_site_urlrewriter_codesample">
+<a name="apex_site_urlrewriter_codesample"><!-- --></a><h2 class="helpHead2">Code Example</h2>
+
+            
+            <p class="p">In this example, we have a simple site consisting of two Visualforce pages: mycontact
+                and myaccount. Be sure you have “Read” permission enabled for both
+                before trying the sample. Each page uses the standard controller for its object
+                type. The contact page includes a link to the parent account, plus contact
+                details.</p>
+
+            <p class="p">Before implementing rewriting, the address bar and link URLs showed the record ID (a
+                random 15-digit string). Once rewriting was enabled, the address bar and links show
+                more user-friendly rewritten URLs.</p>
+
+            <p class="p">The Apex class used to rewrite the URLs for these pages is shown in <a class="xref" href="#ExampleApexClass">Example URL Rewriting Apex Class</a>, with detailed comments.</p>
+
+        </div>
+
+        <div class="section" id="apex_site_urlrewriter_samplepages">
+<a name="apex_site_urlrewriter_samplepages"><!-- --></a><h2 class="helpHead2">Example Site Pages</h2>
+
+            
+            <p class="p">This section shows the Visualforce for the account and contact pages used in this
+                example.</p>
+
+            <div class="p">The account page uses the standard controller for accounts and is nothing more than a
+                standard detail page. This page should be named
+                myaccount.<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"Account"</span>&gt;
+    <span class="tag">&lt;apex:detail</span><span class="attribute"> relatedList=</span><span class="string">"false"</span>/&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+</div>
+
+            <div class="p">The contact page uses the standard controller for contacts and consists of two parts.
+                The first part links to the parent account using the <samp class="codeph apex_page">URLFOR</samp> function and the <samp class="codeph apex_page">$Page</samp>
+                merge variable; the second simply provides the contact details. Notice that the
+                Visualforce page doesn't contain any rewriting logic except <samp class="codeph apex_page">URLFOR</samp>. This page should be named mycontact.
+                <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> standardController=</span><span class="string">"contact"</span>&gt;
+    <span class="tag">&lt;apex:pageBlock</span><span class="attribute"> title=</span><span class="string">"Parent Account"</span>&gt;
+        <span class="tag">&lt;apex:outputLink</span><span class="attribute"> value=</span><span class="string">"{!URLFOR($Page.mycontact,null, 
+</span>               <span class="attribute"> [id=</span>contact.account.id])}<span class="string">"&gt;{!contact.account.name}
+</span>                <span class="tag">&lt;/apex:outputLink</span>&gt;
+    <span class="tag">&lt;/apex:pageBlock</span>&gt;
+    <span class="tag">&lt;apex:detail</span><span class="attribute"> relatedList=</span><span class="string">"false"</span>/&gt;
+<span class="tag">&lt;/apex:page</span>&gt;
+</pre></div>
+</div>
+
+        </div>
+
+        <div class="section" id="ExampleApexClass">
+<a name="ExampleApexClass"><!-- --></a><h2 class="helpHead2">Example URL Rewriting Apex Class</h2>
+
+            
+            <div class="p">The Apex class used as the URL rewriter for the site uses the <samp class="codeph apex_code">mapRequestUrl</samp> method to map incoming URL
+                requests to the right Salesforce record. It also uses the <samp class="codeph apex_code">generateUrlFor</samp> method to rewrite the URL for the
+                link to the account page in a more user-friendly
+                form.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> myRewriter <span class="keyword">implements</span> Site.UrlRewriter {
+
+    <span class="onelineComment">//Variables to represent the user-friendly URLs for</span>
+    <span class="onelineComment">//account and contact pages</span>
+    <span class="keyword">String</span> ACCOUNT_PAGE = <span class="string">'/myaccount/'</span>;
+    <span class="keyword">String</span> CONTACT_PAGE = <span class="string">'/mycontact/'</span>;
+    <span class="onelineComment">//Variables to represent my custom Visualforce pages</span>
+    <span class="onelineComment">//that display account and contact information</span>
+    <span class="keyword">String</span> ACCOUNT_VISUALFORCE_PAGE = <span class="string">'/myaccount?id='</span>;
+    <span class="keyword">String</span> CONTACT_VISUALFORCE_PAGE = <span class="string">'/mycontact?id='</span>;
+
+    <span class="keyword">global</span> PageReference mapRequestUrl(PageReference
+            myFriendlyUrl){
+        <span class="keyword">String</span> url = myFriendlyUrl.getUrl();
+
+        <span class="statement">if</span>(url.startsWith(CONTACT_PAGE)){
+            <span class="onelineComment">//Extract the name of the contact from the URL</span>
+            <span class="onelineComment">//For example: /mycontact/Ryan returns Ryan</span>
+            <span class="keyword">String</span> name = url.substring(CONTACT_PAGE.length(),
+                    url.length());
+
+            <span class="onelineComment">//Select the ID of the contact that matches</span>
+            <span class="onelineComment">//the name from the URL</span>
+            Contact con = [SELECT Id FROM Contact WHERE Name =:
+                    name LIMIT 1];
+
+            <span class="onelineComment">//Construct a new page reference in the form</span>
+            <span class="onelineComment">//of my Visualforce page</span>
+            <span class="statement">return</span> <span class="keyword">new</span> PageReference(CONTACT_VISUALFORCE_PAGE + con.id);
+        }
+        <span class="statement">if</span>(url.startsWith(ACCOUNT_PAGE)){
+            <span class="onelineComment">//Extract the name of the account</span>
+            <span class="keyword">String</span> name = url.substring(ACCOUNT_PAGE.length(),
+                    url.length());
+
+            <span class="onelineComment">//Query for the ID of an account with this name</span>
+            Account acc = [SELECT Id FROM Account WHERE Name =:name LIMIT 1];
+
+           <span class="onelineComment">//Return a page in Visualforce format</span>
+            <span class="statement">return</span> <span class="keyword">new</span> PageReference(ACCOUNT_VISUALFORCE_PAGE + acc.id);
+        }
+        <span class="onelineComment">//If the URL isn't in the form of a contact or</span>
+        <span class="onelineComment">//account page, continue with the request</span>
+        <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+    <span class="keyword">global</span> List&lt;PageReference&gt; generateUrlFor(List&lt;PageReference&gt; 
+            mySalesforceUrls){
+        <span class="onelineComment">//A list of pages to return after all the links </span>
+        <span class="onelineComment">//have been evaluated</span>
+        List&lt;PageReference&gt; myFriendlyUrls = <span class="keyword">new</span> List&lt;PageReference&gt;();
+        
+        <span class="onelineComment">//a list of all the ids in the urls</span>
+        List&lt;id&gt; accIds = <span class="keyword">new</span> List&lt;id&gt;();
+        
+        <span class="onelineComment">// loop through all the urls once, finding all the valid ids</span>
+        <span class="statement">for</span>(PageReference mySalesforceUrl : mySalesforceUrls){
+        <span class="onelineComment">//Get the URL of the page</span>
+        <span class="keyword">String</span> url = mySalesforceUrl.getUrl();
+ 
+            <span class="onelineComment">//If this looks like an account page, transform it</span>
+            <span class="statement">if</span>(url.startsWith(ACCOUNT_VISUALFORCE_PAGE)){
+                <span class="onelineComment">//Extract the ID from the query parameter</span>
+                <span class="onelineComment">//and store in a list</span>
+                <span class="onelineComment">//for querying later in bulk.</span>
+                        <span class="keyword">String</span> id= url.substring(ACCOUNT_VISUALFORCE_PAGE.length(),
+                        url.length());
+                        accIds.add(id);
+            }
+        }
+
+    <span class="onelineComment">// Get all the account names in bulk</span>
+    List &lt;account&gt; accounts = [SELECT Name FROM Account WHERE Id IN :accIds];
+
+    <span class="onelineComment">// make the new urls</span>
+    <span class="keyword">Integer</span> counter = 0;
+
+    <span class="onelineComment">// it is important to go through all the urls again, so that the order</span>
+    <span class="onelineComment">// of the urls in the list is maintained. </span>
+    <span class="statement">for</span>(PageReference mySalesforceUrl : mySalesforceUrls) {
+
+       <span class="onelineComment">//Get the URL of the page</span>
+       <span class="keyword">String</span> url = mySalesforceUrl.getUrl();
+
+       <span class="statement">if</span>(url.startsWith(ACCOUNT_VISUALFORCE_PAGE)){
+         myFriendlyUrls.add(<span class="keyword">new</span> PageReference(ACCOUNT_PAGE + accounts.get(counter).name));
+         counter++;
+       } <span class="statement">else</span> {
+         <span class="onelineComment">//If this doesn't start like an account page,</span>
+         <span class="onelineComment">//don't do any transformations</span>
+         myFriendlyUrls.add(mySalesforceUrl);
+       }
+    }
+   
+    <span class="onelineComment">//Return the full list of pages</span>
+    <span class="statement">return</span> myFriendlyUrls;
+  }
+
+}</pre></div>
+</div>
+
+        </div>
+
+        <div class="section" id="apex_site_urlrewriter_beforeafter">
+<a name="apex_site_urlrewriter_beforeafter"><!-- --></a><h2 class="helpHead2">Before and After Rewriting</h2>
+
+            
+            <div class="p">Here is a visual example of the results of implementing the Apex class to rewrite the
+                original site URLs. Notice the ID-based URLs in the first figure, and the
+                user-friendly URLs in the second.<div class="fig fignone">
+<span class="figcap">Site URLs Before Rewriting</span>
+                    
+                    <img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fsites_url_rewriter_before.png&folder=apexcode" alt="Site URLs before">
+                </div>
+</div>
+
+            <p class="p">The numbered elements in this figure are:</p>
+
+        </div>
+
+        <ol class="ol enumList">
+            <li class="li">The original URL for the contact page before rewriting</li>
+
+            <li class="li">The link to the parent account page from the contact page</li>
+
+            <li class="li">The original URL for the link to the account page before rewriting, shown in the
+                browser's status bar</li>
+
+        </ol>
+
+        <div class="section" id="apex_site_urlrewriter_after">
+<a name="apex_site_urlrewriter_after"><!-- --></a>
+            <div class="fig fignone">
+<span class="figcap">Site URLs After Rewriting</span>
+                
+                <img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fsites_url_rewriter_after.png&folder=apexcode" alt="Site URLs after">
+            </div>
+
+            <p class="p">The numbered elements in this figure are:</p>
+
+        </div>
+
+        <ol class="ol enumList">
+            <li class="li">The rewritten URL for the contact page after rewriting</li>
+
+            <li class="li">The link to the parent account page from the contact page</li>
+
+            <li class="li">The rewritten URL for the link to the account page after rewriting, shown in the
+                browser's status bar</li>
+
+        </ol>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

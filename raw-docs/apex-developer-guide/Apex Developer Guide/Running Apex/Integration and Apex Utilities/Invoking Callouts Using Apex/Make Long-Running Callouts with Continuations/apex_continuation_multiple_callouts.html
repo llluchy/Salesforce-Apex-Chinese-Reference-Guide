@@ -1,0 +1,98 @@
+<a name="apex_continuation_multiple_callouts"><!-- --></a><h1 class="helpHead1">Making Multiple Asynchronous Callouts</h1><div class="body conbody">
+<div class="shortdesc">To make multiple callouts to a long-running service simultaneously from a Visualforce
+      page, you can add up to three requests to the Continuation instance. An example of when to
+      make simultaneous callouts is when you’re making independent requests to a service, such as
+      getting inventory statistics for two products.</div>
+
+      <p class="p">When you’re making multiple callouts in the same continuation, the callout requests run in
+         parallel and suspend the Visualforce request. Only after all callout responses are returned
+         does the Visualforce process resume.</p>
+
+      <p class="p">The following Visualforce and Apex examples show how to make two asynchronous callouts
+         simultaneously by using a single continuation. The Visualforce page is shown first. The
+         Visualforce page contains a button that invokes the action method <samp class="codeph apex_code">startRequestsInParallel</samp> in the controller. When the
+         Visualforce process resumes, the <span class="keyword parmname">outputPanel</span> component is rendered
+         again. This panel displays the responses of the two asynchronous callouts.</p>
+
+      <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"MultipleCalloutController"</span><span class="attribute"> showChat=</span><span class="string">"false"</span><span class="attribute"> showHeader=</span><span class="string">"false"</span>&gt;
+   <span class="tag">&lt;apex:form</span> &gt;
+      <span class="multilineComment">&lt;!-- Invokes the action method when the user clicks this button. --&gt;</span>
+      <span class="tag">&lt;apex:commandButton</span><span class="attribute"> action=</span><span class="string">"{!startRequestsInParallel}"</span><span class="attribute"> value=</span><span class="string">"Start Request"</span><span class="attribute"> reRender=</span><span class="string">"panel"</span>/&gt;  
+   <span class="tag">&lt;/apex:form</span>&gt;
+
+   <span class="tag">&lt;apex:outputPanel</span><span class="attribute"> id=</span><span class="string">"panel"</span>&gt;
+       <span class="multilineComment">&lt;!-- Displays the response body of the initial callout. --&gt;</span>   
+       <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!result1}"</span> /&gt;
+       
+       <span class="tag">&lt;br/</span>&gt;
+       <span class="multilineComment">&lt;!-- Displays the response body of the chained callout. --&gt;</span>
+       <span class="tag">&lt;apex:outputText</span><span class="attribute"> value=</span><span class="string">"{!result2}"</span> /&gt;
+   <span class="tag">&lt;/apex:outputPanel</span>&gt; 
+   
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+
+      <p class="p">This example shows the controller class for the Visualforce page. The <samp class="codeph apex_code">startRequestsInParallel</samp> method adds two requests to the
+         Continuation. After all callout responses are returned, the callback method (<samp class="codeph apex_code">processAllResponses</samp>) is invoked and processes the
+         responses.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> MultipleCalloutController {
+
+    <span class="onelineComment">// Unique label for the first request</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel1;
+    <span class="onelineComment">// Unique label for the second request</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel2;
+    <span class="onelineComment">// Result of first callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result1 {get;set;}
+   <span class="onelineComment">// Result of second callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result2 {get;set;}
+    <span class="onelineComment">// Endpoints of long-running service</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL1 = 
+        <span class="string">'&lt;Insert your first service URL&gt;'</span>;
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL2 = 
+        <span class="string">'&lt;Insert your second service URL&gt;'</span>;
+           
+    <span class="onelineComment">// Action method</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> startRequestsInParallel() {
+      <span class="onelineComment">// Create continuation with a timeout</span>
+      Continuation con = <span class="keyword">new</span> Continuation(60);
+      <span class="onelineComment">// Set callback method</span>
+      con.continuationMethod=<span class="string">'processAllResponses'</span>;
+      
+      <span class="onelineComment">// Create first callout request</span>
+      HttpRequest req1 = <span class="keyword">new</span> HttpRequest();
+      req1.setMethod(<span class="string">'GET'</span>);
+      req1.setEndpoint(LONG_RUNNING_SERVICE_URL1);
+      
+      <span class="onelineComment">// Add first callout request to continuation</span>
+      <span class="statement">this</span>.requestLabel1 = con.addHttpRequest(req1);     
+      
+      <span class="onelineComment">// Create second callout request</span>
+      HttpRequest req2 = <span class="keyword">new</span> HttpRequest();
+      req2.setMethod(<span class="string">'GET'</span>);
+      req2.setEndpoint(LONG_RUNNING_SERVICE_URL2);
+      
+      <span class="onelineComment">// Add second callout request to continuation</span>
+      <span class="statement">this</span>.requestLabel2 = con.addHttpRequest(req2);     
+      
+      <span class="onelineComment">// Return the continuation</span>
+      <span class="statement">return</span> con;  
+    }
+    
+    <span class="onelineComment">// Callback method.</span>
+    <span class="onelineComment">// Invoked only when responses of all callouts are returned.</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> processAllResponses() {   
+      <span class="onelineComment">// Get the response of the first request</span>
+      HttpResponse response1 = Continuation.getResponse(<span class="statement">this</span>.requestLabel1);
+      <span class="statement">this</span>.result1 = response1.getBody();
+
+      <span class="onelineComment">// Get the response of the second request</span>
+      HttpResponse response2 = Continuation.getResponse(<span class="statement">this</span>.requestLabel2);
+      <span class="statement">this</span>.result2 = response2.getBody();
+                 
+      <span class="onelineComment">// Return null to re-render the original Visualforce page</span>
+      <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}
+</pre></div>
+
+   </div><div id="sfdc:seealso" class="related-links"></div>

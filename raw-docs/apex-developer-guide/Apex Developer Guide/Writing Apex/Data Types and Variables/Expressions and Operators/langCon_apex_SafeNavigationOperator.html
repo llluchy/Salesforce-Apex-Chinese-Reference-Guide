@@ -1,0 +1,252 @@
+<a name="langCon_apex_SafeNavigationOperator"><!-- --></a><h1 class="helpHead1">Safe Navigation Operator </h1><div class="body conbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use the safe navigation operator (<samp class="codeph apex_code">?.</samp>) to replace explicit, sequential checks for null references. This
+            operator short-circuits expressions that attempt to operate on a null value and returns
+            null instead of throwing a NullPointerException.</span></div>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Where possible, we changed noninclusive terms to align with our
+            company value of Equality. We maintained certain terms to avoid any effect on
+            customer implementations.</p>
+</div>
+</div></div></div></div>
+
+        <div class="section">
+            <p class="p">If the left-hand-side of the chain expression evaluates to null, the right-hand-side
+                isn’t evaluated. Use the safe navigation operator (<samp class="codeph apex_code">?.</samp>) in method, variable, and property chaining. The part of the
+                expression that isn’t evaluated can include variable references, method references,
+                or array expressions.</p>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>All Apex types are implicitly nullable and can hold a null value returned from the
+                operator.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Examples</h2>
+
+            
+            <ul class="ul bulletList">
+                <li class="li">This example first evaluates <samp class="codeph apex_code">a</samp>, and
+                    returns null if <samp class="codeph apex_code">a</samp> is null. Otherwise the
+                    return value is <samp class="codeph apex_code">a.b</samp>.<div class="codeSection apex_code"><pre class="codeblock brush:apex">a?.b <span class="onelineComment">// Evaluates to: a == null ? null : a.b</span></pre></div>
+</li>
+
+                <li class="li">This example returns null if <samp class="codeph apex_code">a[x]</samp>
+                    evaluates to null. If <samp class="codeph apex_code">a[x]</samp> doesn’t
+                    evaluate to null and <samp class="codeph apex_code">aMethod()</samp> returns
+                    null, then this expression throws a
+                    NullPointerException.<div class="codeSection apex_code"><pre class="codeblock brush:apex">a[x]?.aMethod().aField <span class="onelineComment">// Evaluates to null if a[x] == null</span></pre></div>
+</li>
+
+                <li class="li">This example returns null if <samp class="codeph apex_code">a[x].aMethod()</samp> evaluates to null.
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">a[x].aMethod()?.aField </pre></div>
+</li>
+
+                <li class="li">This example indicates that the type of the expression is the same whether the
+                    safe navigation operator is used in the expression or
+                    not.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Integer</span> x = anObject?.anIntegerField; <span class="onelineComment">// The expression is of type Integer because the field is of type Integer</span></pre></div>
+</li>
+
+                <li class="li">This example shows a single statement replacing a block of code that checks for
+                    nulls.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Previous code checking for nulls</span>
+<span class="keyword">String</span> profileUrl = <span class="keyword">null</span>;
+<span class="statement">if</span> (user.getProfileUrl() != <span class="keyword">null</span>) {
+   profileUrl = user.getProfileUrl().toExternalForm();
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// New code using the safe navigation operator</span>
+<span class="keyword">String</span> profileUrl = user.getProfileUrl()?.toExternalForm();</pre></div>
+</li>
+
+                <li class="li">This example shows a single-row SOQL query using the safe navigation operator.
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// Previous code checking for nulls</span>
+results = [SELECT Name FROM Account WHERE Id = :accId];
+<span class="statement">if</span> (results.size() == 0) { <span class="onelineComment">// Account was deleted</span>
+    <span class="statement">return</span> <span class="keyword">null</span>;
+}
+<span class="statement">return</span> results[0].Name;</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// New code using the safe navigation operator</span>
+<span class="statement">return</span> [SELECT Name FROM Account WHERE Id = :accId]?.Name;</pre></div>
+</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+<caption><span class="tablecap">Table 1. Safe Navigation Operator Use-Cases</span></caption>
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader  " id="d150748e134">Allowed use-case</th>
+
+                            <th class="featureTableHeader  " id="d150748e137">Example</th>
+
+                            <th class="featureTableHeader  " id="d150748e140">More information</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d150748e134" data-title="Allowed use-case">Method or variable or parameter chains</td>
+
+                            <td class="entry" headers="d150748e137" data-title="Example"><samp class="codeph apex_code">aObject?.aMethod();</samp></td>
+
+                            <td class="entry" headers="d150748e140" data-title="More information">Can be used as a top-level statement.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d150748e134" data-title="Allowed use-case">Using parentheses, for example in a cast. </td>
+
+                            <td class="entry" headers="d150748e137" data-title="Example"><samp class="codeph apex_code">((T)a1?.b1)?.c1()</samp></td>
+
+                            <td class="entry" headers="d150748e140" data-title="More information">The operator skips the method chain up to the first closing
+                                parenthesis. By adding the operator after the parenthesis, the code
+                                safeguards the whole expression. If the operator is used elsewhere,
+                                and not after the parenthesis, the whole cast expression isn’t be
+                                safeguarded. For an example, see <a class="xref" href="#ex_cast">Incorrect use of safe navigation operator with
+                                    cast</a>.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d150748e134" data-title="Allowed use-case">SObject chaining</td>
+
+                            <td class="entry" headers="d150748e137" data-title="Example"><samp class="codeph apex_code"><span class="keyword">String</span> s = contact.Account?.BillingCity;</samp></td>
+
+                            <td class="entry" headers="d150748e140" data-title="More information">An SObject expression evaluates to null when the relationship is
+                                null. The behavior is equivalent to <samp class="codeph apex_code"><span class="keyword">String</span> s = contact.Account.BillingCity</samp>. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d150748e134" data-title="Allowed use-case">SOQL Queries</td>
+
+                            <td class="entry" headers="d150748e137" data-title="Example"><samp class="codeph apex_code"><span class="keyword">String</span> s = [SELECT LastName FROM
+                                    Contact]?.LastName;</samp></td>
+
+                            <td class="entry" headers="d150748e140" data-title="More information"> If the SOQL query returns no objects, then the expression
+                                evaluates to null. For an example, see <a class="xref" href="#ex_soql">SOQL query with safe navigation operator:
+                                    behavior when no records returned</a>.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="example" id="ex_cast">
+<a name="ex_cast"><!-- --></a><h2 class="helpHead2">Incorrect use of safe navigation operator with cast</h2>
+<div class="exampleblock">
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Incorrect use of safe navigation operator</span>
+((T)a1?.b1).c1()</pre></div>
+
+            <p class="p">This is equivalent to:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+T ref = <span class="keyword">null</span>;
+<span class="statement">if</span> (a1 != <span class="keyword">null</span>) {
+ref = (T)a1.b1;
+}
+result = ref.c1();</pre></div>
+
+        </div>
+</div>
+
+        <div class="example" id="ex_soql">
+<a name="ex_soql"><!-- --></a><h2 class="helpHead2">SOQL query with safe navigation operator: behavior when no records returned</h2>
+<div class="exampleblock">
+            
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">List&lt;Contact&gt; contacts = [SELECT LastName FROM Contact]; 
+<span class="keyword">String</span> s; 
+<span class="statement">if</span> (contacts.size() == 0) { 
+   s = <span class="keyword">null</span>; <span class="onelineComment">// New behavior when using Safe Navigation. Earlier, this would throw an exception. } </span>
+<span class="statement">else</span> <span class="statement">if</span> (contacts.size() == 1) { 
+   s = contacts.get(0).LastName; } 
+<span class="statement">else</span> { <span class="onelineComment">// contacts.size() &gt; 1 throw new QueryException(...); }</span></pre></div>
+
+        </div>
+</div>
+
+        <div class="section">
+            <p class="p">You can’t use the Safe Navigation Operator in certain cases. Attempting to use the
+                operator in these ways causes an error during compilation:</p>
+<ul class="ul bulletList">
+                    <li class="li">Types and static expressions with dots. For example: <ul class="ul bulletList">
+                            <li class="li">Namespaces</li>
+
+                            <li class="li">{Namespace}.{Class}</li>
+
+                            <li class="li">Trigger.new</li>
+
+                            <li class="li">Flow.interview.{flowName}</li>
+
+                            <li class="li">{Type}.class</li>
+
+                        </ul>
+</li>
+
+                    <li class="li">Static variable access, method calls, and expressions. For example:<ul class="ul bulletList">
+                            <li class="li"><samp class="codeph apex_code">AClass.AStaticMethodCall()</samp></li>
+
+                            <li class="li"><samp class="codeph apex_code">AClass.AStaticVariable</samp></li>
+
+                            <li class="li"><samp class="codeph apex_code"><span class="keyword">String</span>.format(<span class="string">'{0}'</span>, <span class="string">'hello
+</span>                                    world<span class="string">')</span></samp></li>
+
+                            <li class="li"><samp class="codeph apex_code">Page.{pageName}</samp></li>
+
+                        </ul>
+</li>
+
+                    <li class="li">Assignable expressions. For example:<ul class="ul bulletList">
+                            <li class="li"><samp class="codeph apex_code">foo?.bar = 42;</samp></li>
+
+                            <li class="li"><samp class="codeph apex_code">++foo?.bar;</samp></li>
+
+                        </ul>
+</li>
+
+                    <li class="li">SOQL bind expressions. For
+                        example:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">class</span> X { <span class="keyword">public</span> <span class="keyword">String</span> query = <span class="string">'xyz'</span>;} 
+X x = <span class="keyword">new</span> X(); 
+List&lt;Account&gt; accounts = [SELECT Name FROM Account WHERE Name = :X?.query]
+List&lt;List&lt;SObject&gt;&gt; moreAccounts = [FIND :X?.query IN ALL FIELDS 
+    RETURNING Account(Name)];</pre></div>
+</li>
+
+                    <li class="li">With <samp class="codeph apex_code">addError()</samp> on SObject scalar
+                        fields. For example:
+                            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Contact c; 
+c.LastName?.addError(<span class="string">'The field must have a value'</span>);</pre></div>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You
+                            can use the operator with <samp class="codeph apex_code">addError()</samp> on SObjects, including lookup and master-detail
+                            fields.</p>
+</div>
+</div></div></div></div>
+</li>
+
+                </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

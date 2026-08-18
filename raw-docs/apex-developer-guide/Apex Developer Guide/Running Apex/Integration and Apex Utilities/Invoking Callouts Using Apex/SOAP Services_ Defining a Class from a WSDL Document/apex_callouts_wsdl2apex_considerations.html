@@ -1,0 +1,99 @@
+<a name="apex_callouts_wsdl2apex_considerations"><!-- --></a><h1 class="helpHead1">Considerations Using WSDLs</h1><div class="body">
+            <p class="p">Be aware of the following when generating Apex classes from a WSDL.</p>
+
+            <div class="section" id="section_nsm_jrt_xcc">
+<a name="section_nsm_jrt_xcc"><!-- --></a><h2 class="helpHead2">SOAP Web Service Callout</h2>
+<p class="p">For WSDLs that require namespace changes within the SOAP requests, you must manually construct
+                        the HTTP request body and invoke the endpoint as a POST request from
+                        Apex.</p>
+</div>
+
+            <div class="section">
+<h2 class="helpHead2">Mapping Headers</h2>
+
+                  
+                  <p class="p">Headers defined in the WSDL document become public fields on the stub in the
+                        generated class. This is similar to how the AJAX Toolkit and .NET works.</p>
+
+            </div>
+
+            <div class="section">
+<h2 class="helpHead2">Understanding Runtime Events</h2>
+
+                  
+                  <p class="p">The following checks are performed when Apex code is making a callout to an
+                        external service.</p>
+
+                  <ul class="ul bulletList">
+                        <li class="li">For information on the timeout limits when making an HTTP request or a
+                              Web services call, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm">Callout Limits and Limitations</a>.</li>
+
+                        <li class="li">Circular references in Apex classes are not allowed.</li>
+
+                        <li class="li">More than one loopback connection to Salesforce domains is not
+                              allowed.</li>
+
+                        <li class="li">To allow an endpoint to be accessed, register it from Setup by entering
+                                    <kbd class="ph userinput">Remote Site Settings</kbd> in the
+                                    <span class="keyword parmname">Quick Find</span> box, then selecting
+                                    <strong class="ph uicontrol">Remote Site Settings</strong>.</li>
+
+                        <li class="li">To prevent database connections from being held up, no transactions can
+                              be open.</li>
+
+                  </ul>
+
+            </div>
+
+            <div class="section">
+<h2 class="helpHead2">Understanding Unsupported Characters in Variable Names</h2>
+
+                  
+                  <p class="p">A WSDL file can include an element name that is not allowed in an Apex variable
+                        name. The following rules apply when generating Apex variable names from a
+                        WSDL file:</p>
+
+                  <ul class="ul bulletList">
+                        <li class="li">If the first character of an element name is not alphabetic, an <samp class="codeph apex_code">x</samp> character is prepended to the
+                              generated Apex variable name.</li>
+
+                        <li class="li">If the last character of an element name is not allowed in an Apex
+                              variable name, an <samp class="codeph apex_code">x</samp> character
+                              is appended to the generated Apex variable name.</li>
+
+                        <li class="li">If an element name contains a character that is not allowed in an Apex
+                              variable name, the character is replaced with an underscore (<samp class="codeph apex_code">_</samp>) character.</li>
+
+                        <li class="li">If an element name contains two characters in a row that are not allowed
+                              in an Apex variable name, the first character is replaced with an
+                              underscore (<samp class="codeph apex_code">_</samp>) character and
+                              the second one is replaced with an <samp class="codeph apex_code">x</samp> character. This avoids generating a variable name
+                              with two successive underscores, which is not allowed in Apex.</li>
+
+                        <li class="li">Suppose you have an operation that takes two parameters, <samp class="codeph apex_code">a_</samp> and <samp class="codeph apex_code">a_x</samp>. The generated Apex has two
+                              variables, both named <samp class="codeph apex_code">a_x</samp>.
+                              The class doesn’t compile. Manually edit the Apex and change one of
+                              the variable names.</li>
+
+                  </ul>
+
+            </div>
+
+            <div class="section">
+<h2 class="helpHead2">Debugging Classes Generated from WSDL Files</h2>
+
+                  
+                  <p class="p">Salesforce tests code with SOAP API, .NET, and Axis. If you use other tools,
+                        you can encounter issues.</p>
+
+                  <p class="p">You can use the debugging header to return the XML in request and response SOAP
+                        messages to help you diagnose problems. For more information, see <cite class="cite">SOAP
+                              API Developer Guide</cite>: <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/sforce_api_header_debuggingheader.htm" target="_blank">DebuggingHeader</a>.</p>
+
+            </div>
+
+      </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_wsdl2apex_testing_dml.htm" title="Performing DML Operations and Mock Callouts">← Previous</a></li>
+</ul></div>
+</div>

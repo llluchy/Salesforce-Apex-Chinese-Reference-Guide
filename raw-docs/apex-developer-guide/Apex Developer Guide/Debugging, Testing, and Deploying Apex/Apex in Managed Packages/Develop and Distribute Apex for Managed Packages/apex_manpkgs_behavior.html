@@ -1,0 +1,72 @@
+<a name="apex_manpkgs_behavior"><!-- --></a><h1 class="helpHead1">Version Apex Code Behavior</h1><div class="body conbody">
+<div class="shortdesc">Package developers can use conditional logic in Apex classes and triggers to exhibit
+        different behavior for different versions. With this conditional logic, you can support
+        existing behavior in classes and triggers in previous package versions while evolving the
+        code.</div>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p> Starting in Summer ’25, package subscribers can use Version Settings to specify the
+            version of a migrated second-generation managed package (2GP) that an Apex class depends
+            on. This functionality is already available to first-generation managed packages (1GP),
+            but isn’t yet supported in 2GP packages that weren’t converted from a 1GP package. See
+                <a class="xref" href="https://help.salesforce.com/s/articleView?id=005101483&amp;type=1&amp;language=en_US" target="_blank">Apex Version Settings in Migrated Second-Generation
+                Managed Packages (2GP)</a>.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">When subscribers install multiple versions of your package and write code that references
+            Apex classes or triggers in your package, they must <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_version_settings_intro.htm" title="To aid backwards-compatibility, classes and triggers are stored with the version settings for a specific Salesforce API version.">select
+                the version</a> that they’re referencing. <span class="ph" id="conditional_execution"><a name="conditional_execution"><!-- --></a>Within
+                the Apex code that is being referenced in your package, you can conditionally
+                execute different code paths based on the version setting of the calling Apex code
+                that is making the reference. The package version setting of the calling code can be
+                determined within the package code by calling the <samp class="codeph apex_code">System.requestVersion</samp> method. In this way, package developers can
+                determine the request context and specify different behavior for different versions
+                of the package.</span></p>
+
+        <p class="p">This example uses the <samp class="codeph apex_code">System.requestVersion</samp>
+            method and instantiates the <samp class="codeph apex_code">System.Version</samp> class
+            to define different behaviors in an Apex trigger for different package versions.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="package_version_request"><a name="package_version_request"><!-- --></a><span class="keyword">trigger</span> oppValidation on Opportunity (before <span class="statement">insert</span>, before <span class="statement">update</span>) {
+
+    <span class="statement">for</span> (Opportunity opp : Trigger.<span class="keyword">new</span>){
+    
+        <span class="onelineComment">// Add a new validation to the package</span>
+        <span class="onelineComment">// Applies to versions of the managed package greater than 1.0</span>
+        <span class="statement">if</span> (System.requestVersion().compareTo(<span class="keyword">new</span> Version(1,0)) &gt; 0) {
+            <span class="statement">if</span> (opp.Probability &gt;= 50 &amp;&amp; opp.Description == <span class="keyword">null</span>) {
+                opp.addError(<span class="string">'All deals over 50% require a description'</span>);
+            }
+        }
+
+        <span class="onelineComment">// Validation applies to all versions of the managed package.</span>
+        <span class="statement">if</span> (opp.IsWon == <span class="keyword">true</span> &amp;&amp; opp.LeadSource == <span class="keyword">null</span>) {
+            opp.addError(<span class="string">'A lead source must be provided for all Closed Won deals'</span>);
+        }
+    }
+}</pre></div>
+
+        <p class="p">For a full list of methods that work with package versions, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_version.htm" target="_blank">Version Class</a> and the <samp class="codeph apex_code">System.requestVersion</samp> method in <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_system.htm" target="_blank">System Class</a>.</p>
+
+        <p class="p">The request context persists if a class in an installed package invokes a method of
+            another class in the package. For example, imagine that a subscriber installs a
+            GeoReports package that contains CountryUtil and ContinentUtil classes. The subscriber
+            creates a GeoReportsEx class and associates it with version 2.3 of the GeoReports
+            package. If GeoReportsEx invokes a ContinentUtil method that internally invokes a
+            CountryUtil method, the request context propagates from ContinentUtil to CountryUtil.
+            Therefore, the <samp class="codeph apex_code">System.requestVersion</samp> method in
+            CountryUtil returns version 2.3 of the GeoReports package.</p>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_subscriber_version.htm#apex_manpkgs_subscriber_version" title="As a managed package subscriber, you can specify which package version that your managed Apex classes and triggers use. Set the package version in Setup, through metadata deployments, or with API requests.">Set Package Versions for Apex Classes and Triggers (for package
+       subscribers)</a></div></li>
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_manpkgs_safe_upgrades.htm" title="Learn how to upgrade a managed package safely through this extended example. See the actions that package developers and subscribers can take to ensure a smooth transition and safeguard the backwards compatibility of existing integrations.">Safely Upgrade Packages from Developer and Subscriber Perspectives</a></div></li>
+</ul>
+</div>
+</div>

@@ -1,0 +1,306 @@
+<a name="apex_class_Auth_VerificationResult"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">VerificationResult Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains the result of a verification challenge
+      that you invoke when you create your own Verify page. The challenge can be initiated by either
+      the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in."><samp class="codeph apex_code">System.UserManagement.verifyPasswordlessLogin</samp></a> or
+        <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifySelfRegistration" title="Completes a verification challenge when creating a custom (Visualforce) Verify page for Experience Cloud site self-registration. If the person who is attempting to register enters the verification code successfully, the user is created and logged in."><samp class="codeph apex_code">System.UserManagement.verifySelfRegistration</samp></a>
+      method.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">When users sign up for or log in to your Experience Cloud site with an email address or
+        phone number, Salesforce sends them a verification code. At the same time, Salesforce
+        generates the Verify page for users to enter the code to verify their identity. You can
+        replace the Salesforce-generated Verify page with one that you create with Visualforce. Then
+        invoke the verification challenge and, if the verification code is entered correctly, log in
+        the user. For sign-up, you use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifySelfRegistration" title="Completes a verification challenge when creating a custom (Visualforce) Verify page for Experience Cloud site self-registration. If the person who is attempting to register enters the verification code successfully, the user is created and logged in."><samp class="codeph apex_code">System.UserManagement.verifySelfRegistration</samp></a>
+        method. For passwordless login, you use the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_UserManagement.htm#apex_System_UserManagement_verifyPasswordlessLogin" title="Completes a verification challenge during a passwordless login that uses a custom Verify page (Visualforce only). If the user who is trying to log in enters the verification code successfully, the user is logged in.">System.UserManagement.verifyPasswordlessLogin</a> method. The methods return the
+        verification result, which contains the message displayed as a result of the
+        challenge. This
+        message also
+        indicates
+        whether the challenge is
+        successful
+        and where to direct the user when the verification code is entered correctly.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">This code contains the result of a verification challenge that registers a new user. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> id = System.UserManagement.initSelfRegistration​
+          (Auth.VerificationMethod.SMS, user);
+        Auth.VerificationResult res = System.UserManagement.verifySelfRegistration​
+          (Auth.VerificationMethod.SMS, id, ‘123456’, <span class="keyword">null</span>);
+        <span class="statement">if</span>(res.success == <span class="keyword">true</span>){
+     <span class="onelineComment">//redirect</span>
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_constructors">VerificationResult Constructor</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_properties">VerificationResult Properties</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_methods">VerificationResult Method</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_constructors">
+<a name="apex_Auth_VerificationResult_constructors"><!-- --></a>
+  <h2 class="helpHead2">VerificationResult Constructor</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p"><samp class="codeph apex_code">VerificationResult</samp> has the following
+        constructor.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_ctor">VerificationResult(redirect, success, message)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">VerificationResult</samp> class that contains the verification result from <samp class="codeph apex_code">System.UserManagement.verifySelfRegistration</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_ctor">
+<a name="apex_Auth_VerificationResult_ctor"><!-- --></a>
+  <h3 class="helpHead3">VerificationResult(redirect, success, message)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an instance of the <samp class="codeph apex_code">VerificationResult</samp> class that contains the verification result from <samp class="codeph apex_code">System.UserManagement.verifySelfRegistration</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> VerificationResult(System.PageReference redirect,
+          <span class="keyword">Boolean</span> success, <span class="keyword">String</span> message)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">redirect</var></strong>:<p class="p">Type: System.PageReference<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a> Where user is directed upon successful verification.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">success</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Indicates whether verification succeeded.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">message</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Message that displays as a result of a verification challenge.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_properties">
+<a name="apex_Auth_VerificationResult_properties"><!-- --></a><h2 class="helpHead2">VerificationResult Properties</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">VerificationResult</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_message">message</a></strong><br>
+Message that displays as a result of a verification challenge.         <samp class="codeph ">Token is valid</samp> if the identity verification is       successful. Other values are <samp class="codeph nolang">FAILURE</samp>, <samp class="codeph nolang">PENDING</samp>, <samp class="codeph nolang">RATE_LIMITED</samp>, or         <samp class="codeph nolang">FAILURE_REPORT</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_redirect">redirect</a></strong><br>
+Where the user is directed after entering the verification code       successfully, for example, the Experience Cloud site’s home page or location specified by the       start URL.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_success">success</a></strong><br>
+The verification challenge is successful.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_message">
+<a name="apex_Auth_VerificationResult_message"><!-- --></a>
+  <h3 class="helpHead3">message</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Message that displays as a result of a verification challenge.
+        <samp class="codeph ">Token is valid</samp> if the identity verification is
+      successful. Other values are <samp class="codeph nolang">FAILURE</samp>, <samp class="codeph nolang">PENDING</samp>, <samp class="codeph nolang">RATE_LIMITED</samp>, or
+        <samp class="codeph nolang">FAILURE_REPORT</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> message {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_redirect">
+<a name="apex_Auth_VerificationResult_redirect"><!-- --></a>
+  <h3 class="helpHead3">redirect</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Where the user is directed after entering the verification code
+      successfully, for example, the Experience Cloud site’s home page or location specified by the
+      start URL.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.PageReference redirect {get;
+        set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: System.PageReference<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_system_pagereference.htm" title="A PageReference is a reference to an instantiation of a page. Among other attributes, PageReferences consist of a URL and a set of query parameter names and values.">System.PageReference</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_success">
+<a name="apex_Auth_VerificationResult_success"><!-- --></a>
+  <h3 class="helpHead3">success</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The verification challenge is successful.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> success {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_methods">
+<a name="apex_Auth_VerificationResult_methods"><!-- --></a>
+  <h2 class="helpHead2">VerificationResult Method</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p"><samp class="codeph apex_code">VerificationResult</samp> has the following method.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_VerificationResult.htm#apex_Auth_VerificationResult_clone">clone()</a></strong><br>
+Duplicates the Auth.VerificationResult object.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_VerificationResult_clone">
+<a name="apex_Auth_VerificationResult_clone"><!-- --></a>
+  <h3 class="helpHead3">clone()</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Duplicates the Auth.VerificationResult object.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_class_Auth_VerificationResult" title="Contains the result of a verification challenge that you invoke when you create your own Verify page. The challenge can be initiated by either the System.UserManagement.verifyPasswordlessLogin or System.UserManagement.verifySelfRegistration method.">VerificationResult</a></p>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

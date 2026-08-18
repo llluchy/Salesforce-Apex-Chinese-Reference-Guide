@@ -1,0 +1,145 @@
+<a name="apex_class_Approval_LockResult"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">LockResult Class</h1>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>The result of a record lock returned by a <samp class="codeph apex_code">System.Approval.lock()</samp> method.</span></div>
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Approval.htm" title="The Approval namespace provides classes and methods for approval processes.">Approval</a></p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">The <samp class="codeph apex_code">System.Approval.lock()</samp>
+            methods return Approval.LockResult objects. Each element in a LockResult array
+            corresponds to an element in the ID or sObject array passed as a parameter to a <samp class="codeph apex_code">lock</samp> method. The first element in the LockResult
+            array corresponds to the first element in the ID or sObject array, the second element
+            corresponds to the second element, and so on. If only one ID or sObject is passed in,
+            the LockResult array contains a single element.</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <p class="p">The following example obtains and iterates through the returned Approval.LockResult
+                objects. It locks some queried accounts using <samp class="codeph apex_code">Approval.lock</samp> with a <samp class="codeph apex_code"><span class="keyword">false</span></samp>
+                second parameter to allow partial processing of records on failure. Next, it
+                iterates through the results to determine whether the operation was successful for
+                each record. It writes the ID of every record that was processed successfully to the
+                debug log, or writes error messages and failed fields of the failed records.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="lock_result_example"><a name="lock_result_example"><!-- --></a><span class="onelineComment">// Query the accounts to lock</span>
+Account[] accts = [SELECT Id from Account WHERE Name LIKE <span class="string">'Acme%'</span>];
+<span class="onelineComment">// Lock the accounts</span>
+Approval.LockResult[] lrList = Approval.lock(accts, <span class="keyword">false</span>);
+
+<span class="onelineComment">// Iterate through each returned result</span>
+<span class="statement">for</span>(Approval.LockResult lr : lrList) {
+    <span class="statement">if</span> (lr.isSuccess()) {
+        <span class="onelineComment">// Operation was successful, so get the ID of the record that was processed</span>
+        System.debug(<span class="string">'Successfully locked account with ID: '</span> + lr.getId());
+    }
+    <span class="statement">else</span> {
+        <span class="onelineComment">// Operation failed, so get all errors                </span>
+        <span class="statement">for</span>(Database.Error err : lr.getErrors()) {
+            System.debug(<span class="string">'The following error has occurred.'</span>);                    
+            System.debug(err.getStatusCode() + <span class="string">': '</span> + err.getMessage());
+            System.debug(<span class="string">'Account fields that affected this error: '</span> + err.getFields());
+        }
+    }
+}</pre></div>
+
+    </div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_Approval_LockResult_methods">LockResult Methods</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_approval.htm#apex_methods_system_approval" title="Contains methods for processing approval requests and setting approval-process locks and unlocks on records.">Approval Class</a></div></li></ul>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Approval_LockResult_methods">
+<a name="apex_Approval_LockResult_methods"><!-- --></a>
+  <h2 class="helpHead2">LockResult Methods</h2>
+
+  
+  <div class="body refbody">
+    <div class="section">
+      <p class="p">The following are methods for <samp class="codeph apex_code">LockResult</samp>.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_Approval_LockResult_getErrors">getErrors()</a></strong><br>
+If an error occurred, returns an array of one or more database error       objects, providing the error code and description.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_Approval_LockResult_getId">getId()</a></strong><br>
+Returns the ID of the sObject you are trying to lock.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Approval_LockResult.htm#apex_Approval_LockResult_isSuccess">isSuccess()</a></strong><br>
+A Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the lock operation is successful for this object, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Approval_LockResult_getErrors">
+<a name="apex_Approval_LockResult_getErrors"><!-- --></a><h3 class="helpHead3">getErrors()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>If an error occurred, returns an array of one or more database error
+      objects, providing the error code and description.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> List&lt;Database.Error&gt; getErrors()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_database_error.htm#apex_Database_Error_methods">Database.Error</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Approval_LockResult_getId">
+<a name="apex_Approval_LockResult_getId"><!-- --></a><h3 class="helpHead3">getId()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the ID of the sObject you are trying to lock.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Id getId()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">If the field contains a value, the object was locked. If the field is empty, the operation
+        was not successful.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Approval_LockResult_isSuccess">
+<a name="apex_Approval_LockResult_isSuccess"><!-- --></a><h3 class="helpHead3">isSuccess()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>A Boolean value that is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the lock operation is successful for this object, or <samp class="codeph apex_code"><span class="keyword">false</span></samp> otherwise.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isSuccess()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+</div>
+</div>
+</div>
+</div>

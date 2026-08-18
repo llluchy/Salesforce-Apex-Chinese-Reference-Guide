@@ -1,0 +1,364 @@
+<a name="apex_class_Auth_JWTBearerTokenExchange"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">JWTBearerTokenExchange Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Contains methods that POST the signed JWT bearer token to a token
+      endpoint to request an access token, in the OAuth 2.0 JWT bearer token flow.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Auth.htm" title="The Auth namespace provides an interface and classes for single sign-on into Salesforce and session security management.">Auth</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+      
+      <p class="p">Use the methods in this class to post a signed JWT bearer token to the OAuth token
+        endpoint, in exchange for an access token.</p>
+
+      <p class="p">To test HTTP callouts to the token endpoint, use the <samp class="codeph ">Auth.HttpCalloutMockUtil</samp> class.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+      
+      <div class="p">In the following example application, the Apex controller:<ol class="ol enumList">
+          <li class="li">Creates the JSON Claims Set.</li>
+
+          <li class="li">Specifies the scope of the request with additional claims.</li>
+
+          <li class="li">Creates the signed JWT.</li>
+
+          <li class="li">Specifies the token endpoint and POSTs to it.</li>
+
+          <li class="li">Gets the access token from the HTTP response.</li>
+
+        </ol>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyController{
+ 
+    
+     <span class="keyword">public</span> MyController() {      
+        Auth.JWT jwt = <span class="keyword">new</span> Auth.JWT();
+        jwt.setSub(<span class="string">'user@salesforce.com'</span>); 
+        jwt.setAud(<span class="string">'https://login.salesforce.com'</span>); 
+        jwt.setIss(<span class="string">'3MVG99OxTyEMCQ3gNp2PjkqeZKxnmAiG1xV4oHh9AKL_rSK.BoSVPGZHQ​ukXnVjzRgSuQqGn75NL7yfkQcyy7'</span>);
+        
+        <span class="onelineComment">//Additional claims to set scope</span>
+        Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; claims = <span class="keyword">new</span> Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt;();
+        claims.put(<span class="string">'scope'</span>, <span class="string">'scope name'</span>);
+            
+        jwt.setAdditionalClaims(claims);
+
+        <span class="onelineComment">//Create the object that signs the JWT bearer token</span>
+        Auth.JWS jws = <span class="keyword">new</span> Auth.JWS(jwt, <span class="string">'CertFromCertKeyManagement'</span>);
+        
+        <span class="onelineComment">//Get the resulting JWS in case debugging is required</span>
+        <span class="keyword">String</span> token = jws.getCompactSerialization();
+        
+        <span class="onelineComment">//Set the token endpoint that the JWT bearer token is posted to</span>
+        <span class="keyword">String</span> tokenEndpoint = <span class="string">'https://login.salesforce.com/services/oauth2/token'</span>;
+        
+        <span class="onelineComment">//POST the JWT bearer token</span>
+        Auth.JWTBearerTokenExchange bearer = <span class="keyword">new</span> Auth.JWTBearerTokenExchange(tokenEndpoint, jws);
+        
+        <span class="onelineComment">//Get the access token</span>
+        <span class="keyword">String</span> accessToken = bearer.getAccessToken();
+
+    }
+}</pre></div>
+</div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_constructors">JWTBearerTokenExchange Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_methods">JWTBearerTokenExchange Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_constructors">
+<a name="apex_Auth_JWTBearerTokenExchange_constructors"><!-- --></a><h2 class="helpHead2">JWTBearerTokenExchange Constructors</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">JWTBearerTokenExchange</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_ctor">JWTBearerTokenExchange(tokenEndpoint, jws)</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">JWTBearerTokenExchange</samp> class using the specified token endpoint and the signed JWT       bearer token.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_ctor_2">JWTBearerTokenExchange()</a></strong><br>
+Creates an instance of the <samp class="codeph apex_code">Auth.JWTBearerTokenExchange</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_ctor">
+<a name="apex_Auth_JWTBearerTokenExchange_ctor"><!-- --></a><h3 class="helpHead3">JWTBearerTokenExchange(tokenEndpoint, jws)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an instance of the <samp class="codeph apex_code">JWTBearerTokenExchange</samp> class using the specified token endpoint and the signed JWT
+      bearer token.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> JWTBearerTokenExchange(<span class="keyword">String</span> tokenEndpoint, Auth.JWS jws)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenEndpoint</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The token endpoint that the signed JWT bearer token is POSTed to.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">jws</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWS.htm#apex_class_Auth_JWS" title="Contains methods that apply a digital signature to a JSON Web Token (JWT), using a JSON Web Signature (JWS) data structure. This class creates the signed JWT bearer token, which can be used to request an OAuth access token in the OAuth 2.0 JWT bearer token flow.">Auth.JWS</a></p>
+<p class="p">The signed JWT bearer token.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_ctor_2">
+<a name="apex_Auth_JWTBearerTokenExchange_ctor_2"><!-- --></a><h3 class="helpHead3">JWTBearerTokenExchange()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Creates an instance of the <samp class="codeph apex_code">Auth.JWTBearerTokenExchange</samp> class.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> JWTBearerTokenExchange()</samp></p>
+</div>
+</div>
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_methods">
+<a name="apex_Auth_JWTBearerTokenExchange_methods"><!-- --></a><h2 class="helpHead2">JWTBearerTokenExchange Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">JWTBearerTokenExchange</samp>. All
+        are instance methods.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_clone">clone()</a></strong><br>
+Makes a duplicate copy of the JWTBearerTokenExchange     object.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_getAccessToken">getAccessToken()</a></strong><br>
+Returns the <samp class="codeph apex_code">access_token</samp> in       the token response to the JWT bearer token request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_getGrantType">getGrantType()</a></strong><br>
+Returns the grant type specified in the JWT bearer token request. The       grant type value defaults to <samp class="codeph apex_code">urn:ietf:params:oauth:grant-type:jwt-bearer</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_getHttpResponse">getHttpResponse()</a></strong><br>
+Returns the full <samp class="codeph apex_code">System.HttpResponse</samp> token response to the JWT bearer token     request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_getJWS">getJWS()</a></strong><br>
+Returns the JWS specified in the JWT bearer token     request.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_getTokenEndpoint">getTokenEndpoint()</a></strong><br>
+Returns the token endpoint that the JWT bearer token request is POSTed       to.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_setGrantType">setGrantType(grantType)</a></strong><br>
+Sets the grant type in the JWT bearer token request. Returned by the         <samp class="codeph apex_code">getGrantType()</samp> method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_setJWS">setJWS(jws)</a></strong><br>
+Sets the JWS in the JWT bearer token request. Returned by the <samp class="codeph apex_code">getJWS()</samp> method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWTBearerTokenExchange.htm#apex_Auth_JWTBearerTokenExchange_setTokenEndpoint">setTokenEndpoint(tokenEndpoint)</a></strong><br>
+Sets the token endpoint that the JWT bearer token request is POSTed       to. Returned by the <samp class="codeph apex_code">getTokenEndpoint()</samp>     method.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_clone">
+<a name="apex_Auth_JWTBearerTokenExchange_clone"><!-- --></a><h3 class="helpHead3">clone()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Makes a duplicate copy of the JWTBearerTokenExchange
+    object.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_class_Auth_JWTBearerTokenExchange" title="Contains methods that POST the signed JWT bearer token to a token endpoint to request an access token, in the OAuth 2.0 JWT bearer token flow.">JWTBearerTokenExchange</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_getAccessToken">
+<a name="apex_Auth_JWTBearerTokenExchange_getAccessToken"><!-- --></a><h3 class="helpHead3">getAccessToken()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the <samp class="codeph apex_code">access_token</samp> in
+      the token response to the JWT bearer token request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getAccessToken()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">This method extracts the <samp class="codeph apex_code">access_token</samp> from the
+        token response. If the token response issues the access token in a different parameter, the
+        request fails.</p>
+
+      <p class="p">If you want the full HTTP token response returned, use <samp class="codeph apex_code">getHttpResponse</samp> instead.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_getGrantType">
+<a name="apex_Auth_JWTBearerTokenExchange_getGrantType"><!-- --></a><h3 class="helpHead3">getGrantType()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the grant type specified in the JWT bearer token request. The
+      grant type value defaults to <samp class="codeph apex_code">urn:ietf:params:oauth:grant-type:jwt-bearer</samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getGrantType()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_getHttpResponse">
+<a name="apex_Auth_JWTBearerTokenExchange_getHttpResponse"><!-- --></a><h3 class="helpHead3">getHttpResponse()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the full <samp class="codeph apex_code">System.HttpResponse</samp> token response to the JWT bearer token
+    request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> System.HttpResponse getHttpResponse()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm#apex_classes_restful_http_httpresponse" title="Use the HttpResponse class to handle the HTTP response returned by the Http class.">System.HttpResponse</a></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">You can get the access token from the full <samp class="codeph apex_code">System.HttpResponse</samp>. If you want only the <samp class="codeph apex_code">access_token</samp> from the token response, you can use <samp class="codeph apex_code">getAccessToken</samp> instead.</p>
+
+    </div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_getJWS">
+<a name="apex_Auth_JWTBearerTokenExchange_getJWS"><!-- --></a><h3 class="helpHead3">getJWS()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the JWS specified in the JWT bearer token
+    request.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Auth.JWS getJWS()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWS.htm#apex_class_Auth_JWS" title="Contains methods that apply a digital signature to a JSON Web Token (JWT), using a JSON Web Signature (JWS) data structure. This class creates the signed JWT bearer token, which can be used to request an OAuth access token in the OAuth 2.0 JWT bearer token flow.">Auth.JWS</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_getTokenEndpoint">
+<a name="apex_Auth_JWTBearerTokenExchange_getTokenEndpoint"><!-- --></a><h3 class="helpHead3">getTokenEndpoint()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Returns the token endpoint that the JWT bearer token request is POSTed
+      to.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getTokenEndpoint()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_setGrantType">
+<a name="apex_Auth_JWTBearerTokenExchange_setGrantType"><!-- --></a><h3 class="helpHead3">setGrantType(grantType)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the grant type in the JWT bearer token request. Returned by the
+        <samp class="codeph apex_code">getGrantType()</samp> method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setGrantType(<span class="keyword">String</span> grantType)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">grantType</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_setJWS">
+<a name="apex_Auth_JWTBearerTokenExchange_setJWS"><!-- --></a><h3 class="helpHead3">setJWS(jws)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the JWS in the JWT bearer token request. Returned by the <samp class="codeph apex_code">getJWS()</samp> method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setJWS(Auth.JWS jws)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">jws</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Auth_JWS.htm#apex_class_Auth_JWS" title="Contains methods that apply a digital signature to a JSON Web Token (JWT), using a JSON Web Signature (JWS) data structure. This class creates the signed JWT bearer token, which can be used to request an OAuth access token in the OAuth 2.0 JWT bearer token flow.">Auth.JWS</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Auth_JWTBearerTokenExchange_setTokenEndpoint">
+<a name="apex_Auth_JWTBearerTokenExchange_setTokenEndpoint"><!-- --></a><h3 class="helpHead3">setTokenEndpoint(tokenEndpoint)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the token endpoint that the JWT bearer token request is POSTed
+      to. Returned by the <samp class="codeph apex_code">getTokenEndpoint()</samp>
+    method.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">void</span> setTokenEndpoint(<span class="keyword">String</span> tokenEndpoint)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">tokenEndpoint</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+</div>
+</div>
+</div>
+</div>

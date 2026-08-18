@@ -1,0 +1,249 @@
+<a name="apex_testing_stub_api"><!-- --></a><h1 class="helpHead1">Build a Mocking Framework with the Stub API</h1><div class="body conbody">
+<div class="shortdesc">Apex provides a stub API for implementing a mocking framework. A mocking framework
+        has many benefits. It can streamline and improve testing and help you create faster, more
+        reliable tests. You can use it to test classes in isolation, which is important for unit
+        testing. Building your mocking framework with the stub API can also be beneficial because
+        stub objects are generated at runtime. Because these objects are generated dynamically, you
+        don’t have to package and deploy test classes. You can build your own mocking framework, or
+        you can use one built by someone else.</div>
+
+        <p class="p">You can define the behavior of stub objects, which are created at runtime as anonymous
+            subclasses of Apex classes. The stub API comprises the <samp class="codeph apex_code">System.StubProvider</samp> interface and the <samp class="codeph apex_code">System.Test.createStub()</samp> method.</p>
+
+        <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This feature is intended for advanced Apex developers. Using it requires a thorough
+            understanding of unit testing and mocking frameworks.</p>
+</div>
+</div></div></div></div>
+
+        <p class="p">Let’s look at an example to illustrate how the stub API works. This example isn’t meant
+            to demonstrate the wide range of possible uses for mocking frameworks. It’s
+            intentionally simple to focus on the mechanics of using the Apex stub API.</p>
+
+        <p class="p">Let’s say we want to test the formatting method in the following class.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> DateFormatter {    
+    <span class="onelineComment">// Method to test    </span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getFormattedDate(DateHelper helper) {
+        <span class="statement">return</span> <span class="string">'Today\'s date is '</span> + helper.getTodaysDate();
+    }
+}</pre></div>
+
+        <p class="p">Usually, when we invoke this method, we pass in a helper class that has a method that
+            returns today’s date.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> DateHelper {   
+    <span class="onelineComment">// Method to stub    </span>
+    <span class="keyword">public</span> <span class="keyword">String</span> getTodaysDate() {
+        <span class="statement">return</span> <span class="keyword">Date</span>.today().format();
+    }
+}</pre></div>
+
+        <p class="p">The following code invokes the method.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">DateFormatter df = <span class="keyword">new</span> DateFormatter();
+DateHelper dh = <span class="keyword">new</span> DateHelper();
+<span class="keyword">String</span> dateStr = df.getFormattedDate(dh);</pre></div>
+
+        <p class="p">For testing, we want to isolate the <samp class="codeph apex_code">getFormattedDate()</samp> method to make sure that the formatting is working
+            properly. The return value of the <samp class="codeph apex_code">getTodaysDate()</samp> method normally varies based on the day. However, in this
+            case, we want to return a constant, predictable value to isolate our testing to the
+            formatting. Rather than writing a “fake” version of the class, where the method returns
+            a constant value, we create a stub version of the class. The stub object is created
+            dynamically at runtime, and we can specify the “stubbed” behavior of its method.</p>
+
+        <div class="p">To use a stub version of an Apex class:<ol class="ol enumList">
+                <li class="li">Define the behavior of the stub class by implementing the <samp class="codeph apex_code">System.StubProvider</samp> interface.</li>
+
+                <li class="li">Instantiate a stub object by using the <samp class="codeph apex_code">System.Test.createStub()</samp> method.</li>
+
+                <li class="li">Invoke the relevant method of the stub object from within a test class.</li>
+
+            </ol>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Implement the StubProvider Interface</h2>
+
+            
+            <p class="p">Here’s an implementation of the <samp class="codeph apex_code">StubProvider</samp>
+                interface.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">public</span> <span class="keyword">class</span> MockProvider <span class="keyword">implements</span> System.StubProvider {
+    
+    <span class="keyword">public</span> <span class="keyword">Object</span> handleMethodCall(<span class="keyword">Object</span> stubbedObject, <span class="keyword">String</span> stubbedMethodName, 
+        Type returnType, List&lt;Type&gt; listOfParamTypes, List&lt;<span class="keyword">String</span>&gt; listOfParamNames, 
+        List&lt;<span class="keyword">Object</span>&gt; listOfArgs) {
+        
+        <span class="onelineComment">// The following debug statements show an example of logging </span>
+        <span class="onelineComment">// the invocation of a mocked method.</span>
+       
+        <span class="onelineComment">// You can use the method name and return type to determine which method was called.</span>
+        System.debug(<span class="string">'Name of stubbed method: '</span> + stubbedMethodName);
+        System.debug(<span class="string">'Return type of stubbed method: '</span> + returnType.getName());
+        
+        <span class="onelineComment">// You can also use the parameter names and types to determine which method </span>
+        <span class="onelineComment">// was called.</span>
+        <span class="statement">for</span> (integer i =0; i &lt; listOfParamNames.size(); i++) {
+            System.debug(<span class="string">'parameter name: '</span> + listOfParamNames.get(i));
+            System.debug(<span class="string">'  parameter type: '</span> + listOfParamTypes.get(i).getName());
+        }
+        
+        <span class="onelineComment">// This shows the actual parameter values passed into the stubbed method at runtime.</span>
+        System.debug(<span class="string">'number of parameters passed into the mocked call: '</span> + 
+            listOfArgs.size());
+        System.debug(<span class="string">'parameter(s) sent into the mocked call: '</span> + listOfArgs);
+        
+        <span class="onelineComment">// This is a very simple mock provider that returns a hard-coded value </span>
+        <span class="onelineComment">// based on the return type of the invoked.</span>
+        <span class="statement">if</span> (returnType.getName() == <span class="string">'String'</span>)
+            <span class="statement">return</span> <span class="string">'8/8/2016'</span>;
+        <span class="statement">else</span> 
+            <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+            <p class="p"><samp class="codeph apex_code">StubProvider</samp> is a callback interface. It
+                specifies a single method that requires implementing: <samp class="codeph apex_code">handleMethodCall()</samp>. When a stubbed method is called, <samp class="codeph apex_code">handleMethodCall()</samp> is called. You define the
+                behavior of the stubbed class in this method. The method has the following
+                parameters.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">
+<span class="keyword parmname">stubbedObject</span>: The stubbed object</li>
+
+                <li class="li">
+<span class="keyword parmname">stubbedMethodName</span>: The name of the invoked method</li>
+
+                <li class="li">
+<span class="keyword parmname">returnType</span>: The return type of the invoked method</li>
+
+                <li class="li">
+<span class="keyword parmname">listOfParamTypes</span>: A list of the parameter types of the
+                    invoked method</li>
+
+                <li class="li">
+<span class="keyword parmname">listOfParamNames</span>: A list of the parameter names of the
+                    invoked method</li>
+
+                <li class="li">
+<span class="keyword parmname">listOfArgs</span>: The actual argument values passed into this
+                    method at runtime</li>
+
+            </ul>
+
+            <p class="p">You can use these parameters to determine which method of your class was called, and
+                then you can define the behavior for each method. In this case, we check the return
+                type of the method to identify it and return a hard-coded value.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Instantiate a Stub Version of the Class</h2>
+
+            
+            <p class="p">The next step is to instantiate a stub version of the class. The following utility
+                class returns a stub object that you can use as a mock.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MockUtil {
+    <span class="keyword">private</span> MockUtil(){}
+
+    <span class="keyword">public</span> <span class="keyword">static</span> MockProvider getInstance() {
+        <span class="statement">return</span> <span class="keyword">new</span> MockProvider();
+    }
+    
+     <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">Object</span> createMock(Type typeToMock) {
+        <span class="onelineComment">// Invoke the stub API and pass it our mock provider to create a </span>
+        <span class="onelineComment">// mock class of typeToMock.</span>
+        <span class="statement">return</span> Test.createStub(typeToMock, MockUtil.getInstance());
+    }
+}</pre></div>
+
+            <p class="p">This class contains the method <samp class="codeph apex_code">createMock()</samp>,
+                which invokes the <samp class="codeph apex_code">Test.createStub()</samp> method.
+                The <samp class="codeph apex_code">createStub()</samp> method takes an Apex class
+                type and an instance of the <samp class="codeph apex_code">StubProvider</samp>
+                interface that we created previously. It returns a stub object that we can use in
+                testing.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Invoke the Stub Method</h2>
+
+            
+            <p class="p">Finally, we invoke the relevant method of the stub class from within a test
+                class.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span> 
+<span class="keyword">public</span> <span class="keyword">class</span> DateFormatterTest {   
+    <span class="keyword">@isTest</span> 
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> testGetFormattedDate() {
+        <span class="onelineComment">// Create a mock version of the DateHelper class.</span>
+        DateHelper mockDH = (DateHelper)MockUtil.createMock(DateHelper.<span class="keyword">class</span>);
+        DateFormatter df = <span class="keyword">new</span> DateFormatter();
+        
+        <span class="onelineComment">// Use the mocked object in the test.</span>
+        System.assertEquals(<span class="string">'Today\'s date is 8/8/2016'</span>, df.getFormattedDate(mockDH));
+    }
+}
+</pre></div>
+
+            <p class="p">In this test, we call the <samp class="codeph apex_code">createMock()</samp> method
+                to create a stub version of the <samp class="codeph apex_code">DateHelper</samp>
+                class. We can then invoke the <samp class="codeph apex_code">getTodaysDate()</samp> method on the stub object, which returns our
+                hard-coded date. Using the hard-coded date allows us to test the behavior of the
+                    <samp class="codeph apex_code">getFormattedDate()</samp> method in
+                isolation.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Apex Stub API Limitations</h2>
+
+            
+            <p class="p">Keep the following limitations in mind when working with the Apex stub API.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">The object being mocked must be in the same namespace as the call to the <samp class="codeph apex_code">Test.createStub()</samp> method. However, the
+                    implementation of the <samp class="codeph apex_code">StubProvider</samp>
+                    interface can be in another namespace.</li>
+
+                <li class="li">You can’t mock the following Apex elements.<ul class="ul bulletList">
+                        <li class="li">Static methods (including future methods)</li>
+
+                        <li class="li">Private methods</li>
+
+                        <li class="li">Properties (getters and setters)</li>
+
+                        <li class="li">Triggers</li>
+
+                        <li class="li">Inner classes</li>
+
+                        <li class="li">System types</li>
+
+                        <li class="li">Classes that implement the <samp class="codeph apex_code">Batchable</samp> interface</li>
+
+                        <li class="li">Classes that have only private constructors</li>
+
+                    </ul>
+</li>
+
+                <li class="li">Iterators can’t be used as return types or parameter types.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_interface_System_StubProvider.htm" target="_blank" title="StubProvider Interface - HTML (New Window)">StubProvider Interface</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_test.htm#apex_System_Test_createStub" target="_blank" title="Test.createStub() - HTML (New Window)">Test.createStub()</a></div></li>
+</ul>
+</div>
+</div>

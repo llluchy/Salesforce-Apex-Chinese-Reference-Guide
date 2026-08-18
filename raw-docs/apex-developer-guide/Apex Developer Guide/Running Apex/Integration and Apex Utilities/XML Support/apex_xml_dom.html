@@ -1,0 +1,248 @@
+<a name="apex_xml_dom"><!-- --></a><h1 class="helpHead1">Reading and Writing XML Using the DOM</h1><div class="body conbody">
+<div class="shortdesc">Apex provides classes that enable you to work with XML content using the DOM
+        (Document Object Model).</div>
+
+        <p class="p">DOM classes help you parse or generate XML content. You can use these classes to work
+            with any XML content. One common application is to use the classes to generate the body
+            of a request created by <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm" target="_blank">HttpRequest</a> or to parse a response accessed by
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm" target="_blank">HttpResponse</a>. <span class="ph" id="dom_nodes_intro"><a name="dom_nodes_intro"><!-- --></a>The DOM
+                represents an XML document as a hierarchy of nodes. Some nodes may be branch nodes
+                and have child nodes, while others are leaf nodes with no children.</span> You can
+            parse nested XML content that’s up to <span class="ph" id="xmlTreeDepthLimitNum"><a name="xmlTreeDepthLimitNum"><!-- --></a>50</span> nodes
+            deep.</p>
+
+        <p class="p">The DOM classes are contained in the <samp class="codeph apex_code">Dom</samp>
+            namespace.</p>
+
+        <p class="p">Use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_dom_document.htm" target="_blank">Document Class</a> to process the
+            content in the body of the XML document.</p>
+
+        <p class="p">Use the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_dom_xmlnode.htm" target="_blank">XmlNode Class</a> to work with a node in the XML
+            document.</p>
+
+        <p class="p">Use the Document Class class to process XML content. One common application is to use it
+            to create the body of a request for <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httprequest.htm" target="_blank">HttpRequest</a> or to parse a response accessed by
+                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_http_httpresponse.htm" target="_blank">HttpResponse</a>.</p>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="xml_namespaces_title"><a name="xml_namespaces_title"><!-- --></a>XML Namespaces</span></h2>
+
+            
+            <p class="p">An XML namespace is a collection of names identified by a URI reference and used in
+                XML documents to uniquely identify element types and attribute names. Names in XML
+                namespaces may appear as qualified names, which contain a single colon, separating
+                the name into a namespace prefix and a local part. The prefix, which is mapped to a
+                URI reference, selects a namespace. The combination of the universally managed URI
+                namespace and the document's own namespace produces identifiers that are universally
+                unique.</p>
+
+            <p class="p">The following XML element has a namespace of <samp class="codeph xml"><span class="ph filepath">http://my.name.space</span></samp> and a prefix of <samp class="codeph nolang">myprefix</samp>.</p>
+
+            <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;sampleElement</span><span class="attribute"> xmlns:myprefix=</span>"http://my.name.space" /&gt;</pre></div>
+
+            <p class="p">In the following example, the XML element has two attributes:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">The first attribute has a key of <samp class="codeph nolang">dimension</samp>;
+                    the value is <samp class="codeph nolang">2</samp>.</li>
+
+                <li class="li">The second attribute has a key namespace of <span class="ph filepath">http://ns1</span>; the
+                    value namespace is <span class="ph filepath">http://ns2</span>; the key is <samp class="codeph nolang">example</samp>; the value is <samp class="codeph nolang">test</samp>.</li>
+
+            </ul>
+
+            <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;square</span><span class="attribute"> dimension=</span>"2"<span class="attribute"> ns1:example=</span>"ns2:test"<span class="attribute"> xmlns:ns1=</span>"http://ns1"<span class="attribute"> xmlns:ns2=</span>"http://ns2" /&gt;</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">
+<span class="titlecodeph">Document</span> Example</h2>
+
+            
+            <p class="p">For the purposes of the sample below, assume that the <samp class="codeph apex_code">url</samp> argument passed into the <samp class="codeph apex_code">parseResponseDom</samp> method returns this XML response:</p>
+
+            <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;address</span>&gt;
+    <span class="tag">&lt;name</span>&gt;Kirk Stevens<span class="tag">&lt;/name</span>&gt;
+    <span class="tag">&lt;street1</span>&gt;808 State St<span class="tag">&lt;/street1</span>&gt;
+    <span class="tag">&lt;street2</span>&gt;Apt. 2<span class="tag">&lt;/street2</span>&gt;
+    <span class="tag">&lt;city</span>&gt;Palookaville<span class="tag">&lt;/city</span>&gt;
+    <span class="tag">&lt;state</span>&gt;PA<span class="tag">&lt;/state</span>&gt;
+    <span class="tag">&lt;country</span>&gt;USA<span class="tag">&lt;/country</span>&gt;
+<span class="tag">&lt;/address</span>&gt;
+</pre></div>
+
+            <p class="p">The following example illustrates how to use DOM classes to parse the XML response
+                returned in the body of a <samp class="codeph nolang">GET</samp> request:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> DomDocument {
+ 
+    <span class="onelineComment">// Pass in the URL for the request</span>
+    <span class="onelineComment">// For the purposes of this sample,assume that the URL</span>
+    <span class="onelineComment">// returns the XML shown above in the response body</span>
+    <span class="keyword">public</span> <span class="keyword">void</span> parseResponseDom(<span class="keyword">String</span> url){
+        Http h = <span class="keyword">new</span> Http();
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        <span class="onelineComment">// url that returns the XML in the response body</span>
+        req.setEndpoint(url);
+        req.setMethod(<span class="string">'GET'</span>);
+        HttpResponse res = h.send(req);
+        Dom.Document doc = res.getBodyDocument();
+        
+        <span class="onelineComment">//Retrieve the root element for this document.</span>
+        Dom.XMLNode address = doc.getRootElement();
+        
+        <span class="keyword">String</span> name = address.getChildElement(<span class="string">'name'</span>, <span class="keyword">null</span>).getText();
+        <span class="keyword">String</span> state = address.getChildElement(<span class="string">'state'</span>, <span class="keyword">null</span>).getText();
+        <span class="onelineComment">// print out specific elements</span>
+        System.debug(<span class="string">'Name: '</span> + name);
+        System.debug(<span class="string">'State: '</span> + state);
+        
+        <span class="onelineComment">// Alternatively, loop through the child elements.</span>
+        <span class="onelineComment">// This prints out all the elements of the address</span>
+        <span class="statement">for</span>(Dom.XMLNode child : address.getChildElements()) {
+           System.debug(child.getText());
+        }
+    }
+}</pre></div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Using XML Nodes</h2>
+
+            
+            <p class="p">Use the <samp class="codeph apex_code">XmlNode</samp> class to work with a node in
+                an XML document. The DOM represents an XML document as a hierarchy of nodes. Some
+                nodes may be branch nodes and have child nodes, while others are leaf nodes with no
+                children.</p>
+
+            <p class="p">There are different types of DOM nodes available in Apex. <samp class="codeph apex_code">XmlNodeType</samp> is an enum of these different types.
+                The values are:</p>
+
+            <ul class="ul bulletList">
+                <li class="li">COMMENT</li>
+
+                <li class="li">ELEMENT</li>
+
+                <li class="li">TEXT</li>
+
+            </ul>
+
+            
+            
+            
+            
+            
+            
+            
+            <p class="p">It is important to distinguish between elements and nodes in an XML document. The
+                following is a simple XML example:</p>
+
+            <div class="codeSection xml"><pre class="codeblock brush:xml"><span class="tag">&lt;name</span>&gt;
+    <span class="tag">&lt;firstName</span>&gt;Suvain<span class="tag">&lt;/firstName</span>&gt;
+    <span class="tag">&lt;lastName</span>&gt;Singh<span class="tag">&lt;/lastName</span>&gt;
+<span class="tag">&lt;/name</span>&gt;</pre></div>
+
+            <p class="p">This example contains three XML elements: <samp class="codeph nolang">name</samp>,
+                    <samp class="codeph nolang">firstName</samp>, and <samp class="codeph nolang">lastName</samp>. It contains five nodes: the three <samp class="codeph nolang">name</samp>, <samp class="codeph nolang">firstName</samp>, and <samp class="codeph nolang">lastName</samp> element
+                nodes, as well as two text nodes—<samp class="codeph nolang">Suvain</samp>
+                and <samp class="codeph nolang">Singh</samp>. Note that the text within an element
+                node is considered to be a separate text node.</p>
+
+            <p class="p">For more information about the methods shared by all enums, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_methods_system_enum.htm" target="_blank">Enum Methods</a>.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2"><span class="ph" id="sample_code_title"><a name="sample_code_title"><!-- --></a><span class="titlecodeph">XmlNode</span>
+                    Example</span></h2>
+
+            
+            <p class="p">This example shows how to use <samp class="codeph apex_code">XmlNode</samp> methods
+                and namespaces to create an XML request.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> DomNamespaceSample
+{
+    <span class="keyword">public</span> <span class="keyword">void</span> sendRequest(<span class="keyword">String</span> endpoint)
+    {
+        <span class="onelineComment">// Create the request envelope</span>
+        DOM.Document doc = <span class="keyword">new</span> DOM.Document();
+        
+        <span class="keyword">String</span> soapNS = <span class="string">'http://schemas.xmlsoap.org/soap/envelope/'</span>;
+        <span class="keyword">String</span> xsi = <span class="string">'http://www.w3.org/2001/XMLSchema-instance'</span>;
+        <span class="keyword">String</span> serviceNS = <span class="string">'http://www.myservice.com/services/MyService/'</span>;
+        
+        dom.XmlNode envelope
+            = doc.createRootElement(<span class="string">'Envelope'</span>, soapNS, <span class="string">'soapenv'</span>);
+        envelope.setNamespace(<span class="string">'xsi'</span>, xsi);
+        envelope.setAttributeNS(<span class="string">'schemaLocation'</span>, soapNS, xsi, <span class="keyword">null</span>);
+        
+        dom.XmlNode body
+            = envelope.addChildElement(<span class="string">'Body'</span>, soapNS, <span class="keyword">null</span>);
+        
+        body.addChildElement(<span class="string">'echo'</span>, serviceNS, <span class="string">'req'</span>).
+           addChildElement(<span class="string">'category'</span>, serviceNS, <span class="keyword">null</span>).
+           addTextNode(<span class="string">'classifieds'</span>);
+        
+        System.debug(doc.toXmlString());
+        
+        <span class="onelineComment">// Send the request</span>
+        HttpRequest req = <span class="keyword">new</span> HttpRequest();
+        req.setMethod(<span class="string">'POST'</span>);
+        req.setEndpoint(endpoint);
+        req.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'text/xml'</span>);
+        
+        req.setBodyDocument(doc);
+        
+        Http http = <span class="keyword">new</span> Http();
+        HttpResponse res = http.send(req);
+        
+        System.assertEquals(200, res.getStatusCode());
+        
+        dom.Document resDoc = res.getBodyDocument();
+        
+        envelope = resDoc.getRootElement();
+        
+        <span class="keyword">String</span> wsa = <span class="string">'http://schemas.xmlsoap.org/ws/2004/08/addressing'</span>;
+        
+        dom.XmlNode header = envelope.getChildElement(<span class="string">'Header'</span>, soapNS);
+        System.assert(header != <span class="keyword">null</span>);
+        
+        <span class="keyword">String</span> messageId
+            = header.getChildElement(<span class="string">'MessageID'</span>, wsa).getText();
+        
+        System.debug(messageId);
+        System.debug(resDoc.toXmlString());
+        System.debug(resDoc);
+        System.debug(header);
+        
+        System.assertEquals(
+         <span class="string">'http://schemas.xmlsoap.org/ws/2004/08/addressing/role/anonymous'</span>,
+         header.getChildElement(
+           <span class="string">'ReplyTo'</span>, wsa).getChildElement(<span class="string">'Address'</span>, wsa).getText());
+        
+        
+        System.assertEquals(
+          envelope.getChildElement(<span class="string">'Body'</span>, soapNS).
+              getChildElement(<span class="string">'echo'</span>, serviceNS).
+              getChildElement(<span class="string">'something'</span>, <span class="string">'http://something.else'</span>).
+              getChildElement(
+                <span class="string">'whatever'</span>, serviceNS).getAttribute(<span class="string">'bb'</span>, <span class="keyword">null</span>),
+                <span class="string">'cc'</span>);
+        
+        System.assertEquals(<span class="string">'classifieds'</span>,
+          envelope.getChildElement(<span class="string">'Body'</span>, soapNS).
+              getChildElement(<span class="string">'echo'</span>, serviceNS).
+              getChildElement(<span class="string">'category'</span>, serviceNS).getText());
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_dom_document.htm" target="_blank" title="Apex Reference Guide: Document Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: Document Class</a></div></li></ul>
+</div>
+</div>

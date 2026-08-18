@@ -1,0 +1,58 @@
+<a name="connectapi_examples_post_feed_element_batch_binary"><!-- --></a><h1 class="helpHead1">Post a Batch of Feed Elements with a New (Binary) File </h1><div class="body refbody">
+<div class="shortdesc">Use a trigger to call a method to bulk post a new file to the feeds of
+        accounts.</div>
+
+        <div class="section"><div class="p">
+<div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>This example is valid in version 32.0–35.0. In
+                version 36.0 and later, you can’t post a batch of feed elements with a new file in
+                the same call. Upload the file to Salesforce first, and then specify the uploaded
+                file when posting a batch of feed elements.</p>
+</div>
+</div></div></div></div>
+This trigger calls <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ChatterFeeds_static_methods.htm#apex_ConnectAPI_ChatterFeeds_postFeedElementBatch_1" target="_blank"><samp class="codeph apex_code">postFeedElementBatch(communityId, feedElements)</samp></a> to bulk post to
+            the feeds of newly inserted accounts. Each post has a new file (binary)
+            attachment.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> postFeedItemToAccountWithBinary on Account (after <span class="statement">insert</span>) {
+    Account[] accounts = Trigger.<span class="keyword">new</span>;
+    
+    <span class="onelineComment">// Bulk post to the account feeds.</span>
+
+    List&lt;ConnectApi.BatchInput&gt; batchInputs = <span class="keyword">new</span> List&lt;ConnectApi.BatchInput&gt;();
+
+    <span class="statement">for</span> (Account a : accounts) {
+        ConnectApi.FeedItemInput input = <span class="keyword">new</span> ConnectApi.FeedItemInput();
+
+        input.subjectId = a.id;
+        
+        ConnectApi.MessageBodyInput body = <span class="keyword">new</span> ConnectApi.MessageBodyInput();
+        body.messageSegments = <span class="keyword">new</span> List&lt;ConnectApi.MessageSegmentInput&gt;();
+
+        ConnectApi.TextSegmentInput textSegment = <span class="keyword">new</span> ConnectApi.TextSegmentInput();
+        textSegment.text = <span class="string">'Let\'s win the '</span> + a.name + <span class="string">' account.'</span>;
+
+        body.messageSegments.add(textSegment);
+        input.body = body;
+
+        ConnectApi.ContentCapabilityInput contentInput = <span class="keyword">new</span> ConnectApi.ContentCapabilityInput();
+        contentInput.title = <span class="string">'Title'</span>;
+
+        ConnectApi.FeedElementCapabilitiesInput capabilities = <span class="keyword">new</span> ConnectApi.FeedElementCapabilitiesInput();
+        capabilities.content = contentInput;
+
+        input.capabilities = capabilities;
+
+        <span class="keyword">String</span> text = <span class="string">'We are words in a file.'</span>;
+        <span class="keyword">Blob</span> myBlob = <span class="keyword">Blob</span>.valueOf(text);
+        ConnectApi.BinaryInput binInput = <span class="keyword">new</span> ConnectApi.BinaryInput(myBlob, <span class="string">'text/plain'</span>, <span class="string">'fileName'</span>);
+
+        ConnectApi.BatchInput batchInput = <span class="keyword">new</span> ConnectApi.BatchInput(input, binInput);
+
+        batchInputs.add(batchInput);
+    }
+
+    ConnectApi.ChatterFeeds.postFeedElementBatch(Network.getNetworkId(), batchInputs);</pre></div>
+</div></div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

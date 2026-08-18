@@ -1,0 +1,73 @@
+<a name="pages_security_tips_csrf"><!-- --></a><h1 class="helpHead1">Cross-Site Request Forgery (CSRF)</h1><div class="body conbody">
+        <div class="section">
+            <div class="p">Cross-Site Request Forgery (CSRF) flaws are less a programming mistake and more a
+                lack of a defense. For example, an attacker has a web page at
+                    <span class="ph filepath">www.attacker.com</span> that could be any web page, including one
+                that provides valuable services or information that drives traffic to that site.
+                Somewhere on the attacker's page is an HTML tag that looks like
+                this:<div class="codeSection html"><pre class="codeblock brush:html"><span class="tag">&lt;img</span><span class="attribute"> src=</span><span class="string">"http://www.yourwebpage.com/yourapplication/createuser?email=attacker@attacker.com&amp;type=admin....."</span><span class="attribute"> height=</span><span class="number">1</span><span class="attribute"> width=</span><span class="number">1</span> /&gt;</pre></div>
+</div>
+
+            <p class="p">In other words, the attacker's page contains a URL that performs an action on your
+                website. If the user is still logged into your web page when they visit the
+                attacker's web page, the URL is retrieved and the actions performed. This attack
+                succeeds because the user is still authenticated to your web page. This attack is a
+                simple example, and the attacker can get more creative by using scripts to generate
+                the callback request or even use CSRF attacks against your AJAX methods.</p>
+
+            <p class="p">For more information and traditional defenses:</p>
+
+            <ul class="ul bulletList">
+                <li class="li"><a class="xref" href="http://www.owasp.org/index.php/Cross-Site_Request_Forgery" target="_blank" title="HTML (New Window)">http://www.owasp.org/index.php/Cross-Site_Request_Forgery</a></li>
+
+                <li class="li"><a class="xref" href="http://www.cgisecurity.com/csrf-faq.html" target="_blank" title="HTML (New Window)">http://www.cgisecurity.com/csrf-faq.html</a></li>
+
+                <li class="li"><a class="xref" href="http://shiflett.org/articles/cross-site-request-forgeries" target="_blank" title="HTML (New Window)">http://shiflett.org/articles/cross-site-request-forgeries</a></li>
+
+            </ul>
+
+            <p class="p">Within the Lightning Platform, Salesforce implemented an anti-CSRF token to prevent
+                such an attack. Every page includes a random string of characters as a hidden form
+                field. Upon the next page load, the application checks the validity of this string
+                of characters and doesn’t execute the command unless the value matches the expected
+                value. This feature protects you when using all of the standard controllers and
+                methods.</p>
+
+            <div class="p">Here again, the developer can bypass the built-in defenses without realizing the
+                risk. For example, a custom controller takes the object ID as an input parameter and
+                then uses that input parameter in a SOQL call.
+                <div class="codeSection apex_mixed"><pre class="codeblock brush:apex"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"myClass"</span><span class="attribute"> action=</span><span class="string">"{!init}"</span><span class="tag">&lt;/apex:page</span>&gt;
+
+<span class="keyword">public</span> <span class="keyword">class</span> myClass { 
+  <span class="keyword">public</span> <span class="keyword">void</span> init() { 
+    Id id = ApexPages.currentPage().getParameters().get(<span class="string">'id'</span>); 
+    Account obj = [select id, Name FROM Account WHERE id = :id]; 
+    <span class="statement">delete</span> obj; 
+    <span class="statement">return</span> ; 
+  }
+}
+</pre></div>
+</div>
+
+            <p class="p">The developer unknowingly bypassed the anti-CSRF controls by developing their own
+                action method. The <samp class="codeph nolang">id</samp> parameter is read and
+                used in the code. The anti-CSRF token is never read or validated. An attacking web
+                page can send the user to this page by using a CSRF attack and providing any value
+                for the <samp class="codeph nolang">id</samp> parameter.</p>
+
+            <p class="p">There are no built-in defenses for such situations, and developers must be cautious
+                about writing pages that act based on a user-supplied parameter like the <samp class="codeph nolang">id</samp> variable in the previous example. A possible
+                work-around is to insert an intermediate confirmation page to make sure that the
+                user intended to call the page. Other suggestions include shortening the idle
+                session timeout and educating users to log out of their active session and not use
+                their browser to visit other sites while authenticated.</p>
+
+            <p class="p">Because of the Salesforce built-in defense against CSRF, your users can encounter an
+                error when multiple Salesforce login pages are open. If the user logs in to
+                Salesforce in one tab and then attempts to log in on another, they see this error:
+                The page you submitted was invalid for your session. Users can successfully log in
+                by refreshing the login page or by attempting to log in a second time.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

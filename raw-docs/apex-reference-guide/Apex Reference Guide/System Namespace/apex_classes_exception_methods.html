@@ -1,0 +1,782 @@
+<a name="apex_classes_exception_methods"><!-- --></a><h1 class="helpHead1">Exception Class and Built-In Exceptions</h1><div class="body refbody">
+<div class="shortdesc">An exception denotes an error that disrupts the normal flow of code execution. You
+        can use Apex built-in exceptions or create custom exceptions. All exceptions have common
+        methods.</div>
+<div class="section">
+        <p class="p">All exceptions support built-in methods for returning the error message and exception
+            type. In addition to the standard <samp class="codeph apex_code">exception</samp>
+            class, there are several different types of exceptions:</p>
+
+        <p class="p">The following are exceptions in the <samp class="codeph apex_code">System</samp>
+            namespace.</p>
+
+        
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                
+                
+                <thead class="thead sorted" align="left">
+                    <tr>
+                        <th class="featureTableHeader vertical-align-top " id="d457295e56">Exception</th>
+
+                        <th class="featureTableHeader vertical-align-top " id="d457295e59">Description</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody class="tbody">
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">AssertException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">A System.assert failure that halts code execution. Optionally
+                            contains the custom message specified in the last (<samp class="codeph apex_code">msg</samp>) argument to the <samp class="codeph apex_code">assert()</samp> method.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">AuraException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Legacy Aura-related exception. Use System.AuraHandledException
+                            instead.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">AuraHandledException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Returns a custom error message to a JavaScript controller. See <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.lightning.meta/lightning/controllers_server_apex_custom_errors.htm" target="_blank" title="HTML (New Window)">Returning
+                                Errors from an Apex Server-Side Controller</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">AsyncException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with an asynchronous operation, such as failing to
+                            enqueue an asynchronous call. </td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">BigObjectException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with big object records, such as connection timeouts
+                            during attempts to access or insert big object records.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">CalloutException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with a web service operation, such as failing to make a
+                            callout to an external system.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">DataWeaveScriptException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="DataWeaveExceptionDesc"><a name="DataWeaveExceptionDesc"><!-- --></a>Any run-time script errors that occur
+                                within DataWeave in Apex.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">DmlException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="DMLExceptionDesc"><a name="DMLExceptionDesc"><!-- --></a>Any problem with a DML statement, such as
+                                an <samp class="codeph apex_code"><span class="statement">insert</span></samp> statement missing
+                                a required field on a record.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">DuplicateMessageException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="DuplicateMessageExceptionDesc"><a name="DuplicateMessageExceptionDesc"><!-- --></a>Attempt to enqueue job with
+                                duplicate queueable signature</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">EmailException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with email, such as failure to deliver. For more
+                            information, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_forcecom_email_outbound.htm" target="_blank">Outbound Email</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">ExternalObjectException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with external object records, such as connection timeouts
+                            during attempts to access the data that’s stored on external
+                            systems.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">FatalCursorException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with Apex cursors in a transaction.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">FinalException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any attempt to mutate a read-only collection or record such as an
+                            sObject in an after-update trigger, or a final variable. This exception
+                            causes execution to halt.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">FlowException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with starting flow interviews from Apex. For example, if
+                            an active version of the flow can’t be found or it can’t be started from
+                            Apex.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">HandledException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">A generic handled exception.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">IllegalArgumentException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">An illegal argument was provided to a method call. For example, a
+                            method that requires a non-null argument throws this exception if a null
+                            value is passed into the method.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph nolang">InvalidHeaderException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">An illegal header argument was provided to an Apex REST call. For
+                            example, a call to the <samp class="codeph ">RestResponse.addHeader(name, value)</samp> method throws this
+                            exception if the header name is <samp class="codeph ">cookie</samp>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">InvalidParameterValueException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">This exception is used with both Visualforce pages and Salesforce
+                            Functions. <ul class="ul bulletList">
+                                <li class="li">
+<strong class="ph b">Visualforce</strong>: The exception is thrown when an invalid parameter is
+                                        supplied for a method, or any problem is encountered with a
+                                        URL used with Visualforce pages. For more information on
+                                        Visualforce, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="Adobe Acrobat PDF (New Window)">Visualforce
+                                            Developer's Guide</a>.</li>
+
+                                <li class="li">
+<strong class="ph b">Salesforce Functions</strong>: The exception is thrown when the <samp class="codeph ">functionName</samp> parameter to <samp class="codeph ">Function.get()</samp> doesn’t have
+                                        the correct <samp class="codeph ">project name.function
+                                            name</samp> format. For more information on Salesforce
+                                        functions, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_functions_Function.htm" target="_blank"><samp class="codeph ">Function.get()</samp></a>.</li>
+
+                            </ul>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">LimitException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">A governor limit has been exceeded. This exception can’t be
+                            caught.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">JSONException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with JSON serialization and deserialization operations.
+                            For more information, see the methods of <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_Json.htm#apex_class_System_Json" title="Contains methods for serializing Apex objects into JSON format and deserializing JSON content that was serialized using the serialize method in this class."><samp class="codeph apex_code">System.JSON</samp></a>, <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_JsonParser.htm#apex_class_System_JsonParser" title="Represents a parser for JSON-encoded content."><samp class="codeph apex_code">System.JSONParser</samp></a>, and
+                                <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_System_JsonGenerator.htm#apex_class_System_JsonGenerator" title="Contains methods used to serialize objects into JSON content using the standard JSON encoding."><samp class="codeph apex_code">System.JSONGenerator</samp></a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">ListException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="ListExceptionDesc"><a name="ListExceptionDesc"><!-- --></a>Any problem with a list, such as
+                                attempting to access an index that is out of bounds.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">MathException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with a mathematical operation, such as dividing by
+                            zero.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">NoAccessException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with unauthorized access, such as trying to access an
+                            sObject that the current user doesn’t have access to. This exception is
+                            used with Visualforce pages. For more information on Visualforce, see
+                            the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="Adobe Acrobat PDF (New Window)">Visualforce Developer
+                                Guide</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">NoDataFoundException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">This exception is used with both Visualforce pages and Salesforce
+                            Functions. <ul class="ul bulletList">
+                                <li class="li">
+<strong class="ph b">Visualforce</strong>: The exception is thrown with data that doesn't exist, such
+                                        as trying to access an sObject that has been deleted. For
+                                        more information on Visualforce, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="Adobe Acrobat PDF (New Window)">Visualforce
+                                            Developer's Guide</a>.</li>
+
+                                <li class="li">
+<strong class="ph b">Salesforce Functions</strong>: The exception is thrown when the project or function name
+                                        provided in the <samp class="codeph ">functionName</samp> parameter to the <samp class="codeph ">Function.get()</samp> method can't
+                                        be found. For more information on Salesforce functions, see
+                                            <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_functions_Function.htm" target="_blank"><samp class="codeph ">Function.get()</samp></a>.</li>
+
+                            </ul>
+</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">NoSuchElementException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">This exception is thrown if you try to access items that are outside
+                            the bounds of a list. This exception is used by the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_classes_iterable.htm" target="_blank">Iterator</a>
+                            <samp class="codeph apex_code">next</samp> method. For example, if
+                                <samp class="codeph apex_code">iterator.hasNext() == <span class="keyword">false</span></samp>
+                            and you call <samp class="codeph apex_code">iterator.next()</samp>,
+                            this exception is thrown. This exception is also used by the Apex Flex
+                            Queue methods and is thrown if you attempt to access a job at an invalid
+                            position in the flex queue.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">NullPointerException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with dereferencing null. For an example, see <a class="xref" href="#ex_null_pointer">NullPointerException Example</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">QueryException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="QueryExceptionDesc"><a name="QueryExceptionDesc"><!-- --></a>Any problem with SOQL queries, such as
+                                assigning a query that returns no records or more than one record to
+                                a singleton sObject variable.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">RequiredFeatureMissing</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="chatter_missing"><a name="chatter_missing"><!-- --></a>A Chatter feature is required for code that
+                                has been deployed to an organization that doesn’t have Chatter
+                                enabled.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">SearchException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with SOSL queries executed with SOAP API <samp class="codeph apex_code">search()</samp> call, for example, when
+                            the <samp class="codeph apex_code">searchString</samp> parameter
+                            contains fewer than two characters. For more information, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.api.meta/api/" target="_blank" title="HTML (New Window)">SOAP API Developer
+                                Guide</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">SecurityException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with static methods in the Crypto utility class. For more
+                            information, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_restful_crypto.htm#apex_classes_restful_crypto" title="Provides methods for creating digests, message authentication codes, and signatures, as well as encrypting and decrypting information.">Crypto Class</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">SerializationException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with the serialization of data. This exception is used
+                            with Visualforce pages. For more information on Visualforce, see the
+                                <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="Adobe Acrobat PDF (New Window)">Visualforce Developer
+                                Guide</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">SObjectException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description"><span class="ph" id="SObjectExceptionDesc"><a name="SObjectExceptionDesc"><!-- --></a>Any problem with sObject records, such
+                                as attempting to change a field in an <samp class="codeph apex_code"><span class="statement">update</span></samp> statement that can only
+                                be changed during <samp class="codeph apex_code"><span class="statement">insert</span></samp>.</span></td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">StringException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with Strings, such as a String that is exceeding your
+                            heap size.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">TransientCursorException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">A transient problem with an Apex cursor transaction. The failed transaction can be retried.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">TypeException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with type conversions, such as attempting to convert the
+                            String 'a' to an Integer using the <samp class="codeph apex_code">valueOf</samp> method.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">UnexpectedException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">A non-recoverable internal error within Salesforce has occurred. This
+                            exception causes execution to halt. If necessary, contact Salesforce
+                            Customer Support for more information.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">VisualforceException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with a Visualforce page. For more information on
+                            Visualforce, see the <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.pages.meta/pages/" target="_blank" title="Adobe Acrobat PDF (New Window)">Visualforce Developer
+                                Guide</a>.</td>
+
+                    </tr>
+
+                    <tr>
+                        <td class="entry" headers="d457295e56" data-title="Exception"><samp class="codeph apex_code">XmlException</samp></td>
+
+                        <td class="entry" headers="d457295e59" data-title="Description">Any problem with the XmlStream classes, such as failing to read or
+                            write XML.</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table></div>
+
+        <p class="p">The following is an example using the DmlException exception:</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] accts = <span class="keyword">new</span> Account[]{<span class="keyword">new</span> Account(billingcity = <span class="string">'San Jose'</span>)};
+<span class="statement">try</span> {
+    <span class="statement">insert</span> <span class="statement">as</span> user accts;
+} <span class="statement">catch</span> (System.DmlException e) {
+    <span class="statement">for</span> (<span class="keyword">Integer</span> i = 0; i &lt; e.getNumDml(); i++) {
+        <span class="onelineComment">// Process exception here</span>
+        System.debug(e.getDmlMessage(i)); 
+    }
+}</pre></div>
+
+        <p class="p">For exceptions in other namespaces, see:</p>
+
+        <ul class="ul bulletList">
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_cache_exceptions.htm" title="The Cache namespace contains exception classes.">Cache Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_exceptions_canvas.htm" title="The Canvas namespace contains exception classes.">Canvas Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_exceptions_compression.htm" title="The Compression namespace contains exception classes.">Compression
+                Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/connectAPI_exceptions.htm" title="The ConnectApi namespace contains exception classes."><samp class="codeph apex_code">ConnectApi</samp> Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_DataSource_exceptions.htm" title="The DataSource namespace contains exception classes.">DataSource
+                Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_Reports_exceptions.htm" title="The Reports namespace contains exception classes.">Reports
+                Exceptions</a></li>
+
+            <li class="li"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_Site_exceptions.htm" title="The Site namespace contains an exception class.">Site Exceptions</a></li>
+
+        </ul>
+
+        </div>
+<div class="section" id="exception_common_methods">
+<a name="exception_common_methods"><!-- --></a><h2 class="helpHead2">Common Exception Method</h2>
+
+            
+            <p class="p">Exception methods are all called by and operate on an instance of an exception. This
+                table describes all instance exception methods. All types of exceptions have these
+                methods in common.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d457295e748">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e751">Arguments</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e754">Return Type</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e757">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">getCause</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">Exception</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="getCauseDesc"><a name="getCauseDesc"><!-- --></a>Returns the cause of the exception as an
+                                    exception object.</span></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">getLineNumber</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">Integer</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="getLineNumberDesc"><a name="getLineNumberDesc"><!-- --></a>Returns the line number from where the
+                                    exception was thrown.</span></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">getMessage</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">String</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="getMessageDesc"><a name="getMessageDesc"><!-- --></a>Returns the error message that displays
+                                    for the user.</span></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">getStackTraceString</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">String</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description">
+<span class="ph" id="getStackTraceStringDesc"><a name="getStackTraceStringDesc"><!-- --></a>Returns the stack trace of a
+                                    thrown exception as a string.</span>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">getTypeName</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">String</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="getTypeNameDesc"><a name="getTypeNameDesc"><!-- --></a>Returns the type of exception, such as
+                                    DmlException, ListException, MathException, and so
+                                on.</span></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">initCause</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments">Exception <var class="keyword varname">cause</var>
+</td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">Void</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="initCauseDesc"><a name="initCauseDesc"><!-- --></a>Sets the cause for this exception, if one
+                                    hasn’t already been set.</span></td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e748" data-title="Name"><samp class="codeph apex_code">setMessage</samp></td>
+
+                            <td class="entry" headers="d457295e751" data-title="Arguments">String <var class="keyword varname">s</var>
+</td>
+
+                            <td class="entry" headers="d457295e754" data-title="Return Type">Void</td>
+
+                            <td class="entry" headers="d457295e757" data-title="Description"><span class="ph" id="setMessageDesc"><a name="setMessageDesc"><!-- --></a>Sets the error message that displays for
+                                    the user.</span></td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section" id="dml_email_exception_methods">
+<a name="dml_email_exception_methods"><!-- --></a><h2 class="helpHead2">DMLException and EmailException Methods</h2>
+
+            
+            <p class="p">In addition to the common exception methods, DMLException and EmailException have
+                these methods:</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d457295e913">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e916">Arguments</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e919">Return Type</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e922">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlFieldNames</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">String []</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the names of the field or fields that caused the error
+                                described by the <var class="keyword varname">i<sup class="ph sup">th</sup></var> failed row.
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlFields</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">Schema.sObjectField []</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the field token or tokens for the field or fields that
+                                caused the error described by the <var class="keyword varname">i<sup class="ph sup">th</sup></var>
+                                failed row. For more information on field tokens, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dynamic.htm" target="_blank">Dynamic Apex</a>.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlId</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">String</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the ID of the failed record that caused the error
+                                described by the <var class="keyword varname">i<sup class="ph sup">th</sup></var> failed
+                                row.</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlIndex</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">Integer</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the original row position of the
+                                    <var class="keyword varname">i<sup class="ph sup">th</sup></var> failed row. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlMessage</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">String </td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the user message for the
+                                    <var class="keyword varname">i<sup class="ph sup">th</sup></var> failed row. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlStatusCode</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">String</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Deprecated. Use getDmlType instead. Returns the Apex failure code
+                                for the <var class="keyword varname">i<sup class="ph sup">th</sup></var> failed row. </td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getDmlType</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments">Integer <var class="keyword varname">i</var>
+</td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type"><a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_enums.htm" target="_blank">System.StatusCode</a></td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the value of the System.StatusCode enum. For an example, see <a class="xref" href="#ex_dml_type">getDmlType Example</a>.<p class="p">For more information about System.StatusCode,
+                                    see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/langCon_apex_enums.htm" target="_blank">Enums</a>.</p>
+</td>
+
+                        </tr>
+
+                        <tr>
+                            <td class="entry" headers="d457295e913" data-title="Name"><samp class="codeph apex_code">getNumDml</samp></td>
+
+                            <td class="entry" headers="d457295e916" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e919" data-title="Return Type">Integer</td>
+
+                            <td class="entry" headers="d457295e922" data-title="Description">Returns the number of failed rows for DML exceptions.</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+        <div class="section" id="query_exception_methods">
+<a name="query_exception_methods"><!-- --></a><h2 class="helpHead2">QueryException Method</h2>
+
+            
+            <p class="p">In addition to the common exception methods, QueryException has this method.</p>
+
+            
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+                    
+                    
+                    
+                    
+                    <thead class="thead sorted" align="left">
+                        <tr>
+                            <th class="featureTableHeader vertical-align-top " id="d457295e1146">Name</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e1149">Arguments</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e1152">Return Type</th>
+
+                            <th class="featureTableHeader vertical-align-top " id="d457295e1155">Description</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="tbody">
+                        <tr>
+                            <td class="entry" headers="d457295e1146" data-title="Name"><samp class="codeph ">getInaccessibleFields</samp></td>
+
+                            <td class="entry" headers="d457295e1149" data-title="Arguments"></td>
+
+                            <td class="entry" headers="d457295e1152" data-title="Return Type">
+<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_map.htm#apex_methods_system_map" title="Contains methods for the Map collection type.">Map</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>,<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_set.htm#apex_methods_system_set" title="Represents a collection of unique elements with no duplicate values.">Set&lt;</a><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;&gt;</td>
+
+                            <td class="entry" headers="d457295e1155" data-title="Description">Returns a map in which each key is an <samp class="codeph ">sObjectType</samp> and its corresponding value is the set of
+                                inaccessible field names in fully qualified format
+                                (Namespace__FieldName__c). <p class="p">Use this method to determine the cause
+                                    of the <samp class="codeph ">QueryException</samp>. The
+                                    returned map contains data only if the method that threw the
+                                        <samp class="codeph ">QueryException</samp> is running
+                                    in user mode. </p>
+<p class="p">For an example, see <a class="xref" href="#ex_inaccessible_fields">getInaccessibleFields Example</a>.</p>
+</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table></div>
+
+        </div>
+
+    <div class="example" id="ex_null_pointer">
+<a name="ex_null_pointer"><!-- --></a><h2 class="helpHead2">NullPointerException Example</h2>
+<div class="exampleblock">
+        
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> s;
+s.toLowerCase(); <span class="onelineComment">// Since s is null, this call causes</span>
+                 <span class="onelineComment">// a NullPointerException</span></pre></div>
+
+    </div>
+</div>
+
+    <div class="example" id="ex_dml_type">
+<a name="ex_dml_type"><!-- --></a><h2 class="helpHead2">getDmlType Example</h2>
+<div class="exampleblock">
+        
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+  <span class="statement">insert</span> <span class="statement">as</span> user <span class="keyword">new</span> Account();
+}   <span class="statement">catch</span> (System.DmlException ex) {
+      Assert.areEqual(
+         StatusCode.REQUIRED_FIELD_MISSING,
+         ex.getDmlType(0));
+}</pre></div>
+
+    </div>
+</div>
+
+    <div class="example" id="ex_inaccessible_fields">
+<a name="ex_inaccessible_fields"><!-- --></a><h2 class="helpHead2">getInaccessibleFields Example</h2>
+<div class="exampleblock">
+        
+        <p class="p">In this code sample, it's assumed that the user doesn't have field level security access to the <samp class="codeph nolang">Contact.Email</samp> and <samp class="codeph nolang">Account.Website</samp> fields.</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="statement">try</span> {
+    List&lt;Account&gt; accounts = [SELECT Website, (SELECT Email FROM Contacts) FROM Account WITH USER_MODE];
+} <span class="statement">catch</span> (QueryException qe) {
+    <span class="onelineComment">// Handle inaccessible fields</span>
+    Map&lt;<span class="keyword">String</span>, Set&lt;<span class="keyword">String</span>&gt;&gt; inaccessible = qe.getInaccessibleFields();
+    Set&lt;<span class="keyword">String</span>&gt; accountFields = inaccessible.get(<span class="string">'Account'</span>);
+    Set&lt;<span class="keyword">String</span>&gt; contactFields = inaccessible.get(<span class="string">'Contact'</span>);
+}</pre></div>
+
+    </div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

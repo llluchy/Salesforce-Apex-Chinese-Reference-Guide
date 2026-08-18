@@ -1,0 +1,84 @@
+<a name="apex_qs_trigger"><!-- --></a><h1 class="helpHead1">Add an Apex Trigger</h1><div class="body taskbody">
+<div class="shortdesc">In this step, you create a trigger for the <samp class="codeph apex_code">Book__c</samp> custom object that calls the <samp class="codeph apex_code">applyDiscount</samp> method of the <samp class="codeph apex_code">MyHelloWorld</samp> class that you created in the previous step.</div>
+
+        <div class="section prereq p"><div class="p">Prerequisites:<ul class="ul bulletList">
+                <li class="li">A Salesforce account in a sandbox Professional, Enterprise, Performance, or
+                    Unlimited Edition org, or an account in a Developer org.</li>
+
+                <li class="li"><a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_class.htm" title="In this step, you add an Apex class that contains a method for updating the book price. This method is called by the trigger that you’ll be adding in the next step.">The MyHelloWorld
+                        Apex class.</a></li>
+
+            </ul>
+</div></div>
+
+        <div class="section context">
+            <p class="p">A <em class="ph i">trigger</em> is a piece of code that executes before or after records of a
+                particular type are inserted, updated, or deleted from the Lightning Platform
+                    database. Every trigger runs with a set of context variables that provide
+                access to the records that caused the trigger to fire. All triggers run in bulk;
+                that is, they process several records at once. </p>
+
+        </div>
+
+        <ol class="ol steps enumList">
+            <li class="li step">
+                <span class="ph cmd">From the object management settings for books, go to Triggers, and then click
+                        <strong class="ph uicontrol">New</strong>.</span>
+            </li>
+
+            <li class="li step">
+                <span class="ph cmd">In the trigger editor, delete the default template code and enter this trigger
+                    definition:</span>
+                <div class="itemgroup stepxmp">
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> HelloWorldTrigger on Book__c (before <span class="statement">insert</span>) {
+
+   Book__c[] books = Trigger.<span class="keyword">new</span>;
+
+   MyHelloWorld.applyDiscount(books);
+}
+</pre></div>
+
+                </div>
+                <div class="itemgroup info">
+                    <p class="p">The first line of code defines the trigger:</p>
+
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">trigger</span> HelloWorldTrigger on Book__c (before <span class="statement">insert</span>) {</pre></div>
+
+                    <p class="p">It gives the trigger a name, specifies the object on which it operates, and
+                        defines the events that cause it to fire. For example, this trigger is
+                        called HelloWorldTrigger, it operates on the <samp class="codeph apex_code">Book__c</samp> object, and runs before new books are inserted into
+                        the database. </p>
+
+                    <p class="p">The next line in the trigger creates a list of book records named <samp class="codeph apex_code">books</samp> and assigns it the contents of a
+                        trigger context variable called <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp>. Trigger context variables such as <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp> are implicitly defined in
+                        all triggers and provide access to the records that caused the trigger to
+                        fire. In this case, <samp class="codeph apex_code">Trigger.<span class="keyword">new</span></samp>
+                        contains all the new books that are about to be inserted.</p>
+
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">Book__c[] books = Trigger.<span class="keyword">new</span>;</pre></div>
+
+                    <p class="p">The next line in the code calls the method <samp class="codeph apex_code">applyDiscount</samp> in the <samp class="codeph apex_code">MyHelloWorld</samp> class. It passes in the array of new books. </p>
+
+                    <div class="codeSection apex_code"><pre class="codeblock brush:apex">MyHelloWorld.applyDiscount(books);
+</pre></div>
+
+                </div>
+            </li>
+
+        </ol>
+
+        <div class="section result"><div class="p">You now have all the code that is needed to update the price of all books that get
+            inserted. However, there’s still one piece of the puzzle missing. Unit tests are an
+            important part of writing code and are required. In the next step, you'll see why this
+            is so and will be able to add a test class.</div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_class.htm" title="Add an Apex Class">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_qs_test.htm" title="Add a Test Class">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://help.salesforce.com/HTViewHelpDoc?id=extend_click_find_objectmgmt_parent.htm&amp;language=en_US" target="_blank"><em class="ph i">Salesforce Help</em>: Find Object Management Settings</a></div></li></ul>
+</div>
+</div>

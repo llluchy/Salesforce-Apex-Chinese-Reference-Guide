@@ -1,0 +1,274 @@
+<a name="apex_class_Metadata_Operations"><!-- --></a><div class="nested0">
+  <h1 class="helpHead1">Operations Class</h1>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Represents a class to execute metadata operations, such as
+      retrieving or deploying custom metadata.</span></div>
+
+    <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+      
+      <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Metadata.htm" title="The Metadata namespace provides classes and methods for working with custom metadata in Salesforce">Metadata</a></p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Usage</h2>
+<div class="p">Use the <samp class="codeph nolang">Metadata.Operations</samp>
+      class to execute metadata operations. For more information on use cases and restrictions of
+      metadata operations in Apex, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Metadata.htm" title="The Metadata namespace provides classes and methods for working with custom metadata in Salesforce">Metadata</a>.</div>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Example: Retrieve Metadata</h2>
+
+      
+      <p class="p">The following example retrieves the “MyTestCustomMDType” custom metadata record from the
+        subscriber org, and inspects the custom fields.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ApexMDRetrieveExample"><a name="ApexMDRetrieveExample"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> ReadMetadata {
+  <span class="keyword">public</span> <span class="keyword">void</span> retrieveMetadata () {
+    <span class="onelineComment">// List fullnames of components we want to retrieve</span>
+    List&lt;<span class="keyword">String</span>&gt; componentNameList = 
+<span class="keyword">new</span> List&lt;<span class="keyword">String</span>&gt;{<span class="string">'ISVNamespace__TestCustomMDType.MyTestCustomMDType'</span>};
+
+    <span class="onelineComment">// Retrieve components that are records of custom metadata types</span>
+    <span class="onelineComment">// based on name</span>
+    List&lt;Metadata.Metadata&gt; components = Metadata.Operations.retrieve(
+Metadata.MetadataType.CustomMetadata, componentNameList);
+    Metadata.CustomMetadata customMetadataRecord = (Metadata.CustomMetadata) components.get(0);
+
+    <span class="onelineComment">// Check fields of retrieved component</span>
+    List&lt;Metadata.CustomMetadataValue&gt; values = customMetadataRecord.values;
+    <span class="statement">for</span> (integer i = 0; i &lt; values.size(); i++) {
+      <span class="statement">if</span> (values.get(i).field == <span class="string">'testField__c'</span> &amp;&amp; 
+          values.get(i).value == <span class="string">'desired value'</span>) {
+        <span class="onelineComment">// ...process accordingly...</span>
+      }
+    }
+  }
+}</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example: Deploy Metadata</h2>
+
+      
+      <p class="p">The following example uses the Metadata API in Apex to update the customField custom field
+        value of the MetadataRecordName custom metadata record and deploy this change into the
+        subscriber org. Because the deployment is asynchronous, you must provide a callback class
+        that implements the <samp class="codeph nolang">Metadata.DeployCallback</samp> interface,
+        which is then used when the queued deployment completes.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ApexMDDeployExample"><a name="ApexMDDeployExample"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> CreateMetadata{
+  <span class="keyword">public</span> <span class="keyword">void</span> updateAndDeployMetadata() {
+    <span class="onelineComment">// Setup custom metadata to be created in the subscriber org.</span>
+    Metadata.CustomMetadata customMetadata =  <span class="keyword">new</span> Metadata.CustomMetadata();
+    customMetadata.fullName = <span class="string">'ISVNamespace__MetadataTypeName.MetadataRecordName'</span>;
+
+    Metadata.CustomMetadataValue customField = <span class="keyword">new</span> Metadata.CustomMetadataValue();
+    customField.field = <span class="string">'customField__c'</span>;
+    customField.value = <span class="string">'New value'</span>;
+
+    customMetadata.values.add(customField);
+
+    Metadata.DeployContainer mdContainer = <span class="keyword">new</span> Metadata.DeployContainer();
+    mdContainer.addMetadata(customMetadata);
+
+    <span class="onelineComment">// Setup deploy callback, MyDeployCallback implements</span>
+    <span class="onelineComment">// the Metadata.DeployCallback interface (code for</span>
+    <span class="onelineComment">// this class not shown in this example)</span>
+    MyDeployCallback callback = <span class="keyword">new</span> MyDeployCallback();
+
+    <span class="onelineComment">// Enqueue custom metadata deployment</span>
+    Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
+  }
+}</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Example: Create Two Metadata Records Synchronously </h2>
+
+      
+      <div class="p">Create a metadata record along with another one that references it in the same transaction.
+        If the parent record was installed with a namespace, prefix the developer name with
+          <var class="keyword varname">recordNs__</var>. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>No custom metadata relationship can relate records of
+          the same type to each other.</p>
+</div>
+</div></div></div></div>
+</div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex" id="ApexMDCreateExample"><a name="ApexMDCreateExample"><!-- --></a><span class="keyword">public</span> <span class="keyword">class</span> CreateMetadata {
+ 
+    <span class="keyword">public</span> Id doCreate(
+        <span class="keyword">String</span> parentRecDevName,
+        <span class="keyword">String</span> parentRecLabel, 
+        <span class="keyword">String</span> childRecDevName, 
+        <span class="keyword">String</span> childRecLabel) {
+ 
+        Metadata.DeployContainer mdContainer = <span class="keyword">new</span> Metadata.DeployContainer();
+ 
+        Metadata.CustomMetadata parentRecord = <span class="keyword">new</span> Metadata.CustomMetadata();
+        parentRecord.fullName = <span class="string">'ParentType.'</span> + parentRecDevName;
+        parentRecord.label = parentRecLabel;
+        mdContainer.addMetadata(parentRecord);
+ 
+        Metadata.CustomMetadata childRecord = <span class="keyword">new</span> Metadata.CustomMetadata();
+        childRecord.fullName = <span class="string">'ChildType.'</span> + childRecDevName;
+        childRecord.label = childRecLabel;
+        Metadata.CustomMetadataValue relValue = <span class="keyword">new</span> Metadata.CustomMetadataValue();
+        relValue.field = <span class="string">'Parent__c'</span>;
+        relValue.value = parentRecDevName;
+        childRecord.values.add(relValue);
+        mdContainer.addMetadata(childRecord);
+ 
+        Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, <span class="keyword">null</span>);
+        <span class="statement">return</span> jobId;
+    }
+ 
+}</pre></div>
+
+    </div>
+
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Operations.htm#apex_Metadata_Operations_methods">Operations Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Metadata_Operations_methods">
+<a name="apex_Metadata_Operations_methods"><!-- --></a><h2 class="helpHead2">Operations Methods</h2>
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Operations</samp>.</p>
+</div>
+</div>
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Operations.htm#apex_Metadata_Operations_clone">clone()</a></strong><br>
+Makes a duplicate copy of the <samp class="codeph nolang">Metadata.Operations</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Operations.htm#apex_Metadata_Operations_enqueueDeployment">enqueueDeployment(container, callback)</a></strong><br>
+Deploys custom metadata components asynchronously.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Operations.htm#apex_Metadata_Operations_retrieve">retrieve(type, fullNames)</a></strong><br>
+Retrieves a list of custom metadata components.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Metadata_Operations_clone">
+<a name="apex_Metadata_Operations_clone"><!-- --></a><h3 class="helpHead3">clone()</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Makes a duplicate copy of the <samp class="codeph nolang">Metadata.Operations</samp>.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> clone()</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Object</p>
+</div>
+</div>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Metadata_Operations_enqueueDeployment">
+<a name="apex_Metadata_Operations_enqueueDeployment"><!-- --></a>
+  <h3 class="helpHead3">enqueueDeployment(container, callback)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Deploys custom metadata components asynchronously.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p">To preserve service function, we limit the number of Metadata API deployments originating
+        from Apex that can be enqueued at a time. See Limit on Enqueued Deployments from Apex.</p>
+
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Id enqueueDeployment(Metadata.DeployContainer
+          container, Metadata.DeployCallback callback)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+          <strong class="ph b"><var class="keyword varname">container</var></strong>:
+          <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_DeployContainer.htm#apex_class_Metadata_DeployContainer" title="Represents a container for custom metadata components to be deployed.">Metadata.DeployContainer</a></p>
+
+          <p class="p">Container that contains the set of metadata components to deploy.</p>
+
+        </li>
+
+        <li class="li">
+          <strong class="ph b"><var class="keyword varname">callback</var></strong>:
+          <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_interface_Metadata_DeployCallback.htm#apex_interface_Metadata_DeployCallback" title="An interface for metadata deployment callback classes.">Metadata.DeployCallback</a></p>
+
+          <p class="p">A class that implements the <samp class="codeph nolang">Metadata.DeployCallback</samp> interface. Used by Salesforce to return information
+            about the deployment results.</p>
+
+        </li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+
+      <p class="p">ID of deployment request.</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Metadata_Operations_retrieve">
+<a name="apex_Metadata_Operations_retrieve"><!-- --></a><h3 class="helpHead3">retrieve(type, fullNames)</h3>
+<div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Retrieves a list of custom metadata components.</span></div>
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Metadata.Metadata&gt;
+          retrieve(Metadata.MetadataType type, List&lt;<span class="keyword">String</span>&gt; fullNames)</samp></p>
+</div>
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">type</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_enum_Metadata_MetadataType.htm#apex_enum_Metadata_MetadataType" title="Represents the custom metadata components available in Apex.">Metadata.MetadataType</a></p>
+<p class="p">The metadata component type.</p>
+</li>
+<li class="li">
+<strong class="ph b"><var class="keyword varname">fullNames</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>&gt;</p>
+<p class="p">A list of component names to retrieve. For information on component name formats, see <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Metadata.htm#apex_Metadata_Metadata_fullName" title="The full name of the custom metadata, which can include the namespace, type, and component name.">Metadata.fullName()</a>.</p>
+</li>
+</ul>
+</div>
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_list.htm#apex_methods_system_list" title="Contains methods for the List collection type.">List</a>&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Metadata_Metadata.htm#apex_class_Metadata_Metadata" title="An abstract base class that represents a custom metadata component.">Metadata.Metadata</a>&gt;</p>
+</div>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,167 @@
+<a name="apex_email_template_selector"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">EmailTemplateSelector Interface</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">The <samp class="codeph apex_code">Support.EmailTemplateSelector</samp> interface
+  enables providing default email templates in Case Feed. With default email templates, specified
+  email templates are preloaded for cases based on criteria such as case origin or subject. </div>
+
+  <p class="p"><samp class="codeph apex_code">Support.EmailTemplateSelector</samp> works only in Salesforce
+   Classic, not in Lightning Experience. Lightning Experience users can specify default values for
+   emails using the <samp class="codeph nolang">QuickActionDefaultsHandler</samp> interface. </p>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Support.htm" title="The Support namespace provides an interface used for Case Feed.">Support</a></p>
+
+  </div>
+
+  <p class="p"><span class="ph" id="default_template_prereq"><a name="default_template_prereq"><!-- --></a>To specify default templates, you must create a class that
+    implements <samp class="codeph apex_code">Support.EmailTemplateSelector</samp>.</span></p>
+
+  <p class="p">When you implement this interface, provide an empty parameterless constructor.</p>
+
+ </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_email_template_selector.htm#apex_Support_EmailTemplateSelector_methods">EmailTemplateSelector Methods</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_email_template_selector.htm#apex_email_template_selector_example">EmailTemplateSelector Example Implementation</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Support_EmailTemplateSelector_methods">
+<a name="apex_Support_EmailTemplateSelector_methods"><!-- --></a>
+<h2 class="helpHead2">EmailTemplateSelector Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">EmailTemplateSelector</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_email_template_selector.htm#apex_Support_EmailTemplateSelector_getDefaultTemplateId">getDefaultTemplateId(caseId)</a></strong><br>
+Returns the ID of the email template to preload for the case currently being viewed in the case feed using the specified case ID.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Support_EmailTemplateSelector_getDefaultTemplateId">
+<a name="apex_Support_EmailTemplateSelector_getDefaultTemplateId"><!-- --></a>
+<h3 class="helpHead3">getDefaultTemplateId(caseId)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the ID of the email template to preload for the
+case currently being viewed in the case feed using the specified case
+ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">ID</span> getDefaultTemplateId(<span class="keyword">ID</span> caseId)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">caseId</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic nested1" lang="en-us" lang="en-us" id="apex_email_template_selector_example">
+<a name="apex_email_template_selector_example"><!-- --></a>
+<h2 class="helpHead2">EmailTemplateSelector Example Implementation</h2>
+
+
+<div class="body">
+<p class="p">This is an example implementation of the <samp class="codeph apex_code">Support.EmailTemplateSelector</samp> interface.</p>
+
+<p class="p">The <samp class="codeph apex_code">getDefaultEmailTemplateId</samp> method implementation retrieves the subject and description of the
+case corresponding to the specified case ID. Next, it selects an email
+template based on the case subject and returns the email template
+ID. </p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> MyCaseTemplateChooser <span class="keyword">implements</span> Support.EmailTemplateSelector {
+    <span class="onelineComment">// Empty constructor </span>
+    <span class="keyword">global</span> MyCaseTemplateChooser() {    }
+
+    <span class="onelineComment">// The main interface method </span>
+    <span class="keyword">global</span> <span class="keyword">ID</span> getDefaultEmailTemplateId(<span class="keyword">ID</span> caseId) {
+        <span class="onelineComment">// Select the case we're interested in, choosing any fields that are relevant to our decision</span>
+        Case c = [SELECT Subject, Description FROM Case WHERE Id=:caseId];
+
+        EmailTemplate et;
+
+        <span class="statement">if</span> (c.subject.contains(<span class="string">'LX-1150'</span>)) {
+            et = [SELECT id FROM EmailTemplate WHERE DeveloperName = <span class="string">'LX1150_template'</span>];
+        } <span class="statement">else</span> <span class="statement">if</span>(c.subject.contains(<span class="string">'LX-1220'</span>)) {
+            et = [SELECT id FROM EmailTemplate WHERE DeveloperName = <span class="string">'LX1220_template'</span>];
+        } 
+        
+        <span class="onelineComment">// Return the ID of the template selected</span>
+        <span class="statement">return</span> et.id;
+    }
+} </pre></div>
+
+<p class="p">The following example tests the above code:</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> MyCaseTemplateChooserTest {
+
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testChooseTemplate() {
+    
+        MyCaseTemplateChooser chooser = <span class="keyword">new</span> MyCaseTemplateChooser();
+
+        <span class="onelineComment">// Create a simulated case to test with</span>
+        Case c = <span class="keyword">new</span> Case();
+        c.Subject = <span class="string">'I\'m having trouble with my LX-1150'</span>;
+        Database.<span class="statement">insert</span>(c);
+            
+        <span class="onelineComment">// Make sure the proper template is chosen for this subject</span>
+        Id actualTemplateId = chooser.getDefaultEmailTemplateId(c.Id);
+        EmailTemplate expectedTemplate = 
+          [SELECT id FROM EmailTemplate WHERE DeveloperName = <span class="string">'LX1150_template'</span>];
+        Id expectedTemplateId = expectedTemplate.Id;
+        System.assertEquals(actualTemplateId, expectedTemplateId);
+  
+        <span class="onelineComment">// Change the case properties to match a different template</span>
+        c.Subject = <span class="string">'My LX1220 is overheating'</span>;
+        Database.<span class="statement">update</span>(c);
+  
+        <span class="onelineComment">// Make sure the correct template is chosen in this case</span>
+       actualTemplateId = chooser.getDefaultEmailTemplateId(c.Id);
+        expectedTemplate = 
+          [SELECT id FROM EmailTemplate WHERE DeveloperName = <span class="string">'LX1220_template'</span>];
+        expectedTemplateId = expectedTemplate.Id;
+        System.assertEquals(actualTemplateId, expectedTemplateId);
+    
+    }
+}</pre></div>
+
+</div>
+
+</div>
+</div>

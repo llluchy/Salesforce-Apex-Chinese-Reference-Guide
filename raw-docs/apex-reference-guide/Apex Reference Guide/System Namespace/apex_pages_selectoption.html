@@ -1,0 +1,494 @@
+<a name="apex_pages_selectoption"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">SelectOption Class</h1>
+
+
+
+<div class="body">
+<div class="shortdesc">A <samp class="codeph apex_page">SelectOption</samp> object specifies one of the possible values for a Visualforce<samp class="codeph apex_page"> selectCheckboxes</samp>, <samp class="codeph apex_page">selectList</samp>, or <samp class="codeph apex_page">selectRadio</samp> component.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+
+<p class="p"><samp class="codeph apex_page">SelectOption</samp> consists
+of a label that is displayed to the end user, and a value that is
+returned to the controller if the option is selected. A <samp class="codeph apex_page">SelectOption</samp> can also be displayed
+in a disabled state, so that a user cannot select it as an option,
+but can still view it.</p>
+
+<div class="section">
+<h2 class="helpHead2">Instantiation</h2>
+<div class="p">In a custom controller or controller
+extension, you can instantiate a SelectOption in one of the following
+ways:<ul class="ul bulletList">
+<li class="li">
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">SelectOption option = <span class="keyword">new</span> SelectOption(<var class="keyword varname">value</var>, <var class="keyword varname">label</var>, <var class="keyword varname">isDisabled</var>);</pre></div>
+<p class="p">where <var class="keyword varname">value</var> is the String that
+is returned to the controller if the option is selected by a user, <var class="keyword varname">label</var> is the String that is displayed to the user as the
+option choice, and <var class="keyword varname">isDisabled</var> is a Boolean that,
+if true, specifies that the user cannot select the option, but can
+still view it.</p>
+</li>
+
+<li class="li">
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">SelectOption option = <span class="keyword">new</span> SelectOption(<var class="keyword varname">value</var>, <var class="keyword varname">label</var>);</pre></div>
+<p class="p">where <var class="keyword varname">value</var> is the String that is returned to the controller
+if the option is selected by a user, and <var class="keyword varname">label</var> is
+the String that is displayed to the user as the option choice. Because
+a value for <var class="keyword varname">isDisabled</var> is not specified, the user
+can both view and select the option.</p>
+</li>
+
+</ul>
+</div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2">Example</h2>
+<div class="p">
+<p class="p">The following example shows how a list of SelectOptions
+    objects can be used to provide possible values for a <samp class="codeph apex_code">selectCheckboxes</samp> component on a Visualforce page. In the following custom controller, the <samp class="codeph apex_code">getItems</samp> method defines and returns
+the list of possible SelectOption objects:</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> sampleCon {
+
+ 	<span class="keyword">String</span>[] countries = <span class="keyword">new</span> <span class="keyword">String</span>[]{};
+
+ 	<span class="keyword">public</span> PageReference test() {
+ 	 	<span class="statement">return</span> <span class="keyword">null</span>;
+ 	}
+
+ 	<span class="keyword">public</span> List&lt;SelectOption&gt; getItems() {
+ 	 	List&lt;SelectOption&gt; options = <span class="keyword">new</span> List&lt;SelectOption&gt;();
+ 	 	options.add(<span class="keyword">new</span> SelectOption(<span class="string">'US'</span>,<span class="string">'US'</span>));
+ 	 	options.add(<span class="keyword">new</span> SelectOption(<span class="string">'CANADA'</span>,<span class="string">'Canada'</span>));
+ 	 	options.add(<span class="keyword">new</span> SelectOption(<span class="string">'MEXICO'</span>,<span class="string">'Mexico'</span>));
+ 	 	<span class="statement">return</span> options;
+  	}
+
+ 	<span class="keyword">public</span> <span class="keyword">String</span>[] getCountries() {
+  	 	<span class="statement">return</span> countries;
+ 	}
+
+ 	<span class="keyword">public</span> <span class="keyword">void</span> setCountries(<span class="keyword">String</span>[] countries) {
+ 	 	<span class="statement">this</span>.countries = countries;
+ 	}
+
+}		</pre></div>
+<p class="p">In the following page markup, the <samp class="codeph apex_page"><span class="tag">&lt;apex:selectOptions</span>&gt;</samp> tag uses
+the <samp class="codeph apex_code">getItems</samp> method from
+the controller above to retrieve the list of possible values. Because <samp class="codeph apex_page"><span class="tag">&lt;apex:selectOptions</span>&gt;</samp> is a child
+of the <samp class="codeph apex_page"><span class="tag">&lt;apex:selectCheckboxes</span>&gt;</samp> tag, the options are displayed as checkboxes:</p>
+<div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"> <span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"sampleCon"</span>&gt;
+ 	<span class="tag">&lt;apex:form</span>&gt;
+ 	 	<span class="tag">&lt;apex:selectCheckboxes</span><span class="attribute"> value=</span><span class="string">"{!countries}"</span>&gt;
+ 	 	 	<span class="tag">&lt;apex:selectOptions</span><span class="attribute"> value=</span><span class="string">"{!items}"</span>/&gt;
+ 	 	<span class="tag">&lt;/apex:selectCheckboxes</span>&gt;<span class="tag">&lt;br/</span>&gt;
+ 	 	<span class="tag">&lt;apex:commandButton</span><span class="attribute"> value=</span><span class="string">"Test"</span><span class="attribute"> action=</span><span class="string">"{!test}"</span><span class="attribute"> rerender=</span><span class="string">"out"</span><span class="attribute"> status=</span><span class="string">"status"</span>/&gt;
+ 	<span class="tag">&lt;/apex:form</span>&gt;
+ 	<span class="tag">&lt;apex:outputPanel</span><span class="attribute"> id=</span><span class="string">"out"</span>&gt;
+ 	 	<span class="tag">&lt;apex:actionstatus</span><span class="attribute"> id=</span><span class="string">"status"</span><span class="attribute"> startText=</span><span class="string">"testing..."</span>&gt;
+ 	 	 	<span class="tag">&lt;apex:facet</span><span class="attribute"> name=</span><span class="string">"stop"</span>&gt;
+ 	 	 	 	<span class="tag">&lt;apex:outputPanel</span>&gt;
+ 	 	 	 	 	<span class="tag">&lt;p</span>&gt;You have selected:<span class="tag">&lt;/p</span>&gt;
+ 	 	 	 	 	<span class="tag">&lt;apex:dataList</span><span class="attribute"> value=</span><span class="string">"{!countries}"</span><span class="attribute"> var=</span><span class="string">"c"</span>&gt;<span class="formula">{!c}</span><span class="tag">&lt;/apex:dataList</span>&gt;
+ 	 	 	 	<span class="tag">&lt;/apex:outputPanel</span>&gt;
+ 	 	 	<span class="tag">&lt;/apex:facet</span>&gt;
+ 	 	<span class="tag">&lt;/apex:actionstatus</span>&gt;
+ 	<span class="tag">&lt;/apex:outputPanel</span>&gt;
+<span class="tag">&lt;/apex:page</span>&gt;		</pre></div>
+</div>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_constructors">SelectOption Constructors</a></strong><br>
+</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_methods">SelectOption Methods</a></strong><br>
+</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_SelectOption_constructors">
+<a name="apex_System_SelectOption_constructors"><!-- --></a>
+<h2 class="helpHead2">SelectOption Constructors</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are constructors for <samp class="codeph apex_code">SelectOption</samp>.</p>
+</div>
+
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_ctor_2">SelectOption(value, label)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">SelectOption</samp> class using the specified value and label.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_ctor">SelectOption(value, label, isDisabled)</a></strong><br>
+Creates a new instance of the <samp class="codeph apex_code">SelectOption</samp> class using the specified value, label, and disabled setting.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_ctor_2">
+<a name="apex_System_SelectOption_ctor_2"><!-- --></a>
+<h3 class="helpHead3">SelectOption(value, label)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">SelectOption</samp> class using the specified value and label.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> SelectOption(<span class="keyword">String</span> value, <span class="keyword">String</span> label)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string that is returned to the Visualforce controller if the option is selected by a user.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">label</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string that is displayed to the user as the option choice.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_ctor">
+<a name="apex_System_SelectOption_ctor"><!-- --></a>
+<h3 class="helpHead3">SelectOption(value, label, isDisabled)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Creates a new instance of the <samp class="codeph apex_code">SelectOption</samp> class using the specified value, label, and
+disabled setting.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> SelectOption(<span class="keyword">String</span> value, <span class="keyword">String</span> label,
+<span class="keyword">Boolean</span> isDisabled)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string that is returned to the Visualforce controller if the option is selected by a user.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">label</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The string that is displayed to the user as the option choice.</li>
+
+<li class="li">
+<strong class="ph b"><var class="keyword varname">isDisabled</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> If set to true, the option can’t be selected by the user
+but can still be viewed.</li>
+
+</ul>
+</div>
+
+</div>
+
+</div>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_SelectOption_methods">
+<a name="apex_System_SelectOption_methods"><!-- --></a>
+<h2 class="helpHead2">SelectOption Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">SelectOption</samp>. All are instance methods.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_getDisabled">getDisabled()</a></strong><br>
+Returns the current value of the SelectOption object's <samp class="codeph apex_code">isDisabled</samp> attribute.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_getEscapeItem">getEscapeItem()</a></strong><br>
+Returns the current value of the SelectOption object's <samp class="codeph apex_code">itemEscaped</samp> attribute.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_getLabel">getLabel()</a></strong><br>
+Returns the option label that is displayed to the user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_getValue">getValue()</a></strong><br>
+Returns the option value that is returned to the controller if a user selects the option.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_setDisabled">setDisabled(isDisabled)</a></strong><br>
+Sets the value of the SelectOption object's <samp class="codeph apex_code">isDisabled</samp> attribute.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_setEscapeItem">setEscapeItem(itemsEscaped)</a></strong><br>
+Sets the value of the SelectOption object's <samp class="codeph apex_code">itemEscaped</samp> attribute.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_setLabel">setLabel(label)</a></strong><br>
+Sets the value of the option label that is displayed to the user.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_pages_selectoption.htm#apex_System_SelectOption_setValue">setValue(value)</a></strong><br>
+Sets the value of the option value that is returned to the controller if a user selects the option.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_getDisabled">
+<a name="apex_System_SelectOption_getDisabled"><!-- --></a>
+<h3 class="helpHead3">getDisabled()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the current value of the SelectOption object's <samp class="codeph apex_code">isDisabled</samp> attribute.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getDisabled()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If <samp class="codeph apex_code">isDisabled</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the user can view the option, but cannot select it. If <samp class="codeph apex_code">isDisabled</samp> is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>, the user can both view and
+select the option.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_getEscapeItem">
+<a name="apex_System_SelectOption_getEscapeItem"><!-- --></a>
+<h3 class="helpHead3">getEscapeItem()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the current value of the SelectOption object's <samp class="codeph apex_code">itemEscaped</samp> attribute.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> getEscapeItem()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If <samp class="codeph apex_code">itemEscaped</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, sensitive HTML and XML characters are escaped in the HTML output
+generated by this component. If <samp class="codeph apex_code">itemEscaped</samp> is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>, items
+are rendered as written.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_getLabel">
+<a name="apex_System_SelectOption_getLabel"><!-- --></a>
+<h3 class="helpHead3">getLabel()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the option label that is displayed to the user.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getLabel()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_getValue">
+<a name="apex_System_SelectOption_getValue"><!-- --></a>
+<h3 class="helpHead3">getValue()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the option value that is returned to the controller
+if a user selects the option.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getValue()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_setDisabled">
+<a name="apex_System_SelectOption_setDisabled"><!-- --></a>
+<h3 class="helpHead3">setDisabled(isDisabled)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the value of the SelectOption object's <samp class="codeph apex_code">isDisabled</samp> attribute.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setDisabled(<span class="keyword">Boolean</span> isDisabled)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">isDisabled</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If <samp class="codeph apex_code">isDisabled</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, the user can view the option, but cannot select it. If <samp class="codeph apex_code">isDisabled</samp> is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>, the user can both view and
+select the option.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_setEscapeItem">
+<a name="apex_System_SelectOption_setEscapeItem"><!-- --></a>
+<h3 class="helpHead3">setEscapeItem(itemsEscaped)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the value of the SelectOption object's <samp class="codeph apex_code">itemEscaped</samp> attribute.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setEscapeItem(<span class="keyword">Boolean</span> itemsEscaped)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">itemsEscaped</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">If <samp class="codeph apex_code">itemEscaped</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, sensitive HTML and XML characters are escaped in the HTML output
+generated by this component. If <samp class="codeph apex_code">itemEscaped</samp> is set to <samp class="codeph apex_code"><span class="keyword">false</span></samp>, items
+are rendered as written.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_setLabel">
+<a name="apex_System_SelectOption_setLabel"><!-- --></a>
+<h3 class="helpHead3">setLabel(label)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the value of the option label that is displayed to
+the user.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setLabel(<span class="keyword">String</span> label)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">label</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_SelectOption_setValue">
+<a name="apex_System_SelectOption_setValue"><!-- --></a>
+<h3 class="helpHead3">setValue(value)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Sets the value of the option value that is returned to
+the controller if a user selects the option.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void setValue(<span class="keyword">String</span> value)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">value</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: Void</p>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

@@ -1,0 +1,709 @@
+<a name="apex_methods_system_type"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">Type Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc">Contains methods for getting the Apex type that corresponds to an Apex class and for
+        instantiating new types.</div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+            
+            <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+            
+            <div class="p">Use the <samp class="codeph apex_code">forName</samp> methods to retrieve the type
+                of an Apex class, which can be a built-in or a user-defined class. You can use these
+                methods to retrieve the type of public and global classes, and not private classes
+                even if the context user has access. Also, use the <samp class="codeph apex_code">newInstance</samp> method if you want to instantiate a Type that implements
+                an interface and call its methods while letting someone else<span class="ph">, such
+                    as a subscriber of your package,</span> provide the methods’
+                    implementations.<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>A call to <samp class="codeph apex_code">Type.forName()</samp> can cause the class to be compiled.</p>
+</div>
+</div></div></div></div>
+</div>
+
+        </div>
+
+        <div class="section" id="sampleSection">
+<a name="sampleSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="sampleTitle"><a name="sampleTitle"><!-- --></a>Example: Instantiating a Type Based on Its Name</span></h2>
+
+            
+            <p class="p" id="sample1"><a name="sample1"><!-- --></a>The following sample shows how to use the Type methods to instantiate a
+                Type based on its name. <span class="ph">A typical application of this
+                    scenario is when a package subscriber provides a custom implementation of an
+                    interface that is part of an installed package. The package can get the name of
+                    the class that implements the interface through a custom setting in the
+                    subscriber’s org. The package can then instantiate the type that
+                    corresponds to this class name and invoke the methods that the subscriber
+                    implemented.</span>
+            </p>
+
+            <p class="p" id="sample2"><a name="sample2"><!-- --></a>In this sample, <samp class="codeph apex_code">Vehicle</samp>
+                represents the interface that the <samp class="codeph apex_code">VehicleImpl</samp> class implements. The last class contains the code sample
+                that invokes the methods implemented in <samp class="codeph apex_code">VehicleImpl</samp>.</p>
+
+            <div class="p" id="sample3">
+<a name="sample3"><!-- --></a>This is the <samp class="codeph apex_code">Vehicle</samp>
+                interface.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">interface</span> Vehicle {
+    <span class="keyword">Long</span> getMaxSpeed();
+    <span class="keyword">String</span> getType();
+}</pre></div>
+</div>
+
+            <div class="p" id="sample4">
+<a name="sample4"><!-- --></a>This is the implementation of the <samp class="codeph apex_code">Vehicle</samp>
+                interface.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> with sharing <span class="keyword">class</span> VehicleImpl <span class="keyword">implements</span> Vehicle {
+    <span class="keyword">global</span> <span class="keyword">Long</span> getMaxSpeed() { <span class="statement">return</span> 100; }    
+    <span class="keyword">global</span> <span class="keyword">String</span> getType() { <span class="statement">return</span> <span class="string">'Sedan'</span>; }
+}</pre></div>
+</div>
+
+            <div class="p" id="sample5">
+<a name="sample5"><!-- --></a>The method in this class gets the name of the class that implements the
+                    <samp class="codeph apex_code">Vehicle</samp> interface through a custom
+                setting value. It then instantiates this class by getting the corresponding type and
+                calling the <samp class="codeph apex_code">newInstance</samp> method. Next, it
+                invokes the methods implemented in <samp class="codeph apex_code">VehicleImpl</samp>. This sample requires that you create a public list custom
+                setting named <kbd class="ph userinput">CustomImplementation</kbd> with a text field named
+                    <kbd class="ph userinput">className</kbd>. Create one record for this custom setting with
+                a data set name of <kbd class="ph userinput">Vehicle</kbd> and a class name value of
+                    <kbd class="ph userinput">VehicleImpl</kbd>.
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> CustomerImplInvocationClass {
+
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> invokeCustomImpl() {
+        <span class="onelineComment">// Get the class name from a custom setting.</span>
+        <span class="onelineComment">// This class implements the Vehicle interface.</span>
+        CustomImplementation__c cs = CustomImplementation__c.getInstance(<span class="string">'Vehicle'</span>);
+        
+        <span class="onelineComment">// Get the Type corresponding to the class name</span>
+        Type t = Type.forName(cs.className__c);
+        
+        <span class="onelineComment">// Instantiate the type.</span>
+        <span class="onelineComment">// The type of the instantiated object </span>
+        <span class="onelineComment">//   is the interface.</span>
+        Vehicle v = (Vehicle)t.newInstance();
+        
+        <span class="onelineComment">// Call the methods that have a custom implementation</span>
+        System.debug(<span class="string">'Max speed: '</span> + v.getMaxSpeed());
+        System.debug(<span class="string">'Vehicle type: '</span> + v.getType());       
+    }
+}</pre></div>
+</div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Class Property</h2>
+
+            
+            <p class="p">The <samp class="codeph apex_code"><span class="keyword">class</span></samp> property returns the <samp class="codeph apex_code">System.Type</samp> of the type it is called on. It’s
+                exposed on all Apex built-in types including primitive data types and collections,
+                sObject types, and user-defined classes. This property can be used instead of
+                    <samp class="codeph apex_code">forName</samp> methods.</p>
+
+            <div class="p">Call this property on the type name. For example:
+                <div class="codeSection apex_code"><pre class="codeblock brush:apex">System.Type t = <span class="keyword">Integer</span>.<span class="keyword">class</span>;</pre></div>
+</div>
+
+            <p class="p">You can use this property for the second argument of <samp class="codeph apex_code">JSON.deserialize</samp>, <samp class="codeph apex_code">deserializeStrict</samp>, <samp class="codeph apex_code">JSONParser.readValueAs</samp>, and <samp class="codeph apex_code">readValueAsStrict</samp> methods to get the type of the object to
+                deserialize. For example:</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">Decimal</span> n = (<span class="keyword">Decimal</span>)JSON.deserialize(<span class="string">'100.1'</span>, <span class="keyword">Decimal</span>.<span class="keyword">class</span>);
+</pre></div>
+
+        </div>
+
+    </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Type_methods">
+<a name="apex_System_Type_methods"><!-- --></a>
+<h2 class="helpHead2">Type Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Type</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_equals">equals(typeToCompare)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if the specified type is equal to the current type; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_forName">forName(fullyQualifiedName)</a></strong><br>
+Returns the type that corresponds to the specified fully qualified class   name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_forName_2">forName(namespace, name)</a></strong><br>
+Returns the type that corresponds to the specified namespace and class       name.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_getName">getName()</a></strong><br>
+Returns the name of the current type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_hashCode">hashCode()</a></strong><br>
+Returns a hash code value for the current type.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#unique_941123173">isAssignableFrom(sourceType)</a></strong><br>
+Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if an object reference of the       specified type can be assigned from the child type; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>. </li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_newInstance">newInstance()</a></strong><br>
+Creates an instance of the current type and returns this new instance.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_type.htm#apex_System_Type_toString">toString()</a></strong><br>
+Returns a string representation of the current type, which is the type name.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_equals">
+<a name="apex_System_Type_equals"><!-- --></a>
+<h3 class="helpHead3">equals(typeToCompare)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if
+the specified type is equal to the current type; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> equals(<span class="keyword">Object</span> typeToCompare)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">typeToCompare</var></strong>:<p class="p">Type: </p>
+<p class="p">Object The type to compare with the current type.</p>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Type t1 = Account.<span class="keyword">class</span>;
+Type t2 = Type.forName(<span class="string">'Account'</span>);
+System.assert(t1.equals(t2));</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_forName">
+<a name="apex_System_Type_forName"><!-- --></a>
+ <h3 class="helpHead3">forName(fullyQualifiedName)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Returns the type that corresponds to the specified fully qualified class
+  name.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.Type forName(<span class="keyword">String</span>
+     fullyQualifiedName)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">fullyQualifiedName</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The fully qualified name of the class to get the type of. The fully qualified class name
+      contains the namespace name, for example, <samp class="codeph apex_code">MyNamespace.ClassName</samp>.</p>
+</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: <samp class="codeph apex_code">System.Type</samp></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+    <ul class="ul bulletList">
+     <li class="li">This method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if called outside a
+      managed package to get the type of a non-global class in a managed package. This is because
+      the non-global class isn’t visible outside the managed package. For Apex saved using
+      Salesforce API version 27.0 and earlier, this method does return the corresponding class type
+      for the non-global managed package class.</li>
+
+     <li class="li">When called from an installed managed package to get the name of a local type in an
+      organization with no defined namespace, the <samp class="codeph apex_code">forName(fullyQualifiedName)</samp> method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp>. Instead, use the <samp class="codeph apex_code">forName(namespace,
+       name)</samp> method and specify an empty string or <samp class="codeph apex_code"><span class="keyword">null</span></samp> for the namespace argument.</li>
+
+     <li class="li">A call to <samp class="codeph apex_code">Type.forName()</samp> can cause the class to be
+      compiled.</li>
+
+    </ul>
+
+   </p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_forName_2">
+<a name="apex_System_Type_forName_2"><!-- --></a>
+   <h3 class="helpHead3">forName(namespace, name)</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc">Returns the type that corresponds to the specified namespace and class
+      name.</div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> System.Type forName(<span class="keyword">String</span> namespace,
+               <span class="keyword">String</span> name)</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+         
+         <ul class="ul bulletList">
+            <li class="li">
+<strong class="ph b"><var class="keyword varname">namespace</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The namespace of the class. If the class doesn't have a namespace, set the
+                     <var class="keyword varname">namespace</var> argument to <samp class="codeph apex_code"><span class="keyword">null</span></samp> or an empty string.</p>
+</li>
+
+            <li class="li">
+<strong class="ph b"><var class="keyword varname">name</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">The name of the class.</p>
+</li>
+
+         </ul>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <samp class="codeph apex_code">System.Type</samp></p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+         
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+            <ul class="ul bulletList">
+               <li class="li"><span class="ph" id="non_global_classes"><a name="non_global_classes"><!-- --></a>This method returns <samp class="codeph apex_code"><span class="keyword">null</span></samp> if called outside a managed package to get the type of a
+                     non-global class in a managed package. This is because the non-global class
+                     isn’t visible outside the managed package. For Apex saved using Salesforce API
+                     version 27.0 and earlier, this method does return the corresponding class type
+                     for the non-global managed package class.</span></li>
+
+               <li class="li">Use this method instead of <samp class="codeph apex_code">forName(fullyQualifiedName)</samp> if it’s called from a managed package
+                  installed in an organization with no defined namespace. To get the name of a local
+                  type, set the namespace argument to an empty string or <samp class="codeph apex_code"><span class="keyword">null</span></samp>. For example, <samp class="codeph apex_code">Type t = Type.forName(<span class="string">''</span>, <span class="string">'ClassName'</span>);</samp>.</li>
+
+               <li class="li">A call to <samp class="codeph apex_code">Type.forName()</samp> can cause the
+                  class to be compiled.</li>
+
+            </ul>
+
+         </p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+         
+         <p class="p">This example shows how to get the type that corresponds to the <samp class="codeph apex_code">ClassName</samp> class and the <samp class="codeph apex_code">MyNamespace</samp> namespace.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">Type myType = 
+   Type.forName(<span class="string">'MyNamespace'</span>, <span class="string">'ClassName'</span>);
+</pre></div>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Versioned Behavior Changes</h4>
+
+         
+         <p class="p">In API version 60.0 and later, using an invalid namespace while calling this method
+            returns null. Previously, Apex allowed you to specify an invalid namespace such as
+               <samp class="codeph ">Type.forName('InvalidNamespace',
+               'OuterClass.InnerClass')</samp> or use an outer class as a namespace such
+            as <samp class="codeph ">Type.forName('OuterClass', 'InnerClass')</samp>
+            with indeterminate results.</p>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_getName">
+<a name="apex_System_Type_getName"><!-- --></a>
+<h3 class="helpHead3">getName()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the name of the current type.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> getName()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">This example shows how to get a
+Type’s name. It first obtains a Type by calling <samp class="codeph apex_code">forName</samp>, then calls <samp class="codeph apex_code">getName</samp> on the Type object.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Type t = 
+   Type.forName(<span class="string">'MyClassName'</span>);
+
+<span class="keyword">String</span> typeName = 
+   t.getName();
+System.assertEquals(<span class="string">'MyClassName'</span>,
+   typeName);
+</pre></div>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_hashCode">
+<a name="apex_System_Type_hashCode"><!-- --></a>
+<h3 class="helpHead3">hashCode()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a hash code value for the current type.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Integer</span> hashCode()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_integer.htm#apex_methods_system_integer" title="Contains methods for the Integer primitive data type.">Integer</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">The returned hash code value
+corresponds to the type name hash code that <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_System_String_hashCode" title="Returns a hash code value for this string."><samp class="codeph apex_code"><span class="keyword">String</span>.hashCode</samp></a> returns.</p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="unique_941123173">
+<a name="unique_941123173"><!-- --></a>
+<h3 class="helpHead3">isAssignableFrom(sourceType)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> if an object reference of the
+      specified type can be assigned from the child type; otherwise, returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>. </div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> isAssignableFrom(Type
+            sourceType)</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+         
+         <ul class="ul bulletList">
+            <li class="li">
+<strong class="ph b"><var class="keyword varname">sourceType</var></strong>: The type of the object with which you are checking compatibility.</li>
+
+         </ul>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+         <p class="p">The method returns <samp class="codeph apex_code"><span class="keyword">true</span></samp> when the method is
+            invoked as parentType.isAssignableFrom(childType). When invoked in any of the following
+            ways, the method returns <samp class="codeph apex_code"><span class="keyword">false</span></samp>:</p>
+<ul class="ul bulletList">
+               <li class="li"> childType.isAssignableFrom(parentType)</li>
+
+               <li class="li"> typeA.isAssignableFrom(TypeB) where TypeB is a sibling of TypeA</li>
+
+               <li class="li"> typeA.isAssignableFrom(TypeB) where TypeB and TypeA are unrelated</li>
+
+            </ul>
+
+         <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>A childType is the child of a parentType when it implements an interface, extends a
+            virtual or abstract class, or is the same <samp class="codeph apex_code">System.Type</samp> as the parentType.</p>
+</div>
+</div></div></div></div>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+         
+         <p class="p">Unlike the <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> operator, this method
+            allows you to check type compatibility without having to create a class instance. This
+            method eliminates static compile-time dependencies that <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> requires. </p>
+
+         <div class="p">The following code demonstrates how a typical ISV customer can use <samp class="codeph apex_code">isAssignableFrom()</samp> to check compatibility between a
+            customer-defined type (customerProvidedPluginType) and a valid plugin
+            type.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Scenario: Managed package code loading a “plugin” class that implements a managed interface; the implementation done outside of the package</span>
+<span class="keyword">String</span> pluginNameStr = Config__c.getInstance().PluginApexType__c;
+Type customerProvidedPluginType = Type.forName(pluginNameStr);
+Type pluginInterface = ManagedPluginInterface.<span class="keyword">class</span>;
+
+<span class="onelineComment">// Constructors may have side-effects, including potentially unsafe DML/callouts. </span>
+<span class="onelineComment">// We want to make sure the class is really designed to be a valid plugin before we instantiate it</span>
+<span class="keyword">Boolean</span> validPlugin = pluginInterface.isAssignableFrom(customerProvidedPluginType); <span class="onelineComment">// validate that it implements the right interface</span>
+
+<span class="statement">if</span>(!validPlugin){
+    <span class="statement">throw</span> <span class="keyword">new</span> SecurityException(<span class="string">'Cannot create instance of '</span>+customerProvidedPluginType+<span class="string">'. Does not implement ManagedPluginInterface'</span>);
+}<span class="statement">else</span>{
+    <span class="statement">return</span> Type.newInstance(validPlugin);
+}</pre></div>
+</div>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+         
+         <p class="p">The following code snippet first defines sibling classes A and B that both implement the
+            Callable interface and an unrelated class C. Then, it explores several type comparisons
+            using <samp class="codeph apex_code">isAssignableFrom()</samp>.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Define classes A, B, and C</span>
+
+<span class="keyword">global</span> <span class="keyword">class</span> A <span class="keyword">implements</span> Database.Batchable&lt;<span class="keyword">String</span>&gt;, Callable {
+    <span class="keyword">global</span> Iterable&lt;<span class="keyword">String</span>&gt; start(Database.BatchableContext context) { <span class="statement">return</span> <span class="keyword">null</span>; }
+    <span class="keyword">global</span> <span class="keyword">void</span> execute(Database.BatchableContext context, <span class="keyword">String</span>[] scope) { }
+    <span class="keyword">global</span> <span class="keyword">void</span> finish(Database.BatchableContext context) { }
+    <span class="keyword">global</span> <span class="keyword">Object</span> call(<span class="keyword">String</span> action, Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; args) { <span class="statement">return</span> <span class="keyword">null</span>; }
+}
+</pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+<span class="keyword">global</span> <span class="keyword">class</span> B <span class="keyword">implements</span> Callable {
+    <span class="keyword">global</span> <span class="keyword">Object</span> call(<span class="keyword">String</span> action, Map&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; args) { <span class="statement">return</span> <span class="keyword">null</span>; }
+}
+</pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">global</span> <span class="keyword">class</span> C { }
+</pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">
+Type listOfStrings = Type.forName(<span class="string">'List&lt;String&gt;'</span>);
+Type listOfIntegers = Type.forName(<span class="string">'List&lt;Integer&gt;'</span>);
+boolean flagListTypes = listOfIntegers.isAssignableFrom(listOfStrings); <span class="onelineComment">// false</span></pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Examples with stringType and idType</span>
+Type stringType = Type.forName(<span class="string">'String'</span>);
+Type idType = Type.forName(<span class="string">'Id'</span>);
+boolean isId_assignableFromString = idType.isAssignableFrom(stringType); <span class="onelineComment">// true</span>
+<span class="onelineComment">//isAssignableFrom respects that String can be assigned to Id without an explicit cast</span></pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Examples with typeA, typeB, and typeC</span>
+Type typeA = Type.forName(<span class="string">'A'</span>);
+Type typeB = Type.forName(<span class="string">'B'</span>);
+Type typeC = Type.forName(<span class="string">'C'</span>);
+boolean isTypeB_ofTypeA = typeB.isAssignableFrom( typeA ); <span class="onelineComment">// false - siblings</span>
+boolean isTypeA_ofTypeC = typeA.isAssignableFrom( typeC ); <span class="onelineComment">// false - unrelated types</span>
+boolean isTypeA_ofTypeA = typeA.isAssignableFrom(typeA); <span class="onelineComment">// true - identity</span></pre></div>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">//Examples with callableType and batchableType</span>
+Type callableType = Type.forName(<span class="string">'Callable'</span>);
+Type batchableType = Type.forName(<span class="string">'Database.Batchable'</span>);
+boolean isTypeA_Callable = callableType.isAssignableFrom( typeA ); <span class="onelineComment">// true - type A is a child of Callable type</span>
+boolean isTypeA_Batchable = batchableType.isAssignableFrom( typeA ); <span class="onelineComment">// true - type A is a child of Batchable type</span>
+boolean isCallableOfTypeA = typeA.isAssignableFrom( callableType ); <span class="onelineComment">// false - Callable type is not a child of type A</span>
+boolean isBatchableOfTypeA = typeA.isAssignableFrom( batchableType ); <span class="onelineComment">// false - Batchable type is not a child of type A</span>
+</pre></div>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_newInstance">
+<a name="apex_System_Type_newInstance"><!-- --></a>
+   <h3 class="helpHead3">newInstance()</h3>
+
+   
+   
+   <div class="body refbody">
+<div class="shortdesc">Creates an instance of the current type and returns this new instance.</div>
+
+      <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+         
+         <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Object</span> newInstance()</samp></p>
+
+         
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+         
+         <p class="p">Type: Object</p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+         
+         <p class="p">Because <samp class="codeph apex_code">newInstance</samp> returns the generic object
+            type, you should cast the return value to the type of the variable that will hold this
+            value.</p>
+
+         <p class="p">This method enables you to instantiate a Type that implements an interface and call its
+            methods while letting someone else provide the methods’ implementation. <span class="ph">For example, a package developer can provide an interface that a
+               subscriber who installs the package can implement. The code in the package calls the
+               subscriber's implementation of the interface methods by instantiating the
+               subscriber’s Type.</span></p>
+
+      </div>
+
+      <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+         
+         <p class="p">This example shows how to create an instance of a Type. It first gets a Type by calling
+               <samp class="codeph apex_code">forName</samp> with the name of a class (<samp class="codeph apex_code">ShapeImpl</samp>), then calls <samp class="codeph apex_code">newInstance</samp> on this Type object. The <samp class="codeph apex_code">newObj</samp> instance is declared with the interface type (<samp class="codeph apex_code">Shape</samp>) that the <samp class="codeph apex_code">ShapeImpl</samp> class implements. The return value of the <samp class="codeph apex_code">newInstance</samp> method is cast to the <samp class="codeph apex_code">Shape</samp> type.</p>
+
+         <div class="codeSection apex_code"><pre class="codeblock brush:apex">Type t = 
+   Type.forName(<span class="string">'ShapeImpl'</span>);
+
+Shape newObj = 
+   (Shape)t.newInstance();
+</pre></div>
+
+      </div>
+
+   </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Type_toString">
+<a name="apex_System_Type_toString"><!-- --></a>
+<h3 class="helpHead3">toString()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns a string representation of the current type, which
+is the type name.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">String</span> toString()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This method returns the same
+value as <samp class="codeph apex_code">getName</samp>. <samp class="codeph apex_code"><span class="keyword">String</span>.valueOf</samp> and <samp class="codeph apex_code">System.debug</samp> use this method to convert
+their Type argument into a String.</p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Example</h4>
+<p class="p">This example calls <samp class="codeph apex_code">toString</samp> on the Type corresponding
+to a list of Integers.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">Type t = List&lt;<span class="keyword">Integer</span>&gt;.<span class="keyword">class</span>;
+<span class="keyword">String</span> s = t.toString();
+System.assertEquals(<span class="string">'List&lt;Integer&gt;'</span>, s);
+</pre></div>
+</div>
+
+</div>
+
+</div>
+</div>
+</div>

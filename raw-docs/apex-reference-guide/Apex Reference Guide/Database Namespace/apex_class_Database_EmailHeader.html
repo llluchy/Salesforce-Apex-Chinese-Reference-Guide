@@ -1,0 +1,238 @@
+<a name="apex_class_Database_EmailHeader"><!-- --></a><div class="nested0">
+ <h1 class="helpHead1">DmlOptions.EmailHeader Class</h1>
+
+ 
+ 
+ <div class="body">
+<div class="shortdesc"><span class="ph" id="DmlOptionsEmailHeader_shordesc"><a name="DmlOptionsEmailHeader_shordesc"><!-- --></a>Enables setting email options.</span></div>
+
+  <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+
+   
+   <p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_Database.htm" title="The Database namespace provides classes used with DML operations.">Database</a></p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Usage</h2>
+
+   
+   <p class="p">Even though auto-sent emails can be triggered by actions in the
+        Salesforce user interface, the DMLOptions settings for <samp class="codeph apex_code">emailHeader</samp> take effect only for DML operations carried out in Apex code.</p>
+
+  </div>
+
+  <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+   
+   <div class="p">In the following example, the <samp class="codeph apex_code">triggerAutoResponseEmail</samp> option is
+    specified:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account a = <span class="keyword">new</span> Account(name=<span class="string">'Acme Plumbing'</span>);
+    
+    <span class="statement">insert</span> a;
+    
+    Contact c = <span class="keyword">new</span> Contact(email=<span class="string">'jplumber@salesforce.com'</span>, firstname=<span class="string">'Joe'</span>,lastname=<span class="string">'Plumber'</span>, accountid=a.id);
+    
+    <span class="statement">insert</span> c;
+    
+    Database.DMLOptions dlo = <span class="keyword">new</span> Database.DMLOptions();
+    
+    dlo.EmailHeader.triggerAutoResponseEmail = <span class="keyword">true</span>;
+    
+    Case ca = <span class="keyword">new</span> Case(subject=<span class="string">'Plumbing Problems'</span>, contactid=c.id);
+    
+    database.<span class="statement">insert</span>(ca, dlo);
+   </pre></div>
+</div>
+
+  </div>
+
+  <div class="section">
+   <p class="p">Suppose that you use an after-insert or after-update trigger to change ownership of leads,
+    contacts, or opportunities. If you use the API to change record ownership, or if a Lightning
+    Experience user changes a record’s owner, no email notification is sent. To send email
+    notifications to a record’s new owner, set the <samp class="codeph apex_code">triggerUserEmail</samp> property to <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</p>
+
+  </div>
+
+ </div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_Database_EmailHeader_Properties">
+<a name="apex_Database_EmailHeader_Properties"><!-- --></a>
+<h2 class="helpHead2">DmlOptions.EmailHeader Properties</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are properties for <samp class="codeph apex_code">DmlOptions.EmailHeader</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_EmailHeader.htm#apex_Database_EmailHeader_triggerAutoResponseEmail">triggerAutoResponseEmail</a></strong><br>
+Indicates whether to trigger auto-response rules (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>), for leads and cases.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_EmailHeader.htm#apex_Database_EmailHeader_triggerOtherEmail">triggerOtherEmail</a></strong><br>
+Indicates whether to trigger email outside the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_Database_EmailHeader.htm#apex_Database_EmailHeader_triggerUserEmail">triggerUserEmail</a></strong><br>
+Indicates whether to trigger email that is sent to users in the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_EmailHeader_triggerAutoResponseEmail">
+<a name="apex_Database_EmailHeader_triggerAutoResponseEmail"><!-- --></a>
+<h3 class="helpHead3">triggerAutoResponseEmail</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Indicates whether to trigger auto-response rules (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>), for leads and cases.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> triggerAutoResponseEmail {get;
+set;}</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Property Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">This email can be automatically triggered
+by a number of events, for example creating a case or resetting a
+user  password. If this value is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>, when a case is created, if there is an email address
+ for the contact specified in <span class="keyword parmname">ContactID</span>, the
+email  is sent to that address. If not, the email is sent to the address
+ specified in <span class="keyword parmname">SuppliedEmail</span></p>
+</div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_EmailHeader_triggerOtherEmail">
+<a name="apex_Database_EmailHeader_triggerOtherEmail"><!-- --></a>
+ <h3 class="helpHead3">triggerOtherEmail</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Indicates whether to trigger email outside the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> triggerOtherEmail {get; set;}</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+   
+   <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This email can be automatically triggered by creating, editing, or deleting a contact for a
+    case.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Email sent through Apex because of a group event includes additional behaviors. A
+     <dfn class="term">group event</dfn> is an event for which <span class="keyword parmname">IsGroupEvent</span> is true. The
+     <samp class="codeph apex_code">EventAttendee</samp> object tracks the users, leads, or
+    contacts that are invited to a group event. Note the following behaviors for group event email
+    sent through Apex:<ul class="ul bulletList">
+     <li class="li">Sending a group event invitation to a lead or contact respects the <samp class="codeph apex_code">triggerOtherEmail</samp> option</li>
+
+     <li class="li">Email sent when updating or deleting a group event also respects the <samp class="codeph apex_code">triggerUserEmail</samp> and <samp class="codeph apex_code">triggerOtherEmail</samp> options, as appropriate</li>
+
+    </ul>
+</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_Database_EmailHeader_triggerUserEmail">
+<a name="apex_Database_EmailHeader_triggerUserEmail"><!-- --></a>
+  <h3 class="helpHead3">triggerUserEmail</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Indicates whether to trigger email that is sent to users in the organization (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>).</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">Boolean</span> triggerUserEmail {get; set;}</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Property Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">This email can be automatically triggered by a number of events; resetting a password,
+        creating a new user,  or creating or
+        modifying a task.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Adding comments to a case in Apex
+              doesn’t trigger email to users in the organization even if <samp class="codeph apex_code">triggerUserEmail</samp> is set to <samp class="codeph apex_code"><span class="keyword">true</span></samp>.</p>
+</div>
+</div></div></div></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Email sent through Apex because of a group event includes additional behaviors. A
+          <dfn class="term">group event</dfn> is an event for which <span class="keyword parmname">IsGroupEvent</span> is true.
+        The EventAttendee object tracks the users, leads, or contacts that are invited to a group
+        event. Note the following behaviors for group event email sent through Apex:<ul class="ul bulletList">
+          <li class="li">Sending a group event invitation to a user respects the <samp class="codeph apex_code">triggerUserEmail</samp> option</li>
+
+          <li class="li">Email sent when updating or deleting a group event also respects the <samp class="codeph apex_code">triggerUserEmail</samp> and <samp class="codeph apex_code">triggerOtherEmail</samp> options, as appropriate</li>
+
+        </ul>
+</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

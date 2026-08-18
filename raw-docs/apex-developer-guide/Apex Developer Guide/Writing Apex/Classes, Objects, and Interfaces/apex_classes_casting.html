@@ -1,0 +1,74 @@
+<a name="apex_classes_casting"><!-- --></a><h1 class="helpHead1">Classes and Casting</h1><div class="body">
+<div class="shortdesc">In general, all type information is available at run time. This means that Apex
+        enables <dfn class="term">casting</dfn>, that is, a data type of one class can be assigned to a data
+        type of another class, but only if one class is a subclass of the other class. Use casting
+        when you want to convert an object from one data type to another.</div>
+
+        <p class="p">In the following example, <samp class="codeph apex_code">CustomReport</samp> extends
+            the class <samp class="codeph apex_code">Report</samp>. Therefore, it is a subclass
+            of that class. This means that you can use casting to assign objects with the parent
+            data type (<samp class="codeph apex_code">Report</samp>) to the objects of the
+            subclass data type (<samp class="codeph apex_code">CustomReport</samp>).</p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">class</span> Report {
+}</pre></div>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> CustomReport <span class="keyword">extends</span> Report {
+}</pre></div>
+
+        <p class="p">In the following code segment, a custom report object is first added to a list of report
+            objects. Then the custom report object is returned as a report object, which is then
+            cast back into a custom report object. </p>
+
+        <div class="codeSection apex_code"><pre class="codeblock brush:apex">...
+  <span class="onelineComment">// Create a list of report objects</span>
+  Report[] Reports = <span class="keyword">new</span> Report[5];
+
+  <span class="onelineComment">// Create a custom report object</span>
+  CustomReport a = <span class="keyword">new</span> CustomReport();
+
+  <span class="onelineComment">// Because the custom report is a sub class of the Report class,</span>
+  <span class="onelineComment">// you can add the custom report object a to the list of report objects</span>
+  Reports.add(a);
+
+  <span class="onelineComment">// The following is not legal:</span>
+  <span class="onelineComment">// CustomReport c = Reports.get(0);</span>
+  <span class="onelineComment">// because the compiler does not know that what you are</span>
+  <span class="onelineComment">// returning is a custom report. </span>
+
+  <span class="onelineComment">// You must use cast to tell it that you know what</span>
+  <span class="onelineComment">// type you are returning. Instead, get the first item in the list</span>
+  <span class="onelineComment">// by casting it back to a custom report object</span>
+  CustomReport c = (CustomReport) Reports.get(0);
+...</pre></div>
+
+        <div class="fig fignone">
+<span class="figcap">Casting Example</span>
+            
+            <img class="image" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fcasting.jpg&folder=apexcode" alt="A flowchart of the Apex casting process">
+        </div>
+
+        <p class="p">In addition, an interface type can be cast to a sub-interface or a class type that
+            implements that interface. </p>
+
+        <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>To verify if a class is a specific type of class, use the <samp class="codeph apex_code">instanceOf</samp> keyword. For more information, see <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm">Using the <samp class="codeph apex_code"><span class="statement">instanceof</span></samp> Keyword</a>.</p>
+</div>
+</div></div></div></div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ol class="olchildlinks">
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_collections.htm">Classes and Collections</a><br>
+</li>
+<li class="link olchildlink">
+<a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_casting_collections.htm">Collection Casting</a><br>
+</li>
+</ol>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_annotation.htm" title="Annotations">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_java_diffs.htm" title="Differences Between Apex Classes and Java Classes">Next →</a></li>
+</ul></div>
+</div>

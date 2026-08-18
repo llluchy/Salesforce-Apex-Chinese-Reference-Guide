@@ -1,0 +1,86 @@
+<a name="langCon_apex_dml_examples_delete"><!-- --></a><h1 class="helpHead1">Deleting Records</h1><div class="body conbody">
+        <p class="p">After you persist records in the database, you can delete those records using the <samp class="codeph apex_code"><span class="statement">delete</span></samp> operation. Deleted records aren’t deleted
+            permanently from Salesforce, but they are placed in the Recycle Bin for 15 days from
+            where they can be restored. Restoring deleted records is covered in a later section.</p>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            
+            <p class="p">The following example deletes all accounts that are named 'DotCom':</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex">Account[] doomedAccts = [SELECT Id, Name FROM Account 
+                         WHERE Name = <span class="string">'DotCom'</span>]; 
+<span class="statement">try</span> {
+    <span class="statement">delete</span> doomedAccts;
+} <span class="statement">catch</span> (DmlException e) {
+    <span class="onelineComment">// Process exception here</span>
+}
+</pre></div>
+
+            <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>For more information on processing <samp class="codeph apex_code">DmlException</samp>s, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dml_bulk_exceptions.htm" target="_blank"> Bulk DML Exception Handling</a>.</p>
+</div>
+</div></div></div></div>
+
+        </div>
+
+        <div class="section" id="referential_integrity">
+<a name="referential_integrity"><!-- --></a><h2 class="helpHead2">Referential
+                Integrity When Deleting and Restoring Records</h2>
+<div class="p">The <samp class="codeph apex_code"><span class="statement">delete</span></samp> operation supports cascading deletions. If
+            you delete a parent object, you delete its children automatically, as long as each child
+            record can be deleted. <p class="p">For example, if you delete a case record, Apex automatically
+                deletes any CaseComment, CaseHistory, and CaseSolution records associated with that
+                case. However, if a particular child record is not deletable or is currently being
+                used, then the <samp class="codeph apex_code"><span class="statement">delete</span></samp> operation on the
+                parent case record fails.</p>
+The <samp class="codeph apex_code"><span class="statement">undelete</span></samp>
+            operation restores the record associations for the following types of relationships:<ul class="ul bulletList">
+                <li class="li">Parent accounts (as specified in the <span class="keyword parmname">Parent Account</span> field
+                    on an account)</li>
+
+                <li class="li">Indirect account-contact relationships (as specified on the Related Accounts
+                    related list on a contact or the Related Contacts related list on an
+                    account)</li>
+
+                <li class="li">Parent cases (as specified in the <span class="keyword parmname">Parent Case</span> field on a
+                    case)</li>
+
+                <li class="li">Master solutions for translated solutions (as specified in the <span class="keyword parmname">Master
+                        Solution</span> field on a solution)</li>
+
+                <li class="li">Managers of contacts (as specified in the <span class="keyword parmname">Reports To</span> field
+                    on a contact)</li>
+
+                <li class="li">Products related to assets (as specified in the <span class="keyword parmname">Product</span>
+                    field on an asset)</li>
+
+                <li class="li">Opportunities related to quotes (as specified in the
+                        <span class="keyword parmname">Opportunity</span> field on a quote)</li>
+
+                <li class="li">All custom lookup relationships</li>
+
+                <li class="li">Relationship group members on accounts and relationship groups, with some
+                    exceptions</li>
+
+                <li class="li">Tags</li>
+
+                <li class="li">An article's categories, publication state, and assignments</li>
+
+            </ul>
+<div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Salesforce
+                only restores lookup relationships that have not been replaced. For example, if an
+                asset is related to a different product prior to the original product record being
+                undeleted, that asset-product relationship is not restored.</p>
+</div>
+</div></div></div></div>
+</div>
+</div>
+
+    </div><div id="sfdc:seealso" class="related-links"></div>

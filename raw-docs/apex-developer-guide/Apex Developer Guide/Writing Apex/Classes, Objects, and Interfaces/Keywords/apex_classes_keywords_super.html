@@ -1,0 +1,72 @@
+<a name="apex_classes_keywords_super"><!-- --></a><h1 class="helpHead1">Using the  super Keyword</h1><div class="body">
+<p class="p">The <samp class="codeph apex_code"><span class="keyword">super</span></samp> keyword can
+be used by classes that are extended from virtual or abstract classes.
+By using <samp class="codeph apex_code"><span class="keyword">super</span></samp>, you can override
+constructors and methods from the parent class. </p>
+
+<div class="p">For example, if you have the following virtual class:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">class</span> SuperClass {
+    <span class="keyword">public</span> <span class="keyword">String</span> mySalutation;
+    <span class="keyword">public</span> <span class="keyword">String</span> myFirstName;
+    <span class="keyword">public</span> <span class="keyword">String</span> myLastName;
+
+    <span class="keyword">public</span> SuperClass() {
+
+        mySalutation = <span class="string">'Mr.'</span>;
+        myFirstName = <span class="string">'Carl'</span>;
+        myLastName = <span class="string">'Vonderburg'</span>;
+    }
+
+    <span class="keyword">public</span> SuperClass(<span class="keyword">String</span> salutation, <span class="keyword">String</span> firstName, <span class="keyword">String</span> lastName) {
+
+        mySalutation = salutation;
+        myFirstName = firstName;
+        myLastName = lastName;
+    }
+
+    <span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> printName() {
+
+        System.debug(<span class="string">'My name is '</span> + mySalutation + myLastName);
+    }
+
+   <span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">String</span> getFirstName() {
+       <span class="statement">return</span> myFirstName;
+   }
+}</pre></div>
+</div>
+
+<div class="p">You can create the following class that extends <samp class="codeph apex_code">Superclass</samp> and overrides its <samp class="codeph apex_code">printName</samp> method:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> Subclass <span class="keyword">extends</span> Superclass {
+  <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> printName() {
+        <span class="keyword">super</span>.printName();
+        System.debug(<span class="string">'But you can call me '</span> + <span class="keyword">super</span>.getFirstName());
+    }
+}</pre></div>
+</div>
+
+<p class="p">The expected output when calling <samp class="codeph apex_code">Subclass.printName</samp> is <samp class="ph systemoutput">My name is Mr. Vonderburg.
+But you can call me Carl.</samp></p>
+
+<div class="p">You can also use <samp class="codeph apex_code"><span class="keyword">super</span></samp> to call constructors. Add the following constructor to <samp class="codeph apex_code">SubClass</samp>: <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> Subclass() {
+    <span class="keyword">super</span>(<span class="string">'Madam'</span>, <span class="string">'Brenda'</span>, <span class="string">'Clapentrap'</span>);
+}</pre></div>
+</div>
+
+<p class="p">Now, the expected output of <samp class="codeph apex_code">Subclass.printName</samp> is <samp class="ph systemoutput">My name is Madam Clapentrap. But you can call me
+Brenda.</samp></p>
+
+<div class="section">
+<h2 class="helpHead2">Best Practices for Using the <span class="titlecodeph">super</span> Keyword</h2>
+</div>
+
+<ul class="ul bulletList">
+<li class="li">Only classes that are extending from <samp class="codeph apex_code"><span class="keyword">virtual</span></samp> or <samp class="codeph apex_code"><span class="keyword">abstract</span></samp> classes can use <samp class="codeph apex_code"><span class="keyword">super</span></samp>.</li>
+
+<li class="li">You can only use <samp class="codeph apex_code"><span class="keyword">super</span></samp> in methods that are designated with the <samp class="codeph apex_code"><span class="keyword">override</span></samp> keyword.</li>
+
+</ul>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_instanceof.htm" title="Using the instanceof Keyword">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_this.htm" title="Using the this Keyword">Next →</a></li>
+</ul></div>
+</div>

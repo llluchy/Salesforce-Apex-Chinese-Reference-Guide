@@ -1,0 +1,51 @@
+<a name="apex_testing_tools_start_stop_test"><!-- --></a><h1 class="helpHead1">Using Limits,  startTest , and stopTest</h1><div class="body conbody">
+    <p class="p">The Limits methods return the specific limit for the particular governor, such as the number
+      of calls of a method or the amount of heap size remaining. </p>
+
+    <p class="p">Each method has two versions. The first version returns the amount of the resource that has
+      been used in the current context. The second version contains the word “limit”
+      and returns the total amount of the resource that is available for that context. For example,
+        <samp class="codeph apex_code">getCallouts</samp> returns the number of callouts to an
+      external service that have already been processed in the current context, while <samp class="codeph apex_code">getLimitCallouts</samp> returns the total number of callouts
+      available in the given context. </p>
+
+    <p class="p">In addition to the Limits methods, use the <samp class="codeph apex_code">startTest</samp>
+      and <samp class="codeph apex_code">stopTest</samp> methods to validate how close the code
+      is to reaching governor limits. </p>
+
+    <p class="p">The <samp class="codeph apex_code">startTest</samp> method marks the point in your test
+      code when your test actually begins. Each test method is allowed to call this method only
+      once. All of the code before this method should be used to initialize variables, populate data
+      structures, and so on, allowing you to set up everything you need to run your test. Any code
+      that executes after the call to <samp class="codeph apex_code">startTest</samp> and before
+        <samp class="codeph apex_code">stopTest</samp> is assigned a new set of governor
+      limits.</p>
+
+    <p class="p">The <samp class="codeph apex_code">startTest</samp> method does not refresh the context of
+      the test: it adds a context to your test. For example, if your class makes 98 SOQL queries
+      before it calls <samp class="codeph apex_code">startTest</samp>, and the first significant
+      statement after <samp class="codeph apex_code">startTest</samp> is a DML statement, the
+      program can now make an additional 100 queries. Once <samp class="codeph apex_code">stopTest</samp> is called, however, the program goes back into the original context, and
+      can only make 2 additional SOQL queries before reaching the limit of 100. </p>
+
+    <p class="p"><span class="ph" id="216_stoptest_description"><a name="216_stoptest_description"><!-- --></a>The <samp class="codeph apex_code">stopTest</samp>
+        method marks the point in your test code when your test ends.</span> Use this method in
+      conjunction with the <samp class="codeph apex_code">startTest</samp> method. Each test
+      method is allowed to call this method only once. Any code that executes after the <samp class="codeph apex_code">stopTest</samp> method is assigned the original limits that were
+      in effect before <samp class="codeph apex_code">startTest</samp> was called. All
+      asynchronous calls made after the <samp class="codeph apex_code">startTest</samp> method are
+      collected by the system. <span class="ph" id="216_stoptest_runs_processes"><a name="216_stoptest_runs_processes"><!-- --></a>When <samp class="codeph apex_code">stopTest</samp> is executed, all asynchronous processes are run
+        synchronously. An exception encountered during <samp class="codeph apex_code">stopTest</samp> halts the synchronous processing. For example, an unhandled exception
+        in a batch job’s  <samp class="codeph ">execute</samp> method will prevent the <samp class="codeph ">finish</samp> method from running in a test context.</span></p>
+
+    
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_tools_runas.htm" title="Using the runAs Method">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_testing_SOSL.htm" title="Adding SOSL Queries to Unit Tests">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://trailhead.salesforce.com/content/learn/modules/apex_testing/apex_testing_triggers" target="_blank" title="Test Apex Triggers - HTML (New Window)">Test Apex Triggers</a></div></li></ul>
+</div>
+</div>

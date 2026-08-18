@@ -1,0 +1,38 @@
+<a name="apex_encoding"><!-- --></a><h1 class="helpHead1">Encoding Your Data</h1><div class="body conbody">
+<div class="shortdesc">You can encode and decode URLs and convert strings to hexadecimal
+format by using the methods provided by the <samp class="codeph apex_code">EncodingUtil</samp> class.</div>
+
+<p class="p">This example shows how to URL encode a timestamp value in UTF-8
+by calling <samp class="codeph apex_code">urlEncode</samp>.</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex">DateTime d = System.now();
+<span class="keyword">String</span> timestamp = <span class="string">''</span>+ d.year() + <span class="string">'-'</span> +
+    d.month() + <span class="string">'-'</span> +
+    d.day() + <span class="string">'\'T\''</span> +
+    d.hour() + <span class="string">':'</span> +
+    d.minute() + <span class="string">':'</span> +
+    d.second() + <span class="string">'.'</span> +
+    d.millisecond() + <span class="string">'\'Z\''</span>;
+System.debug(timestamp);
+<span class="keyword">String</span> urlEncodedTimestamp = EncodingUtil.urlEncode(timestamp, <span class="string">'UTF-8'</span>);
+System.debug(urlEncodedTimestamp);</pre></div>
+
+<p class="p">This next example shows how to use <samp class="codeph apex_code">convertToHex</samp> to compute a client response for HTTP Digest
+Authentication (RFC2617).</p>
+
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> SampleTest {
+   <span class="keyword">static</span> testmethod <span class="keyword">void</span> testConvertToHex() {
+      <span class="keyword">String</span> myData = <span class="string">'A Test String'</span>;
+      <span class="keyword">Blob</span> hash = Crypto.generateDigest(<span class="string">'SHA1'</span>,<span class="keyword">Blob</span>.valueOf(<em class="ph i">myData</em>));
+      <span class="keyword">String</span> hexDigest = EncodingUtil.convertToHex(hash);
+      System.debug(hexDigest);  
+    } 
+}</pre></div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_restful_encodingUtil.htm" target="_blank" title="Apex Reference Guide: EncodingUtil Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: EncodingUtil Class</a></div></li></ul>
+</div>
+</div>

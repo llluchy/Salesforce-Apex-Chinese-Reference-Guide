@@ -1,0 +1,66 @@
+<a name="apex_xml_streaming_writing"><!-- --></a><h1 class="helpHead1">Writing XML Using Streams</h1><div class="body conbody">
+<div class="shortdesc">The XmlStreamWriter class methods enable the writing of
+XML data.</div>
+
+<div class="p">Those methods are used in conjunction with HTTP callouts to construct
+an XML document to send in the callout request to an external service.
+The following example shows how to instantiate a new XmlStreamReader
+object:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> xmlString = <span class="string">'&lt;books&gt;&lt;book&gt;My Book&lt;/book&gt;&lt;book&gt;Your Book&lt;/book&gt;&lt;/books&gt;'</span>;
+XmlStreamReader xsr = <span class="keyword">new</span> XmlStreamReader(xmlString);</pre></div>
+</div>
+
+<div class="section">
+<h2 class="helpHead2"><span class="ph" id="xmlstreamwriter_example"><a name="xmlstreamwriter_example"><!-- --></a>XML Writer Methods
+Example</span></h2>
+<p class="p">The following example writes an XML document
+and tests its validity.</p>
+<p class="p">This Hello World sample requires custom objects. You can either
+            create these objects on your own, or download the objects and Apex code as an unmanaged
+            package from AppExchange. To obtain the sample assets in your org, install the <a class="xref" href="https://appexchange.salesforce.com/listingDetail?listingId=a0N30000001saDCEAY" target="_blank" title="html (New Window)">Apex Tutorials Package</a>. This package
+            also contains sample code and objects for the Shipping Invoice example.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> XmlWriterDemo {
+
+     <span class="keyword">public</span> <span class="keyword">String</span> getXml() {
+          XmlStreamWriter w = <span class="keyword">new</span> XmlStreamWriter();
+          w.writeStartDocument(<span class="keyword">null</span>, <span class="string">'1.0'</span>);
+          w.writeProcessingInstruction(<span class="string">'target'</span>, <span class="string">'data'</span>);
+          w.writeStartElement(<span class="string">'m'</span>, <span class="string">'Library'</span>, <span class="string">'http://www.book.com'</span>);
+          w.writeNamespace(<span class="string">'m'</span>, <span class="string">'http://www.book.com'</span>);
+          w.writeComment(<span class="string">'Book starts here'</span>);
+          w.setDefaultNamespace(<span class="string">'http://www.defns.com'</span>);
+          w.writeCData(<span class="string">'&lt;Cdata&gt; I like CData &lt;/Cdata&gt;'</span>);
+          w.writeStartElement(<span class="keyword">null</span>, <span class="string">'book'</span>, <span class="keyword">null</span>);
+          w.writedefaultNamespace(<span class="string">'http://www.defns.com'</span>);
+          w.writeAttribute(<span class="keyword">null</span>, <span class="keyword">null</span>, <span class="string">'author'</span>, <span class="string">'Manoj'</span>);
+          w.writeCharacters(<span class="string">'This is my book'</span>);
+          w.writeEndElement(); <span class="onelineComment">//end book</span>
+          w.writeEmptyElement(<span class="keyword">null</span>, <span class="string">'ISBN'</span>, <span class="keyword">null</span>);
+          w.writeEndElement(); <span class="onelineComment">//end library</span>
+          w.writeEndDocument();
+          <span class="keyword">String</span> xmlOutput = w.getXmlString();
+          w.close();
+          <span class="statement">return</span> xmlOutput;
+        }
+}</pre></div>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> XmlWriterDemoTest {
+    <span class="keyword">static</span> TestMethod <span class="keyword">void</span> basicTest() {
+        XmlWriterDemo demo = <span class="keyword">new</span> XmlWriterDemo();
+        <span class="keyword">String</span> result = demo.getXml();
+        <span class="keyword">String</span> expected = <span class="string">'&lt;?xml version="1.0"?&gt;&lt;?target data?&gt;'</span> +
+            <span class="string">'&lt;m:Library xmlns:m="http://www.book.com"&gt;'</span> + 
+            <span class="string">'&lt;!--Book starts here--&gt;'</span> +
+            <span class="string">'&lt;![CDATA[&lt;Cdata&gt; I like CData &lt;/Cdata&gt;]]&gt;'</span> +
+<span class="string">'&lt;book xmlns="http://www.defns.com" author="Manoj"&gt;This is my book&lt;/book&gt;&lt;ISBN/&gt;&lt;/m:Library&gt;'</span>;
+        
+        System.assert(result == expected);
+    }
+}</pre></div>
+</div>
+
+</div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_XmlStream_writer.htm" target="_blank" title="Apex Reference Guide: XmlStreamWriter Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: XmlStreamWriter Class</a></div></li></ul>
+</div>
+</div>

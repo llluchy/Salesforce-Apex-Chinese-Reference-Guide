@@ -1,0 +1,41 @@
+<a name="connectapi_examples_update_repository_item_binary"><!-- --></a><h1 class="helpHead1">Update a Repository File with Content</h1><div class="body refbody">
+<div class="shortdesc">Call a method to update a repository file with content.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ContentHub_static_methods.htm#apex_ConnectAPI_ContentHub_updateRepositoryFile_8" target="_blank"><samp class="codeph apex_code">updateRepositoryFile(repositoryId, repositoryFileId, file, fileData)</samp></a> to
+      update the content and metadata of a file in a repository. After the file is updated, we show
+      the file’s ID, name, description, external URL, and download
+      URL.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">final</span> <span class="keyword">String</span> gDriveRepositoryId = <span class="string">'0XCxx00000000ODGAY'</span>, gDriveFolderId = <span class="string">'folder:0B0lTys1KmM3sSVJ2bjIzTGFqSWs'</span>, gDriveFileId = <span class="string">'document:1q9OatVpcyYBK-JWzp_PhR75ulQghwFP15zhkamKrRcQ'</span>;
+
+<span class="keyword">final</span> ConnectApi.ContentHubItemInput updatedItem = <span class="keyword">new</span> ConnectApi.ContentHubItemInput();
+updatedItem.itemTypeId = <span class="string">'document'</span>; <span class="onelineComment">//see getAllowedTypes for any file item types available for creation/update</span>
+updatedItem.fields = <span class="keyword">new</span> List&lt;ConnectApi.ContentHubFieldValueInput&gt;();
+
+<span class="onelineComment">//Metadata: name field</span>
+<span class="keyword">final</span> ConnectApi.ContentHubFieldValueInput fieldValueInputName = <span class="keyword">new</span> ConnectApi.ContentHubFieldValueInput();
+fieldValueInputName.name = <span class="string">'name'</span>;
+fieldValueInputName.value =  <span class="string">'updated file name.txt'</span>;
+updatedItem.fields.add(fieldValueInputName);
+
+<span class="onelineComment">//Binary content</span>
+<span class="keyword">final</span> <span class="keyword">Blob</span> updatedFileBlob = <span class="keyword">Blob</span>.valueOf(<span class="string">'even more awesome content for updated file'</span>);
+<span class="keyword">final</span> <span class="keyword">String</span> updatedFileMimeType = <span class="string">'text/plain'</span>;
+<span class="keyword">final</span> ConnectApi.BinaryInput fileBinaryInput = <span class="keyword">new</span> ConnectApi.BinaryInput(updatedFileBlob, updatedFileMimeType, updatedFileName);
+
+<span class="keyword">final</span> ConnectApi.RepositoryFileDetail updatedFile = ConnectApi.ContentHub.updateRepositoryFile(gDriveRepositoryId, gDriveFileId, updatedItem);
+System.debug(<span class="keyword">String</span>.format(<span class="string">'Updated file - id: \'\'{0}\'\', name: \'\'{1}\'\', description: \'\'{2}\'\',\n external URL: \'\'{3}\'\', download URL: \'\'{4}\'\''</span>,  <span class="keyword">new</span> <span class="keyword">String</span>[]{ updatedFile.id, updatedFile.name, updatedFile.description, updatedFile.externalDocumentUrl, updatedFile.downloadUrl}));</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_content_hub_item.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.ContentHubItemInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.ContentHubItemInput</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_content_hub_field_value.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.ContentHubFieldValueInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.ContentHubFieldValueInput</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_binary.htm" target="_blank" title="Apex Reference Guide: ConnectApi.BinaryInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: ConnectApi.BinaryInput</a></div></li>
+</ul>
+</div>
+</div>

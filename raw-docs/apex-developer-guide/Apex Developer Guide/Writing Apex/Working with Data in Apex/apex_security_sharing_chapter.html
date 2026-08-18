@@ -1,0 +1,68 @@
+<a name="apex_security_sharing_chapter"><!-- --></a><h1 class="helpHead1">Apex Security and Sharing Model</h1><div class="body conbody">
+<div class="shortdesc">The Apex security model includes record-level, field-level, and object-level security
+        mechanisms. You can control record-level security modes by using the <samp class="codeph ">with sharing</samp>, <samp class="codeph ">without
+            sharing</samp>, and <samp class="codeph ">inherited sharing</samp> keywords on
+        classes. Apex runs in user mode by default, which means that user permissions on objects and
+        field-level security are respected. A user cannot run code that tries to access fields or
+        objects that are hidden from the user. Other security mechanisms include the <samp class="codeph ">Security.stripInaccessible()</samp> method, and Field and SObject
+        describe methods. </div>
+
+        <div class="section">
+<h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+            
+            <p class="p">In API version 67.0 and later, you can’t use the <samp class="codeph apex_code">WITH
+                    SECURITY_ENFORCED</samp> clause in SOQL <samp class="codeph apex_code">SELECT</samp> queries in Apex code. Instead, use the <samp class="codeph apex_code">WITH USER_MODE</samp> clause.</p>
+
+            <p class="p">In API version 67.0 and later, Apex runs in user context by default, meaning that the
+                current user’s permissions and field-level security (FLS) are enforced during code
+                execution. In API version 66.0 and earlier, system mode is the default.</p>
+
+            <p class="p">In API version 67.0 and later, classes without an explicit sharing declaration run in
+                    <samp class="codeph apex_code">with sharing</samp> mode. In API version 66.0
+                and earlier, the sharing mode of classes without an explicit sharing declaration is
+                determined according these factors.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">If the class is part of an inheritance chain, and any class in that chain is
+                    saved as API version 67.0 and later, the class runs in <samp class="codeph apex_code">with sharing</samp> mode.</li>
+
+                <li class="li">If the class is an Aura controller or an <samp class="codeph apex_code">@AuraEnabled</samp> method called from a Lightning web component, the
+                    class runs in <samp class="codeph apex_code">with sharing</samp> mode.</li>
+
+                <li class="li">If the class isn’t an Apex entry point, its sharing mode is defined by the
+                    sharing mode of the calling class.</li>
+
+                <li class="li">Otherwise, the class runs in <samp class="codeph apex_code">without
+                        sharing</samp> mode.</li>
+
+            </ul>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_security_sharing_rules.htm">Enforce Sharing Rules</a></strong><br>
+In Apex, sharing rules are always enforced by default.  Use the with sharing, without     sharing, and inherited sharing keywords to control record-level security. If you don't want     sharing rules to be enforced, then you must declare a class with the <samp class="codeph apex_code">without sharing</samp> keyword.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm">Enforce Object and Field Permissions</a></strong><br>
+Apex generally runs in user context by default, meaning that the current user’s         permissions and field-level security (FLS) are enforced during code execution. To ignore the         FLS and object permissions of the current user, you must explicitly set a database operation         or query to run in system mode. For fine-grained control, you can check the current user’s         permissions for an object or a field, and then perform a specific DML operation or a query         only if the user has sufficient permissions.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_classes_security.htm">Class Security</a></strong><br>
+You can specify which users can execute methods in top-level classes or Apex     transaction entry points based on their user profile or permission sets. You can only set     security on Apex classes, not on triggers.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_bulk_sharing.htm">Understanding Apex Managed Sharing</a></strong><br>
+<dfn class="term">Sharing</dfn> is the act of granting a user or group of users permission to         perform a set of actions on a record or set of records. Sharing access can be granted using         the Salesforce user interface and Lightning Platform, or programmatically using         Apex.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/pages_security_tips_intro.htm">Security Tips for Apex and Visualforce Development</a></strong><br>
+</li>
+</ul>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_field_object_describe.htm" title="At the most granular level, you can enforce object-level and field-level permissions in your code by explicitly calling the Schema.DescribeSObjectResult and the Schema.DescribeFieldResult methods to check the current user’s access permission levels.">Enforce Security with Field and SObject Describe Methods</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_methods" target="_blank"><em class="ph i">Apex Reference Guide</em>: stripInaccessible()</a></div></li>
+</ul>
+</div>
+</div>

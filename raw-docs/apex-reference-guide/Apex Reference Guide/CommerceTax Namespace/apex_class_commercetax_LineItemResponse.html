@@ -1,0 +1,519 @@
+<a name="apex_class_commercetax_LineItemResponse"><!-- --></a><div class="nested0">
+    <h1 class="helpHead1">LineItemResponse Class</h1>
+
+    
+    
+    <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Response class that stores details of a list of one or more line
+            items on which the tax engine has calculated tax.</span></div>
+
+        <div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_commercetax.htm" title="Manage the communication between Salesforce and an external tax engine.">CommerceTax</a></p>
+</div>
+
+        <div class="section">
+<h2 class="helpHead2">Example</h2>
+
+            <p class="p">This example uses a <samp class="codeph ">LineItemResponse</samp> list to store
+                information about each line item that was processed as part of the request. For
+                simplicity, the sample code uses a static value of 1 for the tax rate. However, most
+                integrations typically have a more complex process for determining a tax rate. Most
+                integrations also build a <samp class="codeph ">TaxDetailsResponse</samp> list
+                to store the actual tax value information that they assign to each line item in the
+                    <samp class="codeph ">LineItemResponse</samp> list.</p>
+
+            <div class="codeSection"><brush:plainpbrush:plainrbrush:plainebrush:plain brush:plaincbrush:plainlbrush:plainabrush:plainsbrush:plainsbrush:plain=brush:plain"brush:plaincbrush:plainobrush:plaindbrush:plainebrush:plainbbrush:plainlbrush:plainobrush:plaincbrush:plainkbrush:plain brush:plain"brush:plain>Double totalTax = 0.0;
+             Double totalAmount = 0.0;
+             List&lt;commercetax.LineItemResponse&gt; lineItemResponses = new List&lt;commercetax.LineItemResponse&gt;();
+             for(Commercetax.TaxLineItemRequest lineItem : request.lineItems){
+                 commercetax.AddressesResponse addressesRes = new commercetax.AddressesResponse();
+                 if(request.DocumentCode == 'SetsNullForResponseWithoutException'){
+                     addressesRes.setShipFrom(null);
+                     addressesRes.setShipTO(null);
+                     addressesRes.setSoldTo(null);
+                 }else{
+                     commercetax.AddressResponse addRes = new commercetax.AddressResponse();
+                     addRes.setLocationCode('locationCode');
+                     addressesRes.setShipFrom(addRes);
+                     addressesRes.setShipTO(addRes);
+                     addressesRes.setSoldTo(addRes);
+                 }
+                 commercetax.LineItemResponse lineItemResponse = new commercetax.LineItemResponse();
+                 Double totalLineTax = 0;
+                 List&lt;commercetax.TaxDetailsResponse&gt; taxDetailsResponses = new List&lt;commercetax.TaxDetailsResponse&gt;();
+                 for(integer i =0;i&lt;1;i++){
+                     Integer rate  = 1;
+                     Double taxableAmount = lineItem.amount;
+                     commercetax.TaxDetailsResponse taxDetailsResponse = new commercetax.TaxDetailsResponse();
+                     taxDetailsResponse.setRate(Double.valueOf(rate));
+                     taxDetailsResponse.setTaxableAmount(taxableAmount);
+                     Double tax = taxableAmount*rate;
+                     totalLineTax+=tax;
+                     taxDetailsResponse.setTax(taxableAmount*rate);
+                     taxDetailsResponse.setExemptAmount(0);
+                     taxDetailsResponse.setExemptReason('exemptReason');
+                     taxDetailsResponse.setTaxRegionId('taxRegionId');
+                     taxDetailsResponse.setTaxId(String.valueOf(getRandomInteger(0,2323233)));
+                     taxDetailsResponse.setSerCode('serCode');
+                     taxDetailsResponse.setTaxAuthorityTypeId('taxAuthorityTypeId');
+                     if(request.DocumentCode == 'SetsNullForResponseWithoutException'){
+                         taxDetailsResponse.setImposition(null);
+                     }else{
+                         commercetax.ImpositionResponse imposition = new commercetax.ImpositionResponse();
+                         imposition.setSubType('subtype');
+                         imposition.setType('type');
+                         taxDetailsResponse.setImposition(imposition);
+                     }
+ 
+                     if(request.DocumentCode == 'SetsNullForResponseWithoutException'){
+                         taxDetailsResponse.setJurisdiction(null);
+                     }else{
+                         commercetax.JurisdictionResponse jurisdiction = new commercetax.JurisdictionResponse();
+                         jurisdiction.setCountry('country');
+                         jurisdiction.setRegion('region');
+                         jurisdiction.setName('name');
+                         jurisdiction.setStateAssignedNumber('stateAssignedNo');
+                         jurisdiction.setId('id');
+                         jurisdiction.setLevel('level');
+                         taxDetailsResponse.setJurisdiction(jurisdiction);
+                     }
+ 
+                     taxDetailsResponses.add(taxDetailsResponse);
+                 }
+                 lineItemResponse.setTaxes(taxDetailsResponses);
+                 totalTax +=totalLineTax;
+                 totalAmount+=lineItem.amount;</pre></div>
+</div>
+
+    </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_methods">LineItemResponse Methods</a></strong><br>
+Learn more about the available methods with the <samp class="codeph ">LineItemResponse</samp> class.</li>
+</ul>
+</div>
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_methods">
+<a name="apex_commercetax_LineItemResponse_methods"><!-- --></a>
+  <h2 class="helpHead2">LineItemResponse Methods</h2>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Learn more about the available methods with the <samp class="codeph ">LineItemResponse</samp> class.</div>
+
+    <div class="section">
+      <p class="p">The <samp class="codeph apex_code">LineItemResponse</samp> class includes these
+        methods.</p>
+
+    </div>
+
+    
+  </div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setAddresses">setAddresses(addresses)</a></strong><br>
+Sets the Addresses field on the <samp class="codeph ">LineItemResponse</samp> using an instance of <samp class="codeph ">AddressesResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setAmountDetails">setAmountDetails(amountDetails)</a></strong><br>
+Sets the Amount Details field on the <samp class="codeph ">LineItemResponse</samp> using an instance of <samp class="codeph ">AmountDetails</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setCustomTaxAttributes">setCustomTaxAttributes(customTaxAttributes)</a></strong><br>
+Uses an instance of <samp class="codeph ">CustomTaxAttributesResponse</samp> class to include additional attributes in the tax       response at line item level.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setEffectiveDate">setEffectiveDate(effectiveDate)</a></strong><br>
+Sets the EffectiveDate field on the <samp class="codeph ">LineItemResponse</samp> class. Effective Date fields are optional fields that store the       date that a transaction takes effect. We provide these fields only for recordkeeping purposes       – for example, if you must report an effective date to an external general ledger       system. Salesforce doesn't use them to calculate any tax or payment values.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setIsTaxable">setIsTaxable(isTaxable)</a></strong><br>
+Sets the IsTaxable field on the <samp class="codeph ">LineItemResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setLineNumber">setLineNumber(lineNumber)</a></strong><br>
+Sets the LineNumber field on the <samp class="codeph ">LineItemResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setProductCode">setProductCode(productCode)</a></strong><br>
+Sets the ProductCode field on the <samp class="codeph ">LineItemResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setQuantity">setQuantity(quantity)</a></strong><br>
+Sets the Quantity field on the <samp class="codeph ">LineItemResponse</samp> class.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setTaxCode">setTaxCode(taxCode)</a></strong><br>
+Sets the TaxCode field on the <samp class="codeph ">LineItemResponse</samp>.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_LineItemResponse.htm#apex_commercetax_LineItemResponse_setTaxes">setTaxes(taxes)</a></strong><br>
+Sets the Taxes field on a <samp class="codeph ">LineItemResponse</samp>.</li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setAddresses">
+<a name="apex_commercetax_LineItemResponse_setAddresses"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setAddresses(addresses)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Addresses field on the <samp class="codeph ">LineItemResponse</samp> using an instance of <samp class="codeph ">AddressesResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAddresses(commercetax.AddressesResponse
+          addresses)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">addresses</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AddressesResponse.htm#apex_class_commercetax_AddressesResponse" title="Sets the tax address fields based on a response from the external tax engine. Contains setter methods for the Ship From, Ship To, and Sold To addresses.">AddressesResponse</a></p>
+<p class="p">Class that contains methods to set the Ship To, Ship From, and Sold To address
+            information.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setAmountDetails">
+<a name="apex_commercetax_LineItemResponse_setAmountDetails"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setAmountDetails(amountDetails)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Amount Details field on the <samp class="codeph ">LineItemResponse</samp> using an instance of <samp class="codeph ">AmountDetails</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setAmountDetails(commercetax.AmountDetailsResponse
+          amountDetails)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">amountDetails</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_AmountDetailsResponse.htm#apex_class_commercetax_AmountDetailsResponse" title="Sets tax amount fields based on a response from the external tax engine.">AmountDetailsResponse</a></p>
+<p class="p">Class that contains methods to set the tax amount, total amount with tax, total
+            amount, and exempt amount.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setCustomTaxAttributes">
+<a name="apex_commercetax_LineItemResponse_setCustomTaxAttributes"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setCustomTaxAttributes(customTaxAttributes)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Uses an instance of <samp class="codeph ">CustomTaxAttributesResponse</samp> class to include additional attributes in the tax
+      response at line item level.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph ">global void
+          setCustomTaxAttributes(commercetax.CustomTaxAttributesResponse
+          customTaxAttributes)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">customTaxAttributes</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_CustomTaxAttributesResponse.htm#apex_class_commercetax_CustomTaxAttributesResponse" title="Sets additional data or custom attributes in the tax response.">CustomTaxAttributesResponse</a></p>
+<p class="p">Additional</p>
+<p class="p">data or custom attributes to include in the tax response.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: void</p>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setEffectiveDate">
+<a name="apex_commercetax_LineItemResponse_setEffectiveDate"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setEffectiveDate(effectiveDate)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the EffectiveDate field on the <samp class="codeph ">LineItemResponse</samp> class. Effective Date fields are optional fields that store the
+      date that a transaction takes effect. We provide these fields only for recordkeeping purposes
+      – for example, if you must report an effective date to an external general ledger
+      system. Salesforce doesn't use them to calculate any tax or payment values.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setEffectiveDate(<span class="keyword">Datetime</span>
+      effectiveDate)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">effectiveDate</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_datetime.htm#apex_methods_system_datetime" title="Contains methods for the Datetime primitive data type.">Datetime</a></p>
+<p class="p">Optional field that stores the date that a transaction takes effect.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setIsTaxable">
+<a name="apex_commercetax_LineItemResponse_setIsTaxable"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setIsTaxable(isTaxable)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the IsTaxable field on the <samp class="codeph ">LineItemResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setIsTaxable(<span class="keyword">Boolean</span>
+      isTaxable)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">isTaxable</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a></p>
+<p class="p">Whether line items were taxed as part of the tax calculation request.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setLineNumber">
+<a name="apex_commercetax_LineItemResponse_setLineNumber"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setLineNumber(lineNumber)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the LineNumber field on the <samp class="codeph ">LineItemResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setLineNumber(<span class="keyword">String</span>
+      lineNumber)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">lineNumber</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">User-defined number used to identify</p>
+<p class="p">a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setProductCode">
+<a name="apex_commercetax_LineItemResponse_setProductCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setProductCode(productCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the ProductCode field on the <samp class="codeph ">LineItemResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setProductCode(<span class="keyword">String</span>
+      productCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">productCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Code</p>
+<p class="p">for the product that a line item represents.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setQuantity">
+<a name="apex_commercetax_LineItemResponse_setQuantity"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setQuantity(quantity)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Quantity field on the <samp class="codeph ">LineItemResponse</samp> class.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setQuantity(<span class="keyword">Double</span>
+      quantity)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">quantity</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_double.htm#apex_methods_system_double" title="Contains methods for the Double primitive data type.">Double</a></p>
+<p class="p">Quantity of a line item.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setTaxCode">
+<a name="apex_commercetax_LineItemResponse_setTaxCode"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxCode(taxCode)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the TaxCode field on the <samp class="codeph ">LineItemResponse</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span>
+          setTaxCode(<span class="keyword">String</span>
+      taxCode)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxCode</var></strong>:<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+<p class="p">Federal code that an individual or business uses to pay their taxes to a federal or
+            state government. The tax engine uses this code during the tax calculation process.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_commercetax_LineItemResponse_setTaxes">
+<a name="apex_commercetax_LineItemResponse_setTaxes"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">setTaxes(taxes)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Sets the Taxes field on a <samp class="codeph ">LineItemResponse</samp>.</span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">global</span> <span class="keyword">void</span> setTaxes(List&lt;commercetax.TaxDetailsResponse&gt;
+          taxes)</samp></p>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">taxes</var></strong>:<p class="p">Type: List&lt;<a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_commercetax_TaxDetailsResponse.htm#apex_class_commercetax_TaxDetailsResponse" title="Stores details of the tax values that an external tax engine calculates in response to a tax calculation request.">TaxDetailsResponse</a>&gt;</p>
+<p class="p">Tax values applied to a line item in the <samp class="codeph ">LineItemResponse</samp> list. This information is stored in a list of <samp class="codeph ">TaxDetailsResponses</samp>, which contains values such as tax,
+            taxable amount, and tax rate.</p>
+</li>
+
+      </ul>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: void</p>
+</div>
+
+  </div>
+
+</div>
+</div>
+</div>

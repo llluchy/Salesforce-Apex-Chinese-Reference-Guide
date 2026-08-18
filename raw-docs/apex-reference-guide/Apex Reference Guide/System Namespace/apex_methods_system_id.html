@@ -1,0 +1,650 @@
+<a name="apex_methods_system_id"><!-- --></a><div class="nested0">
+<h1 class="helpHead1">Id Class</h1>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Contains methods for the ID primitive data type.</div>
+
+<div class="section">
+<h2 class="helpHead2">Namespace</h2>
+<p class="p"><a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_namespace_System.htm" title="The System namespace provides classes and methods for core Apex functionality.">System</a></p>
+</div>
+
+<div class="section" id="getSobjectTypeExampleSection">
+<a name="getSobjectTypeExampleSection"><!-- --></a><h2 class="helpHead2"><span class="ph" id="getSobjectTypeExampleSectionTitle"><a name="getSobjectTypeExampleSectionTitle"><!-- --></a>Example: Getting an sObject
+Token From an ID</span></h2>
+<p class="p" id="SampleIntro"><a name="SampleIntro"><!-- --></a>This sample shows
+how to use the <samp class="codeph apex_code">getSObjectType</samp> method to obtain an sObject token from an ID. The <samp class="codeph apex_code">updateOwner</samp> method in this sample
+accepts a list of IDs of the sObjects to update the ownerId field
+of. This list contains IDs of sObjects of the same type. The second
+parameter is the new owner ID. Note that since it is a future method,
+it doesn’t accept sObject types as parameters; this is why
+it accepts IDs of sObjects. This method gets the sObject token from
+the first ID in the list, then does a describe to obtain the object
+name and constructs a query dynamicallly. It then queries for all
+sObjects and updates their owner ID fields to the new owner ID.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex" id="getSObjectTypeFromIDEx"><a name="getSObjectTypeFromIDEx"><!-- --></a><span class="keyword">public</span> with sharing <span class="keyword">class</span> MyDynamicSolution {
+    <span class="keyword">@Future</span>
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> updateOwner(List&lt;<span class="keyword">ID</span>&gt; objIds, <span class="keyword">ID</span> newOwnerId) {
+        <span class="onelineComment">// Validate input</span>
+        Assert.isNotNull(objIds);
+        Assert.isTrue(objIds.size() &gt; 0);
+        Assert.isNotNull(newOwnerId);
+        
+        <span class="onelineComment">// Get the sObject token from the first ID</span>
+        <span class="onelineComment">// (the List contains IDs of sObjects of the same type).</span>
+        Schema.SObjectType token = objIds[0].getSObjectType();
+        
+        <span class="onelineComment">// Using the token, do a describe </span>
+        <span class="onelineComment">// and construct a query dynamically. </span>
+        Schema.DescribeSObjectResult dr = token.getDescribe();
+        <span class="keyword">String</span> queryString = <span class="string">'SELECT ownerId FROM '</span> + dr.getName() + 
+            <span class="string">' WHERE '</span>;
+        <span class="statement">for</span>(<span class="keyword">ID</span> objId : objIds) {
+            queryString += <span class="string">'Id=\''</span> + objId + <span class="string">'\' OR '</span>;
+        }    
+        <span class="onelineComment">// Remove the last ' OR'</span>
+        queryString = queryString.subString(0, queryString.length() - 4);
+
+        sObject[] objDBList = Database.query(queryString, AccessLevel.USER_MODE);
+        Assert.isTrue(objDBList.size() &gt; 0);
+        
+        <span class="onelineComment">// Update the owner ID on the sObjects</span>
+        <span class="statement">for</span>(<span class="keyword">Integer</span> i=0;i&lt;objDBList.size();i++) {
+            objDBList[i].put(<span class="string">'ownerId'</span>, newOwnerId);
+        }        
+        Database.SaveResult[] srList = Database.<span class="statement">update</span>(objDBList, <span class="keyword">false</span>, AccessLevel.USER_MODE);
+        <span class="statement">for</span>(Database.SaveResult sr : srList) {
+            <span class="statement">if</span> (sr.isSuccess()) {
+                System.debug(<span class="string">'Updated owner ID successfully for '</span> + 
+                    dr.getName() + <span class="string">' ID '</span> + sr.getId());
+            }
+            <span class="statement">else</span> {
+                System.debug(<span class="string">'Updating '</span> + dr.getName() + <span class="string">' returned the following errors.'</span>);
+                <span class="statement">for</span>(Database.Error e : sr.getErrors()) {
+                    System.debug(e.getMessage());
+                }
+            }
+        }
+    }
+}</pre></div>
+</div>
+
+</div>
+
+<div class="topic reference nested1" lang="en-us" lang="en-us" id="apex_System_Id_methods">
+<a name="apex_System_Id_methods"><!-- --></a>
+<h2 class="helpHead2">Id Methods</h2>
+
+
+<div class="body refbody">
+<div class="section">
+<p class="p">The following are methods for <samp class="codeph apex_code">Id</samp>.</p>
+</div>
+
+</div>
+
+<div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_addError">addError(errorMsg)</a></strong><br>
+Marks a trigger record with a custom error message and prevents any DML operation from   occurring.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_addError_2">addError(errorMsg, escape)</a></strong><br>
+Marks a trigger record with a custom error message, specifies if the error message     should be escaped, and prevents any DML operation from occurring.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_addError_3">addError(exceptionError)</a></strong><br>
+Marks a trigger record with a custom error message and prevents any DML operation from     occurring.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_addError_4">addError(exceptionError, escape)</a></strong><br>
+Marks a trigger record with a custom error message and prevents any DML operation from     occurring.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_getSObjectType">getSObjectType()</a></strong><br>
+Returns the token for the sObject corresponding to this ID. This method is primarily used with describe information.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_to15">to15()</a></strong><br>
+Converts an 18-character Id value to a 15-character case-sensitive string.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_Id_valueOf">valueOf(toID)</a></strong><br>
+Converts the specified String into an ID and returns the ID.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexref.meta/apexref/apex_methods_system_id.htm#apex_System_id_valueOf_2">valueOf(str, restoreCasing)</a></strong><br>
+Converts the specified string into an ID and returns the ID. If         <samp class="codeph ">restoreCasing</samp> is <samp class="codeph ">true</samp>,       and the string represents an 18-character ID that has incorrect casing, the method returns an       18-character ID that is correctly aligned with its encoded casing. </li>
+</ul>
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_addError">
+<a name="apex_System_Id_addError"><!-- --></a>
+ <h3 class="helpHead3">addError(errorMsg)</h3>
+
+ 
+ 
+ <div class="body refbody">
+<div class="shortdesc">Marks a trigger record with a custom error message and prevents any DML operation from
+  occurring.</div>
+
+  <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+   
+   <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addError(<span class="keyword">String</span> errorMsg)</samp></p>
+
+   
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+   
+   <ul class="ul bulletList">
+    <li class="li">
+<strong class="ph b"><var class="keyword varname">errorMsg</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> The error message to mark the record with.</li>
+
+   </ul>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+   
+   <p class="p">Type: Void</p>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+   
+   <p class="p">This method is similar to the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_addError" title="Marks a trigger record with a custom error message and prevents any DML operation from occurring."><samp class="codeph apex_code">addError(errorMsg)</samp></a>
+    sObject method.</p>
+
+   <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>This method escapes any HTML markup in the specified error message. The escaped characters
+    are: <samp class="codeph nolang">\n</samp>, <samp class="codeph nolang">&lt;</samp>, <samp class="codeph nolang">&gt;</samp>, <samp class="codeph nolang">&amp;</samp>, <samp class="codeph nolang">"</samp>, <samp class="codeph nolang">\</samp>, <samp class="codeph nolang">\u2028</samp>, <samp class="codeph nolang">\u2029</samp>, and <samp class="codeph nolang">\u00a9</samp>. As a result, HTML markup is not rendered; instead, it is
+    displayed as text in the Salesforce user interface.</p>
+</div>
+</div></div></div></div>
+
+  </div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Trigger.<span class="keyword">new</span>[0].Id.addError(<span class="string">'bad'</span>);</pre></div>
+
+  </div>
+
+ </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_addError_2">
+<a name="apex_System_Id_addError_2"><!-- --></a>
+  <h3 class="helpHead3">addError(errorMsg, escape)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Marks a trigger record with a custom error message, specifies if the error message
+    should be escaped, and prevents any DML operation from occurring.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addError(<span class="keyword">String</span> errorMsg, <span class="keyword">Boolean</span>
+          escape)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">errorMsg</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> <p class="p">The error message to mark the record with.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">escape</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> <p class="p">Indicates whether any HTML markup in the custom error message should be escaped
+                (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). This parameter is ignored in both Lightning
+              Experience and the Salesforce mobile app, and the HTML is always escaped. The escape
+              parameter only applies in Salesforce Classic.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The escaped characters are: <samp class="codeph nolang">\n</samp>, <samp class="codeph nolang">&lt;</samp>, <samp class="codeph nolang">&gt;</samp>, <samp class="codeph nolang">&amp;</samp>, <samp class="codeph nolang">"</samp>, <samp class="codeph nolang">\</samp>, <samp class="codeph nolang">\u2028</samp>, <samp class="codeph nolang">\u2029</samp>, and <samp class="codeph nolang">\u00a9</samp>. As
+          a result, HTML markup is not rendered; instead, it is displayed as text in the Salesforce
+          user interface.</p>
+
+      <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexref" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Be cautious if you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for the <var class="keyword varname">escape</var> argument. Unescaped strings displayed
+          in the Salesforce user interface can represent a vulnerability in the system because these
+          strings might contain harmful code. If you want to include HTML markup in the error
+          message, call this method with a <samp class="codeph apex_code"><span class="keyword">false</span></samp><var class="keyword varname">
+            escape</var> argument. Make sure that you escape any dynamic content, such as input
+          field values. Otherwise, specify <samp class="codeph apex_code"><span class="keyword">true</span></samp> for the
+          <var class="keyword varname">escape</var> argument or call <a class="xref" href="#apex_System_Id_addError" title="Marks a trigger record with a custom error message and prevents any DML operation from occurring."><samp class="codeph apex_code">addError(<span class="keyword">String</span> <var class="keyword varname">errorMsg</var>)</samp></a>
+        instead.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex">Trigger.<span class="keyword">new</span>[0].Id.addError(<span class="string">'Fix &amp; resubmit'</span>, <span class="keyword">false</span>);</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_addError_3">
+<a name="apex_System_Id_addError_3"><!-- --></a>
+  <h3 class="helpHead3">addError(exceptionError)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Marks a trigger record with a custom error message and prevents any DML operation from
+    occurring.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addError(Exception exceptionError)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">exceptionError</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm" title="An exception denotes an error that disrupts the normal flow of code execution. You can use Apex built-in exceptions or create custom exceptions. All exceptions have common methods.">System.Exception</a> An Exception object or a custom exception object that contains the error message to
+            mark the record with.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+<div class="p">
+<p class="p" id="ThisMethodIsSimilarToTheSObjectMeth-3FA3F62C"><a name="ThisMethodIsSimilarToTheSObjectMeth-3FA3F62C"><!-- --></a>This method is
+        similar to the <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_sobject.htm#apex_System_SObject_addError_3" title="Marks a trigger record with a custom error message and prevents any DML operation from occurring."><samp class="codeph apex_code">addError(exceptionError)</samp></a> sObject method.</p>
+This method escapes
+      any HTML markup in the specified error message. <span class="ph" id="addError_escaped_chars"><a name="addError_escaped_chars"><!-- --></a>The escaped
+        characters are: <samp class="codeph nolang">\n</samp>, <samp class="codeph nolang">&lt;</samp>, <samp class="codeph nolang">&gt;</samp>, <samp class="codeph nolang">&amp;</samp>, <samp class="codeph nolang">"</samp>, <samp class="codeph nolang">\</samp>, <samp class="codeph nolang">\u2028</samp>, <samp class="codeph nolang">\u2029</samp>, and <samp class="codeph nolang">\u00a9</samp>. As a result, HTML
+        markup is not rendered; instead, it is displayed as text in the Salesforce user
+        interface.</span>
+</div>
+</div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyException <span class="keyword">extends</span> Exception{}
+
+Trigger.<span class="keyword">new</span>[0].Id.addError(<span class="keyword">new</span> myException(<span class="string">'Invalid Id'</span>));</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_addError_4">
+<a name="apex_System_Id_addError_4"><!-- --></a>
+  <h3 class="helpHead3">addError(exceptionError, escape)</h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc">Marks a trigger record with a custom error message and prevents any DML operation from
+    occurring.</div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Void addError(Exception exceptionError, <span class="keyword">Boolean</span>
+          escape)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">exceptionError</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_classes_exception_methods.htm" title="An exception denotes an error that disrupts the normal flow of code execution. You can use Apex built-in exceptions or create custom exceptions. All exceptions have common methods.">System.Exception</a> <p class="p">An Exception object or a custom exception object that contains the error message to
+              mark the record with.</p>
+</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">escape</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> <p class="p">Indicates whether any HTML markup in the custom error message should be escaped
+                (<samp class="codeph apex_code"><span class="keyword">true</span></samp>) or not (<samp class="codeph apex_code"><span class="keyword">false</span></samp>). This parameter is ignored in both Lightning
+              Experience and the Salesforce mobile app, and the HTML is always escaped. The escape
+              parameter only applies in Salesforce Classic.</p>
+</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: Void</p>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Usage</h4>
+
+      
+      <p class="p">The escaped characters are: <samp class="codeph nolang">\n</samp>, <samp class="codeph nolang">&lt;</samp>, <samp class="codeph nolang">&gt;</samp>, <samp class="codeph nolang">&amp;</samp>, <samp class="codeph nolang">"</samp>, <samp class="codeph nolang">\</samp>, <samp class="codeph nolang">\u2028</samp>, <samp class="codeph nolang">\u2029</samp>, and <samp class="codeph nolang">\u00a9</samp>. As
+          a result, HTML markup is not rendered; instead, it is displayed as text in the Salesforce
+          user interface.</p>
+
+      <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexref" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Be cautious if you specify <samp class="codeph apex_code"><span class="keyword">false</span></samp> for the <var class="keyword varname">escape</var> argument. Unescaped strings displayed
+          in the Salesforce user interface can represent a vulnerability in the system because these
+          strings might contain harmful code. If you want to include HTML markup in the error
+          message, call this method with a <samp class="codeph apex_code"><span class="keyword">false</span></samp><var class="keyword varname">
+            escape</var> argument. Make sure that you escape any dynamic content, such as input
+          field values. Otherwise, specify <samp class="codeph apex_code"><span class="keyword">true</span></samp> for the
+          <var class="keyword varname">escape</var> argument or call <a class="xref" href="#apex_System_Id_addError_3" title="Marks a trigger record with a custom error message and prevents any DML operation from occurring."><samp class="codeph apex_code">addError(Exception <var class="keyword varname">e</var>)</samp></a>
+        instead.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+      
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> MyException <span class="keyword">extends</span> Exception{}
+
+account a = <span class="keyword">new</span> account();
+a.addError(<span class="keyword">new</span> MyException(<span class="string">'Invalid Id &amp; other issues'</span>), <span class="keyword">false</span>);
+</pre></div>
+
+    </div>
+
+  </div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_getSObjectType">
+<a name="apex_System_Id_getSObjectType"><!-- --></a>
+<h3 class="helpHead3">getSObjectType()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Returns the token for the sObject corresponding to this
+ID. This method is primarily used with describe information.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> Schema.SObjectType getSObjectType()</samp></p>
+</div>
+
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_class_Schema_SObjectType.htm#apex_class_Schema_SObjectType" title="A Schema.sObjectType object is returned from the field describe result using the getReferenceTo method, or from the sObject describe result using the getSObjectType method.">Schema.SObjectType</a></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Usage</h4>
+<p class="p">For more information about describes, see <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexcode.meta/apexcode/apex_dynamic_describe_objects_understanding.htm" target="_blank">Understanding Apex Describe Information</a>.</p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">account a = <span class="keyword">new</span> account(name = <span class="string">'account'</span>);
+<span class="statement">insert</span> a;
+Id myId = a.id;
+system.assertEquals(Schema.Account.SObjectType, myId.getSobjectType());</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_to15">
+<a name="apex_System_Id_to15"><!-- --></a>
+<h3 class="helpHead3">to15()</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Converts an 18-character Id value to a 15-character case-sensitive string.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> string to15()</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      <p class="p">Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> Id_15_char = <span class="string">'0D5B000001DVM9t'</span>;
+<span class="keyword">String</span> Id_18_char = <span class="string">'0D5B000001DVM9tkAh'</span>;
+<span class="keyword">ID</span> testId = Id_18_char;
+System.assertEquals(testId.to15(),Id_15_char);</pre></div>
+
+  </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_Id_valueOf">
+<a name="apex_System_Id_valueOf"><!-- --></a>
+<h3 class="helpHead3">valueOf(toID)</h3>
+
+
+
+<div class="body refbody">
+<div class="shortdesc">Converts the specified String into an ID and returns the
+ID.</div>
+
+<div class="section">
+<h4 class="helpHead4">Signature</h4>
+<p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">ID</span> valueOf(<span class="keyword">String</span> toID)</samp></p>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Parameters</h4>
+<ul class="ul bulletList">
+<li class="li">
+<strong class="ph b"><var class="keyword varname">toID</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a>
+</li>
+
+</ul>
+</div>
+
+<div class="section">
+<h4 class="helpHead4">Return Value</h4>
+<p class="p">Type: <a class="xref" href="#apex_methods_system_id" title="Contains methods for the ID primitive data type.">ID</a></p>
+</div>
+
+  <div class="section">
+<h4 class="helpHead4">Example</h4>
+
+   
+   <div class="codeSection apex_code"><pre class="codeblock brush:apex">Id myId = Id.valueOf(<span class="string">'001xa000003DIlo'</span>);
+</pre></div>
+
+  </div>
+
+    <div class="section">
+<h4 class="helpHead4">Versioned Behavior Changes</h4>
+
+      
+      <p class="p">In API version 54.0 and later, assignment of an invalid 15 or 18 character ID to a variable
+        results in a <samp class="codeph ">System.StringException</samp> exception.</p>
+
+    </div>
+
+</div>
+
+</div>
+<div class="topic reference nested2" lang="en-us" lang="en-us" id="apex_System_id_valueOf_2">
+<a name="apex_System_id_valueOf_2"><!-- --></a>
+  <h3 class="helpHead3"><span class="titlecodeph">valueOf(str, restoreCasing)</span></h3>
+
+  
+  
+  <div class="body refbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Converts the specified string into an ID and returns the ID. If
+        <samp class="codeph ">restoreCasing</samp> is <samp class="codeph ">true</samp>,
+      and the string represents an 18-character ID that has incorrect casing, the method returns an
+      18-character ID that is correctly aligned with its encoded casing. </span></div>
+
+    <div class="section">
+<h4 class="helpHead4">Signature</h4>
+
+      
+      <p class="p"><samp class="codeph apex_code"><span class="keyword">public</span> <span class="keyword">static</span> Id valueOf(<span class="keyword">String</span> str, <span class="keyword">Boolean</span>
+          restoreCasing)</samp></p>
+
+      
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Parameters</h4>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">str</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_string.htm#apex_methods_system_string" title="Contains methods for the String primitive data type.">String</a> String to be converted to an ID</li>
+
+        <li class="li">
+<strong class="ph b"><var class="keyword varname">restoreCasing</var></strong>: Type: <a class="xref" href="atlas.en-us.apexref.meta/apexref/apex_methods_system_boolean.htm#apex_methods_system_boolean" title="Contains methods for the Boolean primitive data type.">Boolean</a> If set to <samp class="codeph ">true</samp>, and <var class="keyword varname">str</var>
+            represents an 18-character ID, the method returns an 18-character ID that is correctly
+            aligned with its casing.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h4 class="helpHead4">Return Value</h4>
+
+      
+      <p class="p">Type: <a class="xref" href="#apex_methods_system_id" title="Contains methods for the ID primitive data type.">Id</a></p>
+
+      <div class="p">The return value depends on both the <var class="keyword varname">str</var> and the
+          <var class="keyword varname">restoreCasing</var> parameter values. <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexref" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>If the <var class="keyword varname">str</var> is
+          invalid, the method throws a <samp class="codeph ">System.StringException</samp>
+          exception.</p>
+</div>
+</div></div></div></div>
+
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+            
+            
+            
+            <thead class="thead sorted" align="left">
+              <tr>
+                <th class="featureTableHeader  " id="d471801e1157">Parameters</th>
+
+                <th class="featureTableHeader  " id="d471801e1160">restoreCasing=true</th>
+
+                <th class="featureTableHeader  " id="d471801e1163">restoreCasing=false</th>
+
+              </tr>
+
+            </thead>
+
+            <tbody class="tbody">
+              <tr>
+                <td class="entry" headers="d471801e1157" data-title="Parameters">Valid 15-character <var class="keyword varname">str</var> value</td>
+
+                <td class="entry" headers="d471801e1160" data-title="restoreCasing=true">Because the 15-character input value can’t be encoded for casing, the method
+                  throws a <samp class="codeph ">System.StringException</samp>.</td>
+
+                <td class="entry" headers="d471801e1163" data-title="restoreCasing=false">The method returns a 15-character ID.</td>
+
+              </tr>
+
+              <tr>
+                <td class="entry" headers="d471801e1157" data-title="Parameters">Valid 18-character <var class="keyword varname">str</var> value</td>
+
+                <td class="entry" headers="d471801e1160" data-title="restoreCasing=true">The method returns an 18-character ID that is correctly aligned with its
+                  encoded casing. </td>
+
+                <td class="entry" headers="d471801e1163" data-title="restoreCasing=false">The method doesn’t attempt to correctly align the casing of the 18-character
+                  ID and returns an 18-character ID. </td>
+
+              </tr>
+
+            </tbody>
+
+          </table></div>
+</div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+</div>

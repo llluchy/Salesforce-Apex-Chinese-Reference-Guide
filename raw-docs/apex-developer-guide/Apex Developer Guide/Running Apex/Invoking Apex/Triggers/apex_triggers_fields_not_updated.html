@@ -1,0 +1,185 @@
+<a name="apex_triggers_fields_not_updated"><!-- --></a><h1 class="helpHead1">Entity and Field Considerations in Triggers</h1><div class="body">
+<div class="shortdesc">When you create triggers, consider the behavior of certain entities, fields, and
+        operations.</div>
+
+        <div class="section">
+<h2 class="helpHead2">QuestionDataCategorySelection Entity Not Available in After Insert
+                Triggers</h2>
+
+            
+            <div class="p">The <samp class="codeph apex_code">after <span class="statement">insert</span></samp> trigger that fires after
+                inserting one or more <samp class="codeph apex_code">Question</samp> records
+                doesn’t have access to the <samp class="codeph apex_code">QuestionDataCategorySelection</samp> records that are associated with the
+                inserted <samp class="codeph apex_code">Question</samp>s. For example, the
+                following query doesn’t return any results in an <samp class="codeph apex_code">after <span class="statement">insert</span></samp>
+                trigger:<div class="codeSection apex_code"><pre class="codeblock brush:apex">QuestionDataCategorySelection[] dcList = 
+    [select Id,DataCategoryName from QuestionDataCategorySelection where ParentId IN :questions];</pre></div>
+</div>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Fields Not Updateable in Before Triggers</h2>
+
+            
+            <div class="p">Some field values are set during the system save operation, which occurs after
+                    <samp class="codeph apex_code">before</samp> triggers have fired. As a
+                result, these fields cannot be modified or accurately detected in <samp class="codeph apex_code">before <span class="statement">insert</span></samp> or <samp class="codeph apex_code">before <span class="statement">update</span></samp> triggers. Some examples include:<ul class="ul bulletList">
+                    <li class="li"><samp class="codeph apex_code">Task.isClosed</samp></li>
+
+                    <li class="li">
+<samp class="codeph apex_code">Opportunity.amount</samp>*</li>
+
+                    <li class="li"><samp class="codeph apex_code">Opportunity.ForecastCategory</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Opportunity.isWon</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Opportunity.isClosed</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Contract.activatedDate</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Contract.activatedById</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Case.isClosed</samp></li>
+
+                    <li class="li"><samp class="codeph apex_code">Solution.isReviewed</samp></li>
+
+                    <li class="li">
+<samp class="codeph apex_code">Id</samp> (for all records)**</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">createdDate</samp> (for all
+                        records)**</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">lastUpdated</samp> (for all records)</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">Event.WhoId</samp> (when Shared Activities
+                        is enabled)</li>
+
+                    <li class="li">
+<samp class="codeph apex_code">Task.WhoId</samp> (when Shared Activities
+                        is enabled)</li>
+
+                </ul>
+</div>
+
+            <p class="p">* When <samp class="codeph apex_code">Opportunity</samp> has no <samp class="codeph apex_code">lineitems</samp>, <samp class="codeph apex_code">Amount</samp> can be modified by a <samp class="codeph apex_code">before</samp> trigger.</p>
+
+            <p class="p">** <samp class="codeph apex_code">Id</samp> and <samp class="codeph apex_code">createdDate</samp> can be detected in <samp class="codeph apex_code">before
+                    <span class="statement">update</span></samp> triggers, but cannot be modified.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Fields Not Updateable in After Triggers</h2>
+
+            
+            <p class="p">The following fields can’t be updated by <samp class="codeph apex_code">after
+                    <span class="statement">insert</span></samp> or <samp class="codeph apex_code">after <span class="statement">update</span></samp>
+                triggers.</p>
+
+            <ul class="ul bulletList">
+                <li class="li"><samp class="codeph apex_code">Event.WhoId</samp></li>
+
+                <li class="li"><samp class="codeph apex_code">Task.WhoId</samp></li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Considerations for Event DateTime Fields in Insert and Update Triggers</h2>
+
+            
+            <p class="p">We recommend using the following date and time fields to create or update events.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">When creating or updating a timed Event, use <samp class="codeph nolang">ActivityDateTime</samp> to avoid issues with inconsistent date and time
+                    values.</li>
+
+                <li class="li">When creating or updating an all-day Event, use <samp class="codeph nolang">ActivityDate</samp> to avoid issues with inconsistent date and time
+                    values.</li>
+
+                <li class="li">We recommend that you use <samp class="codeph nolang">DurationInMinutes</samp>
+                    because it works with all updates and creates for Events.</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Operations Not Supported in Insert and Update Triggers</h2>
+
+            
+            <p class="p">The following operations aren’t supported in <samp class="codeph apex_code"><span class="statement">insert</span></samp> and <samp class="codeph apex_code"><span class="statement">update</span></samp>
+                triggers.</p>
+
+            <ul class="ul bulletList">
+                <li class="li">Manipulating an activity relation through the <samp class="codeph nolang">TaskRelation</samp> or <samp class="codeph nolang">EventRelation</samp>
+                    object, if Shared Activities is enabled</li>
+
+                <li class="li">Manipulating an invitee relation on a group event through the <samp class="codeph nolang">Invitee</samp> object, whether or not Shared
+                    Activities is enabled</li>
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Entities Not Supported in After Undelete Triggers</h2>
+
+            
+            <div class="p">Certain objects can’t be restored, and therefore, shouldn’t have
+                    <samp class="codeph apex_code">after <span class="statement">undelete</span></samp> triggers.<ul class="ul bulletList">
+                    <li class="li">CollaborationGroup</li>
+
+                    <li class="li">CollaborationGroupMember</li>
+
+                    <li class="li">FeedItem</li>
+
+                    <li class="li">FeedComment</li>
+
+                </ul>
+</div>
+
+        </div>
+
+        
+        <div class="section">
+<h2 class="helpHead2">Considerations for Update Triggers</h2>
+
+            
+            <p class="p">Field history tracking honors the permissions of the current user.
+                If the current user doesn’t have permission to directly edit an object or field, but
+                the user activates a trigger that changes an object or field with history tracking
+                enabled, no history of the change is recorded.</p>
+
+        </div>
+
+        <div class="section">
+<h2 class="helpHead2">Considerations for the Salesforce Side Panel for Salesforce for Outlook</h2>
+
+            
+            <p class="p">When an email is associated to a record using the Salesforce Side Panel for
+                Salesforce for Outlook, the email associations are represented in the <samp class="codeph apex_code">WhoId</samp> or <samp class="codeph apex_code">WhatId</samp> fields on a task record. Associations are completed after the
+                task is created, so the <samp class="codeph apex_code">Task.WhoId</samp> and
+                    <samp class="codeph apex_code">Task.WhatId</samp> fields aren’t immediately
+                available in <samp class="codeph apex_code">before</samp> or <samp class="codeph apex_code">after</samp> Task triggers for insert and update
+                events, and their values are initially <samp class="codeph nolang">null</samp>.
+                The <samp class="codeph apex_code">WhoId</samp> and <samp class="codeph apex_code">WhatId</samp> fields are set on the saved task record in a subsequent
+                operation, however, so their values can be retrieved later.</p>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_ignoring_operations.htm" title="Operations That Don't Invoke Triggers">← Previous</a></li>
+<li class="next_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_fields_not_updated_chatter.htm" title="Triggers for Chatter Objects">Next →</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_triggers_fields_not_updated_chatter.htm" title="You can write triggers for the FeedItem and FeedComment objects.">Triggers for Chatter Objects</a></div></li></ul>
+</div>
+</div>

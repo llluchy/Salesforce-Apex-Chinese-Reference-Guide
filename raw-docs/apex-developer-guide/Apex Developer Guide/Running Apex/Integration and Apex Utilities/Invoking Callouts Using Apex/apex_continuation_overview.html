@@ -1,0 +1,182 @@
+<a name="apex_continuation_overview"><!-- --></a><h1 class="helpHead1">Make Long-Running Callouts with Continuations</h1><div class="body conbody">
+<div class="shortdesc"><span class="ph" id="shortdesc"><a name="shortdesc"><!-- --></a>Use asynchronous callouts to make long-running requests from a
+      Visualforce page or a Lightning component to an external Web service and process responses in
+      callback methods.</span></div>
+
+    <p class="p">An asynchronous callout is a callout that is made from a Visualforce page or a Lightning
+      component for which the response is returned through a callback method. An asynchronous
+      callout is also referred to as a <dfn class="term">continuation</dfn>.</p>
+
+    <div class="section" id="continuations_intro">
+<a name="continuations_intro"><!-- --></a><h2 class="helpHead2">Visualforce Example</h2>
+
+      
+      <p class="p" id="async_diagram_intro"><a name="async_diagram_intro"><!-- --></a>This diagram shows the execution path of an asynchronous callout,
+        starting from a Visualforce page. A user invokes an action on a Visualforce page that
+        requests information from a Web service (step 1). The app server hands the callout request
+        to the Continuation server before returning to the Visualforce page (steps 2–3). The
+        Continuation server sends the request to the Web service and receives the response (steps
+        4–7), then hands the response back to the app server (step 8). Finally, the response
+        is returned to the Visualforce page (step 9).</p>
+
+      <div class="fig fignone" id="async_diagram">
+<a name="async_diagram"><!-- --></a><span class="figcap">Execution Flow of an Asynchronous Callout</span>
+        
+        <div class="imageleft"><span class="image image-block"><img class="image image-block" src="/docs/resources/img/en-us/262.0?doc_id=dev_guides%2Fapex%2Fimages%2Fapex_continuations_diagram.png&folder=apexcode" alt="Diagram for the execution flow of a continuation"></span></div>
+      </div>
+
+      <p class="p" id="async_case"><a name="async_case"><!-- --></a>A typical Salesforce application that benefits from asynchronous callouts
+        contains a Visualforce page with a button. Users click that button to get data from an
+        external Web service. For example, a Visualforce page that gets warranty information for a
+        certain product from a Web service. Thousands of agents in the organization can use this
+        page. Therefore, a hundred of those agents can click the same button to process warranty
+        information for products at the same time. These hundred simultaneous actions exceed the
+          <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm#in_topic_per_transaction_cert_pkg_limits_section">limit of concurrent long-running requests</a> . But by using asynchronous callouts,
+        the requests aren’t subjected to this limit and can be executed.</p>
+
+      <p class="p">In the following example application, the button action is implemented in an Apex
+        controller method. The action method creates a <samp class="codeph apex_code">Continuation</samp> and returns it. After the request is sent to the service, the
+        Visualforce request is suspended. The user must wait for the response to be returned before
+        proceeding with using the page and invoking new actions. When the external service returns a
+        response, the Visualforce request resumes and the page receives this response.</p>
+
+      <p class="p">This is the Visualforce page of our sample application. This page contains a button that
+        invokes the <samp class="codeph apex_code">startRequest</samp> method of the controller
+        that’s associated with this page. After the continuation result is returned and the callback
+        method is invoked, the button renders the <samp class="codeph nolang">outputText</samp>
+        component again to display the body of the response.</p>
+
+      <div class="codeSection apex_page"><pre class="codeblock brush:VisualForce"><span class="tag">&lt;apex:page</span><span class="attribute"> controller=</span><span class="string">"ContinuationController"</span><span class="attribute"> showChat=</span><span class="string">"false"</span><span class="attribute"> showHeader=</span><span class="string">"false"</span>&gt;
+   <span class="tag">&lt;apex:form</span> &gt;
+      <span class="multilineComment">&lt;!-- Invokes the action method when the user clicks this button. --&gt;</span>
+      <span class="tag">&lt;apex:commandButton</span><span class="attribute"> action=</span><span class="string">"{!startRequest}"</span> 
+             <span class="attribute"> value=</span><span class="string">"Start Request"</span><span class="attribute"> reRender=</span><span class="string">"result"</span>/&gt; 
+   <span class="tag">&lt;/apex:form</span>&gt;
+
+   <span class="multilineComment">&lt;!-- This output text component displays the callout response body. --&gt;</span>
+   <span class="tag">&lt;apex:outputText</span><span class="attribute"> id=</span><span class="string">"result"</span><span class="attribute"> value=</span><span class="string">"{!result}"</span> /&gt;
+<span class="tag">&lt;/apex:page</span>&gt;</pre></div>
+
+      <p class="p">The following is the Apex controller that’s associated with the Visualforce page. This
+        controller contains the action and callback methods.</p>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>Before you can call an external service, you must add the remote site to a list of
+        authorized remote sites in the Salesforce user interface. From Setup, enter
+          <kbd class="ph userinput">Remote Site Settings</kbd> in the <span class="keyword parmname">Quick Find</span> box,
+        then select <strong class="ph uicontrol">Remote Site Settings</strong>, and then click <strong class="ph uicontrol">New
+          Remote Site</strong>.<p class="p">If the callout specifies a named credential as the endpoint,
+          you don’t need to configure remote site settings. A named credential specifies the URL of
+          a callout endpoint and its required authentication parameters in one definition. To set up
+          named credentials, see Define a Named Credential in Salesforce Help. In your code, specify
+          the named credential URL instead of the long-running service URL. A named credential URL
+          contains the scheme <samp class="codeph nolang">callout:</samp>, the name of the named
+          credential, and an optional path. For example: <samp class="codeph nolang">callout:</samp><var class="keyword varname">My_Named_Credential</var><samp class="codeph nolang">/</samp><var class="keyword varname">some_path</var>.</p>
+</p>
+</div>
+</div></div></div></div>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> ContinuationController {
+    <span class="onelineComment">// Unique label corresponding to the continuation</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> requestLabel;
+    <span class="onelineComment">// Result of callout</span>
+    <span class="keyword">public</span> <span class="keyword">String</span> result {get;set;}
+    <span class="onelineComment">// Callout endpoint as a named credential URL </span>
+    <span class="onelineComment">// or, as shown here, as the long-running service URL</span>
+    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">String</span> LONG_RUNNING_SERVICE_URL = 
+        <span class="string">'&lt;Insert your service URL&gt;'</span>;
+   
+   <span class="onelineComment">// Action method</span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> startRequest() {
+      <span class="onelineComment">// Create continuation with a timeout</span>
+      Continuation con = <span class="keyword">new</span> Continuation(40);
+      <span class="onelineComment">// Set callback method</span>
+      con.continuationMethod=<span class="string">'processResponse'</span>;
+      
+      <span class="onelineComment">// Create callout request</span>
+      HttpRequest req = <span class="keyword">new</span> HttpRequest();
+      req.setMethod(<span class="string">'GET'</span>);
+      req.setEndpoint(LONG_RUNNING_SERVICE_URL);
+      
+      <span class="onelineComment">// Add callout request to continuation</span>
+      <span class="statement">this</span>.requestLabel = con.addHttpRequest(req);
+      
+      <span class="onelineComment">// Return the continuation</span>
+      <span class="statement">return</span> con;  
+    }
+    
+    <span class="onelineComment">// Callback method </span>
+    <span class="keyword">public</span> <span class="keyword">Object</span> processResponse() {   
+      <span class="onelineComment">// Get the response by using the unique label</span>
+      HttpResponse response = Continuation.getResponse(<span class="statement">this</span>.requestLabel);
+      <span class="onelineComment">// Set the result variable that is displayed on the Visualforce page</span>
+      <span class="statement">this</span>.result = response.getBody();
+      
+      <span class="onelineComment">// Return null to re-render the original Visualforce page</span>
+      <span class="statement">return</span> <span class="keyword">null</span>;
+    }
+}</pre></div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>
+        <ul class="ul bulletList">
+          <li class="li">You can make up to three asynchronous callouts in a single continuation. Add these
+            callout requests to the same continuation by using the <samp class="codeph apex_code">addHttpRequest</samp> method of the <samp class="codeph apex_code">Continuation</samp> class. The callouts run in parallel for this continuation and
+            suspend the Visualforce request. Only after the external service returns all callouts,
+            the Visualforce process resumes.</li>
+
+          <li class="li">Asynchronous callouts are supported only through a Visualforce page. Making an
+            asynchronous callout by invoking the action method outside a Visualforce page, such as
+            in the Developer Console, isn’t supported.</li>
+
+          <li class="li">Asynchronous callouts are available for Apex controllers and Visualforce pages saved
+            in version 30.0 and later. If JavaScript remoting is used, version 31.0 or later is
+            required.</li>
+
+          <li class="li">Asynchronous callouts, including callouts that specify named credentials as the
+            callout endpoint, aren’t supported over Private Connect.</li>
+
+        </ul>
+
+      </p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<ul class="ullinks">
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_process.htm">Process for Using Asynchronous Callouts</a></strong><br>
+To use asynchronous callouts, create a <samp class="codeph apex_code">Continuation</samp> object in an action method of a controller, and implement a callback     method.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_testing.htm">Testing Asynchronous Callouts</a></strong><br>
+Write tests to test your controller and meet code coverage requirements for deploying         or packaging Apex. Because Apex tests don’t support making callouts, you can simulate         callout requests and responses. When you’re simulating a callout, the request doesn’t get         sent to the external service, and a mock response is used.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_limits.htm">Asynchronous Callout Limits</a></strong><br>
+When a continuation is executing, the continuation-specific limits apply. When the     continuation returns and the request resumes, a new Apex transaction starts. All Apex and     Visualforce limits apply and are reset in the new transaction, including the Apex callout     limits.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_multiple_callouts.htm">Making Multiple Asynchronous Callouts</a></strong><br>
+To make multiple callouts to a long-running service simultaneously from a Visualforce       page, you can add up to three requests to the Continuation instance. An example of when to       make simultaneous callouts is when you’re making independent requests to a service, such as       getting inventory statistics for two products.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_chained_callouts.htm">Chaining Asynchronous Callouts</a></strong><br>
+If the order of the callouts matters, or when a callout is conditional on the response       of another callout, you can chain callout requests. Chaining callouts means that the next       callout is made only after the response of the previous callout returns. For example, you       might need to chain a callout to get warranty extension information after the warranty service       response indicates that the warranty expired. You can chain up to three callouts.</li>
+<li class="link ulchildlink">
+<strong><a href="atlas.en-us.apexcode.meta/apexcode/apex_continuation_callout_soap.htm">Making an Asynchronous Callout from an Imported WSDL</a></strong><br>
+In addition to <samp class="codeph apex_code">HttpRequest</samp>-based callouts,         asynchronous callouts are supported in Web service calls that are made from WSDL-generated         classes. The process of making asynchronous callouts from a WSDL-generated class is similar         to the process for using the <samp class="codeph apex_code">HttpRequest</samp>         class.</li>
+</ul>
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_timeouts.htm" title="Callout Limits and Limitations">← Previous</a></li>
+</ul></div>
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_callouts_named_credentials.htm" title="A named credential specifies the URL of a callout endpoint and its required authentication parameters in one definition. Salesforce manages all authentication for Apex callouts that specify a named credential as the callout endpoint so that your code doesn’t have to. You can also skip remote site settings, which are otherwise required for callouts to external sites, for the site defined in the named credential.">Named Credentials as Callout Endpoints</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.apex_continuations" target="_blank" title="Lightning Web Components Developer Guide: Make Long-Running Callouts with Continuations - HTML (New Window)"><em class="ph i">Lightning Web Components Developer Guide</em>: Make Long-Running Callouts with Continuations</a></div></li>
+</ul>
+</div>
+</div>

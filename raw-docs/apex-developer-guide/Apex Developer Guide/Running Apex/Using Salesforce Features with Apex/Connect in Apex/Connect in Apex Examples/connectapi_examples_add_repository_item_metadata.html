@@ -1,0 +1,43 @@
+<a name="connectapi_examples_add_repository_item_metadata"><!-- --></a><h1 class="helpHead1">Create a Repository File Without Content (Metadata Only)</h1><div class="body refbody">
+<div class="shortdesc">Call a method to create a file without binary content (metadata only) in a Google Drive
+    repository folder.</div>
+
+    <div class="section"><div class="p">Call <a class="xref" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_ConnectAPI_ContentHub_static_methods.htm#apex_ConnectAPI_ContentHub_addRepositoryItem_5" target="_blank"><samp class="codeph apex_code">addRepositoryItem(repositoryId, repositoryFolderId, file)</samp></a> to create a
+      file without binary content (metadata only) in a Google Drive repository folder. After the
+      file is created, we show the file’s ID, name, description, external URL, and download
+      URL.<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">final</span> <span class="keyword">String</span> gDriveRepositoryId = <span class="string">'0XCxx00000000ODGAY'</span>, gDriveFolderId = <span class="string">'folder:0B0lTys1KmM3sSVJ2bjIzTGFqSWs'</span>;
+
+<span class="keyword">final</span> ConnectApi.ContentHubItemInput newItem = <span class="keyword">new</span> ConnectApi.ContentHubItemInput();
+newItem.itemTypeId = <span class="string">'document'</span>; <span class="onelineComment">//see getAllowedTypes for any file item types available for creation/update</span>
+newItem.fields = <span class="keyword">new</span> List&lt;ConnectApi.ContentHubFieldValueInput&gt;();
+
+<span class="onelineComment">//Metadata: name field</span>
+<span class="keyword">final</span> ConnectApi.ContentHubFieldValueInput fieldValueInput = <span class="keyword">new</span> ConnectApi.ContentHubFieldValueInput();
+fieldValueInput.name = <span class="string">'name'</span>;
+fieldValueInput.value = <span class="string">'new folder item name.txt'</span>;
+newItem.fields.add(fieldValueInput);
+
+<span class="onelineComment">//Metadata: description field</span>
+<span class="keyword">final</span> ConnectApi.ContentHubFieldValueInput fieldValueInputDesc = <span class="keyword">new</span> ConnectApi.ContentHubFieldValueInput();
+fieldValueInputDesc.name = <span class="string">'description'</span>;
+fieldValueInputDesc.value = <span class="string">'It does describe it'</span>;
+newItem.fields.add(fieldValueInputDesc);
+
+<span class="keyword">final</span> ConnectApi.RepositoryFolderItem newFolderItem = ConnectApi.ContentHub.addRepositoryItem(gDriveRepositoryId, gDriveFolderId, newItem);
+<span class="keyword">final</span> ConnectApi.RepositoryFileSummary newFile = newFolderItem.file;
+System.debug(<span class="keyword">String</span>.format(<span class="string">'New file - id: \'\'{0}\'\', name: \'\'{1}\'\', description: \'\'{2}\'\' \n external URL: \'\'{3}\'\', download URL: \'\'{4}\'\''</span>, <span class="keyword">new</span> <span class="keyword">String</span>[]{ newFile.id, newFile.name, newFile.description, newFile.externalDocumentUrl, newFile.downloadUrl}));</pre></div>
+</div></div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled">
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_content_hub_item.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.ContentHubItemInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.ContentHubItemInput</a></div></li>
+<li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_connectapi_input_content_hub_field_value.htm" target="_blank" title="Apex Reference Guide:
+                            ConnectApi.ContentHubFieldValueInput - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>:
+                            ConnectApi.ContentHubFieldValueInput</a></div></li>
+</ul>
+</div>
+</div>

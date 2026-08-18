@@ -1,0 +1,76 @@
+<a name="langCon_apex_locking_statements"><!-- --></a><h1 class="helpHead1">Locking Statements</h1><div class="body">
+<div class="shortdesc">In Apex, you can use <samp class="codeph apex_code">FOR UPDATE</samp> to lock
+    sObject records while they’re being updated in order to prevent race conditions and other
+    thread safety problems. </div>
+
+    <div class="section">
+      <p class="p">While an sObject record is locked, no other client or user is allowed to make updates
+        either through code or the Salesforce user interface. The client locking the records can
+        perform logic on the records and make updates with the guarantee that the locked records
+        won’t be changed by another client during the lock period. The lock gets released
+        when the transaction completes.</p>
+
+      <div class="p">To lock a set of sObject records in Apex, embed the keywords <samp class="codeph apex_code">FOR UPDATE</samp> after any inline SOQL statement. For example,
+        the following statement, in addition to querying for two accounts, also locks the accounts
+        that are
+        returned:<div class="codeSection apex_code"><pre class="codeblock brush:apex">Account [] accts = [SELECT Id FROM Account LIMIT 2 FOR UPDATE];</pre></div>
+</div>
+
+      <div class="box message info"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note.png&folder=apexcode" alt="Note"><div class="mediaBd">
+<h4 class="mbs">Note</h4>
+<p>You can’t use the <samp class="codeph apex_code">ORDER BY</samp> keywords in
+        any SOQL query that uses locking.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Locking Considerations</h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">While the records are locked by a client, the locking client can modify their field
+          values in the database in the same transaction. Other clients have to wait until the
+          transaction completes and the records are no longer locked before being able to update the
+          same records. Other clients can still query the same records while they’re
+          locked.</li>
+
+        <li class="li">If you attempt to lock a record currently locked by another client, your process waits a
+          maximum of 10 seconds for the lock to be released before acquiring a new lock. If the wait
+          time exceeds 10 seconds, a <samp class="codeph apex_code">QueryException</samp> is
+          thrown. Similarly, if you attempt to update a record currently locked by another client
+          and the lock isn’t released within a maximum of 10 seconds, a <samp class="codeph apex_code">DmlException</samp> is thrown.</li>
+
+        <li class="li">If a client attempts to modify a locked record, the update operation can succeed if the
+          lock gets released within a short amount of time after the update call was made. In this
+          case, it’s possible that the updates overwrite changes made by the locking client if the
+          second client obtained an old copy of the record. To prevent the overwrite from happening,
+          the second client must lock the record first. The locking process returns a fresh copy of
+          the record from the database through the <samp class="codeph apex_code">SELECT</samp>
+          statement. The second client can use this copy to make new updates.</li>
+
+        <li class="li">The record locks that are obtained in Apex via <samp class="codeph apex_code">FOR
+            UPDATE</samp> clause are automatically released when making callouts. The information
+          is logged in the debug log and the logged message includes the most recently locked entity
+          type. For example: <samp class="codeph ">FOR_UPDATE_LOCKS_RELEASE FOR UPDATE locks
+            released due to a callout. The most recent lock was Account.</samp> Use caution while
+          making callouts in contexts where <samp class="codeph apex_code">FOR UPDATE</samp>
+          queries could have been previously executed.</li>
+
+        <li class="li">When you perform a DML operation on one record, related records are locked in addition
+          to the record in question.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="box message warn"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_warning.png&folder=apexcode" alt="Warning"><div class="mediaBd">
+<h4 class="mbs">Warning</h4>
+<p>Use care when setting locks in your Apex code. See <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/langCon_apex_deadlocks.htm#langCon_apex_deadlocks">Avoiding Deadlocks</a>.</p>
+</div>
+</div></div></div></div>
+
+  </div><div id="sfdc:seealso" class="related-links"></div>

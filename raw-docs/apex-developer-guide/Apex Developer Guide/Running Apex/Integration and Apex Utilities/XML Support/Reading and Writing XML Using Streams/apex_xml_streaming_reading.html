@@ -1,0 +1,134 @@
+<a name="apex_xml_streaming_reading"><!-- --></a><h1 class="helpHead1">Reading XML Using Streams</h1><div class="body conbody">
+<div class="shortdesc">The XMLStreamReader class methods enable forward, read-only access to XML
+        data.</div>
+
+        <div class="p">Those methods are used in conjunction with HTTP callouts to parse XML data or skip
+            unwanted events. You can parse nested XML content that’s up to <span class="ph" id="xmlTreeDepthLimitNum"><a name="xmlTreeDepthLimitNum"><!-- --></a>50</span> nodes deep. The following example shows how to
+            instantiate a new XmlStreamReader
+            object:<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">String</span> xmlString = <span class="string">'&lt;books&gt;&lt;book&gt;My Book&lt;/book&gt;&lt;book&gt;Your Book&lt;/book&gt;&lt;/books&gt;'</span>;
+XmlStreamReader xsr = <span class="keyword">new</span> XmlStreamReader(xmlString);</pre></div>
+</div>
+
+        <p class="p">These methods work on the following XML events:</p>
+
+        <ul class="ul bulletList">
+            <li class="li">An <dfn class="term">attribute</dfn> event is specified for a particular element. For example,
+                the element <samp class="codeph xml"><span class="tag">&lt;book</span>&gt;</samp> has an attribute <samp class="codeph xml">title</samp>: <samp class="codeph xml"><span class="tag">&lt;book</span>
+                   <span class="attribute"> title=</span>"Salesforce.com for Dummies"&gt;</samp>.</li>
+
+            <li class="li">A <dfn class="term">start element</dfn> event is the opening tag for an element, for example
+                    <samp class="codeph xml"><span class="tag">&lt;book</span>&gt;</samp>.</li>
+
+            <li class="li">An <dfn class="term">end element</dfn> event is the closing tag for an element, for example
+                    <samp class="codeph xml"><span class="tag">&lt;/book</span>&gt;</samp>.</li>
+
+            <li class="li">A <dfn class="term">start document</dfn> event is the opening tag for a document.</li>
+
+            <li class="li">An <dfn class="term">end document</dfn> event is the closing tag for a document.</li>
+
+            <li class="li">An <dfn class="term">entity reference</dfn> is an entity reference in the code, for example
+                    <samp class="codeph xml">!ENTITY title = "My Book Title"</samp>.</li>
+
+            <li class="li">A <dfn class="term">characters</dfn> event is a text character.</li>
+
+            <li class="li">A <dfn class="term">comment</dfn> event is a comment in the XML file.</li>
+
+        </ul>
+
+        <p class="p">Use the <samp class="codeph apex_code">next</samp> and <samp class="codeph apex_code">hasNext</samp> methods to iterate over XML data. Access data in XML using <samp class="codeph apex_code">get</samp> methods such as the <samp class="codeph apex_code">getNamespace</samp> method.</p>
+
+        <p class="p">When iterating over the XML data, always check that stream data is available using
+                <samp class="codeph apex_code">hasNext</samp> before calling <samp class="codeph apex_code">next</samp> to avoid attempting to read past the end of
+            the XML data.</p>
+
+        <div class="section">
+<h2 class="helpHead2">XmlStreamReader Example</h2>
+
+            
+            <p class="p">The following example processes an XML string.</p>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> <span class="keyword">class</span> XmlStreamReaderDemo {
+
+    <span class="onelineComment">// Create a class Book for processing</span>
+    <span class="keyword">public</span> <span class="keyword">class</span> Book {
+        <span class="keyword">String</span> name;
+        <span class="keyword">String</span> author;
+    }
+
+    <span class="keyword">public</span> Book[] parseBooks(XmlStreamReader reader) {
+        Book[] books = <span class="keyword">new</span> Book[0];
+        boolean isSafeToGetNextXmlElement = <span class="keyword">true</span>;
+        <span class="statement">while</span>(isSafeToGetNextXmlElement) {
+            <span class="onelineComment">// Start at the beginning of the book and make sure that it is a book</span>
+            <span class="statement">if</span> (reader.getEventType() == XmlTag.START_ELEMENT) {
+                <span class="statement">if</span> (<span class="string">'Book'</span> == reader.getLocalName()) {
+                    <span class="onelineComment">// Pass the book to the parseBook method (below) </span>
+                    Book book = parseBook(reader);
+                    books.add(book);
+                }
+            }
+            <span class="onelineComment">// Always use hasNext() before calling next() to confirm </span>
+            <span class="onelineComment">// that we have not reached the end of the stream</span>
+            <span class="statement">if</span> (reader.hasNext()) {
+                reader.next();
+            } <span class="statement">else</span> {
+                isSafeToGetNextXmlElement = <span class="keyword">false</span>;
+                <span class="statement">break</span>;
+            }
+        }
+        <span class="statement">return</span> books;
+    }
+
+    <span class="onelineComment">// Parse through the XML, determine the author and the characters</span>
+    Book parseBook(XmlStreamReader reader) {
+        Book book = <span class="keyword">new</span> Book();
+        book.author = reader.getAttributeValue(<span class="keyword">null</span>, <span class="string">'author'</span>);
+        boolean isSafeToGetNextXmlElement = <span class="keyword">true</span>;
+        <span class="statement">while</span>(isSafeToGetNextXmlElement) {
+            <span class="statement">if</span> (reader.getEventType() == XmlTag.END_ELEMENT) {
+                <span class="statement">break</span>;
+            } <span class="statement">else</span> <span class="statement">if</span> (reader.getEventType() == XmlTag.CHARACTERS) {
+                book.name = reader.getText();
+            }
+            <span class="onelineComment">// Always use hasNext() before calling next() to confirm </span>
+            <span class="onelineComment">// that we have not reached the end of the stream</span>
+            <span class="statement">if</span> (reader.hasNext()) {
+                reader.next();
+            } <span class="statement">else</span> {
+                isSafeToGetNextXmlElement = <span class="keyword">false</span>;
+                <span class="statement">break</span>;
+            }
+        }
+        <span class="statement">return</span> book;
+    }
+}</pre></div>
+
+            <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">@isTest</span>
+<span class="keyword">private</span> <span class="keyword">class</span> XmlStreamReaderDemoTest {
+    <span class="onelineComment">// Test that the XML string contains specific values</span>
+    <span class="keyword">static</span> testMethod <span class="keyword">void</span> testBookParser() {
+
+        XmlStreamReaderDemo demo = <span class="keyword">new</span> XmlStreamReaderDemo();
+
+        <span class="keyword">String</span> str = <span class="string">'&lt;books&gt;&lt;book author="Chatty"&gt;Alpha beta&lt;/book&gt;'</span> +
+            <span class="string">'&lt;book author="Sassy"&gt;Baz&lt;/book&gt;&lt;/books&gt;'</span>;
+
+        XmlStreamReader reader = <span class="keyword">new</span> XmlStreamReader(str);
+        XmlStreamReaderDemo.Book[] books = demo.parseBooks(reader);
+
+        System.debug(books.size());
+
+        <span class="statement">for</span> (XmlStreamReaderDemo.Book book : books) {
+            System.debug(book);
+        }
+    }
+}</pre></div>
+
+        </div>
+
+    </div><div id="sfdc:seealso" class="related-links">
+<div class="relinfo">
+<h4>See Also</h4>
+<ul class="unstyled"><li><div><a class="link" href="https://developer.salesforce.com/docs/atlas.en-us.262.0.apexref.meta/apexref/apex_classes_xml_XmlStream_reader.htm" target="_blank" title="Apex Reference Guide: XmlStreamReader Class - HTML (New Window)"><em class="ph i">Apex Reference Guide</em>: XmlStreamReader Class</a></div></li></ul>
+</div>
+</div>

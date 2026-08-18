@@ -1,0 +1,300 @@
+<a name="apex_classes_keywords_sharing"><!-- --></a><h1 class="helpHead1">Use the <span class="titlecodeph">with sharing</span>, <span class="titlecodeph">without sharing</span>, and <span class="titlecodeph">inherited sharing</span> Keywords</h1><div class="body conbody">
+<div class="shortdesc">Use the <samp class="codeph apex_code">with sharing</samp> or <samp class="codeph apex_code">without sharing</samp> keywords on a class to specify whether sharing
+    rules are enforced. Use the <samp class="codeph apex_code">inherited sharing</samp> keyword on
+    a class to run the class in the sharing mode of the calling class. The default sharing mode is
+      <samp class="codeph apex_code">with sharing</samp>.</div>
+
+    <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_tip.png&folder=apexcode" alt="Tip"><div class="mediaBd">
+<h4 class="mbs">Tip</h4>
+<p>For information about how to create sharing rules, see <a class="xref" href="https://help.salesforce.com/s/articleView?id=platform.security_about_sharing_rules.htm&amp;type=5&amp;language=en_US" target="_blank" title="HTML (New Window)">Sharing Rules</a> in Salesforce
+      Help.</p>
+</div>
+</div></div></div></div>
+
+    <div class="section">
+<h2 class="helpHead2">With Sharing</h2>
+
+      
+      <p class="p">Use the <samp class="codeph apex_code">with sharing</samp> keyword when declaring a class
+        to enforce sharing rules of the current user. Salesforce recommends that you explicitly set
+        this keyword to ensure that Apex code runs in the current user context. If a class doesn’t
+        have an explicit sharing declaration, then it defaults to <samp class="codeph apex_code">with sharing</samp>.</p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> with sharing <span class="keyword">class</span> sharingClass {
+        
+        <span class="onelineComment">// Code here</span>
+        
+        }</pre></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Without Sharing</h2>
+
+      
+      <p class="p">Use the <samp class="codeph apex_code">without sharing</samp> keyword when declaring a
+        class to ensure that the sharing rules for the current user aren’t enforced. For example,
+        you can explicitly allow a class to ignore sharing rules even when it’s called from another
+        class that does enforce sharing rules. </p>
+
+      <div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="keyword">public</span> without sharing <span class="keyword">class</span> noSharing {
+        
+        <span class="onelineComment">// Code here</span>
+        
+        }</pre></div>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p> If you declare a class as <samp class="codeph apex_code">without
+          sharing</samp>, the class can access records that the current user otherwise doesn’t
+        have permission to access. Salesforce recommends that you use <samp class="codeph apex_code">without sharing</samp> only for classes that require system-level access.</p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Inherited Sharing</h2>
+
+      
+      <p class="p">Use the <samp class="codeph apex_code">inherited sharing</samp> keyword when declaring a
+        class to enforce the sharing rules of the calling class. Using <samp class="codeph apex_code">inherited sharing</samp> is an advanced technique to determine
+        the sharing mode at run time and design Apex classes that can run in either <samp class="codeph apex_code">with sharing</samp> or <samp class="codeph apex_code">without
+          sharing</samp> mode.</p>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>Because the sharing mode is determined at run time, you must take
+        extreme care to ensure that your Apex code is secure to run in both <samp class="codeph apex_code">with sharing</samp> and <samp class="codeph apex_code">without
+          sharing</samp> modes.</p>
+</div>
+</div></div></div></div>
+
+      <p class="p">Using <samp class="codeph apex_code">inherited sharing</samp>, along with other
+        appropriate security checks, helps your code pass AppExchange security review and ensures
+        that your privileged Apex code isn’t used in unexpected or insecure ways. An Apex class with
+          <samp class="codeph apex_code">inherited sharing</samp> runs in <samp class="codeph apex_code">with sharing</samp> mode if used as:</p>
+
+      <ul class="ul bulletList">
+        <li class="li">An Aura component controller</li>
+
+        <li class="li">An <samp class="codeph apex_code">@AuraEnabled</samp> method called from a Lightning
+          web component</li>
+
+        <li class="li">A Visualforce controller</li>
+
+        <li class="li">An Apex REST service</li>
+
+        <li class="li">An asynchronous Apex class</li>
+
+        <li class="li">Any other entry point to an Apex transaction</li>
+
+      </ul>
+
+      <p class="p">A class declared as <samp class="codeph apex_code">inherited sharing</samp> runs as
+          <samp class="codeph apex_code">without sharing</samp> only when explicitly called from
+        an already established <samp class="codeph nolang">without sharing</samp> context.</p>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Omitted Sharing</h2>
+
+      
+      <p class="p">Apex without an explicit sharing declaration runs as <samp class="codeph apex_code">with
+          sharing</samp> by default. However, if an Apex class without an explicit sharing
+        declaration extends from a parent class, it adopts the same sharing mode as the parent
+        class.</p>
+
+      <div class="box message confirm"><div class="inner"><div class="bd"><div class="media">
+<img class="img mtm" src="/docs/resources/img/en-us/262.0?doc_id=images%2Ficon_note_important.png&folder=apexcode" alt="Important"><div class="mediaBd">
+<h4 class="mbs">Important</h4>
+<p>
+        <p class="p">We recommend that you always include an explicit sharing declaration on Apex classes that
+          include database operations or SOQL queries. This practice promotes intentionality and
+          increases code maintainability.</p>
+
+        <p class="p">Identifying the sharing mode for Apex classes compiled with API version 66.0 or earlier
+          is challenging without an explicit declaration. Determining the sharing mode in these
+          cases requires a thorough investigation of the class inheritance tree, the caller
+          sequence, and the class’s behavior. See the Versioned Behavior Changes section.</p>
+
+      </p>
+</div>
+</div></div></div></div>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Implementation in Apex Triggers</h2>
+<p class="p">Apex triggers can’t have an explicit
+        sharing declaration. Triggers always run implicitly in a <samp class="codeph apex_code">without sharing</samp> context, which means that they bypass the sharing rules of the
+        current user.</p>
+<p class="p">However, database operations within trigger bodies, including SOQL
+        queries, SOSL queries, DML statements, and Database methods, run in user mode unless system
+        mode is explicitly specified. User mode overrides the trigger’s <samp class="codeph apex_code">without sharing</samp> context and effectively enforces a <samp class="codeph apex_code">with sharing</samp> context in the trigger body.</p>
+<p class="p">The
+          <samp class="codeph apex_code">AccountUpdateTrigger</samp> example demonstrates this
+        distinction.</p>
+<div class="codeSection apex_code"><pre class="codeblock brush:apex"><span class="onelineComment">// API version 67.0 and later</span>
+
+<span class="onelineComment">// The trigger itself runs as without sharing (all records accessible by default)</span>
+<span class="keyword">trigger</span> AccountUpdateTrigger on Account (after <span class="statement">update</span>) {
+
+    <span class="onelineComment">// This SOQL query doesn't specify an access mode, so it defaults to WITH USER_MODE.</span>
+    <span class="onelineComment">// Object- and field-level permissions are enforced.</span>
+    <span class="onelineComment">// User mode reapplies the record sharing rules of the current user,</span>
+    <span class="onelineComment">// effectively overriding trigger's own without sharing context.</span>
+    List&lt;Contact&gt; contactsAccessibleByCurrentUser = [SELECT Id, Name, AccountId 
+                                                     FROM Contact 
+                                                     WHERE AccountId = :Trigger.newMap.keySet()];
+
+    <span class="onelineComment">// This SOQL query explicitly includes a WITH SYSTEM_MODE clause.</span>
+    <span class="onelineComment">// Object- and field-level are bypassed.</span>
+    <span class="onelineComment">// Record sharing remains governed by the trigger's own without sharing context, </span>
+    <span class="onelineComment">// so all records are visible regardless of the user running the query    </span>
+
+List&lt;Contact&gt; allRelatedContacts = [SELECT Id, Name, AccountId 
+                                    FROM Contact 
+                                    WHERE AccountId = :Trigger.newMap.keySet() 
+                                    WITH SYSTEM_MODE ];
+
+    <span class="onelineComment">// Further processing with the related Contacts</span>
+
+}
+</pre></div>
+<p class="p">To eliminate ambiguity, we recommend that you set explicit access mode on all
+        database operations in your trigger and handler classes. When possible, delegate all
+        business logic to trigger handlers.</p>
+</div>
+
+    <div class="section">
+<h2 class="helpHead2">Other Implementation Details </h2>
+
+      
+      <ul class="ul bulletList">
+        <li class="li">Sharing declarations don’t enforce object-level access or field-level security. See
+            <a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_perms_enforcing.htm" title="Apex generally runs in user context by default, meaning that the current user’s permissions and field-level security (FLS) are enforced during code execution. To ignore the FLS and object permissions of the current user, you must explicitly set a database operation or query to run in system mode. For fine-grained control, you can check the current user’s permissions for an object or a field, and then perform a specific DML operation or a query only if the user has sufficient permissions.">Enforcing Object and Field Permissions</a>.</li>
+
+        <li class="li">Except for methods in an <samp class="codeph apex_code">inherited sharing</samp>
+          class, the sharing mode of a method is determined by where the method is defined, not
+          where it’s called from. For example, a method defined in a <samp class="codeph apex_code">with sharing</samp> class still enforces sharing rules even if it’s called from a
+            <samp class="codeph apex_code">without sharing</samp> class. Exceptions also apply to
+          methods for classes compiled with API version 66.0 or earlier. See the Versioned Behavior
+          Changes section.</li>
+
+        <li class="li">You can declare a sharing mode on both inner classes and outer classes. Inner classes
+          don’t adopt the sharing mode of the container class. Otherwise, the sharing setting
+          applies to all code contained in the class, including initialization code, constructors,
+          and methods.</li>
+
+        <li class="li"> If an Apex class without an explicit sharing declaration extends from a parent class,
+          then it adopts the same sharing mode as the parent class.</li>
+
+        <li class="li">
+<a class="xref" href="atlas.en-us.apexcode.meta/apexcode/apex_async_overview.htm" title="Apex offers multiple ways for running your Apex code asynchronously. Choose the asynchronous Apex feature that best suits your needs.">Asynchronous Apex</a> classes defined with <samp class="codeph apex_code">inherited sharing</samp> always run in <samp class="codeph apex_code">with sharing</samp> mode for asynchronous operations. Each
+          asynchronous operation is a new entry point and the sharing mode isn’t serialized.</li>
+
+        <li class="li">Anonymous Apex and Connect in Apex always run in <samp class="codeph nolang">with
+            sharing</samp> mode.</li>
+
+      </ul>
+
+    </div>
+
+    <div class="section">
+<h2 class="helpHead2">Best Practices</h2>
+
+      
+      <p class="p">We recommend that you always include an explicit sharing declaration on Apex classes that
+        include database operations or SOQL queries. This practice promotes intentionality and
+        increases code maintainability.</p>
+
+      
+<div class="data colSort"><table class="featureTable sort_table" summary="">
+          
+          
+          <thead class="thead sorted" align="left">
+            <tr>
+              <th class="featureTableHeader  " id="d35464e308">Sharing Mode</th>
+
+              <th class="featureTableHeader  " id="d35464e311">When to Use</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody class="tbody">
+            <tr>
+              <td class="entry" headers="d35464e308" data-title="Sharing Mode"><samp class="codeph apex_code">with sharing</samp></td>
+
+              <td class="entry" headers="d35464e311" data-title="When to Use">Use this mode as the default unless your use case requires otherwise. </td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d35464e308" data-title="Sharing Mode"><samp class="codeph apex_code">without sharing</samp></td>
+
+              <td class="entry" headers="d35464e311" data-title="When to Use">
+                <p class="p">Use this mode with caution. Make sure that you don’t inadvertently expose
+                  sensitive data that’s normally hidden by sharing rules. This sharing mode is best
+                  used to grant targeted elevation of sharing privileges to the current user.</p>
+
+                <p class="p"> For example, use <samp class="codeph apex_code">without sharing</samp> to
+                  allow community users to read records to which they wouldn’t otherwise have
+                  access.</p>
+
+              </td>
+
+            </tr>
+
+            <tr>
+              <td class="entry" headers="d35464e308" data-title="Sharing Mode"><samp class="codeph apex_code">inherited sharing</samp></td>
+
+              <td class="entry" headers="d35464e311" data-title="When to Use">Use this mode for service classes that must be flexible and support use cases
+                with different sharing modes.</td>
+
+            </tr>
+
+          </tbody>
+
+        </table></div>
+
+    </div>
+
+    <div class="section" id="sharing_declaration_versioned_behavior">
+<a name="sharing_declaration_versioned_behavior"><!-- --></a><h2 class="helpHead2">Versioned Behavior Changes</h2>
+
+      
+      <p class="p">In API version 67.0 and later, classes without an explicit sharing declaration run in
+          <samp class="codeph apex_code">with sharing</samp> mode.</p>
+
+      <p class="p">In API version 66.0 and earlier, the sharing mode of classes without an explicit sharing
+        declaration is determined according these factors.</p>
+
+      <ul class="ul bulletList">
+        <li class="li">If the class is part of an inheritance chain, and any class in that chain is saved as
+          API version 67.0 and later, the class runs in <samp class="codeph apex_code">with
+            sharing</samp> mode.</li>
+
+        <li class="li">If the class is an Aura controller or an <samp class="codeph apex_code">@AuraEnabled</samp> method called from a Lightning web component, the class runs in
+            <samp class="codeph apex_code">with sharing</samp> mode.</li>
+
+        <li class="li">Otherwise, the class runs in <samp class="codeph apex_code">without sharing</samp>
+          mode.</li>
+
+        <li class="li">If the class isn’t an Apex entry point, its sharing mode is defined by the sharing mode
+          of the calling class.</li>
+
+      </ul>
+
+    </div>
+
+  </div><div id="sfdc:seealso" class="related-links">
+<div class="pagination pagination-centered"><ul class="pagination">
+<li class="previous_page"><a class="link" href="atlas.en-us.apexcode.meta/apexcode/apex_classes_keywords_transient.htm" title="Using the transient Keyword">← Previous</a></li>
+</ul></div>
+</div>
