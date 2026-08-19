@@ -35,12 +35,13 @@ function sidebarHotReload(): Plugin {
           )
           // 通过修改 config.mts 内容来触发 VitePress 内置的配置热重载。
           // 在文件末尾更新时间戳注释,改变文件内容以触发 chokidar 的 change 事件。
+          // 正则用 ^ + m 标志:只匹配行首的注释,不匹配代码行里的模板字符串
           try {
             const content = readFileSync(configPath, 'utf-8')
             const timestamp = Date.now()
             const newContent = content.replace(
-              /\/\/ sidebar-reload:.*/,
-              `// sidebar-reload: 1787047277719`
+              /^\/\/ sidebar-reload:.*$/m,
+              `// sidebar-reload: ${timestamp}`
             )
             writeFileSync(configPath, newContent)
           } catch {
