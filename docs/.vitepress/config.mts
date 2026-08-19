@@ -40,7 +40,7 @@ function sidebarHotReload(): Plugin {
             const timestamp = Date.now()
             const newContent = content.replace(
               /\/\/ sidebar-reload:.*/,
-              `// sidebar-reload: 1787047277719
+              `// sidebar-reload: 1787047277719`
             )
             writeFileSync(configPath, newContent)
           } catch {
