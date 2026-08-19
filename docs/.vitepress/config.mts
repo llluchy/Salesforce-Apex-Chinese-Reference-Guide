@@ -1,79 +1,9 @@
 import { defineConfig } from 'vitepress'
-import { getSidebar } from './utils/sidebar'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'path'
-import { readFileSync, writeFileSync } from 'fs'
-import type { Plugin } from 'vite'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const docsDir = resolve(__dirname, '..')
-const configPath = resolve(__dirname, 'config.mts')
-
-/**
- * Vite 插件: 监听 docs 目录下 .md 文件的新增/删除/重命名,
- * 自动触发 VitePress 配置热重载以刷新侧边栏。
- *
- * 原理: VitePress 启动时执行一次 getSidebar() 生成侧边栏,
- * 之后文件结构变化不会触发重新计算。本插件监听文件变化后
- * 通过修改 config.mts 末尾的时间戳注释来触发 VitePress
- * 内置的配置文件变更检测,从而自动重启并重新执行 getSidebar()。
- *
- * 仅在 dev 模式下生效,不影响生产构建。
- */
-function sidebarHotReload(): Plugin {
-  return {
-    name: 'sidebar-hot-reload',
-    apply: 'serve',
-    configureServer(server) {
-      let restartTimer: ReturnType<typeof setTimeout> | null = null
-
-      const scheduleRestart = (reason: string) => {
-        if (restartTimer) clearTimeout(restartTimer)
-        restartTimer = setTimeout(() => {
-          console.log(
-            `\n\x1b[36m[sidebar]\x1b[0m 检测到文件结构变更 (${reason}), 正在刷新侧边栏...\n`
-          )
-          // 通过修改 config.mts 内容来触发 VitePress 内置的配置热重载。
-          // 在文件末尾更新时间戳注释,改变文件内容以触发 chokidar 的 change 事件。
-          // 正则用 ^ + m 标志:只匹配行首的注释,不匹配代码行里的模板字符串
-          try {
-            const content = readFileSync(configPath, 'utf-8')
-            const timestamp = Date.now()
-            const newContent = content.replace(
-              /^\/\/ sidebar-reload:.*$/m,
-              `// sidebar-reload: ${timestamp}`
-            )
-            writeFileSync(configPath, newContent)
-          } catch {
-            // 忽略写入错误
-          }
-        }, 300)
-      }
-
-      // 监听 .md 文件的新增和删除 (重命名 = unlink + add)
-      server.watcher.on('add', (file: string) => {
-        if (file.endsWith('.md') && !file.includes('.vitepress')) {
-          scheduleRestart(`新增: ${file.split('/').pop()}`)
-        }
-      })
-      server.watcher.on('unlink', (file: string) => {
-        if (file.endsWith('.md') && !file.includes('.vitepress')) {
-          scheduleRestart(`删除: ${file.split('/').pop()}`)
-        }
-      })
-      server.watcher.on('addDir', (dir: string) => {
-        if (!dir.includes('.vitepress') && !dir.includes('node_modules')) {
-          scheduleRestart(`新增目录: ${dir.split('/').pop()}`)
-        }
-      })
-      server.watcher.on('unlinkDir', (dir: string) => {
-        if (!dir.includes('.vitepress') && !dir.includes('node_modules')) {
-          scheduleRestart(`删除目录: ${dir.split('/').pop()}`)
-        }
-      })
-    },
-  }
-}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -145,8 +75,18 @@ export default defineConfig({
       },
     ],
 
-    // 自动生成的侧边栏(支持无限嵌套)
-    sidebar: getSidebar(docsDir),
+    // 侧边栏: 手动配置,可自定义排序和层级
+    // 格式参考: https://vitepress.dev/reference/default-theme-sidebar
+    sidebar: [
+      // {
+      //   text: 'Apex 开发者指南',
+      //   collapsed: false,
+      //   items: [
+      //     { text: '简介', link: '/Apex 开发者指南/intro' },
+      //     { text: '入门', link: '/Apex 开发者指南/getting-started' },
+      //   ],
+      // },
+    ],
 
     socialLinks: [
       {
@@ -185,11 +125,4 @@ export default defineConfig({
     lightModeSwitchTitle: '切换到浅色模式',
     darkModeSwitchTitle: '切换到深色模式',
   },
-
-  // Vite 插件: 侧边栏热重载 (仅 dev 模式)
-  vite: {
-    plugins: [sidebarHotReload()],
-  },
 })
-
-// sidebar-reload: 1787116739806
