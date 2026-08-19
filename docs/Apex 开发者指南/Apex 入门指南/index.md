@@ -1,4 +1,4 @@
-# Getting Started with Apex
+# Apex 入门指南
 
 > **英文原文**: [Getting Started with Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_getting_started.htm)
 
